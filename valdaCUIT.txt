@@ -1,0 +1,52 @@
+IF EMPTY(M.CUIT)
+   RETU(.T.)
+ENDI
+IF M.CUIT='             ' .OR. M.CUIT='  -        - '
+   RETU(.T.)
+ENDIF
+XC=''
+FOR XI=1 TO LEN(M.CUIT)
+    IF SUBS(M.CUIT,XI,1)$'0123456789'
+       XC=XC+SUBS(M.CUIT,XI,1)
+    ENDI
+NEXT
+XR=1
+IF LEN(XC)=11
+   XS=0
+   FOR XI=1 TO LEN(XC)
+       DO CASE
+          CASE XI=1.OR.XI=7
+               XS=XS+VAL(SUBS(XC,XI,1))*5
+          CASE XI=2.OR.XI=8
+               XS=XS+VAL(SUBS(XC,XI,1))*4
+          CASE XI=3.OR.XI=9
+               XS=XS+VAL(SUBS(XC,XI,1))*3
+          CASE XI=4.OR.XI=10
+               XS=XS+VAL(SUBS(XC,XI,1))*2
+          CASE XI=5
+               XS=XS+VAL(SUBS(XC,XI,1))*7
+          CASE XI=6
+               XS=XS+VAL(SUBS(XC,XI,1))*6
+          OTHER
+               XS=XS+VAL(SUBS(XC,XI,1))*1
+       ENDCA
+   NEXT
+   XR=INT(((XS/11)-INT(XS/11))*11)
+   IF XR=0
+      RETURN(.T.)
+   ENDI
+ENDI
+
+*------------------------------------------------------------------------
+eMessageTitle = 'Error'
+eMessageText = 'La cuenta de verificacion indica un error'
+nDialogType = 0 + 16
+*  4 = Yes and No buttons
+*  16 = Stop sign icon
+*  256 = Second button is default
+
+nAnswer = MESSAGEBOX(eMessageText, nDialogType, eMessageTitle)
+	
+*---------------------------------------------------------------------
+
+RETU(.F.)

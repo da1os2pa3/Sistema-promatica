@@ -1,0 +1,201 @@
+{
+ "version": "auto-py-to-exe-configuration_v1",
+ "pyinstallerOptions": [
+  {
+   "optionDest": "noconfirm",
+   "value": true
+  },
+  {
+   "optionDest": "filenames",
+   "value": "C:/Proyectos_Python/ABM_Clientes/main.py"
+  },
+  {
+   "optionDest": "onefile",
+   "value": false
+  },
+  {
+   "optionDest": "console",
+   "value": false
+  },
+  {
+   "optionDest": "icon_file",
+   "value": "C:/Proyectos_Python/ABM_Clientes/sistema.ico"
+  },
+  {
+   "optionDest": "clean_build",
+   "value": false
+  },
+  {
+   "optionDest": "strip",
+   "value": false
+  },
+  {
+   "optionDest": "noupx",
+   "value": false
+  },
+  {
+   "optionDest": "disable_windowed_traceback",
+   "value": false
+  },
+  {
+   "optionDest": "uac_admin",
+   "value": false
+  },
+  {
+   "optionDest": "uac_uiaccess",
+   "value": false
+  },
+  {
+   "optionDest": "argv_emulation",
+   "value": false
+  },
+  {
+   "optionDest": "bootloader_ignore_signals",
+   "value": false
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/main.exe;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/LOGO1.jpg;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/promatica.jpg;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/tapiz.jpg;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/atras.png;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/avance.png;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/backup.png;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/buscar.png;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/clientes4.png;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/comprasmay.png;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/configuraciones.png;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/ctacte.png;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/dbf-excel.png;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/finarch.png;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/garantia.png;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/impresora.png;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/inf_tecnico.png;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/marcas.png;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/planilla.png;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/presuequipo.png;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/presupuesto.png;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/productos.png;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/proveedor.png;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/recibo.png;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/reparar.png;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/reset.png;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/rma.png;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/rubro.png;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/salida.png;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/tecnica.png;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/toparch.png;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/ver.png;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/hoja.pdf;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/fotos;fotos/"
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Proyectos_Python/ABM_Clientes/tecnica;tecnica/"
+  }
+ ],
+ "nonPyinstallerOptions": {
+  "increaseRecursionLimit": true,
+  "manualArguments": ""
+ }
+}
