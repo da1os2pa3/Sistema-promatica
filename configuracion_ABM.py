@@ -10,13 +10,13 @@ class datosConfig:
         except Error as ex:
             print("Error de conexion: {0}".format(ex))
 
-    def __str__(self):
-        datos = self.consultar_setting()
-#        datos_inf = self.consultar_informa()
-        aux = ""
-        for row in datos:
-            aux = aux + str(row) + "\n"
-        return aux
+#     def __str__(self):
+#         datos = self.consultar_setting()
+# #        datos_inf = self.consultar_informa()
+#         aux = ""
+#         for row in datos:
+#             aux = aux + str(row) + "\n"
+#         return aux
 
     def consultar_setting(self, tofil):
         cur = self.cnn.cursor()
