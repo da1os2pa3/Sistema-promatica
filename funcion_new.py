@@ -319,3 +319,16 @@ class ClaseFuncion_new:
         dev_informa = self.consultar_informa()
         for row in dev_informa:
             return row[21]
+
+    #------------------------------------------------------------------------------
+    # VALIDACIONES
+    #------------------------------------------------------------------------------
+
+    """ Valida los caracteres que ingresan en los campos numericos - solo numeros, punto y guion. """
+
+    def validar(self, value):
+        codigo = value
+        for i in codigo:
+            if i not in '0123456789.-':
+                return  False
+        return True

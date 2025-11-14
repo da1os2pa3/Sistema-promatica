@@ -448,17 +448,17 @@ class Ventproved(Frame):
 
             """ Ahora ejecuto este procedimiento que se encarga de poner el puntero en el registro que acabamos 
             de encontrar correspondiente al Id de tabla asignado en el parametro de la funcion llena_grilla. """
+            """ "rg" = es el Text o Index del registro en el Treeview I001, IB002.... y ahi posiciono el foco 
+            con las siguientes instrucciones. """
 
-            if ult_tabla_id:
+            self.grid_proved.selection_set(rg)
+            # Para que no me diga que no hay nada seleccionado
+            self.grid_proved.focus(rg)
+            # para que la linea seleccionada no me quede fuera del area visible del treeview
+            self.grid_proved.yview(self.grid_proved.index(rg))
+            return
 
-                """ "rg" = es el Text o Index del registro en el Treeview I001, IB002.... y ahi posiciono el foco 
-                con las siguientes instrucciones. """
-
-                self.grid_proved.selection_set(rg)
-                # Para que no me diga que no hay nada seleccionado
-                self.grid_proved.focus(rg)
-                # para que la linea seleccionada no me quede fuera del area visible del treeview
-                self.grid_proved.yview(self.grid_proved.index(rg))
+        self.mover_puntero_topend("END")
 
     def habilitar_text(self, estado):
 

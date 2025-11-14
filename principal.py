@@ -1,10 +1,10 @@
 """ Este es el modulo menu principal desde donde accedemos a cada ABM y proceso del sistema"""
-from clientes import *
+from clientes import Ventana
 from proved import *
-from articulos import *
+from articulos import VentArt
 from orden_reparacion import *
-from marcas import *
-from rubros import *
+from marcas import Vent_marcas
+from rubros import Vent_rubros
 from cotiz_vta import *
 from configuracion import *
 from planilla_caja import PlaniCaja

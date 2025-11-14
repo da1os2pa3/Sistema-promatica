@@ -709,10 +709,10 @@ class PlaniCaja(Frame):
             for rg in regis:
 
                 """ buscado = guardo el 'text' correspondiente al Id del grid que esta en regis y muevo toda 
-                la linea de datos del treeview a la variable buscado), o sea, para el Id I0001 paso el Id de la 
-                tabla 57... y asi ira cambiando para cada rg
-                text = te da el valor de la primera columna del grid, que es donde veo el Id del registro 
-                asignado en la tabla"""
+                        la linea de datos del treeview a la variable buscado), o sea, para el Id I0001 paso el Id de la 
+                        tabla 57... y asi ira cambiando para cada rg
+                    text = te da el valor de la primera columna del grid, que es donde veo el Id del registro 
+                        asignado en la tabla"""
 
                 buscado = self.grid_planilla.item(rg)['text']
                 if int(buscado) == int(ult_tabla_id):
@@ -720,18 +720,19 @@ class PlaniCaja(Frame):
                     break
 
             """ Ahora ejecuto este procedimiento que se encarga de poner el puntero en el registro que acabamos 
-            de encontrar correspondiente al Id de tabla asignado en el parametro de la funcion llena_grilla. """
+            de encontrar correspondiente al Id de tabla asignado en el parametro de la funcion llena_grilla. 
+                "rg" = es el Text o Index del registro en el Treeview I001, IB002.... y ahi posiciono el foco 
+            con las siguientes instrucciones. """
 
-            if ult_tabla_id:
+            self.grid_planilla.selection_set(rg)
+            # Para que no me diga que no hay nada seleccionado
+            self.grid_planilla.focus(rg)
+            # para que la linea seleccionada no me quede fuera del area visible del treeview
+            self.grid_planilla.yview(self.grid_planilla.index(rg))
+            return
 
-                """ "rg" = es el Text o Index del registro en el Treeview I001, IB002.... y ahi posiciono el foco 
-                con las siguientes instrucciones. """
-
-                self.grid_planilla.selection_set(rg)
-                # Para que no me diga que no hay nada seleccionado
-                self.grid_planilla.focus(rg)
-                # para que la linea seleccionada no me quede fuera del area visible del treeview
-                self.grid_planilla.yview(self.grid_planilla.index(rg))
+        # En caso de que el parametro sea "" muevo el puntero al final del GRID
+        self.mover_puntero_topend("END")
 
     def filtrar_grilla(self, fecha_filtrar):
 

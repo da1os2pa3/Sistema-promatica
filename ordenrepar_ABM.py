@@ -10,8 +10,7 @@ class DatosOrdenRepar:
         self.master = pantalla
 
         try:
-            self.cnn = mysql.connector.connect(host="localhost", user="root",
-            passwd="", database="sist_prom")
+            self.cnn = mysql.connector.connect(host="localhost", user="root", passwd="", database="sist_prom")
         except Error as ex:
             print("Error de conexion: {0}".format(ex))
 
@@ -185,15 +184,11 @@ class DatosOrdenRepar:
             cur.execute("SELECT * FROM orden_repara ORDER BY num_orden")
             datos = cur.fetchall()
             aux = ""
-
             for row in datos:
                 if xparametro == 1:
                     aux = str(row[1]) + "\n"
                 else:
                     aux = str(row[0]) + "\n"
-
-#                aux = str(row[1]) + "\n"
-
             self.cnn.commit()
             cur.close()
             return aux

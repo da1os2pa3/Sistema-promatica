@@ -336,15 +336,6 @@ def codigo_repetido(codcontrol, tabla, campo):
     cur.close()
     return datos
 
-'''
-# Valida los caracteres que ingresan en los campos numericos - solo numeros punto y guion
-'''
-def validar(value):
-    codigo = value
-    for i in codigo:
-        if i not in '0123456789.-':
-            return  False
-    return True
 
 '''
 # Esta se fija que no existan mas de una vez los caracteres "-", "." en el campo numerico
@@ -514,3 +505,34 @@ def convierte_cifra(numero, sw):
             texto_unidad = texto_unidad[sw]
 
     return "%s %s %s" % (texto_centena, texto_decena, texto_unidad)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# '''
+# # Valida los caracteres que ingresan en los campos numericos - solo numeros punto y guion
+# '''
+# def validar(value):
+#     print(value)
+#     codigo = value
+#     for i in codigo:
+#         if i not in '0123456789.-':
+#             return  False
+#     return True

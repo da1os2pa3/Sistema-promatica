@@ -41,15 +41,15 @@ class clase_presupuestos(Frame):
         self.master.resizable(0, 0)
 
         """ Actualizamos el contenido de la ventana (la ventana pude crecer si se le agrega mas widgets).Esto 
-        actualiza el ancho y alto de la ventana en caso de crecer.
-        Obtenemos el largo y  ancho de la pantalla """
+        actualiza el ancho y alto de la ventana en caso de crecer. """
 
+        #Obtenemos el ancho y alto de la pantalla
         wtotal = self.master.winfo_screenwidth()
         htotal = self.master.winfo_screenheight()
-        # Guardamos el largo y alto de la ventana
+        # Asiganamos medidas a la ventana
         wventana = 1035
         hventana = 700
-        # Aplicamos la siguiente formula para calcular donde debería posicionarse
+        # Formula para calcular el centro, si le sumos valores puedo correrla a partir del centro
         pwidth = round(wtotal / 2 - wventana / 2) + 0
         pheight = round(htotal / 2 - hventana / 2) + 0
         # Se lo aplicamos a la geometría de la ventana
@@ -72,19 +72,29 @@ class clase_presupuestos(Frame):
         # ESTADO INICIAL
         # ----------------------------------------------------------------------
 
-        self.llena_grilla_resu_presup("")
+        # # guarda en item el Id del elemento fila en este caso fila 0 del grid principal
+        # item = self.grid_tvw_resupresup.identify_row(0)
+        # # Grid de auxpresup
+        # self.grid_tvw_resupresup.selection_set(item)
+        # # pone el foco en el item seleccionado
+        # self.grid_tvw_resupresup.focus(item)
 
-        # guarda en item el Id del elemento fila en este caso fila 0 del grid principal
-        item = self.grid_tvw_resupresup.identify_row(0)
-        # Grid de auxpresup
-        self.grid_tvw_resupresup.selection_set(item)
-        # pone el foco en el item seleccionado
-        self.grid_tvw_resupresup.focus(item)
         # Obtengo el numero del presupuesto siguiente al ultimo cargado
         self.strvar_nro_presup.set(value=(int(self.varPresupuestos.traer_ultimo(1)) + 1))
-        # Seteos iniciales
+
+        """ Seteos iniciales: self.limpiar_entrys_total()-
+        self.strvar_fecha_presup.set(value=una_fecha.strftime('%d/%m/%Y'))-self.estado_entrys_inicial("disabled")-
+        self.estado_botones_dos("disabled")-self.estado_botones_uno("normal")-
+        self.varPresupuestos.vaciar_auxpresup("aux_presup")-self.limpiar_Grid_auxiliar()-self.alta_modif_aux = 0
+        self.alta_modif_presup = 0-self.grid_tvw_resupresup['selectmode'] = 'browse'-
+        self.grid_tvw_resupresup.bind("<Double-Button-1>", self.DobleClickGrid) """
+
         self.estado_inicial()
+
+        # Designo un orden antes de llenar la grilla
         self.filtro_activo_resu_presup = "resu_presup ORDER BY rp_fecha, rp_numero ASC"
+
+        self.llena_grilla_resu_presup("")
         # ----------------------------------------------------------------------
 
     # ----------------------------------------------------------------------
@@ -969,17 +979,17 @@ class clase_presupuestos(Frame):
 
             """ Ahora ejecuto este procedimiento que se encarga de poner el puntero en el registro que acabamos 
             de encontrar correspondiente al Id de tabla asignado en el parametro de la funcion llena_grilla. """
+            """ "rg" = es el Text o Index del registro en el Treeview I001, IB002.... y ahi posiciono el foco 
+            con las siguientes instrucciones. """
 
-            if ult_tabla_id:
+            self.grid_tvw_resupresup.selection_set(rg)
+            # Para que no me diga que no hay nada seleccionado
+            self.grid_tvw_resupresup.focus(rg)
+            # para que la linea seleccionada no me quede fuera del area visible del treeview
+            self.grid_tvw_resupresup.yview(self.grid_tvw_resupresup.index(rg))
+            return
 
-                """ "rg" = es el Text o Index del registro en el Treeview I001, IB002.... y ahi posiciono el foco 
-                con las siguientes instrucciones. """
-
-                self.grid_tvw_resupresup.selection_set(rg)
-                # Para que no me diga que no hay nada seleccionado
-                self.grid_tvw_resupresup.focus(rg)
-                # para que la linea seleccionada no me quede fuera del area visible del treeview
-                self.grid_tvw_resupresup.yview(self.grid_tvw_resupresup.index(rg))
+        self.mover_puntero_topend("END")
 
     def limpiar_Grid_auxiliar(self):
 
