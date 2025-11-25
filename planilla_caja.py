@@ -132,7 +132,8 @@ class PlaniCaja(Frame):
         self.alta_modif = 0
         self.dato_seleccion = ""
         self.retorno = ""
-        vcmd = (self.register(validar), '%P')
+        #vcmd = (self.varFuncion_new.validar, '%P')
+        vcmd = (self.register(self.varFuncion_new.validar), "%P")
         # ---------------------------------------------------------------------------------
 
         # ---------------------------------------------------------------------------------

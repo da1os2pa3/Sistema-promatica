@@ -105,7 +105,7 @@ class VentArt(Frame):
         # ------------------------------------------------------------------------------
 
         # para la funcion validate y controlar campos solo numericos
-        vcmd = (self.register(validar), '%P')
+        vcmd = (self.register(self.varFuncion_new.validar), "%P")
 
         # Se usa para saber que filtro esta activo y mantenerlo - a continuacion se setea a un valor inicial
         self.filtro_activo = "articulos ORDER BY rubro, marca, descripcion ASC"

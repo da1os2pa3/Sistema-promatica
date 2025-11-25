@@ -192,7 +192,7 @@ class clase_presupuestos(Frame):
         self.alta_modif_aux = 0         # tabla aux_presu
         self.alta_modif_presup = 0      # tabla resu_presu
         # para validar ingresos de numeros en gets numericos
-        vcmd = (self.register(validar), '%P')
+        vcmd = (self.register(self.varFuncion_new.validar), "%P")
         # ----------------------------------------------------------------------
 
         # ----------------------------------------------------------------------
