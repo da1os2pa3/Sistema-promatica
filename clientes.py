@@ -23,13 +23,13 @@ class Ventana(Frame):
 
         # ---------------------------------------------------------------------------------
         # Instanciaciones -*-
-
         # Creo una instancia de clientesABM de la clase datosClientes
         self.varClientes = datosClientes(self.master)
         # ---------------------------------------------------------------------------------
 
         # ---------------------------------------------------------------------------------
         # PANTALLA -*-
+        # ---------------------------------------------------------------------------------
 
         # Esto esta agregado para centrar las ventanas en la pantalla
         master.resizable(0, 0)
@@ -51,31 +51,27 @@ class Ventana(Frame):
         # ------------------------------------------------------------------------------
 
         self.create_widgets()
-
-        # --------------------------------------------------------------------------
-        # ESTADO INICIAL -*-
-
-        self.estado_A()
-
-        # ---------------------------------------------------------------------------
-
+        self.estado_inicial()
         self.llena_grilla("")
 
         # ---------------------------------------------------------------------------
-        # Seteo de foco y punteros sobre el GRID
-        item = self.grid_clientes.identify_row(0)
-        self.grid_clientes.selection_set(item)
-        self.grid_clientes.focus(item)
+        # SETEO INICIAL DEL GRID
+        # ---------------------------------------------------------------------------------
+
+        # item = self.grid_clientes.identify_row(0)
+        # self.grid_clientes.selection_set(item)
+        # self.grid_clientes.focus(item)
         # ---------------------------------------------------------------------------
 
-    # ===========================================================================
+    # ---------------------------------------------------------------------------------
     # WIDGETS -*-
-    # ===========================================================================
+    # ---------------------------------------------------------------------------------
 
     def create_widgets(self):
 
         # --------------------------------------------------------------------------
         # TITULOS -*-
+        # ---------------------------------------------------------------------------------
 
         # Encabezado logo y titulo con PACK
         self.frame_titulo_top = Frame(self.master)
@@ -96,6 +92,7 @@ class Ventana(Frame):
 
         # --------------------------------------------------------------------------
         # STRINGVARS -*-
+        # ---------------------------------------------------------------------------------
 
         self.strvar_codigo = tk.StringVar(value="")
         self.strvar_apellido = tk.StringVar(value="")
@@ -116,6 +113,7 @@ class Ventana(Frame):
 
         # --------------------------------------------------------------------------
         # BOTONES -*-
+        # ---------------------------------------------------------------------------------
 
         # BOTONES NUEVO - ELIMINAR - EDITAR - GUARDAR - CANCELAR
         barra_botones = LabelFrame(self.master)
@@ -192,6 +190,7 @@ class Ventana(Frame):
 
         # --------------------------------------------------------------------------
         # BUSQUEDA DE CLIENTES -*-
+        # ---------------------------------------------------------------------------------
 
         self.frame_tv = Frame(self.master)
         # FRAME dentro del frame principal para poner la llinea de busqueda
@@ -279,6 +278,7 @@ class Ventana(Frame):
 
         # --------------------------------------------------------------------------
         # ENTRYS -*-
+        # ---------------------------------------------------------------------------------
 
         self.sector_entry = LabelFrame(self.master)
 
@@ -402,7 +402,7 @@ class Ventana(Frame):
             color = ('evenrow',) if cont % 2 else ('oddrow',)
 
             # convierto fecha de 2024-12-19 a 19/12/2024
-            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[13], '%Y-%m-%d'))
+            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[13], '%Y-%m-%d'), "hora_no")
 
             self.grid_clientes.insert("", END, tags=color, text=row[0], values=(row[1], row[2], row[3], row[4],
                                                                       row[5], row[6], row[7], row[8], row[9], row[10],
@@ -420,7 +420,6 @@ class Ventana(Frame):
         necesite acomodar puntero en un item en particular (caso altas, modificaciones ...)."""
 
         if ult_tabla_id:
-
             """ regis = Guardo todos los Id del Grid (I001, IB003, ...)"""
             regis = self.grid_clientes.get_children()
             rg = ""
@@ -448,31 +447,43 @@ class Ventana(Frame):
             self.grid_clientes.focus(rg)
             # para que la linea seleccionada no me quede fuera del area visible del treeview
             self.grid_clientes.yview(self.grid_clientes.index(rg))
-
-        # En caso de que el parametro sea "" muevo el puntero al final del GRID
-        self.mover_puntero_topend("END")
-
+        else:
+            # caso de que el parametro ult_tabla_id sea " " muevo el puntero al final del GRID
+            self.mover_puntero_topend("END")
 
     # --------------------------------------------------------------------------
     # INICIALIZACION SISTEMA -*-
     # --------------------------------------------------------------------------
 
-    def estado_A(self):
+    def estado_inicial(self):
 
         # Variables
         self.filtro_activo = "clientes ORDER BY apellido, nombres ASC"
         self.var_Id = -1
         self.alta_modif = 0
 
-        # Grilla
-        self.selected = self.grid_clientes.focus()
-        self.clave = self.grid_clientes.item(self.selected, 'text')
-
-        # Estado inicial del Gui
         self.limpiar_text()
         self.habilitar_btn_A("normal")
         self.habilitar_btn_B("disabled")
         self.habilitar_text("disabled")
+
+    def limpiar_text(self):
+
+        self.entry_codigo.delete(0, END)
+        self.entry_apellido.delete(0, END)
+        self.entry_nombres.delete(0, END)
+        self.entry_direccion.delete(0, END)
+        self.entry_localidad.delete(0, END)
+        self.entry_provincia.delete(0, END)
+        self.entry_postal.delete(0,END)
+        self.entry_telefono_pers.delete(0, END)
+        self.entry_telefono_trab.delete(0, END)
+        self.entry_mail.delete(0, END)
+        self.entry_fecha_ingreso.delete(0, END)
+        self.combo_sit_fiscal.set("")
+        self.combo_sit_fiscal.current(0)
+        self.entry_cuit.delete(0, END)
+        self.entry_observaciones.delete(0, END)
 
     def habilitar_text(self, estado):
 
@@ -520,33 +531,15 @@ class Ventana(Frame):
 
         self.btnGuardar.configure(state=estado)
 
-    def limpiar_text(self):
-
-        self.entry_codigo.delete(0, END)
-        self.entry_apellido.delete(0, END)
-        self.entry_nombres.delete(0, END)
-        self.entry_direccion.delete(0, END)
-        self.entry_localidad.delete(0, END)
-        self.entry_provincia.delete(0, END)
-        self.entry_postal.delete(0,END)
-        self.entry_telefono_pers.delete(0, END)
-        self.entry_telefono_trab.delete(0, END)
-        self.entry_mail.delete(0, END)
-        self.entry_fecha_ingreso.delete(0, END)
-        self.combo_sit_fiscal.set("")
-        self.combo_sit_fiscal.current(0)
-        self.entry_cuit.delete(0, END)
-        self.entry_observaciones.delete(0, END)
-
     def fCancelar(self):
 
         r = messagebox.askquestion("Cancelar", "Confirma cancelar operacion actual?", parent=self)
         if r == messagebox.YES:
-            self.estado_A()
+            self.estado_inicial()
 
     def fReset(self):
 
-        self.estado_A()
+        self.estado_inicial()
         self.limpiar_Grid()
         self.llena_grilla("")
         self.mover_puntero_topend("TOP")
@@ -617,14 +610,11 @@ class Ventana(Frame):
             self.entry_telefono_pers.insert(0, row[8])
             self.entry_telefono_trab.insert(0, row[9])
             self.entry_mail.insert(0, row[10])
-
-            self.combo_sit_fiscal.set("") ## para que no quede el valor inicial del camo junto con el editado(CF CF Consumidor...)
+            self.combo_sit_fiscal.set("")
             self.combo_sit_fiscal.insert(0, row[11])
-
             self.entry_cuit.insert(0, row[12])
-
             # convierto fecha de date a string y cambio a visualizacion español
-            fecha_convertida = fecha_str_reves_normal(self, datetime.strftime(row[13], "%Y-%m-%d"))
+            fecha_convertida = fecha_str_reves_normal(self, datetime.strftime(row[13], "%Y-%m-%d"), "hora_no")
             self.entry_fecha_ingreso.insert(0, fecha_convertida)
             self.entry_observaciones.insert(0, row[14])
 
@@ -640,7 +630,7 @@ class Ventana(Frame):
         # selecciono el Id del GRID para su uso posterior
         self.selected = self.grid_clientes.focus()
         self.selected_ant = self.grid_clientes.prev(self.selected)
-        # guardo en clave el Id pero de la Tabla (no son el mismo que el grid
+        # guardo en clave el Id pero de la Tabla (no son el mismo que el grid)
         self.clave = self.grid_clientes.item(self.selected, 'text')
         self.clave_ant = self.grid_clientes.item(self.selected_ant, 'text')
         # ------------------------------------------------------------------------------
@@ -668,9 +658,10 @@ class Ventana(Frame):
     def fGuardar(self):
 
         #-----------------------------------------------------------------
-        # CONTROLO CODIGO REPETIDO
+        # VALIDACIONES
+        #-----------------------------------------------------------------
 
-        # control de codigo de cliente repetido (en funciones)
+        # CONTROLO CODIGO REPETIDO - control de codigo de cliente repetido (en funciones)
         codrep = codigo_repetido(self.strvar_codigo.get(), "clientes", "codigo")
 
         if self.alta_modif == 1:
@@ -732,12 +723,12 @@ class Ventana(Frame):
                 self.var_Id == -1
                 messagebox.showinfo("Correcto", "La modificacion del registro fue exitosa", parent=self)
 
-            self.filtro_activo = "clientes ORDER BY apellido, nombres ASC"
-
             self.limpiar_Grid()
             self.limpiar_text()
             self.habilitar_btn_B("disabled")
             self.habilitar_btn_A("normal")
+
+            self.filtro_activo = "clientes ORDER BY apellido, nombres ASC"
 
             if self.alta_modif == 1:
                 ultimo_tabla_id = self.varClientes.traer_ultimo(0)
@@ -812,7 +803,6 @@ class Ventana(Frame):
         self.filtro_activo = "clientes ORDER BY codigo ASC"
         self.limpiar_Grid()
         self.llena_grilla(self.clave)
-        self.puntero_modificacion(self.clave)
 
     def forden_apellido(self):
 
@@ -822,7 +812,6 @@ class Ventana(Frame):
         self.filtro_activo = "clientes ORDER BY apellido, nombres ASC"
         self.limpiar_Grid()
         self.llena_grilla(self.clave)
-        self.puntero_modificacion(self.clave)
 
     def fToparch(self):
         self.mover_puntero_topend('TOP')

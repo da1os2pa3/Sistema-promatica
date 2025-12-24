@@ -52,7 +52,7 @@ class clase_garantias(Frame):
         # ------------------------------------------------------------------------------
 
         self.create_widgets()
-        self.estado_A()
+        self.estado_inicial()
         self.llena_grilla("")
 
         # ------------------------------------------------------------------------------
@@ -65,11 +65,11 @@ class clase_garantias(Frame):
         # selection_set(): similar a selection_add(), pero remueve los elementos previamente seleccionados.
         # selection_toggle(): cambia la selección de un elemento. """
 
-        # guarda en item el Id del elemento fila en este caso fila 0
-        item = self.grid_garantias.identify_row(0)
-        self.grid_garantias.selection_set(item)
-        # pone el foco en el item seleccionado
-        self.grid_garantias.focus(item)
+        # # guarda en item el Id del elemento fila en este caso fila 0
+        # item = self.grid_garantias.identify_row(0)
+        # self.grid_garantias.selection_set(item)
+        # # pone el foco en el item seleccionado
+        # self.grid_garantias.focus(item)
 
     # ------------------------------------------------------------------
     # WIDGETS
@@ -88,9 +88,9 @@ class clase_garantias(Frame):
         self.photocc = Image.open('garantia.png')
         self.photocc = self.photocc.resize((50, 50), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.png_garantia = ImageTk.PhotoImage(self.photocc)
-        self.lbl_png_garantia = Label(self.frame_titulo_top, image=self.png_garantia, bg="red", relief=RIDGE, bd=5)
+        self.lbl_png_garantia = Label(self.frame_titulo_top, image=self.png_garantia, bg="red", relief="ridge", bd=5)
         self.lbl_titulo = Label(self.frame_titulo_top, width=52, text="Garantias",
-                                bg="black", fg="gold", font=("Arial bold", 20, "bold"), bd=5, relief=RIDGE, padx=5)
+                                bg="black", fg="gold", font=("Arial bold", 20, "bold"), bd=5, relief="ridge", padx=5)
         # Coloco logo y titulo en posicion de pantalla
         self.lbl_png_garantia.grid(row=0, column=0, sticky=W, padx=5, ipadx=22)
         self.lbl_titulo.grid(row=0, column=1, sticky="nsew")
@@ -101,7 +101,7 @@ class clase_garantias(Frame):
         # VARIABLES GENERALES
         # --------------------------------------------------------------------------
 
-        self.vcmd = (self.register(validar), '%P')
+        self.vcmd = (self.register(self.varFuncion_new.validar), "%P")
 
         # --------------------------------------------------------------------------
         # STRINGVARS
@@ -112,13 +112,13 @@ class clase_garantias(Frame):
 
         self.strvar_buscostring =tk.StringVar(value="")
         self.strvar_nombre_cliente = tk.StringVar(value="")
-        self.strvar_codigo_cliente = tk.StringVar(value=0)
+        self.strvar_codigo_cliente = tk.StringVar(value="0")
         una_fecha = datetime.strftime(date.today(), "%d/%m/%Y")
         self.strvar_fecha_movim = tk.StringVar(value=una_fecha)
         self.strvar_fecha_vto = tk.StringVar(value=una_fecha)
         self.strvar_detalle_articulo = tk.StringVar(value="")
-        self.strvar_total_oper = tk.StringVar(value=0)
-        self.strvar_meses = tk.StringVar(value=1)
+        self.strvar_total_oper = tk.StringVar(value="0")
+        self.strvar_meses = tk.StringVar(value="1")
         self.strvar_numero_factura = tk.StringVar(value="")
         self.strvar_observaciones = tk.StringVar(value="")
 
@@ -138,27 +138,27 @@ class clase_garantias(Frame):
 
         self.grid_garantias.bind("<Double-Button-1>", self.DobleClickGrid)
 
-        self.grid_garantias.column("#0", width=60, anchor=CENTER, minwidth=60)
-        self.grid_garantias.column("col1", width=100, anchor=CENTER, minwidth=80)
-        self.grid_garantias.column("col2", width=50, anchor=CENTER, minwidth=50)
-        self.grid_garantias.column("col3", width=100, anchor=CENTER, minwidth=80)
-        self.grid_garantias.column("col4", width=50, anchor=CENTER, minwidth=50)
+        self.grid_garantias.column("#0", width=60, anchor="center", minwidth=60)
+        self.grid_garantias.column("col1", width=100, anchor="center", minwidth=80)
+        self.grid_garantias.column("col2", width=50, anchor="center", minwidth=50)
+        self.grid_garantias.column("col3", width=100, anchor="center", minwidth=80)
+        self.grid_garantias.column("col4", width=50, anchor="center", minwidth=50)
         self.grid_garantias.column("col5", width=300, anchor=W, minwidth=280)
         self.grid_garantias.column("col6", width=600, anchor=W, minwidth=600)
-        self.grid_garantias.column("col7", width=100, anchor=CENTER, minwidth=100)
-        self.grid_garantias.column("col8", width=80, anchor=CENTER, minwidth=80)
-        self.grid_garantias.column("col9", width=200, anchor=CENTER, minwidth=200)
+        self.grid_garantias.column("col7", width=100, anchor="center", minwidth=100)
+        self.grid_garantias.column("col8", width=80, anchor="center", minwidth=80)
+        self.grid_garantias.column("col9", width=200, anchor="center", minwidth=200)
 
-        self.grid_garantias.heading("#0", text="Id", anchor=CENTER)
-        self.grid_garantias.heading("col1", text="Fecha venta", anchor=CENTER)
-        self.grid_garantias.heading("col2", text="meses", anchor=CENTER)
-        self.grid_garantias.heading("col3", text="Fecha vencimiento", anchor=CENTER)
-        self.grid_garantias.heading("col4", text="", anchor=CENTER)
-        self.grid_garantias.heading("col5", text="Cliente", anchor=CENTER)
-        self.grid_garantias.heading("col6", text="Articulo", anchor=CENTER)
-        self.grid_garantias.heading("col7", text="Importe", anchor=CENTER)
-        self.grid_garantias.heading("col8", text="Factura", anchor=CENTER)
-        self.grid_garantias.heading("col9", text="Observaciones", anchor=CENTER)
+        self.grid_garantias.heading("#0", text="Id", anchor="center")
+        self.grid_garantias.heading("col1", text="Fecha venta", anchor="center")
+        self.grid_garantias.heading("col2", text="meses", anchor="center")
+        self.grid_garantias.heading("col3", text="Fecha vencimiento", anchor="center")
+        self.grid_garantias.heading("col4", text="", anchor="center")
+        self.grid_garantias.heading("col5", text="Cliente", anchor="center")
+        self.grid_garantias.heading("col6", text="Articulo", anchor="center")
+        self.grid_garantias.heading("col7", text="Importe", anchor="center")
+        self.grid_garantias.heading("col8", text="Factura", anchor="center")
+        self.grid_garantias.heading("col9", text="Observaciones", anchor="center")
 
         self.grid_garantias.tag_configure('oddrow', background='light grey')
         self.grid_garantias.tag_configure('evenrow', background='white')
@@ -335,7 +335,7 @@ class clase_garantias(Frame):
         self.lbl_texto_codigo_cliente = Label(self.frame_tercero, textvariable=self.strvar_codigo_cliente, width=10 )
         self.lbl_texto_codigo_cliente.grid(row=1, column=3, padx=5, pady=2, sticky=W)
 
-        self.frame_tercero.pack(side=TOP, fill=BOTH,expand=0, padx=5, pady=3)
+        self.frame_tercero.pack(side="top", fill=BOTH,expand=0, padx=5, pady=3)
         # -----------------------------------------------------------------------------
 
         # -----------------------------------------------------------------------------
@@ -390,8 +390,8 @@ class clase_garantias(Frame):
             color = ('evenrow',) if cont % 2 else ('oddrow',)
 
             # convierto fecha de 2024-12-19 a 19/12/2024
-            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[1], '%Y-%m-%d'))
-            forma_normal2 = fecha_str_reves_normal(self, datetime.strftime(row[3], '%Y-%m-%d'))
+            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[1], '%Y-%m-%d'), "hora_no")
+            forma_normal2 = fecha_str_reves_normal(self, datetime.strftime(row[3], '%Y-%m-%d'), "hora_no")
 
             self.grid_garantias.insert("", END, tags=color, text=row[0], values=(forma_normal, row[2],
                                                     forma_normal2, row[4], row[5], row[6], row[7], row[8], row[9]))
@@ -438,8 +438,8 @@ class clase_garantias(Frame):
             # para que la linea seleccionada no me quede fuera del area visible del treeview
             self.grid_garantias.yview(self.grid_garantias.index(rg))
             return
-
-        self.mover_puntero_topend("END")
+        else:
+            self.mover_puntero_topend("END")
 
     def limpiar_Grid(self):
 
@@ -450,7 +450,7 @@ class clase_garantias(Frame):
     # ESTADOS
     # -----------------------------------------------------------------------------
 
-    def estado_A(self):
+    def estado_inicial(self):
 
         # Variables
         self.var_Id = -1
@@ -604,12 +604,12 @@ class clase_garantias(Frame):
             if row[1] == "None":
                 messagebox.showerror("Error", "Error de fechas en Tabla, elimine el item y "
                                               "vuelva a cargarlo ", parent=self)
-                self.estado_A()
+                self.estado_inicial()
                 return
 
             # Convierto fechas a dd/mm/aaa
-            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[1], '%Y-%m-%d'))
-            forma_normal2 = fecha_str_reves_normal(self, datetime.strftime(row[3], '%Y-%m-%d'))
+            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[1], '%Y-%m-%d'), "hora_no")
+            forma_normal2 = fecha_str_reves_normal(self, datetime.strftime(row[3], '%Y-%m-%d'), "hora_no")
 
             self.entry_fecha_movim.insert(0, forma_normal)
             self.strvar_fecha_vto.set(value=forma_normal2)
@@ -724,7 +724,7 @@ class clase_garantias(Frame):
             elif self.alta_modif == 2:
                 self.llena_grilla(self.clave)
 
-            self.estado_A()
+            self.estado_inicial()
             self.btn_nuevoitem.focus()
 
         except:
@@ -737,7 +737,7 @@ class clase_garantias(Frame):
 
         r = messagebox.askquestion("Cancelar", "Confirma cancelar operacion actual?", parent=self)
         if r == messagebox.YES:
-            self.estado_A()
+            self.estado_inicial()
 
     def fSalir(self):
         self.master.destroy()

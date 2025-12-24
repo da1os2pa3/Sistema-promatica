@@ -8,8 +8,8 @@ from datetime import date, datetime
 from PIL import Image, ImageTk
 #-----------------------------------------------
 #from tkinter import *
-from tkinter import ttk
-import tkinter as tk
+#from tkinter import ttk
+#import tkinter as tk
 import tkinter.font as tkFont
 from tkinter import messagebox
 
@@ -23,16 +23,17 @@ class CuentaCorriente(Frame):
         self.master.grab_set()
         self.master.focus_set()
 
-        # Instanciaciones -----------------------------------------------------------------
-        # Creo una instancia de clientesABM de la clase datosClientes
+        # ------------------------------------------------------------------------------
+        # Instanciaciones
+        # Creo una instancia de clientesABM y de funcion_new
         self.varCtacte = datosCtacte(self.master)
-        #self.varFuncion_new = ClaseFuncion_new(self.master, self.varCtacte)
         self.varFuncion_new = ClaseFuncion_new(self.master)
         # ----------------------------------------------------------------------------------
 
         # ----------------------------------------------------------------------------------
         # Esto esta agregado para centrar las ventanas en la pantalla
         # ----------------------------------------------------------------------------------
+
         #master.geometry("880x510")
         self.master.resizable(0, 0)
         # Actualizamos el contenido de la ventana (la ventana pude crecer si se le agrega
@@ -50,22 +51,25 @@ class CuentaCorriente(Frame):
         self.master.geometry(str(wventana) + "x" + str(hventana) + "+" + str(pwidth) + "+" + str(pheight))
         # ------------------------------------------------------------------------------
 
+        # ------------------------------------------------------------------------------
         self.create_widgets()
 
-        # ------------------------------------------------------------------------------
-        # VARIABLES
-
-        self.filtro_activo = "ctacte WHERE cc_codcli = 0 ORDER BY cc_fecha ASC"
-        self.var_Id = -1
-        self.alta_modif = 0
+        self.estado_inicial()
+        self.llena_grilla("")
         # ------------------------------------------------------------------------------
 
-        self.llena_grilla()
+        # # guarda en item el Id del elemento fila en este caso fila 0
+        # item = self.grid_ctacte.identify_row(0)
+        # self.grid_ctacte.selection_set(item)
+        # # pone el foco en el item seleccionado
+        # self.grid_ctacte.focus(item)
 
-        # ------------------------------------------------------------------------------
-
-        # guarda en item el Id del elemento fila en este caso fila 0
-        item = self.grid_ctacte.identify_row(0)
+        # self.habilitar_text("disabled")
+        # self.habilitar_Btn_Final("disabled")
+        # self.habilitar_Btn_busquedas("disabled")
+        # #self.habilitar_Selec_cliente("disabled")
+        # self.habilitar_Btn_Oper("disabled")
+        # self.entry_nombre_cliente.focus()
 
         """ 
         La función Treeview.selection() retorna una tupla con los ID de los elementos seleccionados o una
@@ -77,26 +81,17 @@ class CuentaCorriente(Frame):
         # selection_toggle(): cambia la selección de un elemento. 
         """
 
-        self.grid_ctacte.selection_set(item)
-
-        # pone el foco en el item seleccionado
-        self.grid_ctacte.focus(item)
-
-        self.habilitar_text("disabled")
-        self.habilitar_Btn_Final("disabled")
-        self.habilitar_Btn_busquedas("disabled")
-        #self.habilitar_Selec_cliente("disabled")
-        self.habilitar_Btn_Oper("disabled")
-        self.entry_nombre_cliente.focus()
-
-    # ================================================================
-    # ========================== WIDGETS =============================
-    # ================================================================
+    # ------------------------------------------------------------------
+    # WIDGETS
+    # ------------------------------------------------------------------
 
     def create_widgets(self):
 
-        # ------------------------------------------------------------------------------
+        self.vcmd = (self.register(self.varFuncion_new.validar), "%P")
+
+        # ------------------------------------------------------------------
         # TITULOS
+        # ------------------------------------------------------------------
 
         # Encabezado logo y titulo con PACK
         self.frame_titulo_top = Frame(self.master)
@@ -105,24 +100,22 @@ class CuentaCorriente(Frame):
         self.photocc = Image.open('ctacte.png')
         self.photocc = self.photocc.resize((50, 50), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.png_ctacte = ImageTk.PhotoImage(self.photocc)
-        self.lbl_png_ctacte = Label(self.frame_titulo_top, image=self.png_ctacte, bg="red", relief=RIDGE, bd=5)
+        self.lbl_png_ctacte = Label(self.frame_titulo_top, image=self.png_ctacte, bg="red", relief="ridge", bd=5)
         self.lbl_titulo = Label(self.frame_titulo_top, width=52, text="Cuentas Corrientes",
-                                bg="black", fg="gold", font=("Arial bold", 20, "bold"), bd=5, relief=RIDGE, padx=5)
+                                bg="black", fg="gold", font=("Arial bold", 20, "bold"), bd=5, relief="ridge", padx=5)
 
         # Coloco logo y titulo en posicion de pantalla
         self.lbl_png_ctacte.grid(row=0, column=0, sticky=W, padx=5, ipadx=22)
         self.lbl_titulo.grid(row=0, column=1, sticky="nsew")
-        self.frame_titulo_top.pack(side=TOP, fill=X, padx=5, pady=2)
-        # ------------------------------------------------------------------------------
+        self.frame_titulo_top.pack(side="top", fill="x", padx=5, pady=2)
+        # ------------------------------------------------------------------
 
-        # ------------------------------------------------------------------------------
+        # ------------------------------------------------------------------
         # STRINGVARS
+        # ------------------------------------------------------------------
 
-        self.retorno = ""
-
-        # self.strvar_buscostring =tk.StringVar(value="")
         self.strvar_nombre_cliente = tk.StringVar(value="")
-        self.strvar_codigo_cliente = tk.StringVar(value=0)
+        self.strvar_codigo_cliente = tk.StringVar(value="0")
         self.strvar_fecha_movim = tk.StringVar(value="")
         self.strvar_detalle_movim = tk.StringVar(value="")
         self.strvar_saldo_cliente = tk.StringVar(value="0.00")
@@ -132,19 +125,17 @@ class CuentaCorriente(Frame):
 
         # ------------------------------------------------------------------------------
         # VARIABLES GENERALES
-
+        # ------------------------------------------------------------------
         # Para identificar si el movimiento es alta o modificacion (1 - ALTA 2 - Modificacion)
-        self.vcmd = (self.register(validar), '%P')
+#        self.varFuncion_new = ClaseFuncion_new(self.master)
+
         una_fecha = datetime.strftime(date.today(), "%d/%m/%Y")
         self.strvar_fecha_movim = tk.StringVar(value=una_fecha)
         # ------------------------------------------------------------------------------
 
-        # ===============================================================
-        # ======================== TREVIEEW  ============================
-        # ===============================================================
-
-        # ------------------------------------------------------------------------------
-        # TREEVIEW
+        # ------------------------------------------------------------------
+        # GRID - TREVIEEW
+        # ------------------------------------------------------------------
 
         self.frame_tvw_ctacte=LabelFrame(self.master, text="Cuentas Corrientes: ", foreground="#CF09BD")
 
@@ -158,21 +149,21 @@ class CuentaCorriente(Frame):
 
         self.grid_ctacte.bind("<Double-Button-1>", self.DobleClickGrid)
 
-        self.grid_ctacte.column("#0", width=40, anchor=CENTER, minwidth=60)
-        self.grid_ctacte.column("col1", width=80, anchor=CENTER, minwidth=60)
-        self.grid_ctacte.column("col2", width=300, anchor=CENTER, minwidth=200)
-        self.grid_ctacte.column("col3", width=90, anchor=CENTER, minwidth=80)
-        self.grid_ctacte.column("col4", width=90, anchor=CENTER, minwidth=80)
-        self.grid_ctacte.column("col5", width=90, anchor=CENTER, minwidth=80)
-        self.grid_ctacte.column("col6", width=60, anchor=CENTER, minwidth=80)
+        self.grid_ctacte.column("#0", width=40, anchor="center", minwidth=60)
+        self.grid_ctacte.column("col1", width=80, anchor="center", minwidth=60)
+        self.grid_ctacte.column("col2", width=300, anchor="center", minwidth=200)
+        self.grid_ctacte.column("col3", width=90, anchor="center", minwidth=80)
+        self.grid_ctacte.column("col4", width=90, anchor="center", minwidth=80)
+        self.grid_ctacte.column("col5", width=90, anchor="center", minwidth=80)
+        self.grid_ctacte.column("col6", width=60, anchor="center", minwidth=80)
 
-        self.grid_ctacte.heading("#0", text="Id", anchor=CENTER)
-        self.grid_ctacte.heading("col1", text="Fecha", anchor=CENTER)
-        self.grid_ctacte.heading("col2", text="Detalle", anchor=CENTER)
-        self.grid_ctacte.heading("col3", text="Debito", anchor=CENTER)
-        self.grid_ctacte.heading("col4", text="Credito", anchor=CENTER)
-        self.grid_ctacte.heading("col5", text="Saldo", anchor=CENTER)
-        self.grid_ctacte.heading("col6", text="Clave", anchor=CENTER)
+        self.grid_ctacte.heading("#0", text="Id", anchor="center")
+        self.grid_ctacte.heading("col1", text="Fecha", anchor="center")
+        self.grid_ctacte.heading("col2", text="Detalle", anchor="center")
+        self.grid_ctacte.heading("col3", text="Debito", anchor="center")
+        self.grid_ctacte.heading("col4", text="Credito", anchor="center")
+        self.grid_ctacte.heading("col5", text="Saldo", anchor="center")
+        self.grid_ctacte.heading("col6", text="Clave", anchor="center")
 
         # SCROLLBAR del Treeview
         scroll_x = Scrollbar(self.frame_tvw_ctacte, orient=HORIZONTAL)
@@ -185,12 +176,13 @@ class CuentaCorriente(Frame):
         scroll_x.pack(side=BOTTOM, fill=X)
         self.grid_ctacte['selectmode'] = 'browse'
 
-        self.grid_ctacte.pack(side=TOP, fill=BOTH, expand=1, padx=5, pady=2)
-        self.frame_tvw_ctacte.pack(side=TOP, fill=BOTH, padx=5, pady=2)
-        # ------------------------------------------------------------------------------
+        self.grid_ctacte.pack(side="top", fill=BOTH, expand=1, padx=5, pady=2)
+        self.frame_tvw_ctacte.pack(side="top", fill=BOTH, padx=5, pady=2)
+        # ------------------------------------------------------------------
 
-        # ------------------------------------------------------------------------------
+        # ------------------------------------------------------------------
         # ENTRYS
+        # ------------------------------------------------------------------
 
         self.frame_primero=LabelFrame(self.master, text="", foreground="red")
 
@@ -253,7 +245,7 @@ class CuentaCorriente(Frame):
                                  fg="white")
         self.btnFinarch.grid(row=0, column=10, padx=5, sticky="nsew", pady=2)
 
-        self.frame_primero.pack(side=TOP, fill=BOTH, expand=0, padx=5, pady=2)
+        self.frame_primero.pack(side="top", fill=BOTH, expand=0, padx=5, pady=2)
         # ---------------------------------------------------------------------------------
 
         # ---------------------------------------------------------------------------------------
@@ -301,11 +293,12 @@ class CuentaCorriente(Frame):
         self.strvar_credito_movim.trace("w", lambda *args: self.limitador(self.strvar_credito_movim, 15))
         self.entry_credito_movim.bind('<Tab>', lambda e: self.calcular())
 
-        self.frame_tercero.pack(side=TOP, fill=BOTH, expand=0, padx=5, pady=2)
-        # --------------------------------------------------------------------------------------
+        self.frame_tercero.pack(side="top", fill=BOTH, expand=0, padx=5, pady=2)
+        # ------------------------------------------------------------------
 
-        # --------------------------------------------------------------------------------------
-        # BOTONES DEL TREEVIEW
+        # ------------------------------------------------------------------
+        # BOTONES TREEVIEW
+        # ------------------------------------------------------------------
 
         self.frame_cuarto=LabelFrame(self.master, text="", foreground="red")
 
@@ -332,10 +325,23 @@ class CuentaCorriente(Frame):
                              bg="yellow", fg="white")
         self.btnSalir.grid(row=0, column=5, padx=5, pady=2, sticky="nsew")
 
-        self.frame_cuarto.pack(side=TOP, fill=BOTH, expand=0, padx=5, pady=2)
-        # --------------------------------------------------------------------------------------
+        self.frame_cuarto.pack(side="top", fill=BOTH, expand=0, padx=5, pady=2)
+        # ------------------------------------------------------------------
 
-    def llena_grilla(self):
+        # ------------------------------------------------------------------
+        # METODOS
+        # ------------------------------------------------------------------
+
+    # ------------------------------------------------------------------
+    # GRID
+    # ------------------------------------------------------------------
+
+    def limpiar_Grid(self):
+
+        for item in self.grid_ctacte.get_children():
+            self.grid_ctacte.delete(item)
+
+    def llena_grilla(self, ult_tabla_id):
 
         if len(self.filtro_activo) > 0:
             datos = self.varCtacte.consultar_ctacte(self.filtro_activo)
@@ -349,10 +355,10 @@ class CuentaCorriente(Frame):
         for row in datos:
 
             # convierto fecha de 2024-12-19 a 19/12/2024
-            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[1], '%Y-%m-%d'))
+            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[1], '%Y-%m-%d'), "hora_no")
 
             suma_saldos += row[3] - row[4]
-            self.grid_ctacte.insert("", END, text=row[0], values=(forma_normal, row[2], row[3], row[4],
+            self.grid_ctacte.insert("", "end", text=row[0], values=(forma_normal, row[2], row[3], row[4],
                                                                   suma_saldos, row[7]))
             suma_debitos += row[3]
             suma_creditos += row[4]
@@ -362,6 +368,58 @@ class CuentaCorriente(Frame):
         if len(self.grid_ctacte.get_children()) > 0:
             self.grid_ctacte.selection_set(self.grid_ctacte.get_children()[0])
 
+        # ----------------------------------------------------------------------------------
+        # Procedimiento para acomodar los punteros en caso de altas, modif. ....)
+
+        """ ult_tabla_id = Trae el Id de la tabla (21, 60, 61, ..) correspondiente identificando al registro 
+        en el cual yo quiero que se ponga el puntero del GRID.
+        Traera blanco ('') si la funcion llena_grilla es llamada desde cualquier lugar que no 
+        necesite acomodar puntero en un item en particular (caso altas, modificaciones ...)."""
+
+        if ult_tabla_id:
+            """ regis = Guardo todos los Id del Grid (I001, IB003, ...)"""
+            regis = self.grid_ctacte.get_children()
+            rg = ""
+
+            for rg in regis:
+
+                """ buscado = guardo el 'text' correspondiente al Id del grid que esta en regis y muevo toda 
+                la linea de datos del treeview a la variable buscado), o sea, para el Id I0001 paso el Id de la 
+                tabla 57... y asi ira cambiando para cada rg
+                text = te da el valor de la primera columna del grid, que es donde veo el Id del registro 
+                asignado en la tabla"""
+
+                buscado = self.grid_ctacte.item(rg)['text']
+                if int(buscado) == int(ult_tabla_id):
+                    """ Si coinciden los Id quiere decir que encontre al registro que estoy buscando por Id de tabla."""
+                    break
+
+            """ Ahora ejecuto este procedimiento que se encarga de poner el puntero en el registro que acabamos 
+                de encontrar correspondiente al Id de tabla asignado en el parametro de la funcion llena_grilla. 
+            "rg" = es el Text o Index del registro en el Treeview I001, IB002.... y ahi posiciono el foco 
+                con las siguientes instrucciones. """
+
+            self.grid_ctacte.selection_set(rg)
+            # Para que no me diga que no hay nada seleccionado
+            self.grid_ctacte.focus(rg)
+            # para que la linea seleccionada no me quede fuera del area visible del treeview
+            self.grid_ctacte.yview(self.grid_ctacte.index(rg))
+        else:
+            # caso de que el parametro ult_tabla_id sea " " muevo el puntero al final del GRID
+            self.mover_puntero_topend("END")
+
+    def estado_inicial(self):
+
+        self.filtro_activo = "ctacte WHERE cc_codcli = 0 ORDER BY cc_fecha ASC"
+        self.var_Id = -1
+        self.alta_modif = 0
+
+        self.habilitar_text("disabled")
+        self.habilitar_Btn_Final("disabled")
+        self.habilitar_Btn_busquedas("disabled")
+        self.habilitar_Btn_Oper("disabled")
+        self.entry_nombre_cliente.focus()
+
     def limpiar_text(self):
 
         una_fecha = datetime.strftime(date.today(), "%d/%m/%Y")
@@ -369,11 +427,6 @@ class CuentaCorriente(Frame):
         self.entry_detalle_movim.delete(0, END)
         self.strvar_debito_movim.set(value="0.00")
         self.strvar_credito_movim.set(value="0.00")
-
-    def limpiar_Grid(self):
-
-        for item in self.grid_ctacte.get_children():
-            self.grid_ctacte.delete(item)
 
     def habilitar_text(self, estado):
 
@@ -395,25 +448,13 @@ class CuentaCorriente(Frame):
 
     def habilitar_Btn_busquedas(self, estado):
 
-        # self.entry_buscar_ctacte.configure(state=estado)
-        # self.btn_buscar_movim.configure(state=estado)
-        # self.btn_muestra_todo_movim.configure(state=estado)
         self.btn_compactar.configure(state=estado)
         self.btn_imprime.configure(state=estado)
 
-    # def habilitar_Selec_cliente(self, estado):
-    #
-    #     pass
-    #
-    #     # self.lbox_selec_cliente.configure(state=estado)
-    #     # self.btn_seleccion_cliente.configure(state=estado)
-
     def reset_stringvars(self):
 
-        self.retorno = ""
-        # self.strvar_buscostring.set(value="")
         self.strvar_nombre_cliente.set(value="")
-        self.strvar_codigo_cliente.set(value=0)
+        self.strvar_codigo_cliente.set(value="0")
         una_fecha = datetime.strftime(date.today(), "%d/%m/%Y")
         self.strvar_fecha_movim.set(value=una_fecha)
         self.strvar_detalle_movim.set(value="")
@@ -432,14 +473,14 @@ class CuentaCorriente(Frame):
         self.entry_nombre_cliente.configure(state="normal")
         self.btn_bus_cli.configure(state="normal")
         self.strvar_nombre_cliente.set(value="")
-        self.strvar_codigo_cliente.set(value=0)
+        self.strvar_codigo_cliente.set(value="0")
         self.limpiar_text()
         self.habilitar_text("disabled")
 
         self.habilitar_Btn_Oper("disabled")
         self.habilitar_Btn_Final("disabled")
         self.limpiar_Grid()
-        self.strvar_saldo_cliente.set(value=0)
+        self.strvar_saldo_cliente.set(value="0")
 
         self.entry_nombre_cliente.focus()
 
@@ -450,14 +491,14 @@ class CuentaCorriente(Frame):
             self.entry_nombre_cliente.configure(state="normal")
             self.btn_bus_cli.configure(state="normal")
             self.strvar_nombre_cliente.set(value="")
-            self.strvar_codigo_cliente.set(value=0)
+            self.strvar_codigo_cliente.set(value="0")
             self.limpiar_text()
             self.habilitar_text("disabled")
 
             self.habilitar_Btn_Oper("disabled")
             self.habilitar_Btn_Final("disabled")
             self.limpiar_Grid()
-            self.strvar_saldo_cliente.set(value=0)
+            self.strvar_saldo_cliente.set(value="0")
 
             self.entry_nombre_cliente.focus()
 
@@ -478,14 +519,11 @@ class CuentaCorriente(Frame):
 
         self.habilitar_text("normal")
         self.habilitar_Btn_busquedas("disabled")
-        self.habilitar_Selec_cliente("disabled")
         self.habilitar_Btn_Oper("disabled")
         self.habilitar_Btn_Final("normal")
         self.entry_fecha_movim.focus()
 
     def fEditar(self):
-
-        self.alta_modif = 2
 
         # Asi obtengo el Id del Grid de donde esta el foco (I006...I002...)
         self.selected = self.grid_ctacte.focus()
@@ -497,8 +535,11 @@ class CuentaCorriente(Frame):
             messagebox.showwarning("Modificar", "No hay nada seleccionado", parent=self)
             return
 
+        self.alta_modif = 2
         self.var_Id = self.clave  # puede traer -1 , en ese caso seria un alta
+
         self.habilitar_text('normal')
+
         # En la lista valores cargo todos los registros completos con todos los campos
         valores = self.grid_ctacte.item(self.selected, 'values')
 
@@ -518,37 +559,34 @@ class CuentaCorriente(Frame):
 
         # guardo item seleccionado en el grid
         self.selected = self.grid_ctacte.focus()
+        self.selected_ant = self.grid_ctacte.prev(self.selected)
         # guardo el Id del item correspondiente a la Tabla
         self.clave = self.grid_ctacte.item(self.selected, 'text')
+        self.clave_ant = self.grid_ctacte.item(self.selected_ant, 'text')
 
         # guardo la clae de movimiento anterior si la hay
         self.clavemov_ant = 0
-
-        self.puntabla(self.selected, "E")
 
         if self.clave == "":
             messagebox.showwarning("Eliminar", "No hay nada seleccionado", parent=self)
             return
 
         valores = self.grid_ctacte.item(self.selected, 'values')
-
         data = str(self.clave)+" "+valores[2]
 
         r = messagebox.askquestion("Eliminar", "Confirma eliminar item?\n " + data, parent=self)
 
-        if r == messagebox.YES:
+        if r == messagebox.NO:
+            messagebox.showinfo("Eliminar", "Eliminacion cancelada", parent=self)
+            return
 
-            # Elimino de tabla planicaja
-            n = self.varCtacte.eliminar_item_ctacte(self.clave)
+        # Elimino de tabla planicaja
+        self.varCtacte.eliminar_item_ctacte(self.clave)
 
-            if n == 1:
-                messagebox.showinfo("Eliminar", "Registro eliminado correctamente", parent=self)
-                self.limpiar_Grid()
-                self.llena_grilla()
-            else:
-                messagebox.showinfo("Eliminar", "No fue posible eliminar el Registro", parent=self)
+        messagebox.showinfo("Eliminar", "Registro eliminado correctamente", parent=self)
 
-        self.puntabla(self.selected, "F")
+        self.limpiar_Grid()
+        self.llena_grilla(self.clave_ant)
 
     def fGuardar(self):
 
@@ -578,11 +616,12 @@ class CuentaCorriente(Frame):
             self.selected = self.grid_ctacte.focus()
             # Guardo el Id del registro de la base de datos (no es el mismo que el otro, este puedo verlo en la base)
             self.clave = self.grid_ctacte.item(self.selected, 'text')
-            self.nuevo_itempla = ""
+
+            #self.nuevo_itempla = ""
 
             if self.alta_modif == 1:
 
-                self.nuevo_itempla = str(self.strvar_detalle_movim.get())
+                #self.nuevo_itempla = str(self.strvar_detalle_movim.get())
 
                 # debe ser cero si es un alta de nuevo movimiento
                 self.strvar_clavemov.set(value="0")
@@ -610,7 +649,6 @@ class CuentaCorriente(Frame):
 
             # cierre de las novedades y reseteando pantalla para nuevo movimiento - actualizando grilla
             self.limpiar_Grid()
-            self.llena_grilla()
             self.reset_campos()
 
             # Deshabilitar variables a estado cero
@@ -620,12 +658,10 @@ class CuentaCorriente(Frame):
             self.habilitar_Btn_Final("disabled")
 
             if self.alta_modif == 1:
-                self.puntabla(self.nuevo_itempla, "A")
+                ultimo_tabla_id = self.varCtacte.traer_ultimo(0)
+                self.llena_grilla(ultimo_tabla_id)
             elif self.alta_modif == 2:
-                self.puntabla(self.clave, "B")
-            elif self.alta_modif == 0:
-                messagebox.showerror("Error","codigo de Alta_modif cero", parent=self)
-                return
+                self.llena_grilla(self.clave)
 
             self.btn_nuevoitem.focus()
 
@@ -645,20 +681,20 @@ class CuentaCorriente(Frame):
         self.master.destroy()
 
     # -------------------------------------------------------
-    # MOVIMIENTO EN TREEVIEW
+    # PUNTERO
     # -------------------------------------------------------
 
     def fToparch(self):
-        self.mover_puntero('TOP')
+        self.mover_puntero_topend("TOP")
 
     def fFinarch(self):
-        self.mover_puntero('END')
+        self.mover_puntero_topend('END')
 
-    def mover_puntero(self, param_topend):
+    def mover_puntero_topend(self, param_topend):
 
         if param_topend == 'TOP':
 
-            # obtengo una lista con todos los Id del treeview
+            # obtengo una lista con todos los Id del treeview (I001, I002.....
             regis = self.grid_ctacte.get_children()
             # barro y salgo al primero, pero me quedo en el primero
             rg = ""
@@ -675,12 +711,13 @@ class CuentaCorriente(Frame):
 
         elif param_topend == 'END':
 
-            # Obtengo una lista con todos los Id del treeview
+            # Obtengo una lista con todos los Id del treeview (I001, I002, ..........
             regis = self.grid_ctacte.get_children()
             # Barro la lista y ,me quedo conel ultimo Id
             rg = ""
+            # barro hasta el ultimo
             for rg in regis:
-                pass
+                continue
             if rg == "":
                 return
             # Selecciono el ultimo Id en este caso
@@ -689,84 +726,6 @@ class CuentaCorriente(Frame):
             self.grid_ctacte.focus(rg)
             # lleva el foco al final del treeview
             self.grid_ctacte.yview(self.grid_ctacte.index(self.grid_ctacte.get_children()[-1]))
-
-    def puntabla(self, registro, tipo_mov):
-
-        # metodo para posicionar el puntero en el TV luego de las distintas acciones sobre los datos
-
-        # trae el indice de la tabla "I001"
-        regis = self.grid_ctacte.get_children()
-        rg = ""
-        contador = 0
-        # --------------------------------------------------------------------------------
-
-        # aca traigo el codigo del registr0 (cod.cliente, cod. art.... que estoy dando de alta porque aun no tengo ID)
-        # ALTA
-        if tipo_mov == "A":
-            for rg in regis:
-                buscado = self.grid_ctacte.item(rg)['values']
-                # contador = contador + 1
-                # busco el codigo de contrato que ingrese nuevo - Aca busco un campo de la tabla
-                # a registro se le paso el nro de contrato en este caso
-                if str(buscado[0]) == registro:
-                    break
-        # --------------------------------------------------------
-
-        # Aca es para acomodar el puntero cuando el registro si existe en la tabla, entonces puedo usar el ID
-        # MODIFICACION
-        if tipo_mov == "B":
-            for rg in regis:
-                # En buscado guardo el Id de la tabla (base datos) del que estoy posicionado
-                buscado = self.grid_ctacte.item(rg)['text']
-                # en registro viene "clave" que es el Id del que estoy parado y lo paso a la funcion como parametro
-                contador += 1
-                # busco el ID de la tabla con el que guarde antes en "clave" - aca busco un Id de la tabla
-                # a registro se le paso el Id de la tabla (es distinto la busqueda a ALTA)
-                if buscado == registro:  # 72
-                    break
-        # --------------------------------------------------------
-
-        # ELIMINAR REGISTRO PARTE 1 -es la parte donde tomo el Id del registro que le sigue al que voy a eliminar
-        if tipo_mov == 'E':
-            control = 1
-            self.buscado2 = ""
-            for rg in regis:
-                contador += 1
-                if control == 0:
-                    # guardo Id del que sigue
-                    buscado = self.grid_ctacte.item(rg)['values']
-                    self.buscado2 = str(buscado[2])
-                    break
-                if rg == registro:  # registro seria self.selected o sea el Id de la BD
-                    control = 0
-        # --------------------------------------------------------
-
-        # ELIMINAR REGISTRO PARTE 2 - Aca si ya busco poner el puntero en el Id del que obtuve antes
-        # que es el que sigue al que borre
-        if tipo_mov == 'F':
-            for rg in regis:
-                buscado = self.grid_ctacte.item(rg)['values']
-                if self.buscado2 == str(buscado[2]):
-                    break
-        # --------------------------------------------------------
-
-        # BUSCAR EN TABLA - Viene de la funcion que busca en la tabla lo que se requiere
-        if tipo_mov == 'S':
-            if regis != ():
-                for rg in regis:
-                    break
-                if rg == "":
-                    self.btn_buscar_planilla.configure(state="disabled")
-                    return
-        # --------------------------------------------------------
-
-        self.grid_ctacte.selection_set(rg)
-        self.grid_ctacte.focus(rg)
-        self.grid_ctacte.yview(self.grid_ctacte.index(rg))
-
-        if rg == "":
-            return False
-        return True
 
     # -------------------------------------------------------
     # BUSQUEDAS
@@ -788,15 +747,22 @@ class CuentaCorriente(Frame):
 
         self.varCtacte.buscar_entabla(self.filtro_activo)
         self.limpiar_Grid()
-        self.llena_grilla()
+        self.llena_grilla("")
 
-        self.puntabla("", "S")
+        """ Obtengo el Id del grid para que me tome la seleccion y el foco se coloque efectivamente en el 
+        item buscado y asi cuando le doy -show all- el puntero se sigue quedando en el registro buscado"""
+        item = self.grid_ctacte.selection()
+        self.grid_ctacte.focus(item)
+
+#        self.puntabla("", "S")
 
     def fShowall(self):
 
+        self.selected = self.grid_ctacte.focus()
+        self.clave = self.grid_ctacte.item(self.selected, 'text')
         self.filtro_activo = "ctacte WHERE cc_codcli = '" + self.strvar_codigo_cliente.get() + "' ORDER BY cc_fecha ASC"
         self.limpiar_Grid()
-        self.llena_grilla()
+        self.llena_grilla("self.clave")
 
     def fBuscli(self):
 
@@ -831,9 +797,6 @@ class CuentaCorriente(Frame):
         self.habilitar_Btn_busquedas("normal")
         self.habilitar_Btn_Oper("normal")
 
-        # self.entry_nombre_cliente.focus()
-        # self.entry_nombre_cliente.icursor(tk.END)
-
         # si el codigo de cliente no es cero, filtro la tabla por el cliente seleccionado
         if int(self.strvar_codigo_cliente.get()) != 0:
 
@@ -841,79 +804,11 @@ class CuentaCorriente(Frame):
             self.filtro_activo = "ctacte WHERE cc_codcli = '" + self.strvar_codigo_cliente.get() +" ' ORDER BY cc_fecha"
 
             self.limpiar_Grid()
-            self.llena_grilla()
+            self.llena_grilla("")
 
             # inhabilito edicion de nombre de cliente para que no pueda cambiarlo
             self.entry_nombre_cliente.configure(state="disabled")
             self.btn_bus_cli.configure(state="disabled")
-
-
-        # # busqueda de cliente para carga de la orden - usa listbox
-        # if len(self.strvar_nombre_cliente.get()) > 0:
-        #     """
-        #     2 - acceder la tabla de clientes y filtrar por el string de busqueda que se
-        #     haya colocado en el entry cliente
-        #     el comando INSTR de SQL nos busca la posicion de lo que busco dentro de una cadena, si no la encuentra
-        #     devuelve cero
-        #     """
-        #     se_busca = self.strvar_nombre_cliente.get()
-        #
-        #     que_busco = "clientes WHERE INSTR(apellido, '" + se_busca + "') > 0"\
-        #                 + " OR " + "INSTR(nombres, '" + se_busca + "') > 0"
-        #
-        #     self.retorno = self.varCtacte.buscar_entabla(que_busco)
-        #
-        #     # borro los items anteriores del listbox y habilito botones
-        #     self.lbox_selec_cliente.configure(state="normal")
-        #     self.lbox_selec_cliente.delete(0, END)
-        #     self.btn_seleccion_cliente.configure(state="normal")
-        #
-        #     # llenar listbox con lo filtrado (campo apellido y nombre
-        #     for index, reto in enumerate(self.retorno):
-        #         if reto[2] == "":
-        #             self.lbox_selec_cliente.insert(index, reto[3])
-        #         else:
-        #             self.lbox_selec_cliente.insert(index, reto[2]+' '+reto[3])
-        #
-        #     self.lbox_selec_cliente.focus()
-        #
-        # else:
-        #
-        #     messagebox.showwarning("Alerta", "No ingreso busqueda", parent=self)
-
-    # def fSelec_cli(self):
-    #
-    #     self.habilitar_Btn_busquedas("normal")
-    #     self.habilitar_Btn_Oper("normal")
-    #
-    #     self.strvar_codigo_cliente.set(value=0)
-    #
-    #     # Metodo del boton seleccionar cliente debe devolver los datos del cliente enfocado
-    #     for item in self.lbox_selec_cliente.curselection():
-    #         self.strvar_nombre_cliente.set(value=self.lbox_selec_cliente.get(item))
-    #
-    #     for item in self.retorno:
-    #
-    #         if item[2] == "":
-    #             if self.strvar_nombre_cliente.get() == item[3]:
-    #                 self.strvar_codigo_cliente.set(value=item[1])
-    #
-    #         if item[2] != "":
-    #             if self.strvar_nombre_cliente.get() == (item[2] + ' ' + item[3]):
-    #                 self.strvar_codigo_cliente.set(value=item[1])
-    #
-    #     # si el codigo de cliente no es cero, filtro la tabla por el cliente seleccionado
-    #     if int(self.strvar_codigo_cliente.get()) != 0:
-    #         # filtrar la cuenta corriente para este cliente
-    #         self.filtro_activo = "ctacte WHERE cc_codcli = '" + self.strvar_codigo_cliente.get() +" ' ORDER BY cc_fecha ASC"
-    #         self.limpiar_Grid()
-    #         self.llena_grilla()
-    #
-    #         # inhabilito edicion de nombre de cliente para que no pueda cambiarlo
-    #         self.entry_nombre_cliente.configure(state="disabled")
-    #         self.btn_bus_cli.configure(state="disabled")
-
-
 
     # -------------------------------------------------------
     # VALIDACIONES
@@ -966,25 +861,25 @@ class CuentaCorriente(Frame):
 
             # Control de que no ingresen mas de una vez el '-' o el '.' - Funcion en funciones.py
             if not control_forma(list(self.strvar_debito_movim.get())):
-                self.strvar_debito_movim.set(value=0)
+                self.strvar_debito_movim.set(value="0")
                 self.entry_debito_movim.focus()
                 return
             if not control_forma(list(self.strvar_credito_movim.get())):
-                self.strvar_credito_movim.set(value=0)
+                self.strvar_credito_movim.set(value="0")
                 self.entry_credito_movim.focus()
                 return
 
             # Control de valor en blanco o solo un . o -
             if (self.strvar_debito_movim.get() == "" or self.strvar_debito_movim.get() == "." or
                     self.strvar_debito_movim.get() == "-"):
-                self.strvar_debito_movim.set(value=0)
+                self.strvar_debito_movim.set(value="0")
             if (self.strvar_credito_movim.get() == "" or self.strvar_credito_movim.get() == "." or
                     self.strvar_credito_movim.get() == "-"):
-                self.strvar_credito_movim.set(value=0)
+                self.strvar_credito_movim.set(value="0")
 
             # control de valor en cero o si tiene mas de dos decimales lo trunco a dos
             if float(self.strvar_debito_movim.get()) == 0:
-                self.strvar_debito_movim.set(value=0)
+                self.strvar_debito_movim.set(value="0")
             else:
                 self.strvar_debito_movim.set(value=round(float(self.strvar_debito_movim.get()), 2))
 
@@ -999,9 +894,9 @@ class CuentaCorriente(Frame):
             self.entry_total_partes.focus()
             return
 
-    # ==============================================================
-    # ======================= INFORMES =============================
-    # ==============================================================
+    # -------------------------------------------------------
+    # INFORMES
+    # -------------------------------------------------------
 
     def fImprime(self):
 
@@ -1070,49 +965,3 @@ class CuentaCorriente(Frame):
         # Abre el archivo PDF para luego, si quiero, poder imprimirlo
         path = 'hoja.pdf'
         os.system(path)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        # ---------------------------------------------------------------------------------
-        # SELECCION DEL CLIENTE
-
-        # self.frame_segundo=LabelFrame(self.master, text="", foreground="red")
-
-        # # LISTBOX SELECCION DEL CLIENTE
-        # self.lbox_selec_cliente = Listbox(self.frame_segundo, width=50, height=3)
-        # self.lbox_selec_cliente.grid(row=0, column=0, rowspan=3, padx=10, pady=5, sticky='nsew')
-        # self.btn_seleccion_cliente = Button(self.frame_segundo, text='Seleccionar', command=self.fSelec_cli, width=19,
-        #                                     bg="CadetBlue", fg="Black")
-        # self.btn_seleccion_cliente.grid(row=0, column=2, rowspan=3,  padx=10, pady=5, sticky='nsew')
-        # scrollbar = Scrollbar(self.frame_segundo, orient=VERTICAL, width=20)
-        # scrollbar.grid(row=0, column=1, rowspan=3, sticky='nsew')
-        # self.lbox_selec_cliente.config(yscrollcommand=scrollbar.set)
-        # scrollbar.config(command=self.lbox_selec_cliente.yview)
-
-        # # BUSCAR MOVIMIENTOS
-        # self.lbl_busqueda_ctacte = Label(self.frame_segundo, text="Buscar: ", justify=CENTER)
-        # self.lbl_busqueda_ctacte.grid(row=0, column=3, padx=3, pady=3, sticky=W)
-        # self.entry_buscar_ctacte = Entry(self.frame_segundo, textvariable=self.strvar_buscostring, width=30)
-        # self.entry_buscar_ctacte.grid(row=0, column=4, padx=5, pady=3, sticky=W)
-        # self.btn_buscar_movim = Button(self.frame_segundo, text="Filtrar", command=self.fBuscar_en_tabla,
-        #                                    bg="blue", fg="white", width=16)
-        # self.btn_buscar_movim.grid(row=0, column=5, padx=5, pady=3, sticky=W)
-        # self.btn_muestra_todo_movim = Button(self.frame_segundo, text="Mostrar todo", command=self.fShowall,
-        #                                          bg="blue", fg="white", width=16)
-        # self.btn_muestra_todo_movim.grid(row=0, column=6, padx=5, pady=3, sticky=W)
-
-        # self.frame_segundo.pack(side=TOP, fill=BOTH, expand=0, padx=5, pady=2)
-        # ---------------------------------------------------------------------------------------

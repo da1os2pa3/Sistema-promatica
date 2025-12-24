@@ -1,40 +1,18 @@
-"""
-# ============================ WIDGETS
-# ============================ STRINGVARS
-# ============================ TREEVIEW
-# ============================ PANTALLA (GRILLA - LIMPIAR - BOTONES ON OFF .....)
-# ============================ MOVIMIENTO EN TREEVIEW
-# ============================ IMPRESION
-# ========================================================================================================
-# FUNCIONES METODOS ======================================================================================
-# ========================================================================================================
-# ---------------------------------------- PANTALLA - WIDGETS - TREEVIEW
-# def llena_grilla(self):
-# ---------------------------------------- STRINGVARS
-# ---------------------------------------- CRUD
-# def fSalir(self):
-# --------------------------------------- MOVIMIENTOS ARCHIVO
-# def fToparch(self):
-# def fFinarch(self):
-# def mover_puntero(self, param_topend):
-# def puntabla(self, registro, tipo_mov):
-# --------------------------------------- BUSQUEDAS
-# --------------------------------------- VALIDACIONES
-# --------------------------------------- IMPRESION
-# def fImprime(self):
-# ========================================================================================================
-"""
-
 import os
-from PDF_clase import *
-from tkinter import *
-from tkinter import ttk
-from saldosctacte_ABM import *
-from tkinter import messagebox
-#from datetime import date, datetime
-from PIL import Image, ImageTk
+
 import tkinter as tk
 import tkinter.font as tkFont
+from tkinter import *
+from tkinter import ttk
+
+# from datetime import date, datetime
+from PIL import Image, ImageTk
+
+from PDF_clase import *
+
+from funciones import formatear_cifra
+from saldosctacte_ABM import *
+
 
 class Saldosctacte(Frame):
 
@@ -62,11 +40,11 @@ class Saldosctacte(Frame):
         wventana = 1035
         hventana = 475
         # ------ Aplicamos la siguiente formula para calcular donde debería posicionarse
-        pwidth = round(wtotal / 2 - wventana / 2) + 100
-        pheight = round(htotal / 2 - hventana / 2) - 50
+        pwidth = round(wtotal / 2 - wventana / 2) + 0
+        pheight = round(htotal / 2 - hventana / 2) + 0
         # ------ Se lo aplicamos a la geometría de la ventana
         self.master.geometry(str(wventana) + "x" + str(hventana) + "+" + str(pwidth) + "+" + str(pheight))
-        # ------------------------------------------------------------------------------
+        # -------------------------------------------------------------------
 
         # Se usa para saber que filtro esta activo y mantenerlo - a continuacion se setea a un valor inicial
         self.filtro_activo = "saldosctacte ORDER BY scc_nomcli ASC"
@@ -94,15 +72,13 @@ class Saldosctacte(Frame):
     #     self.habilitar_Selec_cliente("disabled")
     #     self.habilitar_Btn_Oper("disabled")
 
-
-    # ==================================================================================================
-    # ========================================== WIDGETS ===============================================
-    # ==================================================================================================
-
+    # ------------------------------------------------------------
+    # WIDGETS
+    # -----------------------------------------------------------------
 
     def create_widgets(self):
 
-        # TITULOS =============================================================================
+        # TITULOS
 
         # Encabezado logo y titulo con PACK
         self.frame_titulo_top = Frame(self.master)
@@ -112,36 +88,30 @@ class Saldosctacte(Frame):
         self.photocc = self.photocc.resize((50, 50), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.png_ctacte = ImageTk.PhotoImage(self.photocc)
         self.lbl_png_ctacte = Label(self.frame_titulo_top, image=self.png_ctacte, bg="red", relief=RIDGE, bd=5)
-
         self.lbl_titulo = Label(self.frame_titulo_top, width=52, text="Saldos en cuentas Corrientes",
                                 bg="black", fg="gold", font=("Arial bold", 20, "bold"), bd=5, relief=RIDGE, padx=5)
-
         # Coloco logo y titulo en posicion de pantalla
         self.lbl_png_ctacte.grid(row=0, column=0, sticky=W, padx=5, ipadx=22)
         self.lbl_titulo.grid(row=0, column=1, sticky="nsew")
-        self.frame_titulo_top.pack(side=TOP, fill=X, padx=5, pady=2)
-        # --------------------------------------------------------------------------
+        self.frame_titulo_top.pack(side="top", fill="x", padx=5, pady=2)
+        # -----------------------------------------------------------------
 
         # VARIABLES GENERALES - =====================================================================
         # Para identificar si el movimiento es alta o modificacion (1 - ALTA 2 - Modificacion)
         self.var_Id = -1
         self.alta_modif = 0
 
-
-        # =====================================================================================
-        # ============================ STRINGVARS =============================================
-        # =====================================================================================
-
+        # ------------------------------------------------------------
+        # STRINGVARS
+        # ------------------------------------------------------------
 
         self.strvar_saldo_total =tk.StringVar(value="0.00")
 
+        # ------------------------------------------------------------
+        # GRID - TREEVIEW
+        # ------------------------------------------------------------
 
-        # ========================================================================================
-        # ====================================== TREVIEEW  =======================================
-        # ========================================================================================
-
-
-        # LABELFRAME DEL TREEVIEW ---------------------------------------------------------------------------
+        # LABELFRAME DEL TREEVIEW
         self.frame_tvw_ctacte=LabelFrame(self.master, text="Saldos en Cuentas Corrientes: ", foreground="#CF09BD")
 
         # STYLE TREEVIEW
@@ -153,15 +123,18 @@ class Saldosctacte(Frame):
 
         #self.grid_articulos.bind("<Double-Button-1>", self.DobleClickGrid)
 
-        self.grid_saldos_ctacte.column("#0", width=50, anchor=CENTER, minwidth=50)
-        self.grid_saldos_ctacte.column("col1", width=50, anchor=CENTER, minwidth=50)
-        self.grid_saldos_ctacte.column("col2", width=300, anchor=CENTER, minwidth=200)
-        self.grid_saldos_ctacte.column("col3", width=100, anchor=CENTER, minwidth=80)
+        self.grid_saldos_ctacte.column("#0", width=30, anchor=CENTER, minwidth=30)
+        self.grid_saldos_ctacte.column("col1", width=30, anchor=CENTER, minwidth=30)
+        self.grid_saldos_ctacte.column("col2", width=300, anchor=CENTER, minwidth=300)
+        self.grid_saldos_ctacte.column("col3", width=60, anchor="e", minwidth=60)
 
         self.grid_saldos_ctacte.heading("#0", text="Id", anchor=CENTER)
         self.grid_saldos_ctacte.heading("col1", text="", anchor=CENTER)
         self.grid_saldos_ctacte.heading("col2", text="Cliente", anchor=CENTER)
         self.grid_saldos_ctacte.heading("col3", text="Saldo", anchor=CENTER)
+
+        self.grid_saldos_ctacte.tag_configure('oddrow', background='light grey')
+        self.grid_saldos_ctacte.tag_configure('evenrow', background='white')
 
         # SCROLLBAR del Treeview
         scroll_x = Scrollbar(self.frame_tvw_ctacte, orient=HORIZONTAL)
@@ -174,24 +147,29 @@ class Saldosctacte(Frame):
         scroll_x.pack(side=BOTTOM, fill=X)
         self.grid_saldos_ctacte['selectmode'] = 'browse'
 
-        self.grid_saldos_ctacte.pack(side=TOP, fill=BOTH, expand=1, padx=5, pady=2)
-        self.frame_tvw_ctacte.pack(side=TOP, fill=BOTH, padx=5, pady=2)
+        self.grid_saldos_ctacte.pack(side="top", fill=BOTH, expand=1, padx=5, pady=2)
+        self.frame_tvw_ctacte.pack(side="top", fill=BOTH, padx=5, pady=2)
 
-        # Armado de los Frames -------------------------------------------------------------------
+        # ------------------------------------------------------------
+        # BOTONES
+        # ------------------------------------------------------------
+
+        # Armado de los Frames
         self.frame_primero=LabelFrame(self.master, text="", foreground="red")
 
-        # botones fin y principio archivo -------------------------------------------------------------------
+        # botones fin y principio archivo
         self.photo4 = Image.open('toparch.png')
         self.photo4 = self.photo4.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo4 = ImageTk.PhotoImage(self.photo4)
-        self.btnToparch = Button(self.frame_primero, text="", image=self.photo4, command=self.fToparch, bg="grey", fg="white")
+        self.btnToparch = Button(self.frame_primero, text="", image=self.photo4, command=self.fToparch, bg="grey",
+                                 fg="white")
         self.btnToparch.grid(row=0, column=0, padx=5, sticky="nsew", pady=2)
         self.photo5 = Image.open('finarch.png')
         self.photo5 = self.photo5.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo5 = ImageTk.PhotoImage(self.photo5)
         self.btnFinarch = Button(self.frame_primero, text="", image=self.photo5, command=self.fFinarch, bg="grey", fg="white")
         self.btnFinarch.grid(row=0, column=1, padx=5, sticky="nsew", pady=2)
-        # ---------------------------------------------------------------------------------
+        # ---------------------------------------------------
 
         # Boton Imprimir
         self.photo_imp = Image.open('impresora.png')
@@ -201,34 +179,36 @@ class Saldosctacte(Frame):
         self.btn_imprime.grid(row=0, column=2, padx=4, pady=2)
         #self.btnPlaniCaja.place(x=555, y=10, width=100, height=100)
 
+        # Boton salida
         self.photo3 = Image.open('salida.png')
         self.photo3 = self.photo3.resize((30, 30), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo3 = ImageTk.PhotoImage(self.photo3)
-        self.btnSalir=Button(self.frame_primero, text="Salir", image=self.photo3, width=65, command=self.fSalir, bg="yellow", fg="white")
+        self.btnSalir=Button(self.frame_primero, text="Salir", image=self.photo3, width=65, command=self.fSalir,
+                             bg="yellow", fg="white")
         self.btnSalir.grid(row=0, column=3, padx=5, pady=2, sticky="nsew")
 
+        # Impresion saldo total
         fff = tkFont.Font(family="Arial", size=10, weight="bold")
         lbl_saldototal = Label(self.frame_primero, text="Saldo total: ", font=fff, justify=LEFT)
         lbl_saldototal.grid(row=0, column=4, padx=4, pady=2)
         lbl_imp_saldototal = Label(self.frame_primero, textvariable=self.strvar_saldo_total, font=fff, justify=RIGHT)
         lbl_imp_saldototal.grid(row=0, column=5, padx=4, pady=2)
 
-        # Cerrado de los Frames PACKS ---------------------------------------------------------------------
-        self.frame_primero.pack(side=TOP, fill=BOTH, expand=0, padx=5, pady=2)
+        # Cerrado de PACKS
+        self.frame_primero.pack(side="top", fill="both", expand=0, padx=5, pady=2)
 
-
-    # =============================================================================================
-    # ==================================== PANTALLA ===============================================
-    # =============================================================================================
-
+    # ------------------------------------------------------------
+    # GRILLA - GRID
+    # ------------------------------------------------------------
 
     def llena_grilla(self):
 
-        # Tomo la base de ctacte y la ordeno por codigo de cliente ----------------------------------------------
+        # Tomo la base de ctacte y la ordeno por codigo de cliente y fecha
         if len(self.filtro_activo) > 0:
-            datos = self.varSaldoscc.consultar_saldosctacte("ctacte ORDER BY cc_codcli ASC")
+            datos = self.varSaldoscc.consultar_saldosctacte("ctacte ORDER BY cc_codcli, cc_fecha ASC")
         else:
-            datos = self.varSaldoscc.consultar_saldosctacte("ctacte ORDER BY cc_codcli ASC")
+            messagebox("Error", "No existe filtro activo de orden", parenty=self)
+            return
 
         # eliminar movimientos en tabla auxiliar de saldos "saldosctacte"
         self.varSaldoscc.vaciar_auxsaldos("saldosctacte")
@@ -241,52 +221,71 @@ class Saldosctacte(Frame):
         antecod = ""
         antecli = ""
 
-        # Tomo solamente el primer elemento que viene en la lista datos para usar en el corte de control --------
+        # Estructura para corte de control en el calculo de los saldos deuores para cada cliente
+
+        # Tomo el primer elemento que viene en lista datos (primer cliente) para usar en el corte de control --------
         for primer in datos:
-            antecod = primer[5]
-            antecli = primer[6]
+            antecod = primer[5] #codigo
+            antecli = primer[6] # nombre
             break
 
-        # Hago el barrido en toda la lista datos, acumulando mientras se repita el codigo de cliente ------------
+        cont = 0
+        # Barro toda la lista datos, acumulando mientras se repita el codigo de cliente ------------
         for row in datos:
 
-            # aqui provoco el corte de control cuando cambia el codigo de cliente -------------------------------
-            if antecod != row[5]:
-                # calculo saldo final
+            if antecod == row[5]:
+
+                # para mismo cliente sumo sus debitos y sus creditos
+                suma_debitos += row[3]
+                suma_creditos += row[4]
+
+            else:
+
+                # cambio el cliente y resto debitos menos creditos
                 saldofinal = suma_debitos - suma_creditos
 
+                # Si saldo final es distinto de cero, me intersa que salga en el listado
                 if saldofinal != 0:
+
+                    cont += 1
+                    color = ('evenrow',) if cont % 2 else ('oddrow',)
+
                     # inserto el resultado en treeview de saldosctacte
-                    self.grid_saldos_ctacte.insert("", END, text=row[0], values=(antecod, antecli, saldofinal))
-
+                    self.grid_saldos_ctacte.insert("", "end", tags=color, text=row[0],
+                                                   values=(antecod, antecli, formatear_cifra(saldofinal)))
                     self.varSaldoscc.insertar_saldoctacte(antecod, antecli, saldofinal)
-
+                    # voy acumulando un saldo total de deuda
                     saldo_total += saldofinal
 
-                # cargo nuevo cliente para corte de control
+                # OJO - aqui ya guardo el debito y el credito del nuevo cliente leido, si no me lo saltea
+                suma_debitos = row[3]
+                suma_creditos = row[4]
+
+                # Aqui cargo nuevo cliente para corte de control
                 antecod = row[5]
                 antecli = row[6]
-                # vuelvo a cero los acumuladores
-                suma_debitos = 0
-                suma_creditos = 0
 
-            # para mismo cliente sumo sus debitos y sus creditos
-            suma_debitos += row[3]
-            suma_creditos += row[4]
 
-        self.strvar_saldo_total.set(value=saldo_total)
+        """ Cuando el for termina de iterar en la lista datos, aun me queda procesar al ultimo de la lista
+        por eso, al salir del for realizo el mismo proceso de acumulacion e inserccion que a los demas, si no, 
+        no me sale el ultimo cliente"""
+        saldofinal = suma_debitos - suma_creditos
+
+        if saldofinal != 0:
+            # inserto el resultado en treeview de saldosctacte
+            self.grid_saldos_ctacte.insert("", "end", text=row[0],
+                                           values=(antecod, antecli, formatear_cifra(saldofinal)))
+            self.varSaldoscc.insertar_saldoctacte(antecod, antecli, saldofinal)
+            saldo_total += saldofinal
+
+        self.strvar_saldo_total.set(value=formatear_cifra(saldo_total))
 
         if len(self.grid_saldos_ctacte.get_children()) > 0:
             self.grid_saldos_ctacte.selection_set(self.grid_saldos_ctacte.get_children()[0])
 
-    def fSalir(self):
-        self.master.destroy()
-
-
-    # # ================================================================================================
-    # # ================================= MOVIMIENTO EN TREEVIEW =======================================
-    # # ================================================================================================
-
+    # ------------------------------------------------------------
+    # PUNTERO
+    # ------------------------------------------------------------
 
     def fToparch(self):
         self.mover_puntero('TOP')
@@ -418,11 +417,12 @@ class Saldosctacte(Frame):
             return False
         return True
 
+    # ------------------------------------------------------------
+    # IMPRESION
+    # ------------------------------------------------------------
 
-    # =================================================================================================
-    # ======================================= IMPRESION ===============================================
-    # =================================================================================================
-
+    def fSalir(self):
+        self.master.destroy()
 
     def fImprime(self):
 

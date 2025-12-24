@@ -22,7 +22,8 @@ from guias_tecnicas import clase_GuiasTecnicas
 import tkinter as tk
 #------------------------------------------------------
 from PIL import Image, ImageTk
-import  locale
+from PIL.Image import Resampling
+import locale
 
 """ esta clase Principal, hereda de la clase Frame"""
 
@@ -40,7 +41,7 @@ class Principal(Frame):
     def __init__(self, master=None):
         # herencia
         super().__init__(master, width=880, height=510)
-        # propiedades instanciamientos
+        # propiedades instanciamientos (serian las variables de la clase)
         self.master = master
 
         locale.setlocale(locale.LC_ALL, '')
@@ -76,7 +77,6 @@ class Principal(Frame):
         menu_archivo.add_command(label='* Archivo de Proveedores', command=self.fProved)
         menu_archivo.add_command(label='* Archivo de Marcas', command=self.m_marcas)
         menu_archivo.add_command(label='* Archivo de Rubros', command=self.fRubros)
-        #menu_archivo.add_command(label='* Archivo items Ingresos y Egresos', command=self.fIngEgr)
         menu_archivo.add_command(label='* Configuracion', command=self.fConfiguracion)
 
         menu_informes = tk.Menu(menu_principal, tearoff=0)
@@ -97,31 +97,24 @@ class Principal(Frame):
 
         self.create_widgets()
 
-    def fsale_menu(self):
-
-        self.master.quit()
-        self.master.destroy()
-
     def create_widgets(self):
 
         # TITULO principal de pantalla - traer_nombre de Empresa
         # datos_retornados = self.consultar_parametros()
-
         # label1 = Label(self.master, text='Sistema Tecnico - ' + datos_retornados[1],
         #                bg="black", fg="gold", font=("times new roman", 30, "bold"),
         #                bd=12, relief=RIDGE)
 
         # ---------------------------------------------------------------
-        # Foto fondo pantalla Promatica
+        # Foto fondo pantalla
         photo33 = Image.open("promatica.jpg")
-        photo33 = photo33.resize((880, 510), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        photo33 = photo33.resize((880, 510), Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         photo33 = ImageTk.PhotoImage(photo33)
         fondopan = Label(self.master, image=photo33).place(x=0, y=85)
 
         label1 = Label(self.master, text='Gestion Comercial - Promatica Computacion', bg="black", fg="gold",
                        font=("times new roman", 30, "bold"), bd=12, relief=RIDGE)
-
-        label1.pack(side=TOP, fill=X, pady=10, padx=5)
+        label1.pack(side="top", fill="x", pady=10, padx=5)
         # ---------------------------------------------------------------
 
         # ---------------------------------------------------------------
@@ -131,8 +124,9 @@ class Principal(Frame):
 
         # ---------------------------------------------------------------
         #BARRA MENU INFERIOR
+        # ---------------------------------------------------------------
 
-        # ARTICULOS CRUD - ABM ------------------------------------------------------------------------
+        # ARTICULOS CRUD - ABM
         photo1 = Image.open('productos.png')
         photo1 = photo1.resize((80, 70), Image.LANCZOS)  # Redimension (Alto, Ancho)
         photo1 = ImageTk.PhotoImage(photo1)
@@ -140,7 +134,7 @@ class Principal(Frame):
                                    border=3, command=self.fArticulos, bg="blue", fg="white")
         self.btnArticulos.pack(side=LEFT, expand=1, fill=X, pady=5, padx=3)
 
-        # ORDENES DE REPARACION -----------------------------------------------------------------------
+        # ORDENES DE REPARACION
         photo2 = Image.open('reparar.png')
         photo2 = photo2.resize((80, 70), Image.LANCZOS)  # Redimension (Alto, Ancho)
         photo2 = ImageTk.PhotoImage(photo2)
@@ -148,7 +142,7 @@ class Principal(Frame):
                                    border=3, command=self.m_orden_repara, bg="blue", fg="white")
         self.btnorden_rep.pack(side=LEFT, expand=1, fill=X, pady=5, padx=3)
 
-        # PRESUPUESTOS COTIZACIONES - INGRESO VENTAS -------------------------------------------------
+        # PRESUPUESTOS COTIZACIONES - INGRESO VENTAS
         photo3 = Image.open('presupuesto.png')
         photo3 = photo3.resize((80, 70), Image.LANCZOS)  # Redimension (Alto, Ancho)
         photo3 = ImageTk.PhotoImage(photo3)
@@ -156,7 +150,7 @@ class Principal(Frame):
                                 border=3, bg="blue", fg="white")
         self.btnCotvta.pack(side=LEFT, expand=1, fill=X, pady=5, padx=3)
 
-        # PLANILLA DE CAJA ---------------------------------------------------------------------------
+        # PLANILLA DE CAJA
         photo4 = Image.open('planilla.png')
         photo4 = photo4.resize((80, 70), Image.LANCZOS)  # Redimension (Alto, Ancho)
         photo4 = ImageTk.PhotoImage(photo4)
@@ -164,7 +158,7 @@ class Principal(Frame):
                                    command=self.fPlaniCaja, border=3, bg="blue", fg="white")
         self.btnPlaniCaja.pack(side=LEFT, expand=1, fill=X, pady=5, padx=3)
 
-        # CUENTA CORRIENTE ---------------------------------------------------------------------------
+        # CUENTA CORRIENTE
         photo5 = Image.open('ctacte.png')
         photo5 = photo5.resize((80, 70), Image.LANCZOS)  # Redimension (Alto, Ancho)
         photo5 = ImageTk.PhotoImage(photo5)
@@ -172,7 +166,7 @@ class Principal(Frame):
                                    command=self.fCtacte, border=3, bg="blue", fg="white")
         self.btnCtacte.pack(side=LEFT, expand=1, fill=X, pady=5, padx=3)
 
-        # SALIDA DEL SISTEMA -------------------------------------------------------------------------
+        # SALIDA DEL SISTEMA
         photo6 = Image.open('salida.png')
         photo6 = photo6.resize((80, 70), Image.LANCZOS)  # Redimension (Alto, Ancho)
         photo6 = ImageTk.PhotoImage(photo6)
@@ -182,8 +176,9 @@ class Principal(Frame):
 
         # ------------------------------------------------------
         # BARRA MENU SUPERIOR
+        # ------------------------------------------------------
 
-        # CLIENTES ---------------------------------------------------------------------------------
+        # CLIENTES
         photo7 = Image.open('clientes4.png')
         photo7 = photo7.resize((20, 20), Image.LANCZOS)  # Redimension (Alto, Ancho)
         photo7 = ImageTk.PhotoImage(photo7)
@@ -191,7 +186,7 @@ class Principal(Frame):
                                    command=self.fClientes, height=53, border=3, bg="blue", fg="white")
         self.btnClientes.pack(side=LEFT, expand=1, fill=X, pady=5, padx=3)
 
-        # GARANTIAS ---------------------------------------------------------------------------------
+        # GARANTIAS
         photo8 = Image.open('garantia.png')
         photo8 = photo8.resize((20, 20), Image.LANCZOS)  # Redimension (Alto, Ancho)
         photo8 = ImageTk.PhotoImage(photo8)
@@ -199,53 +194,58 @@ class Principal(Frame):
                                    command=self.fGarantia, height=53, border=3, bg="blue", fg="white")
         self.btnCtacte.pack(side=LEFT, expand=1, fill=X, pady=5, padx=3)
 
-        # RECIBOS ----------------------------------------------------------------------------------
+        # RECIBOS
         photo9 = Image.open('recibo.png')
-        photo9 = photo9.resize((20, 20), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        photo9 = photo9.resize((20, 20), Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         photo9 = ImageTk.PhotoImage(photo9)
         self.btnRecibos = Button(self.frame2, text="Recibos", image=photo9, compound=TOP, pady=3,
                                    command=self.fRecibos, height=53, border=3, bg="blue", fg="white")
         self.btnRecibos.pack(side=LEFT, expand=1, fill=X, pady=5, padx=3)
 
-        # PRESUPUESTOS -----------------------------------------------------------------------------
+        # PRESUPUESTOS
         photo10 = Image.open('presuequipo.png')
-        photo10 = photo10.resize((20, 20), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        photo10 = photo10.resize((20, 20), Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         photo10 = ImageTk.PhotoImage(photo10)
         self.btnPresupuestos = Button(self.frame2, text="Presupuestos", image=photo10, compound=TOP, pady=3,
                                    command=self.fPresupuestos, height=53, border=3, bg="blue", fg="white")
-        self.btnPresupuestos.pack(side=LEFT, expand=1, fill=X, pady=5, padx=3)
+        self.btnPresupuestos.pack(side="left", expand=1, fill="x", pady=5, padx=3)
 
-        # ARTICULOS FALTANTES -----------------------------------------------------------------------
+        # ARTICULOS FALTANTES
         photo11 = Image.open('comprasmay.png')
-        photo11 = photo11.resize((20, 20), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        photo11 = photo11.resize((20, 20), Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         photo11 = ImageTk.PhotoImage(photo11)
         self.btnartfaltantes = Button(self.frame2, text="Articulos faltantes", image=photo11, compound=TOP, pady=3,
                                    command=self.fCompras, height=53, border=3, bg="blue", fg="white")
-        self.btnartfaltantes.pack(side=LEFT, expand=1, fill=X, pady=5, padx=3)
+        self.btnartfaltantes.pack(side=LEFT, expand=1, fill="x", pady=5, padx=3)
 
-        # RMA --------------------------------------------------------------------------------------
+        # RMA
         photo12 = Image.open('rma.png')
-        photo12 = photo12.resize((20, 20), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        photo12 = photo12.resize((20, 20), Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         photo12 = ImageTk.PhotoImage(photo12)
         self.btnrma = Button(self.frame2, text="Agenda Pendientes\n(RMA)", image=photo12, compound=TOP, pady=3,
                                    command=self.fRma, border=3, bg="blue", fg="white")
-        self.btnrma.pack(side=LEFT, expand=1, fill=X, pady=5, padx=3)
+        self.btnrma.pack(side=LEFT, expand=1, fill="x", pady=5, padx=3)
 
-        # Respaldos --------------------------------------------------------------------------------
+        # Respaldos
         photo13 = Image.open('backup.png')
-        photo13 = photo13.resize((20, 20), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        photo13 = photo13.resize((20, 20), Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         photo13 = ImageTk.PhotoImage(photo13)
         self.btnbackup = Button(self.frame2, text="Backup", image=photo13, compound=TOP, pady=3,
                                    command=self.fBackup, height=53, border=3, bg="blue", fg="white")
-        self.btnbackup.pack(side=LEFT, expand=1, fill=X, pady=5, padx=3)
+        self.btnbackup.pack(side="left", expand=1, fill="x", pady=5, padx=3)
 
-        # PACKS cierre de pantalla ------------------------------------------------------------------
-        self.frame1.pack(side=BOTTOM, fill=X, pady=10, padx=5)
-        self.frame2.pack(side=TOP, fill=X, pady=10, padx=5)
+        # PACKS cierre de pantalla
+        self.frame1.pack(side="bottom", fill="x", pady=10, padx=5)
+        self.frame2.pack(side="top", fill="x", pady=10, padx=5)
 
         self.frame1.mainloop()
 
-    def fPlaniCaja(selff):
+    def fsale_menu(self):
+
+        self.master.quit()
+        self.master.destroy()
+
+    def fPlaniCaja(self):
 
         # PLANILLA DE CAJA
 
@@ -253,7 +253,7 @@ class Principal(Frame):
         vent.title("Planilla de Caja")
         vent.grab_set()
         vent.focus_set()
-        app = PlaniCaja(vent)  # clase definida en .py
+        app = PlaniCaja(vent)
         app.mainloop()
 
     def fCotVta(self):
@@ -264,7 +264,7 @@ class Principal(Frame):
         vent.title("Cotizaciones/Ventas")
         vent.grab_set()
         vent.focus_set()
-        app = VentCotiz(vent)  # clase definida en cotiz_vta.py
+        app = VentCotiz(vent)
         app.mainloop()
 
     def m_orden_repara(self):
@@ -273,6 +273,7 @@ class Principal(Frame):
 
         """ Defino una variable vent que toma valores de una pantalla "TOPLEVEL" dependiendo
         de master de principal entiendo ???ver eso de depender de principal """
+
         vent = Toplevel()
         vent.title("Ordenes de Reparacion")
         # Asigno la clase Ventart que esta en articulos.py a la variable app
@@ -287,7 +288,7 @@ class Principal(Frame):
         vent.title("ABM Marcas de Articulos")
         vent.grab_set()
         vent.focus_set()
-        app = Vent_marcas(vent)  # clase definida en marcas.py
+        app = Vent_marcas(vent)
         vent.mainloop()
 
     def fRubros(self):
@@ -298,7 +299,7 @@ class Principal(Frame):
         vent.title("ABM Rubros de Articulos")
         vent.grab_set()
         vent.focus_set()
-        app = Vent_rubros(vent)  # clase definida en rubros.py
+        app = Vent_rubros(vent)
         vent.mainloop()
 
     def fClientes(self):
@@ -309,7 +310,7 @@ class Principal(Frame):
         vent.title("ABM Clientes")
         vent.grab_set()
         vent.focus_set()
-        app = Ventana(vent)  # clase definida en clientes.py
+        app = Ventana(vent)
         vent.mainloop()
 
     def fProved(self):
@@ -320,17 +321,15 @@ class Principal(Frame):
         vent.title("ABM Proveedores")
         vent.grab_set()
         vent.focus_set()
-        app = Ventproved(vent)  # clase definida en proved.py
+        app = Ventproved(vent)
         vent.mainloop()
 
     def fArticulos(self):
 
         # ARTICULOS
 
-        """
-        Defino una variable vent que toma valores de una pantalla "TOPLEVEL" dependiendo
-        de master de principal entiendo ???ver eso de depender de principal
-        """
+        """ Defino una variable vent que toma valores de una pantalla "TOPLEVEL" dependiendo
+        de master de principal entiendo ???ver eso de depender de principal """
 
         vent = Toplevel()
         vent.title("ABM Articulos")
@@ -346,7 +345,7 @@ class Principal(Frame):
         vent.title("Cuentas Corrientes")
         vent.grab_set()
         vent.focus_set()
-        app = CuentaCorriente(vent)  # clase definida en .py
+        app = CuentaCorriente(vent)
         app.mainloop()
 
     def fGarantia(self):
@@ -357,7 +356,7 @@ class Principal(Frame):
         vent.title("Garantias")
         vent.grab_set()
         vent.focus_set()
-        app = clase_garantias(vent)  # clase definida en .py
+        app = clase_garantias(vent)
         app.mainloop()
 
     def fRecibos(self):
@@ -368,7 +367,7 @@ class Principal(Frame):
         vent.title("Recibos")
         vent.grab_set()
         vent.focus_set()
-        app = clase_recibos(vent)  # clase definida en .py
+        app = clase_recibos(vent)
         app.mainloop()
 
     def fPresupuestos(self):
@@ -379,7 +378,7 @@ class Principal(Frame):
         vent.title("Presupuestos")
         vent.grab_set()
         vent.focus_set()
-        app = clase_presupuestos(vent)  # clase definida en .py
+        app = clase_presupuestos(vent)
         app.mainloop()
 
     def fCompras(self):
@@ -419,11 +418,6 @@ class Principal(Frame):
 
         # CONFIGURACION
 
-        """
-        Defino una variable vent que toma valores de una pantalla "TOPLEVEL" dependiendo
-        de master de principal entiendo ???ver eso de depender de principal
-        """
-
         vent = Toplevel()
         vent.title("Configuracion - Parametros")
         vent.grab_set()
@@ -439,7 +433,7 @@ class Principal(Frame):
         vent.title("Saldos en Cuentas Corrientes")
         vent.grab_set()
         vent.focus_set()
-        app = Saldosctacte(vent)  # clase definida en .py
+        app = Saldosctacte(vent)
         app.mainloop()
 
     def fInf_tecnico(self):
@@ -450,7 +444,7 @@ class Principal(Frame):
         vent.title("Informes tecnicos")
         vent.grab_set()
         vent.focus_set()
-        app = clase_inf_tecnicos(vent)  # clase definida en .py
+        app = clase_inf_tecnicos(vent)
         app.mainloop()
 
     def fTecnicas(self):
@@ -461,7 +455,7 @@ class Principal(Frame):
         vent.title("Guias Tecnicas")
         vent.grab_set()
         vent.focus_set()
-        app = clase_GuiasTecnicas(vent)  # clase definida en .py
+        app = clase_GuiasTecnicas(vent)
         app.mainloop()
 
     def fSalir(self):

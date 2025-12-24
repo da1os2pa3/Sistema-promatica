@@ -1,6 +1,7 @@
 import mysql.connector
 from mysql.connector import Error
 from datetime import datetime
+from tkinter import messagebox
 
 class datosRma:
 
@@ -12,13 +13,13 @@ class datosRma:
         except Error as ex:
             print("Error de conexion: {0}".format(ex))
 
-    def __str__(self):
-
-        datos = self.consultar_rma()
-        aux = ""
-        for row in datos:
-            aux = aux + str(row) + "\n"
-        return aux
+    # def __str__(self):
+    #
+    #     datos = self.consultar_rma()
+    #     aux = ""
+    #     for row in datos:
+    #         aux = aux + str(row) + "\n"
+    #     return aux
 
     def consultar_rma(self, tofil):
 
@@ -89,3 +90,25 @@ class datosRma:
         self.cnn.commit()
         cur.close()
         return n
+
+    def traer_ultimo(self, xparametro):
+
+        # Trae el último código de cliente en la tabla para proponer el nuevo número en alta
+
+        try:
+            cur = self.cnn.cursor()
+            cur.execute("SELECT * FROM rma ORDER BY Id")
+            datos = cur.fetchall()
+            aux = ""
+            for row in datos:
+                if xparametro == 1:
+                    aux = str(row[1]) + "\n"
+                else:
+                    aux = str(row[0]) + "\n"
+            self.cnn.commit()
+            cur.close()
+            return aux
+        except:
+            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=traer ultimo",
+                                 parent=self.master)
+            exit()

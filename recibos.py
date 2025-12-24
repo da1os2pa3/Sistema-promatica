@@ -57,35 +57,23 @@ class clase_recibos(Frame):
         # ------------------------------------------------------------------------------
 
         self.create_widgets()
-
-        # ------------------------------------------------------------------------------
-        # VARIABLES - ESTADO INICIAL
-
-        self.filtro_activo = "recibos ORDER BY rc_fecha ASC"
-        self.dato_seleccion = ""
-        self.var_Id = -1
-        self.alta_modif = 0
-        # ------------------------------------------------------------------------------
-
+        self.estado_inicial()
         self.llena_grilla("")
 
-        """ guarda en item el Id (I001, IB03, ..) del elemento fila en el que pase el puntero del mouse en este caso 
-        fila 0 el método identify_row() se usa para saber qué fila(item) del Treev está bajo una posición del mouse."""
-        item = self.grid_recibos.identify_row(0)
+        # """ guarda en item el Id (I001, IB03, ..) del elemento fila en el que pase el puntero del mouse en este caso
+        # fila 0 el método identify_row() se usa para saber qué fila(item) del Treev está bajo una posición del mouse."""
+        # item = self.grid_recibos.identify_row(0)
+        # """ En Tkinter(módulo ttk), el método selection_set() del Treeview se usa para seleccionar uno o varios
+        #    ítems de forma programática(por código)."""
+        # self.grid_recibos.selection_set(item)
+        # """ pone el foco en el item seleccionado"""
+        # self.grid_recibos.focus(item)
 
-        """ En Tkinter(módulo ttk), el método selection_set() del Treeview se usa para seleccionar uno o varios 
-           ítems de forma programática(por código)."""
-        self.grid_recibos.selection_set(item)
-
-        # pone el foco en el item seleccionado
-        self.grid_recibos.focus(item)
         # funciones
-        self.habilitar_text("disabled")
-        self.habilitar_btn_inino("disabled")
-        self.habilitar_btn_inisi("normal")
-        self.habilitar_btn_busqueda("normal")
-
-        self.grid_recibos.focus()
+        # self.habilitar_text("disabled")
+        # self.habilitar_btn_inino("disabled")
+        # self.habilitar_btn_inisi("normal")
+        # self.habilitar_btn_busqueda("normal")
 
     # ------------------------------------------------------------------------------
     # WIDGETS
@@ -120,8 +108,8 @@ class clase_recibos(Frame):
         # --------------------------------------------------------------------------
 
         self.strvar_buscostring =tk.StringVar(value="")
-        self.strvar_numero_recibo = tk.StringVar(value=0)
-        self.strvar_codigo_cliente = tk.StringVar(value=0)
+        self.strvar_numero_recibo = tk.StringVar(value="0")
+        self.strvar_codigo_cliente = tk.StringVar(value="0")
         self.strvar_nombre_cliente = tk.StringVar(value="")
         self.strvar_fecha_recibo = tk.StringVar(value="")
         self.strvar_importe_recibo = tk.StringVar(value="0.00")
@@ -131,7 +119,8 @@ class clase_recibos(Frame):
         # --------------------------------------------------------------------------
 
         # La pongo aca porque si la saco arriba no tiene alcance en el scope
-        self.vcmd = (self.register(validar), '%P')
+        self.vcmd = (self.register(self.varFuncion_new.validar), "%P")
+
         self.strvar_fecha_recibo.set(value=datetime.strftime(date.today(), "%d/%m/%Y"))
 
         # --------------------------------------------------------------------------
@@ -150,19 +139,19 @@ class clase_recibos(Frame):
 
         self.grid_recibos.bind("<Double-Button-1>", self.DobleClickGrid)
 
-        self.grid_recibos.column("#0", width=40, anchor=CENTER, minwidth=40)
-        self.grid_recibos.column("col1", width=50, anchor=CENTER, minwidth=40)
-        self.grid_recibos.column("col2", width=60, anchor=CENTER, minwidth=60)
-        self.grid_recibos.column("col3", width=120, anchor=CENTER, minwidth=100)
-        self.grid_recibos.column("col4", width=100, anchor=CENTER, minwidth=80)
-        self.grid_recibos.column("col5", width=250, anchor=CENTER, minwidth=220)
+        self.grid_recibos.column("#0", width=40, anchor="center", minwidth=40)
+        self.grid_recibos.column("col1", width=50, anchor="center", minwidth=40)
+        self.grid_recibos.column("col2", width=60, anchor="center", minwidth=60)
+        self.grid_recibos.column("col3", width=120, anchor="center", minwidth=100)
+        self.grid_recibos.column("col4", width=100, anchor="center", minwidth=80)
+        self.grid_recibos.column("col5", width=250, anchor="center", minwidth=220)
 
-        self.grid_recibos.heading("#0", text="Id", anchor=CENTER)
-        self.grid_recibos.heading("col1", text="Numero", anchor=CENTER)
-        self.grid_recibos.heading("col2", text="Fecha", anchor=CENTER)
-        self.grid_recibos.heading("col3", text="Cliente", anchor=CENTER)
-        self.grid_recibos.heading("col4", text="Importe", anchor=CENTER)
-        self.grid_recibos.heading("col5", text="Detalle", anchor=CENTER)
+        self.grid_recibos.heading("#0", text="Id", anchor="center")
+        self.grid_recibos.heading("col1", text="Numero", anchor="center")
+        self.grid_recibos.heading("col2", text="Fecha", anchor="center")
+        self.grid_recibos.heading("col3", text="Cliente", anchor="center")
+        self.grid_recibos.heading("col4", text="Importe", anchor="center")
+        self.grid_recibos.heading("col5", text="Detalle", anchor="center")
 
         # SCROLLBAR del Treeview
         scroll_x = Scrollbar(self.frame_tvw_recibos, orient=HORIZONTAL)
@@ -171,8 +160,8 @@ class clase_recibos(Frame):
         self.grid_recibos.config(yscrollcommand=scroll_y.set)
         scroll_x.config(command=self.grid_recibos.xview)
         scroll_y.config(command=self.grid_recibos.yview)
-        scroll_y.pack(side=RIGHT, fill=Y)
-        scroll_x.pack(side=BOTTOM, fill=X)
+        scroll_y.pack(side=RIGHT, fill="y")
+        scroll_x.pack(side=BOTTOM, fill="x")
         self.grid_recibos['selectmode'] = 'browse'
 
         self.grid_recibos.pack(side=TOP, fill=BOTH, expand=1, padx=5, pady=2)
@@ -192,7 +181,7 @@ class clase_recibos(Frame):
         self.btn_editaitem = Button(self.frame_primero, text="Editar", command=self.fEditar, width=24, bg="blue",
                                     fg="white")
         self.btn_editaitem.grid(row=0, column=1, padx=5, pady=2)
-        self.btn_borraitem = Button(self.frame_primero, text="Eliminar", command=self.fBorrar, width=24, bg="blue",
+        self.btn_borraitem = Button(self.frame_primero, text="Eliminar", command=self.fBorrar, width=24, bg="red",
                                     fg="white")
         self.btn_borraitem.grid(row=0, column=2, padx=5, pady=2)
         self.btn_guardaritem = Button(self.frame_primero, text="Guardar", command=self.fGuardar, width=24, bg="green",
@@ -309,7 +298,6 @@ class clase_recibos(Frame):
         self.photo_imp = ImageTk.PhotoImage(self.photo_imp)
         self.btn_imprime = Button(self.frame_segundo_1, image=self.photo_imp, pady=3, command=self.fImprime, border=3)
         self.btn_imprime.grid(row=0, column=10, padx=4, pady=2)
-        #self.btnPlaniCaja.place(x=555, y=10, width=100, height=100)
 
         self.frame_segundo_1.pack(side=TOP, fill=BOTH, expand=0, padx=5, pady=2)
 
@@ -343,7 +331,7 @@ class clase_recibos(Frame):
         for row in datos:
 
             # convierto fecha de 2024-12-19 a 19/12/2024
-            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[2], '%Y-%m-%d'))
+            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[2], '%Y-%m-%d'), "hora_no")
             self.grid_recibos.insert("", END, text=row[0], values=(row[1], forma_normal, row[4], row[5], row[6]))
 
         if len(self.grid_recibos.get_children()) > 0:
@@ -387,20 +375,32 @@ class clase_recibos(Frame):
             self.grid_recibos.focus(rg)
             # para que la linea seleccionada no me quede fuera del area visible del treeview
             self.grid_recibos.yview(self.grid_recibos.index(rg))
-            return
-
-        self.mover_puntero_topend("END")
+        else:
+            self.mover_puntero_topend("END")
 
     # -----------------------------------------------------------------------------
     # ESTADOS
     # -----------------------------------------------------------------------------
 
+    def estado_inicial(self):
+
+        self.filtro_activo = "recibos ORDER BY rc_fecha ASC"
+        self.dato_seleccion = ""
+        self.var_Id = -1
+        self.alta_modif = 0
+
+        self.limpiar_text()
+        self.habilitar_text("disabled")
+        self.habilitar_btn_inino("disabled")
+        self.habilitar_btn_inisi("normal")
+        self.habilitar_btn_busqueda("normal")
+
     def limpiar_text(self):
 
         self.strvar_fecha_recibo.set(value=datetime.strftime(date.today(), "%d/%m/%Y"))
-        self.strvar_codigo_cliente.set(value=0)
+        self.strvar_codigo_cliente.set(value="0")
         self.strvar_nombre_cliente.set(value="")
-        self.strvar_importe_recibo.set(value=0)
+        self.strvar_importe_recibo.set(value="0")
         self.text_detalle.delete('1.0', 'end')
         self.strvar_buscostring.set(value="")
 
@@ -477,11 +477,10 @@ class clase_recibos(Frame):
         for row in valores:
 
             # Convierto fechas a dd/mm/aaa
-            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[2], '%Y-%m-%d'))
+            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[2], '%Y-%m-%d'), "hora_no")
 
             self.strvar_fecha_recibo.set(value=forma_normal)
             self.strvar_numero_recibo.set(value=row[1])
-            #self.strvar_codigo_cliente.set(value=valores[3])
             self.strvar_nombre_cliente.set(value=row[4])
             self.strvar_importe_recibo.set(value=row[5])
             self.text_detalle.insert(END, row[6])
@@ -546,9 +545,7 @@ class clase_recibos(Frame):
             self.entry_nombre_cliente.focus()
             return
 
-        aaa = 0
-        if aaa == 0:
-        # #try:
+        try:
 
             # guardo el Id del Treeview (I001, IB00, ...) en selected para ubicacion del foco a posteriori
             self.selected = self.grid_recibos.focus()
@@ -588,11 +585,10 @@ class clase_recibos(Frame):
             elif self.alta_modif == 2:
                 self.llena_grilla(self.clave)
 
-        # #except:
+        except:
 
-        #     messagebox.showerror("Error", "Revise Fechas", parent=self)
-        #     self.entry_fecha_planilla.focus()
-        #     return
+            messagebox.showerror("Error", "Error inesperado - Funcion guardar", parent=self)
+            return
 
         self.habilitar_text("disabled")
         self.habilitar_btn_inino("disabled")
@@ -773,12 +769,12 @@ class clase_recibos(Frame):
 
         # Control de que no ingresen mas de una vez el '-' o el '.' - Funcion en funciones.py
         if not control_forma(list(self.strvar_importe_recibo.get())):
-            self.strvar_importe_recibo.set(value=0)
+            self.strvar_importe_recibo.set(value="0")
             self.entry_importe_recibo.focus()
             return
         # Valido que los campos no me ingresen en blanco
         if self.strvar_importe_recibo.get() == "" or self.strvar_importe_recibo.get() == "-" or self.strvar_importe_recibo.get() == ".":
-            self.strvar_importe_recibo.set(value=0)
+            self.strvar_importe_recibo.set(value="0")
             self.entry_importe_recibo.focus()
             return
         else:
@@ -834,13 +830,14 @@ class clase_recibos(Frame):
 
         # Imprimo el encabezado de pagina ---------------------------------------------------
         pdf.set_font('Arial', '', 9)
-        pdf.cell(w=0, h=5, txt="Recibo Nº: " + str(numero_recibo) + " - Fecha y Hora: " + feac , border=1, align='C', fill=0, ln=1)
+        pdf.cell(w=0, h=5, txt="Recibo Nº: " + str(numero_recibo) + " - Fecha y Hora: " + feac , border=1, align='C',
+                 fill=0, ln=1)
         # -----------------------------------------------------------------------------------
 
         importe_format = formatear_cifra(float(importe))
 
-        var_descripcion = ("Recibi del Sr./a " + cliente + " la suma de pesos " + importe_format +" "+ numero_to_letras(float(importe)) +
-                           ", segun el siguiente detalle: " + " " + detalle )
+        var_descripcion = ("Recibi del Sr./a " + cliente + " la suma de pesos " + importe_format +" "+
+                           numero_to_letras(float(importe)) + ", segun el siguiente detalle: " + " " + detalle )
 
         pdf.set_font('Courier', 'B', 10)
         pdf.cell(w=0, h=5, txt='', align='L', fill=0, ln=1)

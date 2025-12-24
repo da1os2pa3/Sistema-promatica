@@ -1,16 +1,5 @@
+import os
 # ---------------------------------------------------
-# WIDGETS *
-# VARIABLES *
-# TITULOS *
-# STRINGVARS *
-# BOTONES *
-# BUSQUEDAS *
-# TREEVIEWS *
-# ENTRYS *
-# METODOS *
-# CRUD *
-# ---------------------------------------------------
-
 from articulos_ABM import *
 from funciones import *
 from funcion_new import *
@@ -19,7 +8,6 @@ import tkinter.font as tkFont
 from tkinter import messagebox, filedialog
 # ---------------------------------------------------
 from datetime import date, datetime
-import os
 from PIL import Image, ImageTk
 
 class VentArt(Frame):
@@ -68,8 +56,13 @@ class VentArt(Frame):
         # ------------------------------------------------------------------------------
 
         self.create_widgets()
+        self.estado_inicial()
+        self.llena_grilla("")
 
-        # ------------------------------------------------------------------------------
+        # ---------------------------------------------------------------------------
+        # SETEO INICIAL DEL GRID
+        # ---------------------------------------------------------------------------------
+
         """ La función Treeview.selection() retorna una tupla con los ID de los elementos seleccionados o una
         tupla vacía en caso de no haber ninguno
         . Otras funciones para manejar los elementos seleccionados incluyen:
@@ -79,20 +72,12 @@ class VentArt(Frame):
           -selection_toggle(): cambia la selección de un elemento.
         # Carga del Treeview y seteo de foco y punteros sobre el mismo (grid) """
 
-        self.llena_grilla("")
-
-        # guarda en item el Id del elemento fila en este caso fila 0
-        item = self.grid_articulos.identify_row(0)
-        self.grid_articulos.selection_set(item)
-        # pone el foco en el item seleccionado
-        self.grid_articulos.focus(item)
+        # # guarda en item el Id del elemento fila en este caso fila 0
+        # item = self.grid_articulos.identify_row(0)
+        # self.grid_articulos.selection_set(item)
+        # # pone el foco en el item seleccionado
+        # self.grid_articulos.focus(item)
         # -------------------------------------------------------------------------------
-
-        # -------------------------------------------------------------------------------
-        # Estado inicial del Gui
-        self.estado_inicial("disabled")
-        self.habilitar_Btn_Final("disabled")
-        self.habilitar_Btn_Oper("normal")
 
     # ------------------------------------------------------------------------------
     # WIDGETS -*-
@@ -107,11 +92,10 @@ class VentArt(Frame):
         # para la funcion validate y controlar campos solo numericos
         vcmd = (self.register(self.varFuncion_new.validar), "%P")
 
-        # Se usa para saber que filtro esta activo y mantenerlo - a continuacion se setea a un valor inicial
-        self.filtro_activo = "articulos ORDER BY rubro, marca, descripcion ASC"
-        # Para identificar si el movimiento es alta o modificacion (1 - ALTA 2 - Modificacion)
-        self.var_Id = -1
-        self.alta_modif = 0
+        # -------------------------------------------------------------------------------------
+        # IMAGENES Y CARPETAS DE FOTOS DE ARTICULOS -*-
+        # -------------------------------------------------------------------------------------
+
         self.imagen_defa = "tapiz.jpg"
         # Carpetas de trabajo
         self.carpeta_principal = os.path.dirname(__file__)
@@ -140,7 +124,7 @@ class VentArt(Frame):
         # Coloco logo y titulo en posicion de pantalla
         self.lbl_png_articulos.grid(row=0, column=0, sticky=W, padx=5, ipadx=22)
         self.lbl_titulo.grid(row=0, column=1, sticky="nsew")
-        self.frame_titulo_top.pack(side=TOP, fill=X, padx=5, pady=5)
+        self.frame_titulo_top.pack(side="top", fill=X, padx=5, pady=5)
         # ---------------------------------------------------------------------------------------
 
         # ---------------------------------------------------------------------------------------
@@ -199,7 +183,7 @@ class VentArt(Frame):
         self.btn_cancelar=Button(botones1, text="Cancelar", command=self.fCancelar, bg="black", fg="white", width=14)
         self.btn_cancelar.grid(row=4, column=0, padx=5, pady=3, ipadx=10)
 
-        botones1.pack(side=TOP, padx=3, pady=3, fill=Y)
+        botones1.pack(side="top", padx=3, pady=3, fill=Y)
 
         botones2 = LabelFrame(barra_botones, bd=5, relief=RIDGE)
 
@@ -228,7 +212,7 @@ class VentArt(Frame):
         self.btn_Finarch.grid(row=9, column=0, padx=5, pady=3, sticky="nsew")
         # ToolTip(self.btn_Finarch, msg="Ir al final del archivo")
 
-        botones2.pack(side=TOP, padx=3, pady=3, fill=Y)
+        botones2.pack(side="top", padx=3, pady=3, fill="y")
 
         botones3 = LabelFrame(barra_botones, bd=2)
 
@@ -238,7 +222,7 @@ class VentArt(Frame):
         self.btnSalir=Button(botones3, text="Salir", image=self.photo3, command=self.fSalir, bg="yellow", fg="white")
         self.btnSalir.grid(row=10, column=0, padx=5, pady=3, sticky="nsew")
 
-        botones3.pack(side=TOP, padx=3, pady=3, fill=Y)
+        botones3.pack(side="top", padx=3, pady=3, fill="y")
 
         botones4 = LabelFrame(barra_botones, bd=2)
 
@@ -255,9 +239,9 @@ class VentArt(Frame):
         self.lbl_cotiza_dolarhoy.grid(row=12, column=0, padx=5, pady=3, sticky=S)
 
         # Pack barra botones
-        botones4.pack(side=TOP, padx=3, pady=3, fill=Y)
+        botones4.pack(side="top", padx=3, pady=3, fill="y")
         # PACK - frame de botones
-        barra_botones.pack(side=LEFT, padx=5, pady=5, ipady=5, fill=Y)
+        barra_botones.pack(side="left", padx=5, pady=5, ipady=5, fill="y")
         # ---------------------------------------------------------------------------------------
 
         # ---------------------------------------------------------------------------------------
@@ -314,40 +298,40 @@ class VentArt(Frame):
 
         self.grid_articulos = ttk.Treeview(self.frame_tv, height=11, columns=("col1", "col2", "col3", "col4", "col5",
                                                                               "col6", "col7", "col8", "col9", "col10",
-                                                                              "col11", "col12", "col13"))
+                                                                              "col11", "col12"))
 
         self.grid_articulos.bind("<Double-Button-1>", self.DobleClickGrid)
         #self.grid_articulos.bind("<ButtonRelease-3>", self.muestradatos)
 
-        self.grid_articulos.column("#0", width=60, anchor=CENTER, minwidth=60)
-        self.grid_articulos.column("col1", width=100, anchor=W, minwidth=100)
-        self.grid_articulos.column("col2", width=430, anchor=W, minwidth=430)
-        self.grid_articulos.column("col3", width=110, anchor=CENTER, minwidth=110)
-        self.grid_articulos.column("col4", width=130, anchor=CENTER, minwidth=130)
-        self.grid_articulos.column("col5", width=150, anchor=CENTER, minwidth=150)
-        self.grid_articulos.column("col6", width=70, anchor=CENTER, minwidth=70)
-        self.grid_articulos.column("col7", width=70, anchor=CENTER, minwidth=70)
-        self.grid_articulos.column("col8", width=70, anchor=CENTER, minwidth=70)
-        self.grid_articulos.column("col9", width=70, anchor=CENTER, minwidth=70)
-        self.grid_articulos.column("col10", width=300, anchor=W, minwidth=300)
-        self.grid_articulos.column("col11", width=150, anchor=CENTER, minwidth=150)
-        self.grid_articulos.column("col12", width=150, anchor=CENTER, minwidth=150)
-        self.grid_articulos.column("col13", width=80, anchor=CENTER, minwidth=150)
+        self.grid_articulos.column("#0", width=60, anchor="center", minwidth=60)
+        self.grid_articulos.column("col1", width=100, anchor="w", minwidth=100)
+        self.grid_articulos.column("col2", width=350, anchor="w", minwidth=350)
+        self.grid_articulos.column("col3", width=110, anchor="center", minwidth=110)
+        self.grid_articulos.column("col4", width=130, anchor="center", minwidth=130)
+        self.grid_articulos.column("col5", width=80, anchor="e", minwidth=80)
+        self.grid_articulos.column("col6", width=70, anchor="e", minwidth=70)
+        self.grid_articulos.column("col7", width=100, anchor="center", minwidth=100)
+        self.grid_articulos.column("col8", width=70, anchor="center", minwidth=70)
+        self.grid_articulos.column("col9", width=60, anchor="center", minwidth=60)
+        self.grid_articulos.column("col10", width=200, anchor="center", minwidth=200)
+        self.grid_articulos.column("col11", width=100, anchor="center", minwidth=100)
+        self.grid_articulos.column("col12", width=80, anchor="center", minwidth=80)
+        #self.grid_articulos.column("col14", width=80, anchor="center", minwidth=150)
 
-        self.grid_articulos.heading("#0", text="Id", anchor=CENTER)
-        self.grid_articulos.heading("col1", text="Codigo", anchor=W)
-        self.grid_articulos.heading("col2", text="Descripcion", anchor=W)
-        self.grid_articulos.heading("col3", text="Marca", anchor=CENTER)
-        self.grid_articulos.heading("col4", text="Rubro", anchor=CENTER)
-        self.grid_articulos.heading("col5", text="Cod.Barras", anchor=CENTER)
-        self.grid_articulos.heading("col6", text="Dolar", anchor=CENTER)
-        self.grid_articulos.heading("col7", text="IVA", anchor=CENTER)
-        self.grid_articulos.heading("col8", text="Imp.Interno", anchor=CENTER)
-        self.grid_articulos.heading("col9", text="% Ganancia", anchor=CENTER)
+        self.grid_articulos.heading("#0", text="Id", anchor="center")
+        self.grid_articulos.heading("col1", text="Codigo", anchor="w")
+        self.grid_articulos.heading("col2", text="Descripcion", anchor="w")
+        self.grid_articulos.heading("col3", text="Marca", anchor="center")
+        self.grid_articulos.heading("col4", text="Rubro", anchor="center")
+        self.grid_articulos.heading("col5", text="Pesos final", anchor="center")
+        self.grid_articulos.heading("col6", text="Dolar neto", anchor="center")
+        self.grid_articulos.heading("col7", text="Cod.Barras", anchor="center")
+        self.grid_articulos.heading("col8", text="IVA", anchor="center")
+        self.grid_articulos.heading("col9", text="% Ganancia", anchor="center")
         self.grid_articulos.heading("col10", text="Observaciones", anchor=W)
-        self.grid_articulos.heading("col11", text="Fecha ultima Act.", anchor=CENTER)
-        self.grid_articulos.heading("col12", text="Costo Historico", anchor=CENTER)
-        self.grid_articulos.heading("col13", text="Imagen", anchor=CENTER)
+        self.grid_articulos.heading("col11", text="Fecha ultima Act.", anchor="center")
+        self.grid_articulos.heading("col12", text="Costo Historico", anchor="center")
+        #self.grid_articulos.heading("col14", text="Imagen", anchor="center")
 
         self.grid_articulos.tag_configure('oddrow', background='light grey')
         self.grid_articulos.tag_configure('evenrow', background='white')
@@ -364,9 +348,9 @@ class VentArt(Frame):
         self.grid_articulos['selectmode'] = 'browse'
 
         # PACK - de el treeview y el FRAME tv
-        self.frame_buscar.pack(side=TOP, fill=BOTH, expand=1, padx=5, pady=3)
-        self. grid_articulos.pack(side= TOP, fill=BOTH, expand=1, padx=5, pady=5)
-        self.frame_tv.pack(side=TOP, fill=BOTH, padx=5, pady=5)
+        self.frame_buscar.pack(side="top", fill=BOTH, expand=1, padx=5, pady=3)
+        self. grid_articulos.pack(side= "top", fill=BOTH, expand=1, padx=5, pady=5)
+        self.frame_tv.pack(side="top", fill="both", padx=5, pady=5)
         # ------------------------------------------------------------------------
 
         # ------------------------------------------------------------------------
@@ -377,9 +361,6 @@ class VentArt(Frame):
         self.sector_entry = LabelFrame(self.master)
         self.sector_totales = LabelFrame(self.master)
         self.sector_imagen = LabelFrame(self.master)
-
-        # # para la funcion validate y controlar campos solo numericos
-        # vcmd = (self.register(validar), '%P')
 
         # CODIGO
         self.lbl_codigo = Label(self.sector_entry, text="Codigo: ")
@@ -566,15 +547,15 @@ class VentArt(Frame):
 
         # ------------------------------------------------------------------------
         # PACKS de estos tres ultimos
-        self.entry_imagen_art.pack(expand=0, side=TOP, pady=3, padx=2)
-        self.btn_ruta_imagen.pack(expand=0, side=TOP, pady=3, padx=2)
-        self.lbl_imagen_art.pack(expand=1, side=TOP, fill=BOTH, pady=2, padx=2)
+        self.entry_imagen_art.pack(expand=0, side="top", pady=3, padx=2)
+        self.btn_ruta_imagen.pack(expand=0, side="top", pady=3, padx=2)
+        self.lbl_imagen_art.pack(expand=1, side="top", fill="both", pady=2, padx=2)
         # ------------------------------------------------------------------------
 
         # PACKS GENERALES --------------------------------------------------------
-        self.sector_entry.pack(expand=1, side=LEFT, fill=BOTH, pady=5, padx=2)
-        self.sector_totales.pack(expand=1, side=LEFT, fill=BOTH, pady=5, padx=2)
-        self.sector_imagen.pack(expand=1, side=LEFT, fill=BOTH, pady=5, padx=2)
+        self.sector_entry.pack(expand=1, side="left", fill="both", pady=5, padx=2)
+        self.sector_totales.pack(expand=1, side="left", fill="both", pady=5, padx=2)
+        self.sector_imagen.pack(expand=1, side="left", fill="both", pady=5, padx=2)
         # ------------------------------------------------------------------------
 
     # ----------------------------------------------------------------------------
@@ -600,17 +581,19 @@ class VentArt(Frame):
             color = ('evenrow',) if cont % 2 else ('oddrow',)
 
             # convierto fecha de 2024-12-19 a 19/12/2024
-            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[11], '%Y-%m-%d'))
+            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[11], '%Y-%m-%d'), "hora_no")
 
-            self.grid_articulos.insert("", END, tags=color, text=row[0], values=(row[1], row[2], row[3], row[4],
-                                                                                 row[5], row[6], row[7], row[8], row[9],
-                                                                                 row[10], forma_normal, row[12], row[13]))
+            precio_final_pesos = round(float((row[6]*(1+(row[7]/100))) * (1+(row[9]/100))) * float(self.strvar_dolar_actual.get()))
+
+            self.grid_articulos.insert("", "end", tags=color, text=row[0], values=(row[1], row[2], row[3],
+                                                    row[4], formatear_cifra(precio_final_pesos), row[6], row[5], row[7],
+                                                    row[9], row[10], forma_normal, row[12], row[13]))
 
         if len(self.grid_articulos.get_children()) > 0:
             self.grid_articulos.selection_set(self.grid_articulos.get_children()[0])
 
         # ----------------------------------------------------------------------------------
-        # Procedimiento para acomodar los punteros en caso de altas, modif. ....)
+        # Procedimiento para acomodar los punteros en caso de altas, modif. ....
         # ----------------------------------------------------------------------------------
 
         """ ult_tabla_id = Trae el Id de la tabla (21, 60, 61, ..) correspondiente identificando al registro 
@@ -641,21 +624,34 @@ class VentArt(Frame):
             de encontrar correspondiente al Id de tabla asignado en el parametro de la funcion llena_grilla. """
 
             if ult_tabla_id:
-
                 """ "rg" = es el Text o Index del registro en el Treeview I001, IB002.... y ahi posiciono el foco 
                 con las siguientes instrucciones. """
-
                 self.grid_articulos.selection_set(rg)
                 # Para que no me diga que no hay nada seleccionado
                 self.grid_articulos.focus(rg)
                 # para que la linea seleccionada no me quede fuera del area visible del treeview
                 self.grid_articulos.yview(self.grid_articulos.index(rg))
+            else:
+                # caso de que el parametro ult_tabla_id sea " " muevo el puntero al final del GRID
+                self.mover_puntero_topend("END")
 
     # ------------------------------------------------------------------------
     # ESTADOS -*-
     # ------------------------------------------------------------------------
 
-    def estado_inicial(self, estado):
+    def estado_inicial(self):
+
+        # Variables
+        self.filtro_activo = "articulos ORDER BY rubro, marca, descripcion ASC"
+        self.var_Id = -1
+        self.alta_modif = 0
+
+        self.limpiar_text()
+        self.habilitar_text("disabled")
+        self.habilitar_Btn_Oper("normal")
+        self.habilitar_Btn_Final("disabled")
+
+    def habilitar_text(self, estado):
 
         self.entry_codigo.configure(state=estado)
         self.entry_descripcion.configure(state=estado)
@@ -674,12 +670,19 @@ class VentArt(Frame):
         self.entry_costo_historico.configure(state=estado)
         self.btn_ruta_imagen.configure(state=estado)
 
-        if estado == "disabled" or self.alta_modif == 2:
-            self.grid_articulos['selectmode'] = 'browse'
-            self.grid_articulos.bind("<Double-Button-1>", self.DobleClickGrid)
-        else:
+        if self.alta_modif == 1:
             self.grid_articulos['selectmode'] = 'none'
             self.grid_articulos.bind("<Double-Button-1>", self.fNo_modifique)
+        if self.alta_modif == 2 or self.alta_modif == 0:
+            self.grid_articulos['selectmode'] = 'browse'
+            self.grid_articulos.bind("<Double-Button-1>", self.DobleClickGrid)
+
+        # if estado == "disabled" or self.alta_modif == 2:
+        #     self.grid_articulos['selectmode'] = 'browse'
+        #     self.grid_articulos.bind("<Double-Button-1>", self.DobleClickGrid)
+        # else:
+        #     self.grid_articulos['selectmode'] = 'none'
+        #     self.grid_articulos.bind("<Double-Button-1>", self.fNo_modifique)
 
     def limpiar_text(self):
 
@@ -733,6 +736,40 @@ class VentArt(Frame):
 
         self.btn_guardar.configure(state=estado)
 
+    def fCancelar(self):
+
+        r = messagebox.askquestion("Cancelar", "Confirma cancelar operacion actual?", parent=self)
+        if r == messagebox.YES:
+            self.estado_inicial()
+            # self.limpiar_text()
+            # self.habilitar_Btn_Final("disabled")
+            # self.habilitar_Btn_Oper("normal")
+            # self.habilitar_text("disabled")
+
+    def fReset(self):
+
+        self.estado_inicial()
+        self.fResetmarca()
+        self.fResetrubro()
+        self.limpiar_Grid()
+        self.llena_grilla("")
+        self.mover_puntero_topend("TOP")
+        self.btn_nuevo.focus()
+        # self.limpiar_text()
+        # self.fQuitarfiltros()
+        # self.habilitar_text("disabled")
+        # self.habilitar_Btn_Final("disabled")
+        # self.habilitar_Btn_Oper("normal")
+
+    def DobleClickGrid(self, event):
+        self.fEditar()
+
+    def fNo_modifique(self, event):
+        return "breack"
+
+    def fSalir(self):
+        self.master.destroy()
+
     # -----------------------------------------------------------------
     # CRUD -*-
     # -----------------------------------------------------------------
@@ -741,10 +778,11 @@ class VentArt(Frame):
 
         self.alta_modif = 1
 
-        self.estado_inicial("normal")
+        self.habilitar_text("normal")
+        self.limpiar_text()
         self.habilitar_Btn_Final("normal")
         self.habilitar_Btn_Oper("disabled")
-        self.limpiar_text()
+
         self.combo_rubro.SelectedIndex = -1
         self.combo_rubro.set("")
         self.combo_marca.SelectedIndex = -1
@@ -767,19 +805,25 @@ class VentArt(Frame):
         self.selected = self.grid_articulos.focus()
         self.clave = self.grid_articulos.item(self.selected, 'text')
 
-        self.alta_modif = 2
-
         if self.clave == "":
             messagebox.showwarning("Editar", "No hay nada seleccionado", parent=self)
             return
 
         self.var_Id = self.clave  # puede traer -1 , en ese caso seria un alta
+        self.alta_modif = 2
 
-        self.estado_inicial('normal')
+        self.habilitar_text('normal')
         self.limpiar_text()
 
-        self.filtro_activo = "articulos WHERE Id = " + str(self.clave)
-        valores = self.varArtic.consultar_articulo(self.filtro_activo)
+        # --------------------------------------------
+        # self.filtro_activo = "articulos WHERE Id = " + str(self.clave)
+        """ para que permanezca mostrandose el filtro de busqueda actual luego de modificar el articulo que sea. 
+        Por ejemplo: busco el cArtucho 133 y me muestra 10 registros, modifico uno de ellos y vuelvo al grid con 
+        los mismo 10 aun seleccionados y filtrados"""
+
+        self.filtro_edicion = "articulos WHERE Id = " + str(self.clave)
+        valores = self.varArtic.consultar_articulo(self.filtro_edicion)
+        # ---------------------------------------------
 
         for row in valores:
 
@@ -798,7 +842,7 @@ class VentArt(Frame):
             self.strvar_tasa_ganancia.set(value=row[9])
             self.strvar_observa.set(value=row[10])
 
-            fecha_convertida = fecha_str_reves_normal(self, datetime.strftime(row[11], "%Y-%m-%d"))
+            fecha_convertida = fecha_str_reves_normal(self, datetime.strftime(row[11], "%Y-%m-%d"), "hora_no")
             self.strvar_fechaultact.set(value=fecha_convertida)
 
             self.strvar_costo_historico.set(row[12])
@@ -855,51 +899,55 @@ class VentArt(Frame):
             return
         # ------------------------------------------------------------------------------------
 
-        # guardo el Id del Treeview en selected para ubicacion del foco a posteriori (I001, I002....
-        self.selected = self.grid_articulos.focus()
-        # Guardo Id del registro de la base datos _Tabla (no es el mismo del otro, este puedo verlo en la tabla) 1,2,3..
-        self.clave = self.grid_articulos.item(self.selected, 'text')
+        try:
+            # guardo el Id del Treeview en selected para ubicacion del foco a posteriori (I001, I002....
+            self.selected = self.grid_articulos.focus()
+            # Guardo Id del registro de la base datos _Tabla (no es el mismo del otro, este puedo verlo en la tabla) 1,2,3..
+            self.clave = self.grid_articulos.item(self.selected, 'text')
 
-        # self.nuevo_art = ""
+            if self.alta_modif == 1:    #    #self.var_Id == -1:
 
-        if self.alta_modif == 1:    #    #self.var_Id == -1:
-
-            fecha_aux = datetime.strptime(self.strvar_fechaultact.get(), '%d/%m/%Y')
-            self.varArtic.insertar_articulo(self.strvar_codigo.get(), self.strvar_descripcion.get(),
-                                        self.combo_marca.get(), self.combo_rubro.get(), self.strvar_codbar.get(),
-                                        self.strvar_costo_neto_dolar.get(), self.combo_iva.get(),
-                                        self.strvar_tasa_impint.get(), self.strvar_tasa_ganancia.get(),
-                                        self.strvar_observa.get(), fecha_aux, self.strvar_costo_historico.get(),
-                                        self.strvar_imagen_Art.get())
-
-            messagebox.showinfo("Guardar", "Nuevo registro creado correctamente", parent=self)
-
-        else:
-
-            # Verifico que no haya cambiado el costo neto del dolar articulo, si es asi, cambio fecha de ultima modificacion
-            if float(self.costo_neto_dolar_comparado.get()) != float(self.strvar_costo_neto_dolar.get()):
-                fecha_aux = datetime.today()
-            else:
                 fecha_aux = datetime.strptime(self.strvar_fechaultact.get(), '%d/%m/%Y')
+                self.varArtic.insertar_articulo(self.strvar_codigo.get(), self.strvar_descripcion.get(),
+                                            self.combo_marca.get(), self.combo_rubro.get(), self.strvar_codbar.get(),
+                                            self.strvar_costo_neto_dolar.get(), self.combo_iva.get(),
+                                            self.strvar_tasa_impint.get(), self.strvar_tasa_ganancia.get(),
+                                            self.strvar_observa.get(), fecha_aux, self.strvar_costo_historico.get(),
+                                            self.strvar_imagen_Art.get())
 
-            self.varArtic.modificar_articulo(self.var_Id, self.strvar_codigo.get(), self.strvar_descripcion.get(),
-                                             self.combo_marca.get(), self.combo_rubro.get(),
-                                             self.strvar_codbar.get(), self.strvar_costo_neto_dolar.get(),
-                                             self.combo_iva.get(), self.strvar_tasa_impint.get(),
-                                             self.strvar_tasa_ganancia.get(),
-                                             self.strvar_observa.get(), fecha_aux,
-                                             self.strvar_costo_historico.get(), self.strvar_imagen_Art.get())
+                messagebox.showinfo("Guardar", "Nuevo registro creado correctamente", parent=self)
 
-            self.var_Id == -1
-            messagebox.showinfo("Modificacion", "La modificacion del registro fue exitosa", parent=self)
+            elif self.alta_modif == 2:
+
+                # Verifico que no haya cambiado el costo neto del dolar articulo, si es asi, cambio fecha de ultima modificacion
+                if float(self.costo_neto_dolar_comparado.get()) != float(self.strvar_costo_neto_dolar.get()):
+                    fecha_aux = datetime.today()
+                else:
+                    fecha_aux = datetime.strptime(self.strvar_fechaultact.get(), '%d/%m/%Y')
+
+                self.varArtic.modificar_articulo(self.var_Id, self.strvar_codigo.get(), self.strvar_descripcion.get(),
+                                                 self.combo_marca.get(), self.combo_rubro.get(),
+                                                 self.strvar_codbar.get(), self.strvar_costo_neto_dolar.get(),
+                                                 self.combo_iva.get(), self.strvar_tasa_impint.get(),
+                                                 self.strvar_tasa_ganancia.get(),
+                                                 self.strvar_observa.get(), fecha_aux,
+                                                 self.strvar_costo_historico.get(), self.strvar_imagen_Art.get())
+
+                self.var_Id == -1
+                messagebox.showinfo("Modificacion", "La modificacion del registro fue exitosa", parent=self)
+
+        except:
+
+            messagebox.showerror("Error", "Revise datos ingresados por favor", parent=self)
+            self.entry_descripcion.focus()
+            return
 
         self.limpiar_Grid()
         self.limpiar_text()
-        self.estado_inicial("disabled")
         self.habilitar_Btn_Final("disabled")
         self.habilitar_Btn_Oper("normal")
 
-        self.filtro_activo = "articulos ORDER BY rubro, marca, descripcion ASC"
+        #self.filtro_activo = "articulos ORDER BY rubro, marca, descripcion ASC"
 
         if self.alta_modif == 1:
             ultimo_tabla_id = self.varArtic.traer_ultimo(0)
@@ -909,35 +957,12 @@ class VentArt(Frame):
 
         self.alta_modif = 0
 
+        # ojo este debe ir aca abajo sino da problema el browse del grid
+        self.habilitar_text("disabled")
+
     # -----------------------------------------------------------------
     # VARIAS -*-
     # -----------------------------------------------------------------
-
-    def fCancelar(self):
-
-        r = messagebox.askquestion("Cancelar", "Confirma cancelar operacion actual?", parent=self)
-        if r == messagebox.YES:
-            self.limpiar_text()
-            self.habilitar_Btn_Final("disabled")
-            self.habilitar_Btn_Oper("normal")
-            self.estado_inicial("disabled")
-
-    def fReset(self):
-
-        self.limpiar_text()
-        self.fQuitarfiltros()
-        self.estado_inicial("disabled")
-        self.habilitar_Btn_Final("disabled")
-        self.habilitar_Btn_Oper("normal")
-
-    def fSalir(self):
-        self.master.destroy()
-
-    def DobleClickGrid(self, event):
-        self.fEditar()
-
-    def fNo_modifique(self, event):
-        return "breack"
 
     def fBusco_archivo(self):
 
@@ -946,9 +971,9 @@ class VentArt(Frame):
         self.dev_ruta = self.varArtic.consultar_informa()
 
         self.strvar_ruta_fotos = StringVar(value="")
+
         for row in self.dev_informa:
             self.strvar_ruta_fotos.set(value=row[27])
-            #self.strvar_recargo_tarjeta.set(value=row[23])
 
         # Abro ventana dialogo en la ruta de las fotos
         self.file_ruta = filedialog.askopenfilename(initialdir="C:\\Proyectos_Python\\ABM_Clientes\\fotos",
@@ -1037,13 +1062,12 @@ class VentArt(Frame):
             self.imagen_art = ImageTk.PhotoImage(self.photoa)
             self.lbl_imagen_art = Label(self.sector_imagen, image=self.imagen_art, bg="white", relief=RIDGE, bd=5)
             self.lbl_imagen_art.bind("<Double-Button-1>", self.amplia_img)
-            #self.lbl_imagen_art.grid(row=1, column=0, padx=2, pady=1)
 
         except:
 
             messagebox.showerror("Error", "Revise nombre de imagen 'jpg'", parent=self)
 
-        self.lbl_imagen_art.pack(expand=1, side=TOP, fill=BOTH, pady=2, padx=2)
+        self.lbl_imagen_art.pack(expand=1, side=TOP, fill="both", pady=2, padx=2)
 
     def validar_imagen(self):
 
@@ -1079,7 +1103,7 @@ class VentArt(Frame):
 
         # muestro la imagen en el frame
         self.lbl_imagen_art = Label(self.sector_imagen, image=self.imagen_art, bg="white", relief=RIDGE, bd=5)
-        self.lbl_imagen_art.pack(expand=1, side=TOP, fill=BOTH, pady=2, padx=2)
+        self.lbl_imagen_art.pack(expand=1, side=TOP, fill="both", pady=2, padx=2)
 
     def amplia_img(self,koko):
 
@@ -1100,7 +1124,7 @@ class VentArt(Frame):
             # muestro la imagen en el frame
             self.lbl_im_art_b = Label(self.vent_img, image=self.imagen_art_b, bg="white", relief=RIDGE, bd=5)
 
-            self.lbl_im_art_b.pack(expand=1, side=TOP, fill=BOTH, pady=2, padx=2)
+            self.lbl_im_art_b.pack(expand=1, side=TOP, fill="both", pady=2, padx=2)
             self.vent_img.grab_set()
             self.vent_img.focus_set()
 
@@ -1478,7 +1502,7 @@ class VentArt(Frame):
         self.filtro_activo = "articulos ORDER BY rubro, marca, descripcion ASC"
         self.limpiar_Grid()
         self.llena_grilla("")
-        self.puntero_modificacion(self.clave)
+        #self.puntero_modificacion(self.clave)
 
     def forden_descripcion(self):
 
@@ -1489,7 +1513,7 @@ class VentArt(Frame):
         self.filtro_activo = "articulos ORDER BY marca, descripcion ASC"
         self.limpiar_Grid()
         self.llena_grilla("")
-        self.puntero_modificacion(self.clave)
+        #self.puntero_modificacion(self.clave)
 
     def fQuitarfiltros(self):
 

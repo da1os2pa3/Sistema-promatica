@@ -125,3 +125,23 @@ class datosCtacte:
             messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=buscar_entabla-",
                          parent=self.master)
             exit()
+
+    def traer_ultimo(self, xparametro):
+
+        try:
+            cur = self.cnn.cursor()
+            cur.execute("SELECT * FROM ctacte ORDER BY Id")
+            datos = cur.fetchall()
+            aux = ""
+            for row in datos:
+                if xparametro == 1:
+                    aux = str(row[1]) + "\n"
+                else:
+                    aux = str(row[0]) + "\n"
+            self.cnn.commit()
+            cur.close()
+            return aux
+        except:
+            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo traer ultimo",
+                                 parent=self.master)
+            exit()

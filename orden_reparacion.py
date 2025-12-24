@@ -59,15 +59,22 @@ class OrdenesRepara(Frame):
         # ---------------------------------------------------------------------
 
         # ---------------------------------------------------------------------
-        # VARIABLES GENERALES
+        # VARIABLES Y ORDEN INICIAL
         # ---------------------------------------------------------------------
 
-        # Para identificar si el movimiento es alta o modificacion (1 - ALTA 2 - Modificacion)
-        self.var_Id = -1
-        self.alta_modif = 0
-        self.filtro_activo = "orden_repara WHERE fin_retirada = 'N' ORDER BY num_orden ASC"
-        # ----------------------------------------------------------------------
+        self.create_widgets()
 
+        self.estado_inicial()
+
+        self.llena_grilla("")
+
+        # # guarda en item el Id del elemento fila en este caso fila 0
+        # item = self.grid_orden.identify_row(0)
+        # self.grid_orden.selection_set(item)
+        # # pone el foco en el item seleccionado
+        # self.grid_orden.focus(item)
+
+        # ----------------------------------------------------------------------
         """ La función Treeview.selection() retorna una tupla con los ID de los elementos seleccionados o una
         tupla vacía en caso de no haber ninguno.
         # Otras funciones para manejar los elementos seleccionados incluyen:
@@ -75,22 +82,7 @@ class OrdenesRepara(Frame):
         2- selection_remove(): remueve elementos de la selección.
         3- selection_set(): similar a selection_add(), pero remueve los elementos previamente seleccionados.
         4- selection_toggle(): cambia la selección de un elemento. """
-
-        self.create_widgets()
-
-        # Antes de llenar la grilla debo definir el filtro activo para determinar con que configuracion se
-        # mostrara inicialmente el GRID (orden, filtros... etc )
-        self.filtro_activo = "orden_repara WHERE fin_retirada = 'N' ORDER BY num_orden ASC"
-
-        self.llena_grilla("")
-
-        self.estado_inicial("disabled")
-
-        # # guarda en item el Id del elemento fila en este caso fila 0
-        # item = self.grid_orden.identify_row(0)
-        # self.grid_orden.selection_set(item)
-        # # pone el foco en el item seleccionado
-        # self.grid_orden.focus(item)
+        # ----------------------------------------------------------------------
 
     # ------------------------------------------------------------------
     # WIDGETS
@@ -99,8 +91,7 @@ class OrdenesRepara(Frame):
     def create_widgets(self):
 
         # validar: funcion en funciones.py que valida que lo ingresado sea un numeo o "-" o "."
-        #vcmd = (self.register(validar), "%P")
-        vcmd = (self.register(self.varFuncion_new.validar), "%P")
+        self.vcmd = (self.register(self.varFuncion_new.validar), "%P")
 
         # ------------------------------------------------------------------
         # STRINGVARS -*-
@@ -125,7 +116,7 @@ class OrdenesRepara(Frame):
         self.strvar_total_partes = tk.StringVar(value="0")
         self.strvar_total_manodeobra = tk.StringVar(value="0")
         self.strvar_tot_final = tk.StringVar(value="0.00")
-        self.strvar_retirado = tk.StringVar(value="")
+        self.strvar_retirado = tk.StringVar(value="N")
         self.strvar_componentes_equipo = tk.StringVar(value="")
         self.strvar_buscostring = tk.StringVar(value="")
 
@@ -161,16 +152,16 @@ class OrdenesRepara(Frame):
         self.grid_orden.column("col2", width=130, anchor=CENTER)
         self.grid_orden.column("col3", width=130, anchor=CENTER)
         self.grid_orden.column("col4", width=50, anchor=E)
-        self.grid_orden.column("col5", width=400, anchor=W)
+        self.grid_orden.column("col5", width=300, anchor=W)
         self.grid_orden.column("col6", width=90, anchor=E)
         self.grid_orden.column("col7", width=90, anchor=E)
         self.grid_orden.column("col8", width=90, anchor=E)
 
         self.grid_orden.heading("#0", text="Id", anchor="center")
-        self.grid_orden.heading("col1", text="NºOrden", anchor="center")
-        self.grid_orden.heading("col2", text="Fec/Hor Ingreso", anchor="center")
-        self.grid_orden.heading("col3", text="Fecha Egreso", anchor="center")
-        self.grid_orden.heading("col4", text="C", anchor=CENTER)
+        self.grid_orden.heading("col1", text="Nº Orden", anchor="center")
+        self.grid_orden.heading("col2", text="Fecha/Hora Ingreso", anchor="center")
+        self.grid_orden.heading("col3", text="Fecha/Hora Egreso", anchor="center")
+        self.grid_orden.heading("col4", text="Cod.", anchor=CENTER)
         self.grid_orden.heading("col5", text="Cliente", anchor=CENTER)
         self.grid_orden.heading("col6", text="Total", anchor=CENTER)
         self.grid_orden.heading("col7", text="Partes", anchor=CENTER)
@@ -360,7 +351,7 @@ class OrdenesRepara(Frame):
         self.combo_tipo_equipo = ttk.Combobox(self.frame_cuarto, textvariable=self.strvar_equ_grupo, state="readonly",
                                               width=14)
         # self.combo_tipo_equipo['value'] = self.varArtic.combo_input("ma_nombre", "marcas", "ma_nombre")
-        self.combo_tipo_equipo["values"] = ("Notebooks", "PC", "Impresoras", "Fuentes UPS", "Monitores", "Varios")
+        self.combo_tipo_equipo["values"] = ("Notebooks", "PC", "Impresoras", "All in Ones", "Fuentes UPS", "Monitores", "Varios")
         self.combo_tipo_equipo.current(0)
         self.combo_tipo_equipo.grid(row=0, column=9, padx=5, pady=2, sticky="nsew")
 
@@ -422,15 +413,15 @@ class OrdenesRepara(Frame):
         self.text_diagnostico.config(width=41, height=6, wrap="word", padx=4, pady=2)
         self.text_diagnostico.grid(row=1, column=0, padx=4, pady=1, sticky="nsew")
 
-        # Trbajo realizado
-        lbl_trabajo_realizado = Label(self.frame_sexto, text="Trabajo:")
+        # Trabajo realizado
+        lbl_trabajo_realizado = Label(self.frame_sexto, text="Trabajo realizado:")
         lbl_trabajo_realizado.grid(row=0, column=1, padx=4, pady=1, sticky="nsew" )
         self.text_trabajo_realizado = ScrolledText(self.frame_sexto)
         self.text_trabajo_realizado.config(width=41, height=6, wrap="word", padx=4, pady=2)
         self.text_trabajo_realizado.grid(row=1, column=1, padx=4, pady=1, sticky="nsew")
 
         # Anotaciones
-        lbl_anotaciones = Label(self.frame_sexto, text="Notas:")
+        lbl_anotaciones = Label(self.frame_sexto, text="Notas anexas:")
         lbl_anotaciones.grid(row=0, column=2, padx=4, pady=1, sticky="nsew")
         self.text_anotaciones = ScrolledText(self.frame_sexto)
         self.text_anotaciones.config(width=41, height=4, wrap="word", padx=4, pady=2)
@@ -472,7 +463,7 @@ class OrdenesRepara(Frame):
         self.entry_total_partes = Entry(self.frame_octavo, textvariable=self.strvar_total_partes, width=15,
                                         justify=RIGHT)
         self.entry_total_partes.grid(row=0, column=1, padx=5, pady=2, sticky="nsew")
-        self.entry_total_partes.config(validate="key", validatecommand=vcmd)
+        self.entry_total_partes.config(validate="key", validatecommand=self.vcmd)
         self.strvar_total_partes.trace("w", lambda *args: self.limitador(self.strvar_total_partes, 14))
         # mando a la funcion que suma el total final
         self.entry_total_partes.bind('<FocusOut>', lambda e: self.sumar_totalfinal())
@@ -483,7 +474,7 @@ class OrdenesRepara(Frame):
         self.entry_total_manodeobra = Entry(self.frame_octavo, textvariable=self.strvar_total_manodeobra, width=15,
                                             justify="right")
         self.entry_total_manodeobra.grid(row=0, column=3, padx=5, pady=1, sticky="nsew")
-        self.entry_total_manodeobra.config(validate="key", validatecommand=vcmd)
+        self.entry_total_manodeobra.config(validate="key", validatecommand=self.vcmd)
         self.strvar_total_manodeobra.trace("w",
                                            lambda *args: self.limitador(self.strvar_total_manodeobra, 14))
         # mando a la funcion que suma el total final
@@ -500,6 +491,8 @@ class OrdenesRepara(Frame):
         lbl_equipo_retirado.grid(row=0, column=6, padx=4, pady=1, sticky=W)
         self.entry_retirado = Entry(self.frame_octavo, textvariable=self.strvar_retirado, width=2)
         self.strvar_retirado.trace("w", lambda *args: self.limitador(self.strvar_retirado, 1))
+        # Esta llamada, convierte la letra que pongo a mayuscula
+        self.strvar_retirado.trace_add("write", self.on_write)
         self.entry_retirado.grid(row=0, column=7, padx=5, pady=1, sticky="nsew")
 
         self.photo3 = Image.open('salida.png')
@@ -518,7 +511,23 @@ class OrdenesRepara(Frame):
     # ESTADOS -*-
     # --------------------------------------------------------------------------------
 
-    def estado_inicial(self, estado):
+    def on_write(self, *args):
+
+        texto = self.strvar_retirado.get()
+        self.strvar_retirado.set(texto.upper())
+
+    def estado_inicial(self):
+
+        # Variables
+        self.filtro_activo = "orden_repara WHERE fin_retirada = 'N' ORDER BY fecha_ingreso ASC"
+        self.var_Id = -1
+        self.alta_modif = 0
+
+        self.limpiar_text()
+        self.estado_botones("normal")
+        self.habilitar_text("disabled")
+
+    def habilitar_text(self, estado):
 
         self.btn_guardar_orden.configure(state=estado)
         self.btn_bus_cli.configure(state=estado)
@@ -543,6 +552,39 @@ class OrdenesRepara(Frame):
         self.grid_orden['selectmode'] = 'browse'
         self.grid_orden.bind("<Double-Button-1>", self.DobleClickGrid)
 
+    def limpiar_text(self):
+
+        self.entry_nombre_cliente.delete(0, END)
+
+        # eston son solo labels de algunos datos mas del cliente
+        self.strvar_codigo_cliente.set(value="0")
+        self.strvar_cli_datosmas.set(value="")
+
+        # tratamiento de nro de orden
+        self.entry_nro_orden.configure(state="normal")
+        self.entry_nro_orden.delete(0, END)
+        self.entry_nro_orden.configure(state="disabled")
+        self.strvar_fecha_ingreso.set(value="")
+        self.strvar_fecha_egreso.set(value="")
+        self.strvar_equ_ingresa.set(value="")
+        self.strvar_equ_accesorios.set(value="")
+        self.strvar_equ_estado.set(value="")
+        self.strvar_cuentas.set(value="")
+        self.strvar_requerido.set(value="")
+        self.strvar_partes.set(value="")
+        self.text_anotaciones.delete('1.0', 'end')
+        self.text_trabajo_realizado.delete('1.0', 'end')
+        self.text_diagnostico.delete('1.0', 'end')
+        self.strvar_presupuesto.set(value="")
+        self.strvar_partes.set(value="")
+        self.strvar_total_partes.set(value="0.00")
+        self.strvar_total_manodeobra.set(value="0.00")
+        self.strvar_retirado.set(value="N")
+        self.strvar_componentes_equipo.set(value="")
+        self.combo_tipo_equipo.set("")
+        self.combo_tipo_equipo.current(0)
+        self.strvar_cli_deuda.set(value="0")
+
     def estado_botones(self, estado):
 
         self.btn_nueva_orden.configure(state=estado)
@@ -555,7 +597,7 @@ class OrdenesRepara(Frame):
         self.btn_estadistica.configure(state=estado)
         self.entry_buscar_orden.configure(state=estado)
 
-    def estado_global(self):
+    def estado_botones_global(self):
 
         self.entry_nombre_cliente.configure(state="normal")
         self.btn_cancelar_orden.configure(state="normal")
@@ -586,39 +628,6 @@ class OrdenesRepara(Frame):
         self.btn_no_retiradas.configure(state="disabled")
         self.btn_estadistica.configure(state="disabled")
 
-    def limpiar_text(self):
-
-        self.entry_nombre_cliente.delete(0, END)
-
-        # eston son solo labels de algunos datos mas del cliente
-        self.strvar_codigo_cliente.set(value="0")
-        self.strvar_cli_datosmas.set(value="")
-
-        # tratamiento de nro de orden
-        self.entry_nro_orden.configure(state="normal")
-        self.entry_nro_orden.delete(0, END)
-        self.entry_nro_orden.configure(state="disabled")
-        self.strvar_fecha_ingreso.set(value="")
-        self.strvar_fecha_egreso.set(value="")
-        self.strvar_equ_ingresa.set(value="")
-        self.strvar_equ_accesorios.set(value="")
-        self.strvar_equ_estado.set(value="")
-        self.strvar_cuentas.set(value="")
-        self.strvar_requerido.set(value="")
-        self.strvar_partes.set(value="")
-        self.text_anotaciones.delete('1.0', 'end')
-        self.text_trabajo_realizado.delete('1.0', 'end')
-        self.text_diagnostico.delete('1.0', 'end')
-        self.strvar_presupuesto.set(value="")
-        self.strvar_partes.set(value="")
-        self.strvar_total_partes.set(value="0.00")
-        self.strvar_total_manodeobra.set(value="0.00")
-        self.strvar_retirado.set(value="")
-        self.strvar_componentes_equipo.set(value="")
-        self.combo_tipo_equipo.set("")
-        self.combo_tipo_equipo.current(0)
-        self.strvar_cli_deuda.set(value="0")
-
     # --------------------------------------------------------------------------------
     # GRILLA -*-
     # --------------------------------------------------------------------------------
@@ -639,11 +648,15 @@ class OrdenesRepara(Frame):
             3- text=row[0] - es el Id de la Tabla (21, 22, 23..."""
 
             # convierto fecha de 2024-12-19 a 19/12/2024
-            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[2], '%Y-%m-%d'))
+            forma_normal_ingreso = fecha_str_reves_normal(self, datetime.strftime(row[2], '%Y-%m-%d %H:%M'),
+                                                          "hora_si")
+            forma_normal_egreso = None
+            if row[3] != None:
+                forma_normal_egreso  = fecha_str_reves_normal(self, datetime.strftime(row[3], '%Y-%m-%d %H:%M'),
+                                                              "hora_si")
 
-            self.grid_orden.insert("", END, tags=color, text=row[0], values=(row[1], forma_normal, row[3],
-                                                                             row[4], row[5], (row[18]+row[17]),
-                                                                             row[18], row[17]))
+            self.grid_orden.insert("", END, tags=color, text=row[0], values=(row[1], forma_normal_ingreso,
+                                    forma_normal_egreso, row[4], row[5], (row[18]+row[17]), row[18], row[17]))
 
         """ get_children() es que obtiene todos los datos. El [0] indica que obtiene el elemento
         correspondiente a ese indice o sea el Id I001, si no le pongo nada, trae todos los Id)
@@ -691,10 +704,9 @@ class OrdenesRepara(Frame):
             self.grid_orden.focus(rg)
             # para que la linea seleccionada no me quede fuera del area visible del treeview
             self.grid_orden.yview(self.grid_orden.index(rg))
-            return
-
-        # En caso de que el parametro sea "" muevo el puntero al final del GRID
-        self.muevo_puntero_topend("END")
+        else:
+            # En caso de que el parametro sea "" muevo el puntero al final del GRID
+            self.muevo_puntero_topend("END")
 
     def llena_grilla2(self, argg2):
 
@@ -719,16 +731,16 @@ class OrdenesRepara(Frame):
 
         self.alta_modif = 1
 
-        # 0 - Desactivar Browse
+        #  Desactivar Browse
         self.grid_orden['selectmode'] = 'none'
         self.grid_orden.bind("<Double-Button-1>", self.fNo_modifique)
 
-        # Ingreso de una nueva orden de reparacion
-        self.estado_global()
+        # Preparo estado de pantalla
+        self.estado_botones_global()
         self.limpiar_text()
         self.entry_nombre_cliente.focus()
 
-        # 2 - traer ultimo numero de orden mas uno para ingresar
+        # traer ultimo numero de orden mas uno para ingresar
         self.entry_nro_orden.configure(state="normal")
         self.entry_nro_orden.insert(0, (int(self.varOrdenes.traer_ultimo(1)) + 1))
         self.entry_nro_orden.configure(state="disabled")
@@ -741,6 +753,7 @@ class OrdenesRepara(Frame):
 
     def fModificar_orden(self):
 
+        # Preparo claves de registros para puntero en el grid posterior
         # Asi obtengo el Id del Grid de donde esta el foco (I006...I002...)
         self.selected = self.grid_orden.focus()
         # Asi obtengo la clave de la base de datos campo Id que no es lo mismo que el otro (numero secuencial
@@ -751,11 +764,12 @@ class OrdenesRepara(Frame):
             messagebox.showwarning("Alerta", "No hay nada seleccionado", parent=self)
             return
 
+        # Preparo variables y estado pantalla
         self.alta_modif = 2
 
         self.var_Id = self.clave  # puede traer -1 , en ese caso seria un alta
 
-        self.estado_global()
+        self.estado_botones_global()
         self.limpiar_text()
 
         # Trae un solo el registro solicitado mediante su ID. Metodo de ordenrepar_ABM.
@@ -812,6 +826,7 @@ class OrdenesRepara(Frame):
     def fEliminar_orden(self):
 
         # ---------------------------------------------------------------------------
+        # Preparo claves para puntero en el GRid
         # selecciono el Id del Tv grid I010, IB020
         self.selected = self.grid_orden.focus()
         self.selected_ant = self.grid_orden.prev(self.selected)
@@ -842,8 +857,10 @@ class OrdenesRepara(Frame):
 
     def fGuardar_orden(self):
 
-        self.strvar_retirado.set(value=(self.strvar_retirado.get().upper()))
+        #self.strvar_retirado.set(value=(self.strvar_retirado.get().upper()))
 
+        # --------------------------------------------------------------------------------
+        # VALIDAR
         # no permito codigo ni nombre de cliente en blanco
         if int(self.strvar_codigo_cliente.get()) == 0 or self.strvar_nombre_cliente.get() == "":
             messagebox.showerror("Cuidado", "Faltan datos de cliente - verifique", parent=self)
@@ -857,7 +874,9 @@ class OrdenesRepara(Frame):
             messagebox.showerror("Cuidado", "El informe de retirada valor no aceptado, solo S o N - "
                                             "verifique", parent = self)
             return
+        # --------------------------------------------------------------------------------
 
+        # Guardo las claves para los punteros
         # guardo el Id del Tv en selected para ubicacion del foco a posteriori - I001, IB10
         self.selected = self.grid_orden.focus()
         # Guardo el Id del registro de la Tabla (no es el mismo que el otro, este puedo verlo en la TABLA - 21, 12..)
@@ -899,17 +918,20 @@ class OrdenesRepara(Frame):
 
             messagebox.showinfo("Aviso", "La modificacion del registro fue exitosa", parent=self)
 
+        # Ordenar estado de pantalla
         self.limpiar_Grid()
         self.limpiar_text()
-        self.estado_inicial("disabled")
+        self.habilitar_text("disabled")
         self.estado_botones("normal")
 
+        # Acomodar punteros en el GRID
         if self.alta_modif == 1:
             ultimo_tabla_id = self.varOrdenes.traer_ultimo(0)
             self.llena_grilla(ultimo_tabla_id)
         elif self.alta_modif == 2:
             self.llena_grilla(self.clave)
 
+        # Cierre
         self.alta_modif = 0
         self.btn_nueva_orden.focus()
 
@@ -923,7 +945,7 @@ class OrdenesRepara(Frame):
         if r == messagebox.YES:
             self.limpiar_text()
             self.estado_botones("normal")
-            self.estado_inicial("disabled")
+            self.habilitar_text("disabled")
 
     def fSalir(self):
         self.master.destroy()
@@ -945,20 +967,20 @@ class OrdenesRepara(Frame):
 
     def fShowall(self):
 
-        self.filtro_activo = "orden_repara ORDER by num_orden ASC"
+        self.filtro_activo = "orden_repara ORDER by fecha_ingreso ASC"
         self.limpiar_Grid()
         self.llena_grilla("")
 
     def fNoretiradas(self):
 
-        self.filtro_activo = "orden_repara WHERE fin_retirada = 'N' ORDER BY num_orden ASC"
+        self.filtro_activo = "orden_repara WHERE fin_retirada = 'N' ORDER BY fecha_ingreso ASC"
         self.limpiar_Grid()
         self.llena_grilla("")
 
     def fEstadistica(self):
 
         self.filtro_anterior = self.filtro_activo
-        self.filtro_activo = "orden_repara ORDER BY num_orden"
+        self.filtro_activo = "orden_repara ORDER BY fecha_ingreso"
 
         datos = self.varOrdenes.consultar_ordenes(self.filtro_activo)
 
@@ -1007,9 +1029,9 @@ class OrdenesRepara(Frame):
 
         # muestro la imagen en el frame
         self.lbl_total_ordenes1 = Label(self.pantalla_estad, text="Total ordenes: ", bg="light blue",
-                                        relief=RIDGE, bd=5)
+                                        relief="ridge", bd=5)
         self.lbl_total_ordenes2 = Label(self.pantalla_estad, textvariable=self.strvar_estad_total, bg="plum1",
-                                        relief=RIDGE, bd=5)
+                                        relief="ridge", bd=5)
         self.lbl_pendi_ordenes1 = Label(self.pantalla_estad, text="Ordenes pendientes: ", bg="light blue",
                                         relief=RIDGE, bd=5)
         self.lbl_pendi_ordenes2 = Label(self.pantalla_estad, textvariable=self.strvar_estad_pendi, bg="plum1",
@@ -1041,7 +1063,6 @@ class OrdenesRepara(Frame):
         for widg in self.pantalla_estad.winfo_children():
             widg.grid_configure(padx=5, pady=3, sticky='nsew')
 
-        #self.lbl_total_ordenes.pack(expand=1, side=TOP, fill=BOTH, pady=2, padx=2)
         self.pantalla_estad.grab_set()
         self.pantalla_estad.focus_set()
 
@@ -1105,21 +1126,22 @@ class OrdenesRepara(Frame):
 
     def fFiltrar_orden(self):
 
-        if len(self.strvar_buscar_orden.get()) > 0:
-            se_busca = self.strvar_buscar_orden.get()
-
-            self.filtro_activo = "orden_repara WHERE INSTR(nombre_cliente, '" + se_busca + "') > 0" \
-                                 + " OR " + "INSTR(equ_descripcion, '" + se_busca + "') > 0" \
-                                 + " OR " + "INSTR(equ_grupo, '" + se_busca + "') > 0" \
-                                 + " OR " + "INSTR(det_equipo, '" + se_busca + "') > 0"
-
-            self.retorno = self.varOrdenes.buscar_entabla(self.filtro_activo)
-
-            self.limpiar_Grid()
-            self.llena_grilla2(self.filtro_activo)
-        else:
+        if len(self.strvar_buscar_orden.get()) <= 0:
             messagebox.showwarning("Alerta", "No ingreso busqueda", parent=self)
             self.entry_buscar_orden.focus()
+            return
+
+        se_busca = self.strvar_buscar_orden.get()
+
+        self.filtro_activo = "orden_repara WHERE INSTR(nombre_cliente, '" + se_busca + "') > 0" \
+                             + " OR " + "INSTR(equ_descripcion, '" + se_busca + "') > 0" \
+                             + " OR " + "INSTR(equ_grupo, '" + se_busca + "') > 0" \
+                             + " OR " + "INSTR(det_equipo, '" + se_busca + "') > 0"
+
+        self.retorno = self.varOrdenes.buscar_entabla(self.filtro_activo)
+
+        self.limpiar_Grid()
+        self.llena_grilla2(self.filtro_activo)
 
     # ----------------------------------------------------------------------------
     # CALCULOS -*-

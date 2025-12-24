@@ -1,13 +1,3 @@
-#--------------------------------------------------
-# GRID
-# ESTADOS
-# CRUD
-# VARIAS
-# BUSQUEDAS
-# CALCULOS
-# SEL
-# PUNTEROS
-#--------------------------------------------------
 from funciones import *
 from funcion_new import *
 from planilla_caja_ABM import datosPlanilla
@@ -29,17 +19,16 @@ class PlaniCaja(Frame):
         super().__init__(master, width=880, height=510)
         self.master = master
 
-        # ---------------------------------------------------------------------------------
-        # Instanciaciones
+        self.master.grab_set()
+        self.master.focus_set()
 
+        # ---------------------------------------------------------------------------------
         """ Creo una instancia de la clase en _ABM que le corresponde. Le paso la pantalla para poder usar los parent 
         en los messagebox. A varFuncion_new, le paso tambien la pantalla por el mismo motivo y ademas debo pasarle 
         la variable instanciada con el _ABM, de esa manera tambien le paso a funcion la instanciacion de clase del 
         _ABM y asi puede usar los metods que estan en el _ABM """
 
-        self.master.grab_set()
-        self.master.focus_set()
-
+        # Instanciaciones
         self.varPlanilla = datosPlanilla(self.master)
         self.varFuncion_new = ClaseFuncion_new(self.master)
         # ---------------------------------------------------------------------------------
@@ -70,14 +59,27 @@ class PlaniCaja(Frame):
 
         # ------------------------------------------------------------------------------
         """ PROCEDIMIENTO PARA QUE QUEDE MOSTRANDO LA ULTIMA PLANILLA CARGADA - Obtengo la fecha de la ultima 
-        planilla cargada filtrar la tabla (en str pero al reves YYY-mm-dd) """
+        planilla cargada y la filtro  (viene  como date asi YYY-mm-dd). Aca defino por primera vez filtro_activo.
+        self.filtro_activo =  'planicaja WHERE CAST(pl_fecha AS date) = CAST('" + self.ultima_fecha + "' AS date)' """
+
         self.obtener_fecha_inicial()
         # ------------------------------------------------------------------------------
 
         # ------------------------------------------------------------------------------
         self.create_widgets()
+
+        self.estado_inicial()
+
+        self.habilitar_text()
+
         self.llena_grilla("")
         # ------------------------------------------------------------------------------
+
+        # # guarda en item el Id del elemento fila en este caso fila 0
+        # item = self.grid_planilla.identify_row(0)
+        # self.grid_planilla.selection_set(item)
+        # # pone el foco en el item seleccionado
+        # self.grid_planilla.focus(item)
 
         """ La función Treeview.selection() retorna una tupla con los ID de los elementos seleccionados o una
         tupla vacía en caso de no haber ninguno
@@ -86,16 +88,6 @@ class PlaniCaja(Frame):
         selection_remove(): remueve elementos de la selección.
         selection_set(): similar a selection_add(), pero remueve los elementos previamente seleccionados.
         selection_toggle(): cambia la selección de un elemento. """
-
-        # guarda en item el Id del elemento fila en este caso fila 0
-        item = self.grid_planilla.identify_row(0)
-        self.grid_planilla.selection_set(item)
-        # pone el foco en el item seleccionado
-        self.grid_planilla.focus(item)
-
-        # ---------------------------------------------------------------------------
-        self.estado_inicial()
-        # ---------------------------------------------------------------------------
 
     # ---------------------------------------------------------------------------
     #  WIDGETS
@@ -115,25 +107,25 @@ class PlaniCaja(Frame):
         self.photo3 = self.photo3.resize((50, 50), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.png_ventas = ImageTk.PhotoImage(self.photo3)
         self.lbl_png_ventas = Label(self.frame_titulo_top, image=self.png_ventas, bg="red", relief=RIDGE, bd=5)
-
         self.lbl_titulo = Label(self.frame_titulo_top, width=52, text="Planilla de Caja",
                                 bg="black", fg="gold", font=("Arial bold", 20, "bold"), bd=5, relief=RIDGE, padx=5)
 
         # Coloco logo y titulo en posicion de pantalla
         self.lbl_png_ventas.grid(row=0, column=0, sticky=W, padx=5, ipadx=22)
         self.lbl_titulo.grid(row=0, column=1, sticky="nsew")
-        self.frame_titulo_top.pack(side=TOP, fill=X, padx=5, pady=2)
+        self.frame_titulo_top.pack(side="top", fill="x", padx=5, pady=2)
         # ---------------------------------------------------------------------------------
 
         # ---------------------------------------------------------------------------------
         # VARIABLES GENERALES
         # ---------------------------------------------------------------------------------
 
-        self.alta_modif = 0
-        self.dato_seleccion = ""
-        self.retorno = ""
         #vcmd = (self.varFuncion_new.validar, '%P')
         vcmd = (self.register(self.varFuncion_new.validar), "%P")
+
+        # self.alta_modif = 0
+        # self.dato_seleccion = ""
+        # self.retorno = ""
         # ---------------------------------------------------------------------------------
 
         # ---------------------------------------------------------------------------------
@@ -214,47 +206,47 @@ class PlaniCaja(Frame):
 
         self.grid_planilla.bind("<Double-Button-1>", self.DobleClickGrid_pla)
 
-        self.grid_planilla.column("#0", width=40, anchor=CENTER, minwidth=60)
-        self.grid_planilla.column("col1", width=80, anchor=CENTER, minwidth=70)
-        self.grid_planilla.column("col2", width=100, anchor=CENTER, minwidth=80)
-        self.grid_planilla.column("col3", width=350, anchor=CENTER, minwidth=250)
-        self.grid_planilla.column("col4", width=30, anchor=CENTER, minwidth=60)
-        self.grid_planilla.column("col5", width=100, anchor=CENTER, minwidth=80)
-        self.grid_planilla.column("col6", width=100, anchor=CENTER, minwidth=80)
-        self.grid_planilla.column("col7", width=100, anchor=CENTER, minwidth=80)
-        self.grid_planilla.column("col8", width=100, anchor=CENTER, minwidth=80)
-        self.grid_planilla.column("col9", width=100, anchor=CENTER, minwidth=80)
-        self.grid_planilla.column("col10", width=100, anchor=CENTER, minwidth=80)
-        self.grid_planilla.column("col11", width=150, anchor=CENTER, minwidth=150)
-        self.grid_planilla.column("col12", width=150, anchor=CENTER, minwidth=100)
-        self.grid_planilla.column("col13", width=150, anchor=CENTER, minwidth=250)
-        self.grid_planilla.column("col14", width=100, anchor=CENTER, minwidth=250)
-        self.grid_planilla.column("col15", width=100, anchor=CENTER, minwidth=250)
-        self.grid_planilla.column("col16", width=100, anchor=CENTER, minwidth=80)
-        self.grid_planilla.column("col17", width=100, anchor=CENTER, minwidth=80)
-        self.grid_planilla.column("col18", width=100, anchor=CENTER, minwidth=80)
-        self.grid_planilla.column("col10", width=100, anchor=CENTER, minwidth=80)
+        self.grid_planilla.column("#0", width=40, anchor="center", minwidth=60)
+        self.grid_planilla.column("col1", width=80, anchor="center", minwidth=70)
+        self.grid_planilla.column("col2", width=100, anchor="center", minwidth=80)
+        self.grid_planilla.column("col3", width=350, anchor="center", minwidth=250)
+        self.grid_planilla.column("col4", width=30, anchor="center", minwidth=60)
+        self.grid_planilla.column("col5", width=100, anchor="center", minwidth=80)
+        self.grid_planilla.column("col6", width=100, anchor="center", minwidth=80)
+        self.grid_planilla.column("col7", width=100, anchor="center", minwidth=80)
+        self.grid_planilla.column("col8", width=100, anchor="center", minwidth=80)
+        self.grid_planilla.column("col9", width=100, anchor="center", minwidth=80)
+        self.grid_planilla.column("col10", width=100, anchor="center", minwidth=80)
+        self.grid_planilla.column("col11", width=150, anchor="center", minwidth=150)
+        self.grid_planilla.column("col12", width=150, anchor="center", minwidth=100)
+        self.grid_planilla.column("col13", width=150, anchor="center", minwidth=250)
+        self.grid_planilla.column("col14", width=100, anchor="center", minwidth=250)
+        self.grid_planilla.column("col15", width=100, anchor="center", minwidth=250)
+        self.grid_planilla.column("col16", width=100, anchor="center", minwidth=80)
+        self.grid_planilla.column("col17", width=100, anchor="center", minwidth=80)
+        self.grid_planilla.column("col18", width=100, anchor="center", minwidth=80)
+        self.grid_planilla.column("col10", width=100, anchor="center", minwidth=80)
 
-        self.grid_planilla.heading("#0", text="Id", anchor=CENTER)
-        self.grid_planilla.heading("col1", text="Fecha", anchor=CENTER)
-        self.grid_planilla.heading("col2", text="Tipo Mov.", anchor=CENTER)
-        self.grid_planilla.heading("col3", text="Detalle", anchor=CENTER)
-        self.grid_planilla.heading("col4", text="Cant.", anchor=CENTER)
-        self.grid_planilla.heading("col5", text="Ingresos(I)", anchor=CENTER)
-        self.grid_planilla.heading("col6", text="Total Ingresos", anchor=CENTER)
-        self.grid_planilla.heading("col7", text="Egresos(E)", anchor=CENTER)
-        self.grid_planilla.heading("col8", text="Costos", anchor=CENTER)
-        self.grid_planilla.heading("col9", text="Pagos CtaCte(I)", anchor=CENTER)
-        self.grid_planilla.heading("col10", text="Compras(E)", anchor=CENTER)
-        self.grid_planilla.heading("col11", text="Cliente", anchor=CENTER)
-        self.grid_planilla.heading("col12", text="Tipo pago", anchor=CENTER)
-        self.grid_planilla.heading("col13", text="Detalle pago", anchor=CENTER)
-        self.grid_planilla.heading("col14", text="Garantia", anchor=CENTER)
-        self.grid_planilla.heading("col15", text="Observaciones", anchor=CENTER)
-        self.grid_planilla.heading("col16", text="Proveedor", anchor=CENTER)
-        self.grid_planilla.heading("col17", text="CtaCte", anchor=CENTER)
-        self.grid_planilla.heading("col18", text="ClaveMov", anchor=CENTER)
-        self.grid_planilla.heading("col19", text="Codigo Cliente", anchor=CENTER)
+        self.grid_planilla.heading("#0", text="Id", anchor="center")
+        self.grid_planilla.heading("col1", text="Fecha", anchor="center")
+        self.grid_planilla.heading("col2", text="Tipo Mov.", anchor="center")
+        self.grid_planilla.heading("col3", text="Detalle", anchor="center")
+        self.grid_planilla.heading("col4", text="Cant.", anchor="center")
+        self.grid_planilla.heading("col5", text="Ingresos(I)", anchor="center")
+        self.grid_planilla.heading("col6", text="Total Ingresos", anchor="center")
+        self.grid_planilla.heading("col7", text="Egresos(E)", anchor="center")
+        self.grid_planilla.heading("col8", text="Costos", anchor="center")
+        self.grid_planilla.heading("col9", text="Pagos CtaCte(I)", anchor="center")
+        self.grid_planilla.heading("col10", text="Compras(E)", anchor="center")
+        self.grid_planilla.heading("col11", text="Cliente", anchor="center")
+        self.grid_planilla.heading("col12", text="Tipo pago", anchor="center")
+        self.grid_planilla.heading("col13", text="Detalle pago", anchor="center")
+        self.grid_planilla.heading("col14", text="Garantia", anchor="center")
+        self.grid_planilla.heading("col15", text="Observaciones", anchor="center")
+        self.grid_planilla.heading("col16", text="Proveedor", anchor="center")
+        self.grid_planilla.heading("col17", text="CtaCte", anchor="center")
+        self.grid_planilla.heading("col18", text="ClaveMov", anchor="center")
+        self.grid_planilla.heading("col19", text="Codigo Cliente", anchor="center")
 
         # SCROLLBAR del Treeview
         scroll_x = Scrollbar(self.frame_tvw_planilla, orient="horizontal")
@@ -625,7 +617,7 @@ class PlaniCaja(Frame):
         for widg in self.frame_totales.winfo_children():
             widg.grid_configure(padx=4, pady=1, sticky='nsew')
 
-        self.frame_totales.pack(side=TOP, fill=BOTH, expand=0, padx=5, pady=2)
+        self.frame_totales.pack(side="top", fill="both", expand=0, padx=5, pady=2)
 
     # ---------------------------------------------------------------------------------
     # GRID
@@ -657,10 +649,10 @@ class PlaniCaja(Frame):
         for row in datos:
 
             # convierto fecha de 2024-12-19 a 19/12/2024
-            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[1], '%Y-%m-%d'))
+            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[1], '%Y-%m-%d'), "hora_no")
 
             # cargo la grilla
-            self.grid_planilla.insert("", END, text=row[0], values=(forma_normal, row[2], row[3], row[4], row[5],
+            self.grid_planilla.insert("", "end", text=row[0], values=(forma_normal, row[2], row[3], row[4], row[5],
                                                                     round((row[4]*row[5]), 2), row[6], row[7], row[8],
                                                                     row[9], row[10], row[11], row[12], row[13], row[14],
                                                                     row[15], row[16], row[17], row[18]))
@@ -730,10 +722,8 @@ class PlaniCaja(Frame):
             self.grid_planilla.focus(rg)
             # para que la linea seleccionada no me quede fuera del area visible del treeview
             self.grid_planilla.yview(self.grid_planilla.index(rg))
-            return
-
-        # En caso de que el parametro sea "" muevo el puntero al final del GRID
-        self.mover_puntero_topend("END")
+        else:
+            self.mover_puntero_topend("END")
 
     def filtrar_grilla(self, fecha_filtrar):
 
@@ -759,6 +749,7 @@ class PlaniCaja(Frame):
 
         self.reset_stringvars()
         self.estado_inicial()
+        self.habilitar_text()
         self.btn_nuevoitem.focus()
 
     def fReset(self):
@@ -766,15 +757,21 @@ class PlaniCaja(Frame):
         r = messagebox.askquestion("Reset", "Confirma -reset- operacion actual?", parent=self)
         if r == messagebox.YES:
             self.reset_stringvars()
+            self.estado_inicial()
             self.obtener_fecha_inicial()
             # coloco en la variable fecha de planilla la fecha de la ultima planilla cargada
             self.strvar_fecha_planilla.set(value=self.fecha_aux)
             self.limpiar_Grid()
             self.llena_grilla("")
-            self.estado_inicial()
+            self.habilitar_text()
             self.btn_nuevoitem.focus()
 
     def estado_inicial(self):
+
+        self.alta_modif = 0
+        self.retorno = ""
+
+    def habilitar_text(self):
 
         # 1 - "Entry busqueda" y botones "Buscar" y "Mostrar all" =>activos
         self.entry_buscar_movim.configure(state="normal")
@@ -1060,8 +1057,6 @@ class PlaniCaja(Frame):
 
     def fEditaItem(self):
 
-        self.alta_modif = 2
-
         # Asi obtengo el Id del Grid de donde esta el foco (I006...I002...)
         self.selected = self.grid_planilla.focus()
         # Asi obtengo la clave de la Tabla campo Id que no es lo mismo que el otro (numero secuencial
@@ -1072,6 +1067,7 @@ class PlaniCaja(Frame):
             messagebox.showwarning("Modificar", "No hay nada seleccionado", parent=self)
             return
 
+        self.alta_modif = 2
         self.var_Id = self.clave  # puede traer -1 , en ese caso seria un alta
 
         self.estado_boton_nuevo()
@@ -1088,7 +1084,7 @@ class PlaniCaja(Frame):
 
         for row in valores:
 
-            fecha_convertida = fecha_str_reves_normal(self, datetime.strftime(row[1], "%Y-%m-%d"))
+            fecha_convertida = fecha_str_reves_normal(self, datetime.strftime(row[1], "%Y-%m-%d"), "hora_no")
             self.strvar_fecha_planilla.set(value=fecha_convertida)
             self.strvar_tipomov.set(value=row[2])
             self.strvar_detalle_movim.set(value=row[3])
@@ -1394,7 +1390,7 @@ class PlaniCaja(Frame):
             self.limpiar_Grid()
             self.reset_stringvars()
 
-            self.estado_inicial()
+            self.habilitar_text()
 
             if self.alta_modif == 1:
                 ultimo_tabla_id = self.varPlanilla.traer_ultimo(0)
@@ -1486,7 +1482,7 @@ class PlaniCaja(Frame):
 
         if self.ultima_fecha != 0:
             # Esta funcion la pasa a formato str pero al derecho normal de 2024-12-19 a 19/12/2024 esta en funciones
-            self.fecha_aux = fecha_str_reves_normal(self, self.ultima_fecha)
+            self.fecha_aux = fecha_str_reves_normal(self, self.ultima_fecha, "hora_no")
         else:
             # paso la fecha de hoy a string y la asigno a ultima fecha porque no hay otra
             self.fecha_aux = date.today().strftime('%d/%m/%Y')
@@ -1659,7 +1655,7 @@ class PlaniCaja(Frame):
 
         valores_new = self.varFuncion_new.ventana_selec("clientes", "apenombre", "codigo",
                       "direccion", "Apellido y nombre", "Codigo", "Direccion", que_busco,
-                                                        "Orden: Alfabetico cliente", "N")
+                        "Orden: Alfabetico cliente", "N")
 
         """ Esto es ya iterar sobre lo que me devuelve la funcion de seleccion para asignar ya los valores a 
         los Entrys correspondientes. """
@@ -1832,12 +1828,6 @@ class PlaniCaja(Frame):
 
     def fFinarch(self):
         self.mover_puntero_topend('END')
-
-
-
-
-
-
 
 
 

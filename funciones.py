@@ -195,14 +195,23 @@ def mensajes_error_fechas(self, tipo_error):
 """
 Toma una fecha al reves y la pone normal de 2024-12-19 a 19/12/2024
 La fecha debe venir como string en parametro -par-
+Puedo retornar la fecha con la hora o sola
 """
-def fecha_str_reves_normal(self, par):
+def fecha_str_reves_normal(self, par, con_hora):
 
-    # paso a date pero sigue al reves
-    date_al_reves = datetime.strptime(par, '%Y-%m-%d')
-    # paso otra vez a str pero ahora al derecha
-    str_al_derecho = date_al_reves.strftime('%d/%m/%Y')
+    if con_hora == "hora_si":
+        # paso a date pero sigue al reves
+        date_al_reves = datetime.strptime(par, '%Y-%m-%d %H:%M')
+        # paso otra vez a str pero ahora al derecha
+        str_al_derecho = date_al_reves.strftime('%d/%m/%Y %H:%M')
+    else:
+        # paso a date pero sigue al reves
+        date_al_reves = datetime.strptime(par, '%Y-%m-%d')
+        # paso otra vez a str pero ahora al derecha
+        str_al_derecho = date_al_reves.strftime('%d/%m/%Y')
+
     return str_al_derecho
+
 
 """
 Asigno la fecha que ingreso como buena - si algo esta mal va a retornar error por controles
