@@ -128,15 +128,37 @@ class clase_inf_tecnicos_ABM:
         cur.close()
         return n
 
-    # def buscar_entabla(self, argumento):
-    #
-    #     cur = self.cnn.cursor()
-    #     if len(argumento) <= 0:
-    #         return
-    #
-    #     cur.execute("SELECT * FROM " + argumento)
-    #
-    #     datos = cur.fetchall()
-    #     self.cnn.commit()
-    #     cur.close()
-    #     return datos
+    def traer_ultimo(self, xparametro):
+
+        # Trae el último código de cliente en la tabla para proponer el nuevo número en alta
+
+        try:
+            cur = self.cnn.cursor()
+            cur.execute("SELECT * FROM inf_tecnicos ORDER BY id ASC")
+            datos = cur.fetchall()
+            aux = ""
+            for row in datos:
+                if xparametro == 1:
+                    aux = str(row[1]) + "\n" # retorna el codigo
+                else:
+                    aux = str(row[0]) + "\n" # retorna el Id
+            self.cnn.commit()
+            cur.close()
+            return aux
+        except:
+            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=traer ultimo",
+                                 parent=self.master)
+            exit()
+
+    def buscar_entabla(self, argumento):
+
+        cur = self.cnn.cursor()
+        if len(argumento) <= 0:
+            return
+
+        cur.execute("SELECT * FROM " + argumento)
+
+        datos = cur.fetchall()
+        self.cnn.commit()
+        cur.close()
+        return datos

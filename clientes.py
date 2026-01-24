@@ -118,7 +118,7 @@ class Ventana(Frame):
         # BOTONES NUEVO - ELIMINAR - EDITAR - GUARDAR - CANCELAR
         barra_botones = LabelFrame(self.master)
 
-        botones1 = LabelFrame(barra_botones, bd=5, relief=RIDGE)
+        botones1 = LabelFrame(barra_botones, bd=5, relief="ridge")
 
         # Instalacion botones
         self.btnNuevo=Button(botones1, text="Nuevo", command=self.fNuevo, bg="blue", fg="white", width=10)
@@ -132,7 +132,7 @@ class Ventana(Frame):
         self.btnCancelar=Button(botones1, text="Cancelar", command=self.fCancelar, bg="black", fg="white", width=10)
         self.btnCancelar.grid(row=4, column=0, padx=5, pady=3, columnspan=2)
 
-        botones1.pack(side=TOP, padx=3, pady=3, fill=Y)
+        botones1.pack(side="top", padx=3, pady=3, fill="y")
 
         # BOTONES ORDEN - TOPE Y FIN DE ARCHIVO
         botones2 = LabelFrame(barra_botones, bd=5, relief=RIDGE)
@@ -180,12 +180,12 @@ class Ventana(Frame):
         self.lbl_cant_clientes.grid(row=0, column=0, padx=5, pady=3, columnspan=2, sticky='nsew')
         self.lbl_cant_clientes1.grid(row=1, column=0, padx=5, pady=3, columnspan=2, sticky='nsew')
 
-        botones4.pack(side=TOP, padx=3, pady=3, fill=Y)
+        botones4.pack(side="top", padx=3, pady=3, fill="y")
         # --------------------------------------------------------------------------
 
         # --------------------------------------------------------------------------
         # PACK - frame de botones
-        barra_botones.pack(side=LEFT, padx=10, pady=5, ipady=5, fill=Y)
+        barra_botones.pack(side="left", padx=10, pady=5, ipady=5, fill="y")
         # --------------------------------------------------------------------------
 
         # --------------------------------------------------------------------------
@@ -223,50 +223,50 @@ class Ventana(Frame):
 
         self.grid_clientes.bind("<Double-Button-1>", self.DobleClickGrid)
 
-        self.grid_clientes.column("#0", width=60, anchor=CENTER)
-        self.grid_clientes.column("col1", width=60, anchor=CENTER)
-        self.grid_clientes.column("col2", width=180, anchor=W)
-        self.grid_clientes.column("col3", width=220, anchor=W)
-        self.grid_clientes.column("col4", width=220, anchor=W)
-        self.grid_clientes.column("col5", width=120, anchor=CENTER)
-        self.grid_clientes.column("col6", width=90, anchor=CENTER)
-        self.grid_clientes.column("col7", width=60, anchor=CENTER)
-        self.grid_clientes.column("col8", width=200, anchor=CENTER)
-        self.grid_clientes.column("col9", width=200, anchor=CENTER)
-        self.grid_clientes.column("col10", width=200, anchor=CENTER)
-        self.grid_clientes.column("col11", width=150, anchor=CENTER)
-        self.grid_clientes.column("col12", width=100, anchor=CENTER)
-        self.grid_clientes.column("col13", width=100, anchor=CENTER)
-        self.grid_clientes.column("col14", width=200, anchor=CENTER)
+        self.grid_clientes.column("#0", width=60, anchor="center")
+        self.grid_clientes.column("col1", width=60, anchor="center")
+        self.grid_clientes.column("col2", width=180, anchor="w")
+        self.grid_clientes.column("col3", width=220, anchor="w")
+        self.grid_clientes.column("col4", width=220, anchor="w")
+        self.grid_clientes.column("col5", width=120, anchor="center")
+        self.grid_clientes.column("col6", width=90, anchor="center")
+        self.grid_clientes.column("col7", width=60, anchor="center")
+        self.grid_clientes.column("col8", width=200, anchor="center")
+        self.grid_clientes.column("col9", width=200, anchor="center")
+        self.grid_clientes.column("col10", width=200, anchor="center")
+        self.grid_clientes.column("col11", width=150, anchor="center")
+        self.grid_clientes.column("col12", width=100, anchor="center")
+        self.grid_clientes.column("col13", width=100, anchor="center")
+        self.grid_clientes.column("col14", width=200, anchor="center")
 
-        self.grid_clientes.heading("#0", text="Id", anchor=CENTER)
-        self.grid_clientes.heading("col1", text="Codigo", anchor=CENTER)
-        self.grid_clientes.heading("col2", text="Apellido", anchor=CENTER)
-        self.grid_clientes.heading("col3", text="Nombres", anchor=CENTER)
-        self.grid_clientes.heading("col4", text="Direccion", anchor=CENTER)
-        self.grid_clientes.heading("col5", text="Localidad", anchor=CENTER)
-        self.grid_clientes.heading("col6", text="Provincia", anchor=CENTER)
-        self.grid_clientes.heading("col7", text="Postal", anchor=CENTER)
-        self.grid_clientes.heading("col8", text="Telf.Personal", anchor=CENTER)
-        self.grid_clientes.heading("col9", text="Telf.Trabajo", anchor=CENTER)
-        self.grid_clientes.heading("col10", text="E-mail", anchor=CENTER)
-        self.grid_clientes.heading("col11", text="Sit.Fiscal", anchor=CENTER)
-        self.grid_clientes.heading("col12", text="CUIT", anchor=CENTER)
-        self.grid_clientes.heading("col13", text="Fec.Ingreso", anchor=CENTER)
-        self.grid_clientes.heading("col14", text="Observaciones", anchor=CENTER)
+        self.grid_clientes.heading("#0", text="Id", anchor="center")
+        self.grid_clientes.heading("col1", text="Codigo", anchor="center")
+        self.grid_clientes.heading("col2", text="Apellido", anchor="center")
+        self.grid_clientes.heading("col3", text="Nombres", anchor="center")
+        self.grid_clientes.heading("col4", text="Direccion", anchor="center")
+        self.grid_clientes.heading("col5", text="Localidad", anchor="center")
+        self.grid_clientes.heading("col6", text="Provincia", anchor="center")
+        self.grid_clientes.heading("col7", text="Postal", anchor="center")
+        self.grid_clientes.heading("col8", text="Telf.Personal", anchor="center")
+        self.grid_clientes.heading("col9", text="Telf.Trabajo", anchor="center")
+        self.grid_clientes.heading("col10", text="E-mail", anchor="center")
+        self.grid_clientes.heading("col11", text="Sit.Fiscal", anchor="center")
+        self.grid_clientes.heading("col12", text="CUIT", anchor="center")
+        self.grid_clientes.heading("col13", text="Fec.Ingreso", anchor="center")
+        self.grid_clientes.heading("col14", text="Observaciones", anchor="center")
 
         self.grid_clientes.tag_configure('oddrow', background='light grey')
         self.grid_clientes.tag_configure('evenrow', background='white')
 
         # SCROLLBAR del Treeview
-        scroll_x = Scrollbar(self.frame_tv, orient=HORIZONTAL)
-        scroll_y = Scrollbar(self.frame_tv, orient=VERTICAL)
+        scroll_x = Scrollbar(self.frame_tv, orient="horizontal")
+        scroll_y = Scrollbar(self.frame_tv, orient="vertical")
         self.grid_clientes.config(xscrollcommand=scroll_x.set)
         self.grid_clientes.config(yscrollcommand=scroll_y.set)
         scroll_x.config(command=self.grid_clientes.xview)
         scroll_y.config(command=self.grid_clientes.yview)
-        scroll_y.pack(side=RIGHT, fill=Y)
-        scroll_x.pack(side=BOTTOM, fill=X)
+        scroll_y.pack(side="right", fill="y")
+        scroll_x.pack(side="bottom", fill="x")
         # -------------------------------------------------------------------------
 
         # -------------------------------------------------------------------------
@@ -374,7 +374,7 @@ class Ventana(Frame):
         self.entry_observaciones.grid(row=6, column=3, padx=10, pady=3, sticky=W)
 
         # PACK del frame "sector_entry"
-        self.sector_entry.pack(expand=1, fill=BOTH, pady=5, padx=5)
+        self.sector_entry.pack(expand=1, fill="both", pady=5, padx=5)
         # --------------------------------------------------------------------------
 
     # --------------------------------------------------------------------------

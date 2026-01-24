@@ -25,7 +25,9 @@ class datosGarantias:
 
     def consultar_garantia(self, tofil):
 
-        try:
+#        try:
+        xx = 0
+        if xx == 0:
             cur = self.cnn.cursor()
             cur.execute("SELECT * FROM " + tofil)
             # para recuperar todas filas de una tabla de base de datos
@@ -33,7 +35,8 @@ class datosGarantias:
             self.cnn.commit()
             cur.close()
             return datos
-        except:
+        else:
+#        except:
             messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo-Consultar garantia-", parent=self.master)
             exit()
 

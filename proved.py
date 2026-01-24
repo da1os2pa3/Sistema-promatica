@@ -409,7 +409,7 @@ class Ventproved(Frame):
         for row in datos:
 
             # convierto fecha de 2024-12-19 a 19/12/2024
-            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[10], '%Y-%m-%d'))
+            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[10], '%Y-%m-%d'), "hora_no")
 
             cont += 1
             color = ('evenrow',) if cont % 2 else ('oddrow',)
@@ -620,7 +620,7 @@ class Ventproved(Frame):
             self.entry_telefono2.insert(0, row[8])
             self.entry_mail.insert(0, row[9])
 
-            fecha_convertida = fecha_str_reves_normal(self, datetime.strftime(row[10], "%Y-%m-%d"))
+            fecha_convertida = fecha_str_reves_normal(self, datetime.strftime(row[10], "%Y-%m-%d"), "hora_no")
             self.entry_fecha_alta.insert(0, fecha_convertida)
             self.entry_contacto.insert(0, row[11])
             self.entry_observaciones.insert(0, row[12])

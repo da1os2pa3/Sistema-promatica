@@ -2,6 +2,103 @@
 # ================ METODOS POTENCIALES QUE FUI VIENDO Y PUEDEN SER UTILES =========================
 # =================================================================================================
 
+
+""" FORMATEAR COLUMNAS EN UN GRID DE BOTONES
+
+📌 Código
+for c in range(7):
+    self.frame_botones_grid.grid_columnconfigure(c, weight=1, minsize=140)
+
+🔹 1️⃣ for c in range(7):
+
+Esto es un bucle que se repite 7 veces.
+
+range(7) genera: 0, 1, 2, 3, 4, 5, 6
+
+Cada valor representa el número de columna en el grid
+
+👉 O sea: vas a configurar las columnas 0 a la 6 del frame.
+
+🔹 2️⃣ self.frame_botones_grid
+
+Es el Frame (o LabelFrame) donde tenés los botones.
+
+grid_columnconfigure no se aplica a los botones,
+se aplica al contenedor que usa grid.
+
+🔹 3️⃣ grid_columnconfigure(c, ...)
+
+Este método configura cómo se comporta una columna del grid.
+
+c → número de columna
+
+lo que pongas acá afecta a todos los widgets que estén en esa columna
+
+🔹 4️⃣ weight=1
+
+👉 Significa:
+
+Esta columna puede crecer cuando sobra espacio.
+
+weight=0 (default) → no se estira
+
+weight=1 → se estira
+
+todas con 1 → crecen por igual
+
+📌 En tu caso:
+
+las 7 columnas crecen igual
+
+los botones quedan del mismo ancho
+
+🔹 5️⃣ minsize=140
+
+👉 Significa:
+
+Esta columna nunca será más chica que 140 píxeles.
+
+Aunque el botón sea chico o tenga una imagen pequeña:
+
+la columna no se achica
+
+el botón ocupa ese ancho con sticky="nsew"
+
+🧠 Qué logra TODO JUNTO
+Parte	Efecto
+range(7)	configura las 7 columnas
+minsize=140	ancho mínimo fijo
+weight=1	columnas elásticas
+sticky="nsew"	botón llena la celda
+
+👉 Resultado final:
+
+botones del mismo tamaño
+
+imagen + texto sin achicarse
+
+interfaz prolija y escalable
+
+📦 Analogía simple
+
+Pensalo como 7 cajones:
+
+cada cajón mide mínimo 140 px
+
+si sobra lugar, todos se agrandan igual
+
+el botón se estira para llenar su cajón
+
+Si querés, después te explico:
+
+rowconfigure
+
+sticky
+
+o cómo dejar una columna fija y las otras no
+"""
+
+
 # formatear_cifra en funcion
 # numero = total_pesos_mesactual
 # salida1 = "{:,.2f}".format(numero)

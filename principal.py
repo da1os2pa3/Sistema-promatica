@@ -1,29 +1,31 @@
 """ Este es el modulo menu principal desde donde accedemos a cada ABM y proceso del sistema"""
-from clientes import Ventana
-from proved import *
-from articulos import VentArt
-from orden_reparacion import *
-from marcas import Vent_marcas
-from rubros import Vent_rubros
-from cotiz_vta import *
-from configuracion import *
-from planilla_caja import PlaniCaja
-from ctacte import CuentaCorriente
-from saldosctacte import Saldosctacte
-from inf_tecnicos import clase_inf_tecnicos
-from garantias import clase_garantias
-from recibos import clase_recibos
-from presupuestos import clase_presupuestos
-from compras import clase_compras
-from rma import clase_rma
-from respaldos import *
-from guias_tecnicas import clase_GuiasTecnicas
-#------------------------------------------------------
-import tkinter as tk
-#------------------------------------------------------
-from PIL import Image, ImageTk
-from PIL.Image import Resampling
 import locale
+# ------------------------------------------------------
+#import tkinter as tk
+
+# ------------------------------------------------------
+#from PIL import Image, ImageTk
+from PIL.Image import Resampling
+
+from articulos import VentArt
+from clientes import Ventana
+from compras import clase_compras
+from configuracion import *
+from cotiz_vta import *
+from ctacte import CuentaCorriente
+from garantias import clase_garantias
+from guias_tecnicas import clase_GuiasTecnicas
+from inf_tecnicos import clase_inf_tecnicos
+from marcas import Vent_marcas
+from orden_reparacion import *
+from planilla_caja import PlaniCaja
+from presupuestos import clase_presupuestos
+from proved import *
+from recibos import clase_recibos
+from respaldos import *
+from rma import clase_rma
+from rubros import Vent_rubros
+from saldosctacte import Saldosctacte
 
 """ esta clase Principal, hereda de la clase Frame"""
 

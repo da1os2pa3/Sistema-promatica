@@ -1,16 +1,14 @@
+import datetime
 import os
 import subprocess
-import datetime
 import time
+from datetime import datetime
 from tkinter import *
 from tkinter import ttk
-import tkinter as tk
+
 from PIL import Image, ImageTk
-from progress.bar import *
 
 class clase_backup(Frame):
-    # Creo una instancia de clientesABM de la clase datosClientes
-#    varClientes = datosClientes()
 
     def __init__(self, master=None):
         super().__init__(master, width=880, height=150)
@@ -36,9 +34,9 @@ class clase_backup(Frame):
         master.geometry(str(wventana) + "x" + str(hventana) + "+" + str(pwidth) + "+" + str(pheight))
         # ------------------------------------------------------------------------------
 
-        carpeta_principal = os.path.dirname(__file__)
-        self.carpeta_respaldo = os.path.join(carpeta_principal, 'Respaldos')
-        self.contrasena = ""
+        # carpeta_principal = os.path.dirname(__file__)
+        # self.carpeta_respaldo = os.path.join(carpeta_principal, 'Respaldos')
+        # self.contrasena = ""
 
         self.create_widgets()
 
@@ -51,7 +49,7 @@ class clase_backup(Frame):
         # TITULOS - PRIMERA PARTE ----------------------------------------------------
 
         # Stringvars
-        self.strvar_porciento=StringVar(value=0)
+        self.strvar_porciento=StringVar(value="0")
 
         # Encabezado logo y titulo con PACK
         self.frame_titulo_top = Frame(self.master)
@@ -89,22 +87,63 @@ class clase_backup(Frame):
         self.btncancela.grid(row=1, column=2, padx=5, pady=5, sticky="nsew")
         # -------------------------------------------------------------
 
-        self.frame_titulo_top.pack(side=TOP, fill=X, padx=5, pady=5)
-        self.frame_general.pack(side=TOP, padx=5, pady=5)
-        self.frame_botones.pack(side=TOP, padx=5, pady=5)
+        self.frame_titulo_top.pack(side="top", fill="x", padx=5, pady=5)
+        self.frame_general.pack(side="top", padx=5, pady=5)
+        self.frame_botones.pack(side="top", padx=5, pady=5)
         # --------------------------------------------------------------------------
 
     def act_1(self):
+
         self.act_progreso()
         self.crear_respaldos("sist_prom")
         self.btnfin.configure(state="normal")
 
     def crear_respaldos(self, nombre_bd):
 
-        fecha_hora = datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S")
-        with open(f'{self.carpeta_respaldo}/{nombre_bd}_{fecha_hora}.sql', 'w') as out:
-            subprocess.Popen(f'"C:/Program files/MySQL/Mysql Workbench 8.0 CE/"mysqldump --user=root '
-            f'--password={self.contrasena} --databases {nombre_bd}', shell=True, stdout=out)
+        # guardo contraseña
+        self.contrasena = ""
+
+        # -------------------------------------------------------------------------
+        # Aqui logro guardar todas las tablas en una lista "tablas"
+        cmd_tablas = (
+            '"C:/Program Files/MySQL/MySQL Workbench 8.0 CE/mysql" '
+            f'--user=root --password={self.contrasena} '
+            f'-N -e "SHOW TABLES FROM {nombre_bd}"'
+        )
+
+        resultado = subprocess.check_output(cmd_tablas, shell=True, text=True)
+        tablas = resultado.splitlines()
+        # -------------------------------------------------------------------------
+
+        # -------------------------------------------------------------------------
+        # carpeta base del proyecto
+        base_dir = os.getcwd()
+        # carpeta "respaldos"
+        ruta_respaldos = os.path.join(base_dir, "respaldos")
+        # fecha y hora actual (formato seguro para carpetas)
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        # carpeta final: respaldos/2026-01-19_14-30-05
+        ruta_backup = os.path.join(ruta_respaldos, timestamp)
+        # crear carpetas
+        os.makedirs(ruta_backup, exist_ok=True)
+        # -------------------------------------------------------------------------
+
+        # -------------------------------------------------------------------------
+        for tabla in tablas:
+
+            archivo = os.path.join(ruta_backup, f"{tabla}.sql")
+
+            with open(archivo, "w", encoding="utf-8") as out:
+
+                cmd_dump = (
+                    '"C:/Program Files/MySQL/MySQL Workbench 8.0 CE/mysqldump" '
+                    #'--login-path=local '                    
+                    '--column-statistics=0 '
+                    f'--user=root --password={self.contrasena} '
+                    f'{nombre_bd} {tabla}'
+                )
+                subprocess.run(cmd_dump, shell=True, stdout=out)
+        # -------------------------------------------------------------------------
 
     def act_progreso(self):
         tasks = 10

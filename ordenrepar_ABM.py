@@ -29,7 +29,7 @@ class DatosOrdenRepar:
             cur = self.cnn.cursor()
 
             if tofil == "":
-                cur.execute("SELECT * FROM orden_repara ORDER BY num_orden")
+                cur.execute("SELECT * FROM orden_repara ORDER BY or_num_orden")
             else:
                 cur.execute("SELECT * FROM " + tofil)
 
@@ -50,51 +50,66 @@ class DatosOrdenRepar:
             messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo-Consultar Ordenes-", parent=self.master)
             exit()
 
-    def insertar_orden(self, numero_orden, fecha_ingreso, codigo_cliente, nombre_cliente, equipo_ingresa, tipo_ingresa,
-                       equipo_accesorios, equipo_estado, cuentas, trabajo_requerido, text_diagnostico, presupuesto,
-                       text_trabajo_realizado, partes, text_anotaciones, total_mano_obra, total_partes, retirada,
-                       componentes):
-
+    def insertar_orden(self, numero_orden, fecha_ingreso, codigo_cliente, nombre_cliente, equipo_ingresa, grupo_ingresa,
+                             equipo_procesador, equipo_ram, equipo_discos, equipo_sist_oper, equipo_obser,
+                             equipo_accesorios, equipo_estado, cuentas, trabajo_requerido, text_diagnostico,
+                             presupuesto, text_trabajo_realizado, partes, text_anotaciones, total_mano_obra,
+                             total_partes, retirada):
         try:
-
+        #aaa = 0
+        #if aaa == 0:
             cur = self.cnn.cursor()
-            sql = '''INSERT INTO orden_repara (num_orden, fecha_ingreso, cod_cliente, nombre_cliente, equ_descripcion, 
-            equ_grupo, equ_accesorios, equ_estado, dat_ctaycontr, dat_requerido, inf_diagnostico, inf_presupuesto, 
-            trab_realizado, trab_partes, trab_anotacion, tot_mano_obra, tot_partes, fin_retirada, det_equipo) 
-            VALUES('{}','{}','{}','{}', '{}', '{}','{}','{}','{}','{}','{}','{}', '{}','{}','{}','{}','{}',
-            '{}','{}')'''.format(numero_orden, fecha_ingreso, codigo_cliente, nombre_cliente, equipo_ingresa,
-                                 tipo_ingresa, equipo_accesorios, equipo_estado, cuentas, trabajo_requerido,
-                                 text_diagnostico, presupuesto, text_trabajo_realizado, partes, text_anotaciones,
-                                 total_mano_obra, total_partes, retirada, componentes)
+            sql = '''INSERT INTO orden_repara (or_num_orden, fecha_ingreso, or_cod_cliente, or_nombre_cliente, equ_ingresa, 
+                                               equ_grupo, equ_procesador, equ_ram, equ_discos, equ_sist_oper, equ_obser, 
+                                               equ_accesorios, equ_estado, dat_ctaycontr, dat_requerido, 
+                                               inf_diagnostico, inf_presupuesto, trab_realizado, trab_partes, 
+                                               trab_anotacion, tot_mano_obra, tot_partes, fin_retirada) 
+                     VALUES('{}','{}','{}','{}', '{}', '{}','{}','{}','{}','{}','{}','{}', '{}','{}','{}','{}','{}',
+                            '{}', '{}', '{}','{}','{}','{}')'''.format(numero_orden, fecha_ingreso,
+                                                                       codigo_cliente, nombre_cliente, equipo_ingresa,
+                                                                       grupo_ingresa, equipo_procesador, equipo_ram,
+                                                                       equipo_discos, equipo_sist_oper, equipo_obser,
+                                                                       equipo_accesorios, equipo_estado, cuentas,
+                                                                       trabajo_requerido, text_diagnostico, presupuesto,
+                                                                       text_trabajo_realizado, partes, text_anotaciones,
+                                                                       total_mano_obra, total_partes, retirada)
 
             cur.execute(sql)
             n = cur.rowcount
             self.cnn.commit()
             cur.close()
             return n
-
+        #else:
         except:
 
             messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo-Insertar Orden-", parent=self.master)
             exit()
 
     def modificar_orden(self, Id, numero_orden, fecha_ingreso, fecha_egreso, codigo_cliente, nombre_cliente,
-                       equipo_ingresa, tipo_ingresa, equipo_accesorios, equipo_estado, cuentas,
-                       trabajo_requerido, text_diagnostico, presupuesto, text_trabajo_realizado, partes,
-                       text_anotaciones, total_mano_obra, total_partes, retirada, componentes):
+                              equipo_ingresa, grupo_ingresa, equipo_procesador, equipo_ram, equipo_discos,
+                              equipo_sist_oper, equipo_obser, equipo_accesorios, equipo_estado, cuentas,
+                              trabajo_requerido, text_diagnostico, presupuesto, text_trabajo_realizado, partes,
+                              text_anotaciones, total_mano_obra, total_partes, retirada):
 
-        try:
+        #try:
+        aaa = 0
+        if aaa==0:
 
             cur = self.cnn.cursor()
 
-            sql = '''UPDATE orden_repara SET num_orden='{}', fecha_ingreso='{}', fecha_egreso='{}',
-            cod_cliente='{}', nombre_cliente='{}', equ_descripcion='{}', equ_grupo='{}',
-            equ_accesorios='{}', equ_estado='{}', dat_ctaycontr='{}', dat_requerido='{}', inf_diagnostico='{}',
-            inf_presupuesto='{}', trab_realizado='{}', trab_partes='{}', trab_anotacion='{}', tot_mano_obra='{}',
-            tot_partes='{}', fin_retirada='{}', det_equipo='{}' WHERE Id={}'''.format(numero_orden, fecha_ingreso,
-            fecha_egreso, codigo_cliente, nombre_cliente, equipo_ingresa, tipo_ingresa, equipo_accesorios, equipo_estado,
-            cuentas, trabajo_requerido, text_diagnostico, presupuesto, text_trabajo_realizado, partes, text_anotaciones,
-            total_mano_obra, total_partes, retirada, componentes, Id)
+            sql = '''UPDATE orden_repara SET or_num_orden='{}', fecha_ingreso='{}', fecha_egreso='{}', 
+                                             or_cod_cliente='{}', or_nombre_cliente='{}', equ_ingresa='{}', 
+                                             equ_grupo='{}', equ_procesador='{}', equ_ram='{}', equ_discos='{}', 
+                                             equ_sist_oper='{}', equ_obser='{}', equ_accesorios='{}', equ_estado='{}', 
+                                             dat_ctaycontr='{}', dat_requerido='{}', inf_diagnostico='{}', 
+                                             inf_presupuesto='{}', trab_realizado='{}', trab_partes='{}', 
+                                             trab_anotacion='{}', tot_mano_obra='{}', tot_partes='{}', fin_retirada='{}'
+                     WHERE Id={}'''.format(numero_orden, fecha_ingreso, fecha_egreso, codigo_cliente,
+                                             nombre_cliente, equipo_ingresa, grupo_ingresa, equipo_procesador,
+                                             equipo_ram, equipo_discos, equipo_sist_oper, equipo_obser,
+                                             equipo_accesorios, equipo_estado, cuentas, trabajo_requerido,
+                                             text_diagnostico, presupuesto, text_trabajo_realizado, partes,
+                                             text_anotaciones, total_mano_obra, total_partes, retirada, Id)
 
             cur.execute(sql)
             n = cur.rowcount
@@ -102,7 +117,8 @@ class DatosOrdenRepar:
             cur.close()
             return n
 
-        except:
+        else:
+        #except:
 
             messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo-Modificar Orden-", parent=self.master)
             exit()
@@ -160,7 +176,9 @@ class DatosOrdenRepar:
 
     def buscar_entabla(self, argumento):
 
-        try:
+        aaa = 0
+        #try:
+        if aaa==0:
 
             cur = self.cnn.cursor()
             if len(argumento) <= 0:
@@ -171,7 +189,8 @@ class DatosOrdenRepar:
             cur.close()
             return datos
 
-        except:
+        else:
+        #except:
 
             messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo-Buscar en tabla-", parent=self.master)
             exit()
@@ -181,7 +200,7 @@ class DatosOrdenRepar:
         try:
 
             cur = self.cnn.cursor()
-            cur.execute("SELECT * FROM orden_repara ORDER BY num_orden")
+            cur.execute("SELECT * FROM orden_repara ORDER BY or_num_orden")
             datos = cur.fetchall()
             aux = ""
             for row in datos:

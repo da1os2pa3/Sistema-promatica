@@ -1,7 +1,5 @@
 from fpdf import FPDF
-
 #from datetime import datetime
-
 from ordenrepar_ABM import *
 
 varOr = DatosOrdenRepar("")
