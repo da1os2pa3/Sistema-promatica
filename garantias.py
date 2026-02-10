@@ -43,7 +43,7 @@ class clase_garantias(Frame):
         htotal = self.master.winfo_screenheight()
         # Guardamos el largo y alto de la ventana
         wventana = 1035
-        hventana = 620
+        hventana = 625
         # Aplicamos la siguiente formula para calcular donde debería posicionarse
         pwidth = round(wtotal / 2 - wventana / 2) + 0
         pheight = round(htotal / 2 - hventana / 2) + 0
@@ -65,11 +65,13 @@ class clase_garantias(Frame):
         # selection_set(): similar a selection_add(), pero remueve los elementos previamente seleccionados.
         # selection_toggle(): cambia la selección de un elemento. """
 
-        # # guarda en item el Id del elemento fila en este caso fila 0
-        # item = self.grid_garantias.identify_row(0)
-        # self.grid_garantias.selection_set(item)
-        # # pone el foco en el item seleccionado
-        # self.grid_garantias.focus(item)
+        # ...................................................................
+        # # guarda en item el Id del elemento fila en este caso fila 0      .
+        # item = self.grid_garantias.identify_row(0)                        .
+        # self.grid_garantias.selection_set(item)                           .
+        # # pone el foco en el item seleccionado                            .
+        # self.grid_garantias.focus(item)                                   .
+        # ...................................................................
 
     # ------------------------------------------------------------------
     # WIDGETS
@@ -78,36 +80,23 @@ class clase_garantias(Frame):
     def create_widgets(self):
 
         # --------------------------------------------------------------
-        # TITULOS
+        # TITULOS - Encabezado logo y titulo con PACK
         # --------------------------------------------------------------
-
-        # Encabezado logo y titulo con PACK
-        self.frame_titulo_top = Frame(self.master)
-
-        # Armo el logo y el titulo
-        self.photocc = Image.open('garantia.png')
-        self.photocc = self.photocc.resize((50, 50), Image.LANCZOS)  # Redimension (Alto, Ancho)
-        self.png_garantia = ImageTk.PhotoImage(self.photocc)
-        self.lbl_png_garantia = Label(self.frame_titulo_top, image=self.png_garantia, bg="red", relief="ridge", bd=5)
-        self.lbl_titulo = Label(self.frame_titulo_top, width=52, text="Garantias",
-                                bg="black", fg="gold", font=("Arial bold", 20, "bold"), bd=5, relief="ridge", padx=5)
-        # Coloco logo y titulo en posicion de pantalla
-        self.lbl_png_garantia.grid(row=0, column=0, sticky=W, padx=5, ipadx=22)
-        self.lbl_titulo.grid(row=0, column=1, sticky="nsew")
-        self.frame_titulo_top.pack(side=TOP, fill=X, padx=5, pady=2)
+        self.frame_titulo_top = tk.Frame(self.master)
+        self.cuadro_titulos()
+        self.frame_titulo_top.pack(side="top", fill="x", padx=5, pady=2)
         # --------------------------------------------------------------------------
 
         # --------------------------------------------------------------------------
         # VARIABLES GENERALES
         # --------------------------------------------------------------------------
-
         self.vcmd = (self.register(self.varFuncion_new.validar), "%P")
 
         # --------------------------------------------------------------------------
         # STRINGVARS
         # --------------------------------------------------------------------------
-
         self.strvar_valor_dolar_hoy = tk.StringVar(value="0.00")
+
         self.traer_dolarhoy()
 
         self.strvar_buscostring =tk.StringVar(value="")
@@ -123,258 +112,64 @@ class clase_garantias(Frame):
         self.strvar_observaciones = tk.StringVar(value="")
 
         # ------------------------------------------------------------------------
-        # TREVIEEW
+        # TREVIEEW - GRID
         # ------------------------------------------------------------------------
-
-        self.frame_tvw_garantias=LabelFrame(self.master, text="Garantias: ", foreground="#CF09BD")
-
-        # STYLE TREEVIEW
-        style = ttk.Style(self.frame_tvw_garantias)
-        style.theme_use("clam")
-        style.configure("Treeview.Heading", background="black", foreground="white")
-
-        self.grid_garantias = ttk.Treeview(self.frame_tvw_garantias, height=5, columns=("col1", "col2", "col3", "col4",
-                                                                               "col5", "col6", "col7", "col8", "col9"))
-
-        self.grid_garantias.bind("<Double-Button-1>", self.DobleClickGrid)
-
-        self.grid_garantias.column("#0", width=60, anchor="center", minwidth=60)
-        self.grid_garantias.column("col1", width=100, anchor="center", minwidth=80)
-        self.grid_garantias.column("col2", width=50, anchor="center", minwidth=50)
-        self.grid_garantias.column("col3", width=100, anchor="center", minwidth=80)
-        self.grid_garantias.column("col4", width=50, anchor="center", minwidth=50)
-        self.grid_garantias.column("col5", width=300, anchor=W, minwidth=280)
-        self.grid_garantias.column("col6", width=600, anchor=W, minwidth=600)
-        self.grid_garantias.column("col7", width=100, anchor="center", minwidth=100)
-        self.grid_garantias.column("col8", width=80, anchor="center", minwidth=80)
-        self.grid_garantias.column("col9", width=200, anchor="center", minwidth=200)
-
-        self.grid_garantias.heading("#0", text="Id", anchor="center")
-        self.grid_garantias.heading("col1", text="Fecha venta", anchor="center")
-        self.grid_garantias.heading("col2", text="meses", anchor="center")
-        self.grid_garantias.heading("col3", text="Fecha vencimiento", anchor="center")
-        self.grid_garantias.heading("col4", text="", anchor="center")
-        self.grid_garantias.heading("col5", text="Cliente", anchor="center")
-        self.grid_garantias.heading("col6", text="Articulo", anchor="center")
-        self.grid_garantias.heading("col7", text="Importe", anchor="center")
-        self.grid_garantias.heading("col8", text="Factura", anchor="center")
-        self.grid_garantias.heading("col9", text="Observaciones", anchor="center")
-
-        self.grid_garantias.tag_configure('oddrow', background='light grey')
-        self.grid_garantias.tag_configure('evenrow', background='white')
-
-        # SCROLLBAR del Treeview
-        scroll_x = Scrollbar(self.frame_tvw_garantias, orient=HORIZONTAL)
-        scroll_y = Scrollbar(self.frame_tvw_garantias, orient=VERTICAL)
-        self.grid_garantias.config(xscrollcommand=scroll_x.set)
-        self.grid_garantias.config(yscrollcommand=scroll_y.set)
-        scroll_x.config(command=self.grid_garantias.xview)
-        scroll_y.config(command=self.grid_garantias.yview)
-        scroll_y.pack(side=RIGHT, fill=Y)
-        scroll_x.pack(side=BOTTOM, fill=X)
-        self.grid_garantias['selectmode'] = 'browse'
-
-        self.grid_garantias.pack(side=TOP, fill=BOTH, expand=1, padx=5, pady=2)
-        self.frame_tvw_garantias.pack(side=TOP, fill=BOTH, padx=5, pady=2)
+        self.frame_tvw_garantias=tk.LabelFrame(self.master, text="Garantias: ", foreground="#CF09BD")
+        self.cuadro_grid()
+        self.frame_tvw_garantias.pack(side="top", fill="both", padx=5, pady=2)
         # --------------------------------------------------------------------------
 
         # --------------------------------------------------------------------------
         # BUSQUEDA DE UNA GARANTIA
         # --------------------------------------------------------------------------
+        self.frame_busco_garantia=tk.LabelFrame(self.master, text="", background="light blue", foreground="red")
+        self.cuadro_buscar()
+        self.frame_busco_garantia.pack(side="top", fill="both", expand=0, padx=5, pady=3)
+        # --------------------------------------------------------------------------
 
-        self.frame_busco_garantia=LabelFrame(self.master, text="", background="light blue", foreground="red")
-
-        self.lbl_buscar_titulo = Label(self.frame_busco_garantia, text="Buscar garantia nombre cliente: ",
-                                       background="light blue")
-        self.lbl_buscar_titulo.grid(row=0, column=0, padx=5, pady=3, sticky='nsew')
-
-        # ENTRY BUSCAR
-        self.entry_buscar_movim=Entry(self.frame_busco_garantia,textvariable=self.strvar_buscostring, width=50)
-        self.entry_buscar_movim.grid(row=0, column=1, padx=5, pady=3, sticky='nsew')
-
-        # BOTON FILTRAR
-        self.btn_filtrar_movim = Button(self.frame_busco_garantia, text="Buscar", command=self.fBuscar_en_tabla,
-                                       bg="blue", fg="white", width=34)
-        self.btn_filtrar_movim.grid(row=0, column=2, padx=5, pady=3, sticky='nsew')
-
-        # BOTON SHOW ALL
-        self.btn_showall_movim = Button(self.frame_busco_garantia, text="Mostrar todo", command=self.fShowall,
-                                 bg="blue", fg="white", width=34)
-        self.btn_showall_movim.grid(row=0, column=3, padx=5, pady=3, sticky='nsew')
-
-        self.frame_busco_garantia.pack(side=TOP, fill=BOTH, expand=0, padx=5, pady=3)
-        # ------------------------------------------------------------------------------------
-
-        # ------------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------
         # BOTONES DEL TREEVIEW
         # --------------------------------------------------------------------------
-
-        # FRAME primero
-        self.frame_primero=LabelFrame(self.master, text="", foreground="red")
-
-        # BOTON NUEVO
-        self.btn_nuevoitem = Button(self.frame_primero, text="Nuevo Garantia", command=self.fNuevo, width=22, bg="blue",
-                                    fg="white")
-        self.btn_nuevoitem.grid(row=0, column=0, padx=5, pady=2)
-        # BOTON EDITAR
-        self.btn_editaitem = Button(self.frame_primero, text="Edita Garantia", command=self.fEditar, width=22,
-                                    bg="blue", fg="white")
-        self.btn_editaitem.grid(row=0, column=1, padx=5, pady=2)
-        # BOTON BORRAR
-        self.btn_borraitem = Button(self.frame_primero, text="Elimina Garantia", command=self.fBorrar, width=22,
-                                    bg="red", fg="white")
-        self.btn_borraitem.grid(row=0, column=2, padx=5, pady=2)
-        # BOTON GUARDAR
-        self.btn_guardaritem = Button(self.frame_primero, text="Guardar Garantia", command=self.fGuardar, width=21,
-                                      bg="green", fg="white")
-        self.btn_guardaritem.grid(row=0, column=3, padx=5, pady=2)
-        # BOTON CANCELAR
-        self.btn_Cancelar = Button(self.frame_primero, text="Cancelar", command=self.fCancelar, width=21, bg="black",
-                                   fg="white")
-        self.btn_Cancelar.grid(row=0, column=4, padx=5, pady=2)
-        # -----------------------------------------------------------------------------
-
-        # botones fin y principio archivo
-        self.photo4 = Image.open('toparch.png')
-        self.photo4 = self.photo4.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
-        self.photo4 = ImageTk.PhotoImage(self.photo4)
-        self.btnToparch = Button(self.frame_primero, text="", image=self.photo4, command=self.fToparch, bg="grey",
-                                 fg="white")
-        self.btnToparch.grid(row=0, column=5, padx=5, sticky="nsew", pady=2)
-        self.photo5 = Image.open('finarch.png')
-        self.photo5 = self.photo5.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
-        self.photo5 = ImageTk.PhotoImage(self.photo5)
-        self.btnFinarch = Button(self.frame_primero, text="", image=self.photo5, command=self.fFinarch, bg="grey",
-                                 fg="white")
-        self.btnFinarch.grid(row=0, column=6, padx=5, sticky="nsew", pady=2)
-        # ---------------------------------------------------------------------------
-
-        self.photo3 = Image.open('salida.png')
-        self.photo3 = self.photo3.resize((30, 30), Image.LANCZOS)  # Redimension (Alto, Ancho)
-        self.photo3 = ImageTk.PhotoImage(self.photo3)
-        self.btnSalir=Button(self.frame_primero, text="Salir", image=self.photo3, width=65, command=self.fSalir,
-                             bg="yellow", fg="white")
-        self.btnSalir.grid(row=0, column=7, padx=5, pady=2, sticky="nsew")
-
-        self.frame_primero.pack(side=TOP, fill=BOTH, expand=0, padx=5, pady=2)
-        # ----------------------------------------------------------------------------
-
-        # ----------------------------------------------------------------------------
-        # ENTRYS - PEDIDO DE DATOS
+        self.frame_primero=tk.LabelFrame(self.master, text="", foreground="red")
+        self.cuadro_botones_crud()
+        self.frame_primero.pack(side="top", fill="both", expand=0, padx=5, pady=2)
         # --------------------------------------------------------------------------
 
-        self.frame_segundo=LabelFrame(self.master, text="", foreground="red")
+        # --------------------------------------------------------------------------
+        # ENTRYS - PEDIDO DE DATOS
+        # --------------------------------------------------------------------------
+        self.frame_segundo=tk.LabelFrame(self.master, text="", foreground="red")
+        self.cuadro_entrys()
+        self.frame_segundo.pack(side="top", fill="both",expand=0, padx=5, pady=3)
+        # --------------------------------------------------------------------------
 
-        # Fecha del movimiento
-        self.lbl_fecha_movim = Label(self.frame_segundo, text="Fecha Ingreso: ", justify=LEFT)
-        self.lbl_fecha_movim.grid(row=0, column=0, padx=5, pady=2, sticky=W)
-        self.entry_fecha_movim = Entry(self.frame_segundo, textvariable=self.strvar_fecha_movim, width=10,
-                                       justify=RIGHT)
-        self.entry_fecha_movim.grid(row=0, column=1, padx=5, pady=2, sticky=W)
-        #self.entry_fecha_movim.bind("<FocusOut>", self.formato_fecha)
-        #self.entry_fecha_movim.bind('<Tab>', lambda e: self.calcular())
+        # --------------------------------------------------------------------------
+        # ENTRYS - DETALLES
+        # --------------------------------------------------------------------------
+        self.frame_tercero=tk.LabelFrame(self.master, text="", foreground="red")
+        self.cuadro_entrys_detalles()
+        self.frame_tercero.pack(side="top", fill="both",expand=0, padx=5, pady=3)
+        # --------------------------------------------------------------------------
 
-        # Importe Debito
-        self.lbl_meses = Label(self.frame_segundo, text="Meses garantia: ", justify=LEFT)
-        self.lbl_meses.grid(row=0, column=2, padx=5, pady=2, sticky=W)
-        self.entry_meses = Entry(self.frame_segundo, textvariable=self.strvar_meses, width=5, justify=RIGHT)
-        self.entry_meses.config(validate="key", validatecommand=self.vcmd)
-        self.entry_meses.grid(row=0, column=3, padx=5, pady=2, sticky=W)
-        self.strvar_meses.trace("w", lambda *args: self.limitador(self.strvar_meses, 2))
-        self.entry_meses.bind('<Tab>', lambda e: self.calcular_fechas())
+        # --------------------------------------------------------------------------
+        # ENTRYS - DATOS FACTURA Y OBSERVACIONES
+        # --------------------------------------------------------------------------
+        self.frame_cuarto=tk.LabelFrame(self.master, text="", foreground="red")
+        self.cuadro_entrys_factobs()
+        self.frame_cuarto.pack(side="top", fill="both",expand=0, padx=5, pady=3)
+        # --------------------------------------------------------------------------
 
-        # Fecha vencimiento de garantia
-        self.lbl_fecha_vto = Label(self.frame_segundo, text="Fecha Vencimiento: ", justify=LEFT)
-        self.lbl_fecha_vto.grid(row=0, column=4, padx=5, pady=2, sticky=W)
-        self.lbl_fecha_vto_strvar = Label(self.frame_segundo, textvariable=self.strvar_fecha_vto, width=10,
-                                          justify=RIGHT)
-        #self.lbl_fecha_vto_strvar.bind("<FocusOut>", self.formato_fecha)
-        self.lbl_fecha_vto_strvar.grid(row=0, column=5, padx=5, pady=2, sticky=W)
+        # --------------------------------------------------------------------------
+        # ENTRYS - TEXTO DETALLE
+        # --------------------------------------------------------------------------
+        self.frame_quinto=tk.LabelFrame(self.master, text="Observaciones", foreground="blue")
+        self.cuadro_entrys_texto_detalles()
+        self.frame_quinto.pack(side="top", fill="both", expand=0, padx=5, pady=3)
+        # --------------------------------------------------------------------------
 
-        # Importe venta articulo
-        self.lbl_total_oper = Label(self.frame_segundo, text="Total operacion: ", justify=LEFT)
-        self.lbl_total_oper.grid(row=0, column=6, padx=5, pady=2, sticky=W)
-        self.entry_total_oper = Entry(self.frame_segundo, textvariable=self.strvar_total_oper, width=15, justify=RIGHT)
-        self.entry_total_oper.config(validate="key", validatecommand=self.vcmd)
-        self.entry_total_oper.grid(row=0, column=7, padx=5, pady=2, sticky=W)
-        self.entry_total_oper.config(validate="key", validatecommand=self.vcmd)
-        self.strvar_total_oper.trace("w", lambda *args: self.limitador(self.strvar_total_oper, 15))
-
-        self.frame_segundo.pack(side=TOP, fill=BOTH,expand=0, padx=5, pady=3)
-        # -----------------------------------------------------------------------------
-
-        # -----------------------------------------------------------------------------
-        self.frame_tercero=LabelFrame(self.master, text="", foreground="red")
-
-        # Detalle del articulo
-        self.lbl_detalle_articulo = Label(self.frame_tercero, text="Detalle articulo: ", justify=LEFT)
-        self.lbl_detalle_articulo.grid(row=0, column=0, padx=5, pady=2, sticky=W)
-        self.photo_bus_art = Image.open('buscar.png')
-        self.photo_bus_art = self.photo_bus_art.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
-        self.photo_bus_art = ImageTk.PhotoImage(self.photo_bus_art)
-        self.btn_bus_art = Button(self.frame_tercero, text="", image=self.photo_bus_art, command=self.fBusart,
-                                  bg="grey", fg="white")
-        self.btn_bus_art.grid(row=0, column=1, padx=5, pady=3)
-        self.entry_detalle_articulo = Entry(self.frame_tercero, textvariable=self.strvar_detalle_articulo, width=143,
-                                            justify=LEFT)
-        self.strvar_detalle_articulo.trace("w", lambda *args: limitador(self.strvar_detalle_articulo, 150))
-        self.entry_detalle_articulo.grid(row=0, column=2, columnspan=6, padx=5, pady=2, sticky=W)
-
-        # DATOS NOMBRE CLIENTE
-        self.lbl_texto_nombre_cliente = Label(self.frame_tercero, text="Cliente garantia: ", justify=LEFT)
-        self.lbl_texto_nombre_cliente.grid(row=1, column=0, padx=5, pady=2, sticky=W)
-        # BOTON BUSCAR CLIENTE EN LISTBOX
-        self.photo_bus_cli = Image.open('buscar.png')
-        self.photo_bus_cli = self.photo_bus_cli.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
-        self.photo_bus_cli = ImageTk.PhotoImage(self.photo_bus_cli)
-        self.btn_bus_cli = Button(self.frame_tercero, text="", image=self.photo_bus_cli, command=self.fBuscli,
-                                  bg="grey", fg="white")
-        self.btn_bus_cli.grid(row=1, column=1, padx=5, pady=3)
-        self.entry_nombre_cliente = Entry(self.frame_tercero, textvariable=self.strvar_nombre_cliente, width=52)
-        self.entry_nombre_cliente.grid(row=1, column=2, padx=5, pady=2, sticky=W)
-        self.lbl_texto_codigo_cliente = Label(self.frame_tercero, textvariable=self.strvar_codigo_cliente, width=10 )
-        self.lbl_texto_codigo_cliente.grid(row=1, column=3, padx=5, pady=2, sticky=W)
-
-        self.frame_tercero.pack(side="top", fill=BOTH,expand=0, padx=5, pady=3)
-        # -----------------------------------------------------------------------------
-
-        # -----------------------------------------------------------------------------
-        self.frame_cuarto=LabelFrame(self.master, text="", foreground="red")
-
-        # DATOS FACTURA Y OBSERVACIONES
-        self.lbl_numero_factura = Label(self.frame_cuarto, text="Factura Nº: ", justify=LEFT)
-        self.lbl_numero_factura.grid(row=0, column=0, padx=5, pady=2, sticky=W)
-        self.entry_numero_factura = Entry(self.frame_cuarto, textvariable=self.strvar_numero_factura, width=15,
-                                          justify=RIGHT)
-        #self.entry_numero_factura.config(validate="key", validatecommand=vcmd)
-        self.entry_numero_factura.grid(row=0, column=1, padx=5, pady=2, sticky=W)
-        self.strvar_numero_factura.trace("w", lambda *args: self.limitador(self.strvar_numero_factura, 15))
-        self.lbl_observaciones = Label(self.frame_cuarto, text="Observaciones: ", justify=LEFT)
-        self.lbl_observaciones.grid(row=0, column=2, padx=5, pady=2, sticky=W)
-        self.entry_observaciones = Entry(self.frame_cuarto, textvariable=self.strvar_observaciones, width=120,
-                                         justify=LEFT)
-        self.entry_observaciones.grid(row=0, column=3, padx=5, pady=2, sticky=W)
-        self.strvar_observaciones.trace("w", lambda *args: self.limitador(self.strvar_observaciones, 150))
-
-        self.frame_cuarto.pack(side=TOP, fill=BOTH,expand=0, padx=5, pady=3)
-        # -----------------------------------------------------------------------------
-
-        # -----------------------------------------------------------------------------
-        self.frame_quinto=LabelFrame(self.master, text="", foreground="red")
-
-        # DETALLES NOVEDADES
-        # lbl_detalle = Label(self.frame_segundo_2, text="Detalle:", height=1)
-        # lbl_detalle.grid(row=1, column=0, padx=4, pady=1, sticky="nsew")
-        self.text_detalle = ScrolledText(self.frame_quinto)
-        self.text_detalle.config(width=120, height=6, wrap="word", padx=4, pady=3)
-        self.text_detalle.grid(row=1, column=1, padx=4, pady=5, sticky="nsew")
-
-        self.frame_quinto.pack(side=TOP, fill=BOTH,expand=0, padx=5, pady=3)
-        # -----------------------------------------------------------------------------
-
-    # -----------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------
     # GRID
-    # -----------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------
 
     def llena_grilla(self, ult_tabla_id):
 
@@ -428,9 +223,9 @@ class clase_garantias(Frame):
                     break
 
             """ Ahora ejecuto este procedimiento que se encarga de poner el puntero en el registro que acabamos 
-            de encontrar correspondiente al Id de tabla asignado en el parametro de la funcion llena_grilla. """
+                de encontrar correspondiente al Id de tabla asignado en el parametro de la funcion llena_grilla. """
             """ "rg" = es el Text o Index del registro en el Treeview I001, IB002.... y ahi posiciono el foco 
-            con las siguientes instrucciones. """
+                con las siguientes instrucciones. """
 
             self.grid_garantias.selection_set(rg)
             # Para que no me diga que no hay nada seleccionado
@@ -546,7 +341,7 @@ class clase_garantias(Frame):
             self.llena_grilla("")
 
             """ Obtengo el Id del grid para que me tome la seleccion y el foco se coloque efectivamente en el 
-            item buscado y asi cuando le doy -show all- el puntero se sigue quedando en el registro buscado"""
+                item buscado y asi cuando le doy -show all- el puntero se sigue quedando en el registro buscado"""
             item = self.grid_garantias.selection()
             self.grid_garantias.focus(item)
 
@@ -660,6 +455,7 @@ class clase_garantias(Frame):
 
         # -------------------------------------------------------------------
         # VALIDACIONES
+        # -------------------------------------------------------------------
 
         # FECHA
         if not self.strvar_fecha_movim.get() or not self.strvar_fecha_vto.get():
@@ -795,7 +591,7 @@ class clase_garantias(Frame):
     def formato_fecha(self, pollo):
 
         """ Aqui llamo a la funcion validar fechas para revisar todas sus valores posibles. Le paso la fecha
-        tipo string con barras o sin barras. """
+            tipo string con barras o sin barras. """
 
         estado_antes = self.strvar_fecha_movim.get()
 
@@ -850,6 +646,10 @@ class clase_garantias(Frame):
         fecha2 = fecha1 + relativedelta(months=meses)
         self.strvar_fecha_vto.set(value=datetime.strftime(fecha2, '%d/%m/%Y'))
 
+    # ------------------------------------------------------------------------------
+    # BUSQUEDA POR CLIENTE
+    # ------------------------------------------------------------------------------
+
     def fBuscli(self):
 
         """ Creo una variable (que_busco) que contiene los parametros de busqueda - Tabla, el string de busqueda
@@ -861,7 +661,7 @@ class clase_garantias(Frame):
                     + " ORDER BY apenombre"
 
         """ Llamo a funcion ventana de seleccion de items. Paso parametros de Tabla-campos a mostrar en orden de como 
-        quiero verlos. -Titulos para cada columna de esos campos y String de busqueda definido arriba (que_busco). """
+            quiero verlos.-Titulos para cada columna de esos campos y String de busqueda definido arriba(que_busco)."""
 
         valores_new = self.varFuncion_new.ventana_selec("clientes", "apenombre", "codigo",
                       "direccion", "Apellido y nombre", "Codigo", "Direccion", que_busco,
@@ -878,7 +678,8 @@ class clase_garantias(Frame):
         self.entry_nombre_cliente.icursor(tk.END)
 
     # ------------------------------------------------------------------------------
-    # ARTICULO
+    # BUSQUEDA POR ARTICULO ARTICULO
+    # ------------------------------------------------------------------------------
 
     def fBusart(self):
 
@@ -901,3 +702,275 @@ class clase_garantias(Frame):
 
         self.entry_detalle_articulo.focus()
         self.entry_detalle_articulo.icursor(tk.END)
+
+    #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    # CUADROS FRAMES
+    #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+    def cuadro_titulos(self):
+
+        # Armo el logo y el titulo
+        self.photocc = Image.open('garantia.png')
+        self.photocc = self.photocc.resize((50, 50), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.png_garantia = ImageTk.PhotoImage(self.photocc)
+        self.lbl_png_garantia = tk.Label(self.frame_titulo_top, image=self.png_garantia, bg="red", relief="ridge", bd=5)
+        self.lbl_titulo = tk.Label(self.frame_titulo_top, width=52, text="Garantias",
+                                bg="black", fg="gold", font=("Arial bold", 20, "bold"), bd=5, relief="ridge", padx=5)
+        # Coloco logo y titulo en posicion de pantalla
+        self.lbl_png_garantia.grid(row=0, column=0, sticky=W, padx=5, ipadx=22)
+        self.lbl_titulo.grid(row=0, column=1, sticky="nsew")
+
+    def cuadro_grid(self):
+
+        # STYLE TREEVIEW
+        style = ttk.Style(self.frame_tvw_garantias)
+        style.theme_use("clam")
+        style.configure("Treeview.Heading", background="black", foreground="white")
+
+        self.grid_garantias = ttk.Treeview(self.frame_tvw_garantias, height=5, columns=("col1", "col2", "col3", "col4",
+                                                                               "col5", "col6", "col7", "col8", "col9"))
+
+        self.grid_garantias.bind("<Double-Button-1>", self.DobleClickGrid)
+
+        self.grid_garantias.column("#0", width=60, anchor="center", minwidth=60)
+        self.grid_garantias.column("col1", width=100, anchor="center", minwidth=80)
+        self.grid_garantias.column("col2", width=50, anchor="center", minwidth=50)
+        self.grid_garantias.column("col3", width=100, anchor="center", minwidth=80)
+        self.grid_garantias.column("col4", width=50, anchor="center", minwidth=50)
+        self.grid_garantias.column("col5", width=300, anchor="w", minwidth=280)
+        self.grid_garantias.column("col6", width=600, anchor="w", minwidth=600)
+        self.grid_garantias.column("col7", width=100, anchor="center", minwidth=100)
+        self.grid_garantias.column("col8", width=80, anchor="center", minwidth=80)
+        self.grid_garantias.column("col9", width=200, anchor="center", minwidth=200)
+
+        self.grid_garantias.heading("#0", text="Id", anchor="center")
+        self.grid_garantias.heading("col1", text="Fecha venta", anchor="center")
+        self.grid_garantias.heading("col2", text="meses", anchor="center")
+        self.grid_garantias.heading("col3", text="Fecha vencimiento", anchor="center")
+        self.grid_garantias.heading("col4", text="", anchor="center")
+        self.grid_garantias.heading("col5", text="Cliente", anchor="center")
+        self.grid_garantias.heading("col6", text="Articulo", anchor="center")
+        self.grid_garantias.heading("col7", text="Importe", anchor="center")
+        self.grid_garantias.heading("col8", text="Factura", anchor="center")
+        self.grid_garantias.heading("col9", text="Observaciones", anchor="center")
+
+        self.grid_garantias.tag_configure('oddrow', background='light grey')
+        self.grid_garantias.tag_configure('evenrow', background='white')
+
+        # SCROLLBAR del Treeview
+        scroll_x = Scrollbar(self.frame_tvw_garantias, orient="horizontal")
+        scroll_y = Scrollbar(self.frame_tvw_garantias, orient="vertical")
+        self.grid_garantias.config(xscrollcommand=scroll_x.set)
+        self.grid_garantias.config(yscrollcommand=scroll_y.set)
+        scroll_x.config(command=self.grid_garantias.xview)
+        scroll_y.config(command=self.grid_garantias.yview)
+        scroll_y.pack(side="right", fill="y")
+        scroll_x.pack(side="bottom", fill="x")
+        self.grid_garantias['selectmode'] = 'browse'
+
+        self.grid_garantias.pack(side="top", fill="both", expand=1, padx=5, pady=2)
+
+    def cuadro_buscar(self):
+
+        for c in range(4):
+            self.frame_busco_garantia.grid_columnconfigure(c, weight=1, minsize=140)
+
+        img = Image.open("buscar.png").resize((18, 18))
+        icono = ImageTk.PhotoImage(img)
+        self.lbl_buscar_titulo = tk.Label(self.frame_busco_garantia, text=" Buscar garantia (nombre cliente): ",
+                                       background="light blue", compound="left")
+        self.lbl_buscar_titulo.image = icono
+        self.lbl_buscar_titulo.config(image=icono)
+        self.lbl_buscar_titulo.grid(row=0, column=0, padx=5, pady=3, sticky='nsew')
+
+        # ENTRY BUSCAR
+        self.entry_buscar_movim=Entry(self.frame_busco_garantia,textvariable=self.strvar_buscostring, width=50)
+        self.entry_buscar_movim.grid(row=0, column=1, padx=5, pady=3, sticky='nsew')
+
+        # BOTON FILTRAR
+        img = Image.open("filtrar.png").resize((18, 18))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_filtrar_movim = Button(self.frame_busco_garantia, text=" Buscar", command=self.fBuscar_en_tabla,
+                                       bg="blue", fg="white", width=34, compound="left")
+        self.btn_filtrar_movim.image = icono
+        self.btn_filtrar_movim.config(image=icono)
+        self.btn_filtrar_movim.grid(row=0, column=2, padx=5, pady=3, sticky='nsew')
+
+        # BOTON SHOW ALL
+        img = Image.open("ver_todo.png").resize((18, 18))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_showall_movim = Button(self.frame_busco_garantia, text=" Mostrar todo", command=self.fShowall,
+                                 bg="blue", fg="white", width=34, compound="left")
+        self.btn_showall_movim.image = icono
+        self.btn_showall_movim.config(image=icono)
+        self.btn_showall_movim.grid(row=0, column=3, padx=5, pady=3, sticky='nsew')
+
+        # reordenamiento de self.frame_botones_grid
+        for widg in self.frame_busco_garantia.winfo_children():
+            widg.grid_configure(padx=5, pady=3, sticky='nsew')
+
+    def cuadro_botones_crud(self):
+
+        for c in range(5):
+            self.frame_primero.grid_columnconfigure(c, weight=1, minsize=140)
+
+        # BOTON NUEVO
+        img = Image.open("archivo-nuevo.png").resize((18, 18))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_nuevoitem = Button(self.frame_primero, text=" Nuevo Garantia", command=self.fNuevo, width=22, bg="blue",
+                                    fg="white", compound="left")
+        self.btn_nuevoitem.image = icono
+        self.btn_nuevoitem.config(image=icono)
+        self.btn_nuevoitem.grid(row=0, column=0, padx=5, pady=2)
+
+        # BOTON EDITAR
+        img = Image.open("editar.png").resize((18, 18))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_editaitem = Button(self.frame_primero, text=" Editar Garantia", command=self.fEditar, width=22,
+                                    bg="blue", fg="white", compound="left")
+        self.btn_editaitem.image = icono
+        self.btn_editaitem.config(image=icono)
+        self.btn_editaitem.grid(row=0, column=1, padx=5, pady=2)
+
+        # BOTON BORRAR
+        img = Image.open("eliminar.png").resize((18, 18))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_borraitem = Button(self.frame_primero, text=" Eliminar Garantia", command=self.fBorrar, width=22,
+                                    bg="red", fg="white", compound="left")
+        self.btn_borraitem.image = icono
+        self.btn_borraitem.config(image=icono)
+        self.btn_borraitem.grid(row=0, column=2, padx=5, pady=2)
+
+        # BOTON GUARDAR
+        img = Image.open("guardar.png").resize((18, 18))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_guardaritem = Button(self.frame_primero, text=" Guardar Garantia", command=self.fGuardar, width=21,
+                                      bg="green", fg="white", compound="left")
+        self.btn_guardaritem.image = icono
+        self.btn_guardaritem.config(image=icono)
+        self.btn_guardaritem.grid(row=0, column=3, padx=5, pady=2)
+
+        # BOTON CANCELAR
+        img = Image.open("cancelar.png").resize((18, 18))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_cancelar = Button(self.frame_primero, text=" Cancelar", command=self.fCancelar, width=21, bg="black",
+                                   fg="white", compound="left")
+        self.btn_cancelar.image = icono
+        self.btn_cancelar.config(image=icono)
+        self.btn_cancelar.grid(row=0, column=4, padx=5, pady=2)
+
+        # reordenamiento de self.frame_botones_grid
+        for widg in self.frame_primero.winfo_children():
+            widg.grid_configure(padx=5, pady=3, sticky='nsew')
+
+        # FIN y TOP ARCHIVO
+        self.photo4 = Image.open('toparch.png')
+        self.photo4 = self.photo4.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo4 = ImageTk.PhotoImage(self.photo4)
+        self.btnToparch = Button(self.frame_primero, text="", image=self.photo4, command=self.fToparch, bg="grey",
+                                 fg="white")
+        self.btnToparch.grid(row=0, column=5, padx=5, sticky="nsew", pady=2)
+        self.photo5 = Image.open('finarch.png')
+        self.photo5 = self.photo5.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo5 = ImageTk.PhotoImage(self.photo5)
+        self.btnFinarch = Button(self.frame_primero, text="", image=self.photo5, command=self.fFinarch, bg="grey",
+                                 fg="white")
+        self.btnFinarch.grid(row=0, column=6, padx=5, sticky="nsew", pady=2)
+
+        # SALIDA
+        self.photo3 = Image.open('salida.png')
+        self.photo3 = self.photo3.resize((30, 30), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo3 = ImageTk.PhotoImage(self.photo3)
+        self.btnSalir=Button(self.frame_primero, text="Salir", image=self.photo3, width=65, command=self.fSalir,
+                             bg="yellow", fg="white")
+        self.btnSalir.grid(row=0, column=7, padx=5, pady=2, sticky="nsew")
+
+    def cuadro_entrys(self):
+
+        # Fecha del movimiento
+        self.lbl_fecha_movim = tk.Label(self.frame_segundo, text="Fecha Ingreso: ", justify="left")
+        self.lbl_fecha_movim.grid(row=0, column=0, padx=5, pady=2, sticky=W)
+        self.entry_fecha_movim = Entry(self.frame_segundo, textvariable=self.strvar_fecha_movim, width=10,
+                                       justify="right")
+        self.entry_fecha_movim.grid(row=0, column=1, padx=5, pady=2, sticky=W)
+        #self.entry_fecha_movim.bind("<FocusOut>", self.formato_fecha)
+        #self.entry_fecha_movim.bind('<Tab>', lambda e: self.calcular())
+
+        # Importe Debito
+        self.lbl_meses = tk.Label(self.frame_segundo, text="Meses garantia: ", justify="left")
+        self.lbl_meses.grid(row=0, column=2, padx=5, pady=2, sticky=W)
+        self.entry_meses = Entry(self.frame_segundo, textvariable=self.strvar_meses, width=5, justify="right")
+        self.entry_meses.config(validate="key", validatecommand=self.vcmd)
+        self.entry_meses.grid(row=0, column=3, padx=5, pady=2, sticky=W)
+        self.strvar_meses.trace("w", lambda *args: self.limitador(self.strvar_meses, 2))
+        self.entry_meses.bind('<Tab>', lambda e: self.calcular_fechas())
+
+        # Fecha vencimiento de garantia
+        self.lbl_fecha_vto = tk.Label(self.frame_segundo, text="Fecha Vencimiento: ", justify="left")
+        self.lbl_fecha_vto.grid(row=0, column=4, padx=5, pady=2, sticky=W)
+        self.lbl_fecha_vto_strvar = tk.Label(self.frame_segundo, textvariable=self.strvar_fecha_vto, width=10,
+                                          justify="right")
+        #self.lbl_fecha_vto_strvar.bind("<FocusOut>", self.formato_fecha)
+        self.lbl_fecha_vto_strvar.grid(row=0, column=5, padx=5, pady=2, sticky=W)
+
+        # Importe venta articulo
+        self.lbl_total_oper = tk.Label(self.frame_segundo, text="Total operacion: ", justify="left")
+        self.lbl_total_oper.grid(row=0, column=6, padx=5, pady=2, sticky=W)
+        self.entry_total_oper = Entry(self.frame_segundo, textvariable=self.strvar_total_oper, width=15, justify="right")
+        self.entry_total_oper.config(validate="key", validatecommand=self.vcmd)
+        self.entry_total_oper.grid(row=0, column=7, padx=5, pady=2, sticky=W)
+        self.entry_total_oper.config(validate="key", validatecommand=self.vcmd)
+        self.strvar_total_oper.trace("w", lambda *args: self.limitador(self.strvar_total_oper, 15))
+
+    def cuadro_entrys_detalles(self):
+
+        # Detalle del articulo
+        self.lbl_detalle_articulo = tk.Label(self.frame_tercero, text="Detalle articulo: ", justify="left")
+        self.lbl_detalle_articulo.grid(row=0, column=0, padx=5, pady=2, sticky=W)
+        self.photo_bus_art = Image.open('buscar.png')
+        self.photo_bus_art = self.photo_bus_art.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo_bus_art = ImageTk.PhotoImage(self.photo_bus_art)
+        self.btn_bus_art = Button(self.frame_tercero, text="", image=self.photo_bus_art, command=self.fBusart,
+                                  bg="grey", fg="white")
+        self.btn_bus_art.grid(row=0, column=1, padx=5, pady=3)
+        self.entry_detalle_articulo = Entry(self.frame_tercero, textvariable=self.strvar_detalle_articulo, width=143,
+                                            justify="left")
+        self.strvar_detalle_articulo.trace("w", lambda *args: limitador(self.strvar_detalle_articulo, 150))
+        self.entry_detalle_articulo.grid(row=0, column=2, columnspan=6, padx=5, pady=2, sticky=W)
+
+        # DATOS NOMBRE CLIENTE
+        self.lbl_texto_nombre_cliente = tk.Label(self.frame_tercero, text="Cliente garantia: ", justify="left")
+        self.lbl_texto_nombre_cliente.grid(row=1, column=0, padx=5, pady=2, sticky=W)
+        # BOTON BUSCAR CLIENTE EN LISTBOX
+        self.photo_bus_cli = Image.open('buscar.png')
+        self.photo_bus_cli = self.photo_bus_cli.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo_bus_cli = ImageTk.PhotoImage(self.photo_bus_cli)
+        self.btn_bus_cli = Button(self.frame_tercero, text="", image=self.photo_bus_cli, command=self.fBuscli,
+                                  bg="grey", fg="white")
+        self.btn_bus_cli.grid(row=1, column=1, padx=5, pady=3)
+        self.entry_nombre_cliente = Entry(self.frame_tercero, textvariable=self.strvar_nombre_cliente, width=52)
+        self.entry_nombre_cliente.grid(row=1, column=2, padx=5, pady=2, sticky=W)
+        self.lbl_texto_codigo_cliente = tk.Label(self.frame_tercero, textvariable=self.strvar_codigo_cliente, width=10 )
+        self.lbl_texto_codigo_cliente.grid(row=1, column=3, padx=5, pady=2, sticky=W)
+
+    def cuadro_entrys_factobs(self):
+
+        self.lbl_numero_factura = tk.Label(self.frame_cuarto, text="Factura Nº: ", justify="left")
+        self.lbl_numero_factura.grid(row=0, column=0, padx=5, pady=2, sticky=W)
+        self.entry_numero_factura = Entry(self.frame_cuarto, textvariable=self.strvar_numero_factura, width=15,
+                                          justify="right")
+        #self.entry_numero_factura.config(validate="key", validatecommand=vcmd)
+        self.entry_numero_factura.grid(row=0, column=1, padx=5, pady=2, sticky=W)
+        self.strvar_numero_factura.trace("w", lambda *args: self.limitador(self.strvar_numero_factura, 15))
+        self.lbl_observaciones = tk.Label(self.frame_cuarto, text="Observaciones: ", justify="left")
+        self.lbl_observaciones.grid(row=0, column=2, padx=5, pady=2, sticky=W)
+        self.entry_observaciones = Entry(self.frame_cuarto, textvariable=self.strvar_observaciones, width=120,
+                                         justify="left")
+        self.entry_observaciones.grid(row=0, column=3, padx=5, pady=2, sticky=W)
+        self.strvar_observaciones.trace("w", lambda *args: self.limitador(self.strvar_observaciones, 150))
+
+    def cuadro_entrys_texto_detalles(self):
+
+        self.text_detalle = ScrolledText(self.frame_quinto)
+        self.text_detalle.config(width=120, height=6, wrap="word", padx=4, pady=3)
+        self.text_detalle.grid(row=1, column=1, padx=4, pady=5, sticky="nsew")

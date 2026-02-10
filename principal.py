@@ -115,7 +115,7 @@ class Principal(Frame):
         fondopan = Label(self.master, image=photo33).place(x=0, y=85)
 
         label1 = Label(self.master, text='Gestion Comercial - Promatica Computacion', bg="black", fg="gold",
-                       font=("times new roman", 30, "bold"), bd=12, relief=RIDGE)
+                       font=("times new roman", 30, "bold"), bd=12, relief="ridge")
         label1.pack(side="top", fill="x", pady=10, padx=5)
         # ---------------------------------------------------------------
 
@@ -132,49 +132,49 @@ class Principal(Frame):
         photo1 = Image.open('productos.png')
         photo1 = photo1.resize((80, 70), Image.LANCZOS)  # Redimension (Alto, Ancho)
         photo1 = ImageTk.PhotoImage(photo1)
-        self.btnArticulos = Button(self.frame1, text="Articulos", image=photo1, compound=TOP, pady=3,
+        self.btnArticulos = Button(self.frame1, text="Articulos", image=photo1, compound="top", pady=3,
                                    border=3, command=self.fArticulos, bg="blue", fg="white")
-        self.btnArticulos.pack(side=LEFT, expand=1, fill=X, pady=5, padx=3)
+        self.btnArticulos.pack(side="left", expand=1, fill="x", pady=5, padx=3)
 
         # ORDENES DE REPARACION
         photo2 = Image.open('reparar.png')
         photo2 = photo2.resize((80, 70), Image.LANCZOS)  # Redimension (Alto, Ancho)
         photo2 = ImageTk.PhotoImage(photo2)
-        self.btnorden_rep = Button(self.frame1, text="Orden Reparacion", image=photo2, compound=TOP, pady=3,
+        self.btnorden_rep = Button(self.frame1, text="Orden Reparacion", image=photo2, compound="top", pady=3,
                                    border=3, command=self.m_orden_repara, bg="blue", fg="white")
-        self.btnorden_rep.pack(side=LEFT, expand=1, fill=X, pady=5, padx=3)
+        self.btnorden_rep.pack(side="left", expand=1, fill="x", pady=5, padx=3)
 
         # PRESUPUESTOS COTIZACIONES - INGRESO VENTAS
         photo3 = Image.open('presupuesto.png')
         photo3 = photo3.resize((80, 70), Image.LANCZOS)  # Redimension (Alto, Ancho)
         photo3 = ImageTk.PhotoImage(photo3)
-        self.btnCotvta = Button(self.frame1, text="Cotizar/Venta", image=photo3, compound=TOP, pady=3, command=self.fCotVta,
+        self.btnCotvta = Button(self.frame1, text="Cotizar/Venta", image=photo3, compound="top", pady=3, command=self.fCotVta,
                                 border=3, bg="blue", fg="white")
-        self.btnCotvta.pack(side=LEFT, expand=1, fill=X, pady=5, padx=3)
+        self.btnCotvta.pack(side="left", expand=1, fill="x", pady=5, padx=3)
 
         # PLANILLA DE CAJA
         photo4 = Image.open('planilla.png')
         photo4 = photo4.resize((80, 70), Image.LANCZOS)  # Redimension (Alto, Ancho)
         photo4 = ImageTk.PhotoImage(photo4)
-        self.btnPlaniCaja = Button(self.frame1, text="Planilla Caja", image=photo4, compound=TOP, pady=3,
+        self.btnPlaniCaja = Button(self.frame1, text="Planilla Caja", image=photo4, compound="top", pady=3,
                                    command=self.fPlaniCaja, border=3, bg="blue", fg="white")
-        self.btnPlaniCaja.pack(side=LEFT, expand=1, fill=X, pady=5, padx=3)
+        self.btnPlaniCaja.pack(side="left", expand=1, fill="x", pady=5, padx=3)
 
         # CUENTA CORRIENTE
         photo5 = Image.open('ctacte.png')
         photo5 = photo5.resize((80, 70), Image.LANCZOS)  # Redimension (Alto, Ancho)
         photo5 = ImageTk.PhotoImage(photo5)
-        self.btnCtacte = Button(self.frame1, text="Cuenta Corriente", image=photo5, compound=TOP, pady=3,
+        self.btnCtacte = Button(self.frame1, text="Cuenta Corriente", image=photo5, compound="top", pady=3,
                                    command=self.fCtacte, border=3, bg="blue", fg="white")
-        self.btnCtacte.pack(side=LEFT, expand=1, fill=X, pady=5, padx=3)
+        self.btnCtacte.pack(side="left", expand=1, fill="x", pady=5, padx=3)
 
         # SALIDA DEL SISTEMA
         photo6 = Image.open('salida.png')
         photo6 = photo6.resize((80, 70), Image.LANCZOS)  # Redimension (Alto, Ancho)
         photo6 = ImageTk.PhotoImage(photo6)
-        self.btnSalida = Button(self.frame1, text="Salir", image=photo6, compound=TOP, pady=3, command=self.fSalir,
+        self.btnSalida = Button(self.frame1, text="Salir", image=photo6, compound="top", pady=3, command=self.fSalir,
                                 border=3, bg="yellow", fg="Black")
-        self.btnSalida.pack(side=LEFT, expand=1, fill=X, pady=5, padx=3)
+        self.btnSalida.pack(side="left", expand=1, fill="x", pady=5, padx=3)
 
         # ------------------------------------------------------
         # BARRA MENU SUPERIOR
@@ -184,31 +184,31 @@ class Principal(Frame):
         photo7 = Image.open('clientes4.png')
         photo7 = photo7.resize((20, 20), Image.LANCZOS)  # Redimension (Alto, Ancho)
         photo7 = ImageTk.PhotoImage(photo7)
-        self.btnClientes = Button(self.frame2, text="Clientes", image=photo7, compound=TOP, pady=3,
+        self.btnClientes = Button(self.frame2, text="Clientes", image=photo7, compound="top", pady=3,
                                    command=self.fClientes, height=53, border=3, bg="blue", fg="white")
-        self.btnClientes.pack(side=LEFT, expand=1, fill=X, pady=5, padx=3)
+        self.btnClientes.pack(side="left", expand=1, fill="x", pady=5, padx=3)
 
         # GARANTIAS
         photo8 = Image.open('garantia.png')
         photo8 = photo8.resize((20, 20), Image.LANCZOS)  # Redimension (Alto, Ancho)
         photo8 = ImageTk.PhotoImage(photo8)
-        self.btnCtacte = Button(self.frame2, text="Garantias", image=photo8, compound=TOP, pady=3,
+        self.btnCtacte = Button(self.frame2, text="Garantias", image=photo8, compound="top", pady=3,
                                    command=self.fGarantia, height=53, border=3, bg="blue", fg="white")
-        self.btnCtacte.pack(side=LEFT, expand=1, fill=X, pady=5, padx=3)
+        self.btnCtacte.pack(side="left", expand=1, fill=X, pady=5, padx=3)
 
         # RECIBOS
         photo9 = Image.open('recibo.png')
         photo9 = photo9.resize((20, 20), Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         photo9 = ImageTk.PhotoImage(photo9)
-        self.btnRecibos = Button(self.frame2, text="Recibos", image=photo9, compound=TOP, pady=3,
+        self.btnRecibos = Button(self.frame2, text="Recibos", image=photo9, compound="top", pady=3,
                                    command=self.fRecibos, height=53, border=3, bg="blue", fg="white")
-        self.btnRecibos.pack(side=LEFT, expand=1, fill=X, pady=5, padx=3)
+        self.btnRecibos.pack(side="left", expand=1, fill=X, pady=5, padx=3)
 
         # PRESUPUESTOS
         photo10 = Image.open('presuequipo.png')
         photo10 = photo10.resize((20, 20), Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         photo10 = ImageTk.PhotoImage(photo10)
-        self.btnPresupuestos = Button(self.frame2, text="Presupuestos", image=photo10, compound=TOP, pady=3,
+        self.btnPresupuestos = Button(self.frame2, text="Presupuestos", image=photo10, compound="top", pady=3,
                                    command=self.fPresupuestos, height=53, border=3, bg="blue", fg="white")
         self.btnPresupuestos.pack(side="left", expand=1, fill="x", pady=5, padx=3)
 
@@ -216,23 +216,23 @@ class Principal(Frame):
         photo11 = Image.open('comprasmay.png')
         photo11 = photo11.resize((20, 20), Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         photo11 = ImageTk.PhotoImage(photo11)
-        self.btnartfaltantes = Button(self.frame2, text="Articulos faltantes", image=photo11, compound=TOP, pady=3,
+        self.btnartfaltantes = Button(self.frame2, text="Articulos faltantes", image=photo11, compound="top", pady=3,
                                    command=self.fCompras, height=53, border=3, bg="blue", fg="white")
-        self.btnartfaltantes.pack(side=LEFT, expand=1, fill="x", pady=5, padx=3)
+        self.btnartfaltantes.pack(side="left", expand=1, fill="x", pady=5, padx=3)
 
         # RMA
         photo12 = Image.open('rma.png')
         photo12 = photo12.resize((20, 20), Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         photo12 = ImageTk.PhotoImage(photo12)
-        self.btnrma = Button(self.frame2, text="Agenda Pendientes\n(RMA)", image=photo12, compound=TOP, pady=3,
+        self.btnrma = Button(self.frame2, text="Agenda Pendientes\n(RMA)", image=photo12, compound="top", pady=3,
                                    command=self.fRma, border=3, bg="blue", fg="white")
-        self.btnrma.pack(side=LEFT, expand=1, fill="x", pady=5, padx=3)
+        self.btnrma.pack(side="left", expand=1, fill="x", pady=5, padx=3)
 
         # Respaldos
         photo13 = Image.open('backup.png')
         photo13 = photo13.resize((20, 20), Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         photo13 = ImageTk.PhotoImage(photo13)
-        self.btnbackup = Button(self.frame2, text="Backup", image=photo13, compound=TOP, pady=3,
+        self.btnbackup = Button(self.frame2, text="Backup", image=photo13, compound="top", pady=3,
                                    command=self.fBackup, height=53, border=3, bg="blue", fg="white")
         self.btnbackup.pack(side="left", expand=1, fill="x", pady=5, padx=3)
 

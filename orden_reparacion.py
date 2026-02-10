@@ -61,11 +61,8 @@ class OrdenesRepara(Frame):
         # ---------------------------------------------------------------------
         # VARIABLES Y ORDEN INICIAL
         # ---------------------------------------------------------------------
-
         self.create_widgets()
-
         self.estado_inicial()
-
         self.llena_grilla("")
 
         # ---------------------------------------------------------------------
@@ -141,141 +138,67 @@ class OrdenesRepara(Frame):
         # ------------------------------------------------------------------
         # TREEVIEW -*-
         # ------------------------------------------------------------------
-
-        # Defino los Frames
         self.frame_superior = Frame(self.master)
-
         self.frame_tvw_ordenes = LabelFrame(self.frame_superior, text="", foreground="#CF09BD")
-
-        # STYLE TREEVIEW
-        style = ttk.Style(self.frame_tvw_ordenes)
-        style.theme_use("clam")
-        style.configure("Treeview.Heading", background="black", foreground="white")
-
-        # Este es el TV donde aparecen las ordenes de reparacion
-        self.grid_orden = ttk.Treeview(self.frame_tvw_ordenes, height=6, columns=("col1", "col2", "col3", "col4",
-                                                                                  "col5", "col6", "col7", "col8"))
-        self.grid_orden.bind("<Double-Button-1>", self.DobleClickGrid)
-        #self.grid_orden.bind("<ButtonRelease-3>", self.muestradatos)
-
-        self.grid_orden.column("#0", width=40, anchor="center")
-        self.grid_orden.column("col1", width=70, anchor="e")
-        self.grid_orden.column("col2", width=130, anchor="center")
-        self.grid_orden.column("col3", width=130, anchor="center")
-        self.grid_orden.column("col4", width=50, anchor="e")
-        self.grid_orden.column("col5", width=300, anchor="w")
-        self.grid_orden.column("col6", width=90, anchor="e")
-        self.grid_orden.column("col7", width=90, anchor="e")
-        self.grid_orden.column("col8", width=90, anchor="e")
-
-        self.grid_orden.heading("#0", text="Id", anchor="center")
-        self.grid_orden.heading("col1", text="Nº Orden", anchor="center")
-        self.grid_orden.heading("col2", text="Fecha/Hora Ingreso", anchor="center")
-        self.grid_orden.heading("col3", text="Fecha/Hora Egreso", anchor="center")
-        self.grid_orden.heading("col4", text="Cod.", anchor="center")
-        self.grid_orden.heading("col5", text="Cliente", anchor="center")
-        self.grid_orden.heading("col6", text="Total", anchor="center")
-        self.grid_orden.heading("col7", text="Partes", anchor="center")
-        self.grid_orden.heading("col8", text="M.O.", anchor="center")
-
-        self.grid_orden.tag_configure('oddrow', background='light grey')
-        self.grid_orden.tag_configure('evenrow', background='white')
-
-        # SCROLLBAR del Treeview
-        scroll_x = Scrollbar(self.frame_tvw_ordenes, orient="horizontal")
-        scroll_y = Scrollbar(self.frame_tvw_ordenes, orient="vertical")
-        self.grid_orden.config(xscrollcommand=scroll_x.set)
-        self.grid_orden.config(yscrollcommand=scroll_y.set)
-        scroll_x.config(command=self.grid_orden.xview)
-        scroll_y.config(command=self.grid_orden.yview)
-        scroll_y.pack(side="right", fill="y")
-        scroll_x.pack(side="bottom", fill="x")
-        self.grid_orden['selectmode'] = 'browse'
-
-        # PACKS del Treeview
+        self.frame_treeview()
         self.grid_orden.pack(side="top", fill="both", expand=0, padx=3, pady=2)
         self.frame_tvw_ordenes.pack(side="left", fill="both", expand=1, padx=3, pady=2)
         self.frame_superior.pack(side="top", fill="both", expand=0, padx=5, pady=2)
-
-        # # Reordeno los elementos del frame 1_0
-        # for widg in self.frame_listbox_clientes.winfo_children():
-        #     widg.grid_configure(padx=5, pady=3)
         # ----------------------------------------------------------------------
 
         # ----------------------------------------------------------------------
         # BOTONES SOBRE EL GRID (CRUD - IMPRESION - MOVIMIENTOS EN LA GRILLA
         # ----------------------------------------------------------------------
-
         self.frame_botones_grid = LabelFrame(self.master, text="")
-
         self.cuadro_botones_grid()
-
         self.frame_botones_grid.pack(side="top", fill="both", expand=0, padx=3, pady=2)
         # ------------------------------------------------------------------
 
         # ------------------------------------------------------------------
         # ENTRYS -*-
         # ------------------------------------------------------------------
-
         self.frame_entrys_uno = LabelFrame(self.master, text="")
-
         self.cuadro_entrys()
-
         self.frame_entrys_dos.pack(side="top", fill="both", expand=0, padx=5, pady=2)
         # ---------------------------------------------------------------------
 
         # ------------------------------------------------------------------
         # ENTRYS DATOS EQUIPO
         # ------------------------------------------------------------------
-
         self.frame_entrys_uno_bis = LabelFrame(self.master, text="", bd=3, relief="ridge")
-
         self.cuadro_entrys_equipo()
-
         self.frame_entrys_uno_bis.pack(side="top", fill="both", expand=0, padx=5, pady=2)
         # ------------------------------------------------------------------
 
         # ------------------------------------------------------------------
         # ENTRYS DATOS EQUIPO DOS
         # ------------------------------------------------------------------
-
         self.frame_entrys_tres = LabelFrame(self.master, text="", bd=3, relief="ridge")
-
         self.cuadro_entrys_equipo_dos()
-
         self.frame_entrys_tres.pack(side="top", fill="both", expand=0, padx=5, pady=2)
         # ---------------------------------------------------------------------
 
         # ------------------------------------------------------------------
         # ENTRYS DATOS EQUIPO TRES
         # ------------------------------------------------------------------
-
         self.frame_entrys_cuatro = LabelFrame(self.master, text="", bd=3, relief="ridge")
-
         self. cuadro_entrys_equipo_tres()
-
         self.frame_entrys_cuatro.pack(side="top", fill="both", expand=0, padx=5, pady=2)
         # ------------------------------------------------------------------
 
         # ------------------------------------------------------------------
         # ENTRYS DATOS EQUIPO PIE
         # ------------------------------------------------------------------
-
         self.frame_entrys_cinco = LabelFrame(self.master, text="")
-
         self.cuadro_entrys_pie()
-
         self.frame_entrys_cinco.pack(side="top", fill="both", expand=0, padx=5, pady=2)
         # ------------------------------------------------------------------
 
         # ------------------------------------------------------------------
         # ENTRYS DATOS EQUIPO TOTALES
         # ------------------------------------------------------------------
-
         self.frame_entrys_seis = LabelFrame(self.master, text="")
-
         self.cuadro_entrys_totales()
-
         self.frame_entrys_seis.pack(side="top", fill="both", expand=0, padx=5, pady=2)
         # ------------------------------------------------------------------
 
@@ -527,6 +450,96 @@ class OrdenesRepara(Frame):
     # --------------------------------------------------------------------------------
     # CRUD *
     # --------------------------------------------------------------------------------
+
+    def fVer_orden(self):
+
+        # -------------------------------------------------------------
+        self.selected = self.grid_orden.focus()
+        self.clave = self.grid_orden.item(self.selected, 'text')
+
+        if self.clave == "":
+            messagebox.showwarning("Ver", "No hay nada seleccionado", parent=self)
+            return
+
+        # self.alta_modif = 2
+        # self.var_Id = self.clave  #puede traer -1 , en ese caso seria un alta
+
+        self.habilitar_text('normal')
+        self.limpiar_text()
+
+        # Trae un solo el registro solicitado mediante su ID. Metodo de ordenrepar_ABM.
+        datos_registro_selec = self.varOrdenes.traer_un_registro(self.clave)
+
+        # Asigno el valor de la lista al campo desde la posicion 1
+        self.entry_nro_orden.configure(state="normal")
+        self.entry_nro_orden.insert(0, datos_registro_selec[1])
+        self.entry_nro_orden.configure(state="disabled")
+
+        # Aqui analizo que no me llegue desde la TABLA ninguna fecha en "none" dado que ese es un error
+        # en el caso que venga, la convierto datetime con la fecha actual tanto para ingreso como para egreso.
+        una_fecha = (datos_registro_selec[2])
+        self.fecha_final = una_fecha.strftime("%d-%m-%Y %H:%M:%S")
+        self.strvar_fecha_ingreso.set(self.fecha_final)
+
+        # Tratamiento de fecha de egreso porque aca puede venir None
+        if (datos_registro_selec[3]) == None:
+            self.strvar_fecha_egreso.set(value="")
+        else:
+            una_fecha = (datos_registro_selec[3])
+            self.fecha_final = una_fecha.strftime("%d-%m-%Y %H:%M:%S")
+            self.strvar_fecha_egreso.set(self.fecha_final)
+
+        #self.filtro_activo = "orden_repara WHERE Id = " + str(self.clave)
+        #valores = self.varOrdenes.consultar_ordenes(self.filtro_activo)
+
+        # Aqui analizo que no me llegue desde la TABLA ninguna fecha en "none" dado que ese es un error
+        # en el caso que venga, la convierto datetime con la fecha actual tanto para ingreso como para egreso.
+        una_fecha = (datos_registro_selec[2])
+        self.fecha_final = una_fecha.strftime("%d-%m-%Y %H:%M:%S")
+        self.strvar_fecha_ingreso.set(self.fecha_final)
+
+        # Tratamiento de fecha de egreso porque aca puede venir None
+        if (datos_registro_selec[3]) == None:
+            self.strvar_fecha_egreso.set(value="")
+        else:
+            una_fecha = (datos_registro_selec[3])
+            self.fecha_final = una_fecha.strftime("%d-%m-%Y %H:%M:%S")
+            self.strvar_fecha_egreso.set(self.fecha_final)
+
+        self.strvar_codigo_cliente.set(datos_registro_selec[4])
+        self.strvar_nombre_cliente.set(value=datos_registro_selec[5])
+
+        self.strvar_equ_ingresa.set(value=datos_registro_selec[6])
+        self.strvar_equ_grupo.set(value=datos_registro_selec[7])
+        self.strvar_equipo_procesador.set(value=datos_registro_selec[8])
+        self.strvar_equipo_ram.set(value=datos_registro_selec[9])
+        self.strvar_equipo_discos.set(value=datos_registro_selec[10])
+        self.strvar_equipo_sist_oper.set(value=datos_registro_selec[11])
+        self.strvar_equipo_ing_obser.set(value=datos_registro_selec[11])
+        self.strvar_equ_accesorios.set(value=datos_registro_selec[13])
+        self.strvar_equ_estado.set(value=datos_registro_selec[14])
+
+        self.strvar_cuentas.set(value=datos_registro_selec[15])
+        self.strvar_requerido.set(value=datos_registro_selec[16])
+        self.text_diagnostico.insert(END, datos_registro_selec[17])
+        self.strvar_presupuesto.set(value=datos_registro_selec[18])
+        self.text_trabajo_realizado.insert(END, datos_registro_selec[19])
+        self.strvar_partes.set(value=datos_registro_selec[20])
+        self.text_anotaciones.insert(END, datos_registro_selec[21])
+        self.strvar_total_manodeobra.set(value=datos_registro_selec[22])
+        self.strvar_total_partes.set(value=datos_registro_selec[23])
+        self.strvar_retirado.set(value=datos_registro_selec[24])
+
+        self.strvar_cli_deuda.set(value=str(self.fTraedeuda(self.strvar_codigo_cliente.get())))
+
+        # traer los datos del cliente direccion y telefono - Datos mas -
+        retorno = self.varOrdenes.buscar_entabla("clientes WHERE codigo = '" + self.strvar_codigo_cliente.get() + "'")
+
+        for item in retorno:
+            self.strvar_cli_datosmas.set(value=str(item[4] + ' - tel: ' + item[8] + ' / ' + item[9]))
+
+        self.sumar_totalfinal()
+        self.habilitar_text('disabled')
 
     def fNueva(self):
 
@@ -1047,95 +1060,56 @@ class OrdenesRepara(Frame):
             self.entry_total_partes.focus()
             return
 
-    def fVer_orden(self):
+    # ************************************************************************************
+    # TREEVIEW
+    # ************************************************************************************
 
-        # -------------------------------------------------------------
-        self.selected = self.grid_orden.focus()
-        self.clave = self.grid_orden.item(self.selected, 'text')
+    def frame_treeview(self):
 
-        if self.clave == "":
-            messagebox.showwarning("Ver", "No hay nada seleccionado", parent=self)
-            return
+        # STYLE TREEVIEW
+        style = ttk.Style(self.frame_tvw_ordenes)
+        style.theme_use("clam")
+        style.configure("Treeview.Heading", background="black", foreground="white")
 
-        # self.alta_modif = 2
-        # self.var_Id = self.clave  #puede traer -1 , en ese caso seria un alta
+        # Este es el TV donde aparecen las ordenes de reparacion
+        self.grid_orden = ttk.Treeview(self.frame_tvw_ordenes, height=6, columns=("col1", "col2", "col3", "col4",
+                                                                                  "col5", "col6", "col7", "col8"))
+        self.grid_orden.bind("<Double-Button-1>", self.DobleClickGrid)
+        #self.grid_orden.bind("<ButtonRelease-3>", self.muestradatos)
 
-        self.habilitar_text('normal')
-        self.limpiar_text()
+        self.grid_orden.column("#0", width=40, anchor="center")
+        self.grid_orden.column("col1", width=70, anchor="e")
+        self.grid_orden.column("col2", width=130, anchor="center")
+        self.grid_orden.column("col3", width=130, anchor="center")
+        self.grid_orden.column("col4", width=50, anchor="e")
+        self.grid_orden.column("col5", width=300, anchor="w")
+        self.grid_orden.column("col6", width=90, anchor="e")
+        self.grid_orden.column("col7", width=90, anchor="e")
+        self.grid_orden.column("col8", width=90, anchor="e")
 
-        # Trae un solo el registro solicitado mediante su ID. Metodo de ordenrepar_ABM.
-        datos_registro_selec = self.varOrdenes.traer_un_registro(self.clave)
+        self.grid_orden.heading("#0", text="Id", anchor="center")
+        self.grid_orden.heading("col1", text="Nº Orden", anchor="center")
+        self.grid_orden.heading("col2", text="Fecha/Hora Ingreso", anchor="center")
+        self.grid_orden.heading("col3", text="Fecha/Hora Egreso", anchor="center")
+        self.grid_orden.heading("col4", text="Cod.", anchor="center")
+        self.grid_orden.heading("col5", text="Cliente", anchor="center")
+        self.grid_orden.heading("col6", text="Total", anchor="center")
+        self.grid_orden.heading("col7", text="Partes", anchor="center")
+        self.grid_orden.heading("col8", text="M.O.", anchor="center")
 
-        # Asigno el valor de la lista al campo desde la posicion 1
-        self.entry_nro_orden.configure(state="normal")
-        self.entry_nro_orden.insert(0, datos_registro_selec[1])
-        self.entry_nro_orden.configure(state="disabled")
+        self.grid_orden.tag_configure('oddrow', background='light grey')
+        self.grid_orden.tag_configure('evenrow', background='white')
 
-        # Aqui analizo que no me llegue desde la TABLA ninguna fecha en "none" dado que ese es un error
-        # en el caso que venga, la convierto datetime con la fecha actual tanto para ingreso como para egreso.
-        una_fecha = (datos_registro_selec[2])
-        self.fecha_final = una_fecha.strftime("%d-%m-%Y %H:%M:%S")
-        self.strvar_fecha_ingreso.set(self.fecha_final)
-
-        # Tratamiento de fecha de egreso porque aca puede venir None
-        if (datos_registro_selec[3]) == None:
-            self.strvar_fecha_egreso.set(value="")
-        else:
-            una_fecha = (datos_registro_selec[3])
-            self.fecha_final = una_fecha.strftime("%d-%m-%Y %H:%M:%S")
-            self.strvar_fecha_egreso.set(self.fecha_final)
-
-        #self.filtro_activo = "orden_repara WHERE Id = " + str(self.clave)
-        #valores = self.varOrdenes.consultar_ordenes(self.filtro_activo)
-
-        # Aqui analizo que no me llegue desde la TABLA ninguna fecha en "none" dado que ese es un error
-        # en el caso que venga, la convierto datetime con la fecha actual tanto para ingreso como para egreso.
-        una_fecha = (datos_registro_selec[2])
-        self.fecha_final = una_fecha.strftime("%d-%m-%Y %H:%M:%S")
-        self.strvar_fecha_ingreso.set(self.fecha_final)
-
-        # Tratamiento de fecha de egreso porque aca puede venir None
-        if (datos_registro_selec[3]) == None:
-            self.strvar_fecha_egreso.set(value="")
-        else:
-            una_fecha = (datos_registro_selec[3])
-            self.fecha_final = una_fecha.strftime("%d-%m-%Y %H:%M:%S")
-            self.strvar_fecha_egreso.set(self.fecha_final)
-
-        self.strvar_codigo_cliente.set(datos_registro_selec[4])
-        self.strvar_nombre_cliente.set(value=datos_registro_selec[5])
-
-        self.strvar_equ_ingresa.set(value=datos_registro_selec[6])
-        self.strvar_equ_grupo.set(value=datos_registro_selec[7])
-        self.strvar_equipo_procesador.set(value=datos_registro_selec[8])
-        self.strvar_equipo_ram.set(value=datos_registro_selec[9])
-        self.strvar_equipo_discos.set(value=datos_registro_selec[10])
-        self.strvar_equipo_sist_oper.set(value=datos_registro_selec[11])
-        self.strvar_equipo_ing_obser.set(value=datos_registro_selec[11])
-        self.strvar_equ_accesorios.set(value=datos_registro_selec[13])
-        self.strvar_equ_estado.set(value=datos_registro_selec[14])
-
-        self.strvar_cuentas.set(value=datos_registro_selec[15])
-        self.strvar_requerido.set(value=datos_registro_selec[16])
-        self.text_diagnostico.insert(END, datos_registro_selec[17])
-        self.strvar_presupuesto.set(value=datos_registro_selec[18])
-        self.text_trabajo_realizado.insert(END, datos_registro_selec[19])
-        self.strvar_partes.set(value=datos_registro_selec[20])
-        self.text_anotaciones.insert(END, datos_registro_selec[21])
-        self.strvar_total_manodeobra.set(value=datos_registro_selec[22])
-        self.strvar_total_partes.set(value=datos_registro_selec[23])
-        self.strvar_retirado.set(value=datos_registro_selec[24])
-
-        self.strvar_cli_deuda.set(value=str(self.fTraedeuda(self.strvar_codigo_cliente.get())))
-
-        # traer los datos del cliente direccion y telefono - Datos mas -
-        retorno = self.varOrdenes.buscar_entabla("clientes WHERE codigo = '" + self.strvar_codigo_cliente.get() + "'")
-
-        for item in retorno:
-            self.strvar_cli_datosmas.set(value=str(item[4] + ' - tel: ' + item[8] + ' / ' + item[9]))
-
-        self.sumar_totalfinal()
-        self.habilitar_text('disabled')
+        # SCROLLBAR del Treeview
+        scroll_x = Scrollbar(self.frame_tvw_ordenes, orient="horizontal")
+        scroll_y = Scrollbar(self.frame_tvw_ordenes, orient="vertical")
+        self.grid_orden.config(xscrollcommand=scroll_x.set)
+        self.grid_orden.config(yscrollcommand=scroll_y.set)
+        scroll_x.config(command=self.grid_orden.xview)
+        scroll_y.config(command=self.grid_orden.yview)
+        scroll_y.pack(side="right", fill="y")
+        scroll_x.pack(side="bottom", fill="x")
+        self.grid_orden['selectmode'] = 'browse'
 
     # ************************************************************************************
     # METODOS PARA BOTONES Y ENTRYS
@@ -1635,6 +1609,8 @@ class OrdenesRepara(Frame):
         A4 : 210x297mm
         """
 
+        # ----------------------------------------------------------------------------------
+        # CONFIGURACION
         # esto siempre debe estar
         pdf = PDF(orientation='P', unit='mm', format='A4')
         # numero de paginas para luego usar en numeracion de pie de pagina
@@ -1647,7 +1623,9 @@ class OrdenesRepara(Frame):
         pdf.set_auto_page_break(auto=True, margin=20)
         # -----------------------------------------------------------------------------------
 
-        # armado de encabezado --------------------------------------------------------------
+        # -----------------------------------------------------------------------------------
+        # ENCABEZADO
+
         feactual = datetime.now()
         feac = feactual.strftime("%d-%m-%Y %H:%M:%S")
         self.pdf_numero_orden = str(datos_registro_selec[1])
@@ -1661,6 +1639,9 @@ class OrdenesRepara(Frame):
                  align='C', fill=0, ln=1)
         # ----------------------------------------------------------------------------------
 
+        # ----------------------------------------------------------------------------------
+        # DEFINO VARIABLES
+
         self.pdf_desc = str(datos_registro_selec[6])
         self.pdf_grupo = str(datos_registro_selec[7])
         self.pdf_acces = datos_registro_selec[13]
@@ -1672,9 +1653,13 @@ class OrdenesRepara(Frame):
         self.pdf_realizado = datos_registro_selec[19]
         self.pdf_partes = datos_registro_selec[20]
         self.pdf_anotaciones = datos_registro_selec[21]
-        self.pdf_totpartes = str(datos_registro_selec[22])
-        self.pdf_totmanobra = str(datos_registro_selec[23])
+        self.pdf_totmanobra = str(datos_registro_selec[22])
+        self.pdf_totpartes = str(datos_registro_selec[23])
         self.totalpagar = str(datos_registro_selec[22]+datos_registro_selec[23])
+        # ----------------------------------------------------------------------------------
+
+        # ----------------------------------------------------------------------------------
+        # TITULOS Y NOTAS - LINEAS DE IMPRESION YA ARMADAS
 
         cuerpo_1 = 'Equipo: '+self.pdf_desc+' - '+self.pdf_grupo
         cuerpo_2 = 'Accesorios: '+self.pdf_acces
@@ -1690,112 +1675,123 @@ class OrdenesRepara(Frame):
                     ' - Total Mano de Obra $: '+self.pdf_totmanobra+' - Total a pagar $: '+self.totalpagar
         cuerpo_11 = ('NOTA: Pasado 90 dias de recibir su equipo, la casa no se responsabiliza por el estado '
                      'ni el reintegro del mismo')
+        # ----------------------------------------------------------------------------------
 
-        # talon cliente ----------------------------------------------
-        pdf.multi_cell(w=0, h=5, txt=cuerpo_1, align='L', fill=0)
-        pdf.multi_cell(w=0, h=5, txt=cuerpo_2, align='L', fill=0)
-        pdf.multi_cell(w=0, h=5, txt=cuerpo_12, align='L', fill=0)
-        pdf.multi_cell(w=0, h=5, txt=cuerpo_4, align='L', fill=0)
+        # ----------------------------------------------------------------------------------
+        # TALON DEL CLIENTE
+
+        pdf.cell(w=0, h=2, txt='', align='L', fill=0, ln=1)
+        pdf.multi_cell(w=0, h=5, txt=cuerpo_1, border=1, align='L', fill=0)
+        pdf.multi_cell(w=0, h=5, txt=cuerpo_2, border=1, align='L', fill=0)
+        pdf.multi_cell(w=0, h=5, txt=cuerpo_12, border=1, align='L', fill=0)
+        pdf.multi_cell(w=0, h=5, txt=cuerpo_4, border=1, align='L', fill=0)
         # espacios
         pdf.cell(w=0, h=5, txt='', align='L', fill=0, ln=1)
         pdf.multi_cell(w=0, h=5, txt=cuerpo_11, align='L', fill=0)
 
-        # Espaciado entre cuerpos ------------------------------------
-        pdf.cell(w=0, h=15, txt='', align='L', fill=0, ln=1)
+        # Espaciado entre cuerpos
+        pdf.cell(w=0, h=10, txt='', align='L', fill=0, ln=1)
+        # --------------------------------------------------------------------------------
 
-        # talon interno ----------------------------------------------
-        # Encabezado -------------------------------------------------
+        # --------------------------------------------------------------------------------
+        # TALON INTERNO
+
+        # Encabezado
         pdf.set_font('Arial', '', 10)
+        pdf.set_line_width(0.4)
         pdf.cell(w=0, h=5, txt='Fecha/Hora: ' + feac + '  - Orden Nº ' + self.pdf_datos_encabezado_orden, border=1,
                  align='C', fill=0, ln=1)
-        pdf.cell(w=0, h=3, txt='', align='L', fill=0, ln=1)
+        pdf.cell(w=0, h=2, txt='', align='L', fill=0, ln=1)
+        pdf.set_line_width(0.2)
+        # --------------------------------------------------------------------------------
 
-        # Cuerpo segundo talon ----------------------------------------
+        # --------------------------------------------------------------------------------
+        # CUERPO SEGUNDO TALON
+
+        # EQUIPO
         pdf.set_font('Courier', 'B', 10)
-        pdf.cell(w=0, h=5, txt='* Equipo: ', align='L', fill=0, ln=1)
+        pdf.cell(w=0, h=4, txt='* Equipo: ', align='L', fill=0, ln=1)
         pdf.set_font('Arial', '', 11)
-        pdf.cell(w=0, h=5, txt=self.pdf_desc, align='L', fill=0, ln=1)
+        pdf.multi_cell(w=0, h=4, txt=self.pdf_desc, border=1, align='L', fill=0)
         pdf.cell(w=0, h=3, txt='', align='L', fill=0, ln=1)
 
+        # ACCESORIOS Y ESTADO DEL EQUIPO
         pdf.set_font('Courier', 'B', 10)
-        pdf.cell(w=0, h=5, txt='* Accesorios y Estado del equipo: ', align='L', fill=0, ln=1)
+        pdf.cell(w=0, h=4, txt='* Accesorios y Estado del equipo: ', align='L', fill=0, ln=1)
         pdf.set_font('Arial', '', 11)
-        pdf.cell(w=0, h=5, txt=self.pdf_acces+'  -  '+self.pdf_estado, align='L', fill=0, ln=1)
+        pdf.multi_cell(w=0, h=4, txt=self.pdf_acces+'  -  '+self.pdf_estado, border=1, align='L', fill=0)
         pdf.cell(w=0, h=3, txt='', align='L', fill=0, ln=1)
 
+        # CUENTAS Y CONTRASEÑAS
         pdf.set_font('Courier', 'B', 10)
-        pdf.cell(w=0, h=5, txt='* Cuentas y contraseñas: ', align='L', fill=0, ln=1)
+        pdf.cell(w=0, h=4, txt='* Cuentas y contraseñas: ', align='L', fill=0, ln=1)
         pdf.set_font('Arial', '', 11)
-        pdf.cell(w=0, h=5, txt=self.pdf_cuenta, align='L', fill=0, ln=1)
+        pdf.multi_cell(w=0, h=4, txt=self.pdf_cuenta, border=1, align='L', fill=0)
         pdf.cell(w=0, h=3, txt='', align='L', fill=0, ln=1)
 
+        # REQUERIMIENTO
         pdf.set_font('Courier', 'B', 10)
-        pdf.cell(w=0, h=5, txt='* Requerimiento: ', align='L', fill=0, ln=1)
+        pdf.cell(w=0, h=4, txt='* Requerimiento: ', align='L', fill=0, ln=1)
         pdf.set_font('Arial', '', 11)
-        pdf.cell(w=0, h=5, txt=self.pdf_requerido, align='L', fill=0, ln=1)
+        pdf.multi_cell(w=0, h=4, txt=self.pdf_requerido, align='L', border=1, fill=0)
         pdf.cell(w=0, h=3, txt='', align='L', fill=0, ln=1)
 
+        # DIAGNOSTICO
         pdf.set_font('Courier', 'B', 10)
-        pdf.cell(w=0, h=5, txt='* Diagnostico: ', align='L', fill=0, ln=1)
+        pdf.cell(w=0, h=4, txt='* Diagnostico: ', align='L', fill=0, ln=1)
         pdf.set_font('Arial', '', 11)
-        pdf.multi_cell(w=0, h=5, txt=self.pdf_diagnostico, align='L', fill=0)
+        pdf.multi_cell(w=0, h=4, txt=self.pdf_diagnostico, border=1, align='L', fill=0)
         pdf.cell(w=0, h=3, txt='', align='L', fill=0, ln=1)
 
+        # PRESUPUESTO
         pdf.set_font('Courier', 'B', 10)
-        pdf.cell(w=0, h=5, txt='* Presupuesto: ', align='L', fill=0, ln=1)
+        pdf.cell(w=0, h=4, txt='* Presupuesto: ', align='L', fill=0, ln=1)
         pdf.set_font('Arial', '', 11)
-        pdf.cell(w=0, h=5, txt=self.pdf_presupuesto, align='L', fill=0, ln=1)
+        pdf.multi_cell(w=0, h=4, txt=self.pdf_presupuesto, border=1, align='L', fill=0)
         pdf.cell(w=0, h=3, txt='', align='L', fill=0, ln=1)
 
+        # TRABAJO REALIZADO
         pdf.set_font('Courier', 'B', 10)
-        pdf.cell(w=0, h=5, txt='* Trabajo realizado: ', align='L', fill=0, ln=1)
+        pdf.cell(w=0, h=4, txt='* Trabajo realizado: ', align='L', fill=0, ln=1)
         pdf.set_font('Arial', '', 11)
-        pdf.multi_cell(w=0, h=5, txt=self.pdf_realizado, align='L', fill=0)
+        pdf.multi_cell(w=0, h=4, txt=self.pdf_realizado, border=1, align='L', fill=0)
         pdf.cell(w=0, h=3, txt='', align='L', fill=0, ln=1)
 
+        # PARTES REEMPLAZADAS
         pdf.set_font('Courier', 'B', 10)
-        pdf.cell(w=0, h=5, txt='* Partes reemplazadas: ', align='L', fill=0, ln=1)
+        pdf.cell(w=0, h=4, txt='* Partes reemplazadas: ', align='L', fill=0, ln=1)
         pdf.set_font('Arial', '', 11)
-        pdf.cell(w=0, h=5, txt=self.pdf_partes, align='L', fill=0, ln=1)
+        pdf.multi_cell(w=0, h=4, txt=self.pdf_partes, border=1, align='L', fill=0)
         pdf.cell(w=0, h=3, txt='', align='L', fill=0, ln=1)
 
+        # pdf.set_font('Courier', 'B', 10)
+        # pdf.cell(w=0, h=5, txt='* Anotaciones: ', align='L', fill=0, ln=1)
+        # pdf.set_font('Arial', '', 11)
+        # pdf.multi_cell(w=0, h=5, txt=self.pdf_anotaciones, align='L', fill=0)
+        # pdf.cell(w=0, h=3, txt='', align='L', fill=0, ln=1)
+
+        # CONTROLES INTERNOS
         pdf.set_font('Courier', 'B', 10)
-        pdf.cell(w=0, h=5, txt='* Anotaciones: ', align='L', fill=0, ln=1)
+        pdf.cell(w=0, h=4, txt='Bateria-Teclado-Camara-Sonido-Mic-Wifi-Lectora-Msconfig-Drivers-Fecha/Hora-Temperatura',
+                 align='L', fill=0, ln=1)
+        pdf.cell(w=0, h=4, txt='Disco-Antivirus-Actualizaciones-Navegadores-Crack-Restauracion-Ccleaner-Office',
+                 align='L', fill=0, ln=1)
+        pdf.cell(w=0, h=3, txt='', align='L', fill=0, ln=1)
+
+        # TOTALES
+        pdf.set_font('Courier', 'B', 10)
+        pdf.cell(w=0, h=4, txt='* Totales: ', align='L', fill=0, ln=1)
         pdf.set_font('Arial', '', 11)
-        pdf.multi_cell(w=0, h=5, txt=self.pdf_anotaciones, align='L', fill=0)
-        pdf.cell(w=0, h=3, txt='', align='L', fill=0, ln=1)
-
-        pdf.set_font('Courier', 'B', 10)
-        pdf.cell(w=0, h=5, txt='Bateria-Teclado-Camara-Sonido-Mic-Wifi-Lectora-Msconfig-Drivers-Fecha/Hora-Temperatura', align='L', fill=0, ln=1)
-        pdf.cell(w=0, h=5, txt='Disco-Antivirus-Actualizaciones-Navegadores-Crack-Restauracion-Ccleaner-Office', align='L', fill=0, ln=1)
-        pdf.cell(w=0, h=3, txt='', align='L', fill=0, ln=1)
-
-        pdf.set_font('Courier', 'B', 10)
-        pdf.cell(w=0, h=5, txt='* Totales: ', align='L', fill=0, ln=1)
-        pdf.set_font('Arial', '', 11)
-        pdf.multi_cell(w=0, h=5, txt=cuerpo_10, align='L', fill=0)
+        pdf.multi_cell(w=0, h=4, txt=cuerpo_10, border=1, align='L', fill=0)
         #pdf.line(10, 210, 190, 210)
         pdf.cell(w=0, h=3, txt='', align='L', fill=0, ln=1)
 
         # Espaciado entre cuerpos ------------------------------------
-        pdf.cell(w=0, h=20, txt='', align='L', fill=0, ln=1)
+        pdf.cell(w=0, h=15, txt='', align='L', fill=0, ln=1)
 
         pdf.set_font('Courier', 'B', 10)
         pdf.cell(w=0, h=5, txt='Retirada................................ ', align='R', fill=0, ln=1)
-
-        # # -----------------------------------------------------------------------------
-        # pdf.multi_cell(w=0, h=5, txt='Orden de reparacion ' + self.pdf_datos_encabezado_orden, border=1, align='C', fill=0)
-        # pdf.multi_cell(w=0, h=5, txt=cuerpo_1, align='L', fill=0)
-        # pdf.multi_cell(w=0, h=5, txt=cuerpo_2, align='L', fill=0)
-        # pdf.multi_cell(w=0, h=5, txt=cuerpo_4, align='L', fill=0)
-        # pdf.multi_cell(w=0, h=5, txt=cuerpo_3, align='L', fill=0)
-        # pdf.multi_cell(w=0, h=5, txt=cuerpo_5, align='L', fill=0)
-        # pdf.multi_cell(w=0, h=5, txt=cuerpo_6, align='L', fill=0)
-        # pdf.multi_cell(w=0, h=5, txt=cuerpo_7, align='L', fill=0)
-        # pdf.multi_cell(w=0, h=5, txt=cuerpo_8, align='L', fill=0)
-        # pdf.multi_cell(w=0, h=5, txt=cuerpo_9, align='L', fill=0)
-        # pdf.multi_cell(w=0, h=5, txt=cuerpo_10, align='L', border=1, fill=0)
-        # # -----------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------
 
         """ para crear una linea recta
         #pdf.rect(x=50, y=80, w=70, h=95)
@@ -1810,27 +1806,22 @@ class OrdenesRepara(Frame):
         # ----------------------------------------------------------------------------
 
         # -----------------------------------------------------------------------------
-        """
-        Para insertar lineas de escritura una debajo de otra
+        """ Para insertar lineas de escritura una debajo de otra
         por ejemplo :
         linea 1
         linea 2
         linea 3
-
         for i in range(1, 41):
-            pdf.cell(0, 10, f'Esta es la linea {i} :D', ln=True)
-        """
+            pdf.cell(0, 10, f'Esta es la linea {i} :D', ln=True)  """
         # -------------------------------------------------------------------------------
 
         # --------------------------------------------------------------------------------
         # margenes izq derecha arriba y abajo
-        """
-        Margen antes de terminar la hoja o sea en tre la ultima linea de la hoja y el fin de la hoja
-        pdf.set_auto_page_break(auto=True, margin=15)
-        """
+        """ Margen antes de terminar la hoja o sea en tre la ultima linea de la hoja y el fin de la hoja
+        pdf.set_auto_page_break(auto=True, margin=15) """
         # -------------------------------------------------------------------------------------
 
-        # # para listar una base de datos forma simple basica
+        """ # # para listar una base de datos forma simple basica
         # # lista_de_datos = retorno de la base de datos
 
         # # al ultimo le ponemos w=0 y abarca todo el resto del renglon hasta el final
@@ -1848,7 +1839,7 @@ class OrdenesRepara(Frame):
         #     pdf.cell(w=20, h=5, txt=row[3], border=1, align='C', fill=0)
         #     mostrar = row[4]
         #     cadena = (mostrar[:100])
-        #     pdf.multi_cell(w=0, h=5, txt=cadena, border=1, align='E', fill=0)
+        #     pdf.multi_cell(w=0, h=5, txt=cadena, border=1, align='E', fill=0) """
 
         pdf.output('hoja.pdf')
 
@@ -1882,6 +1873,8 @@ class OrdenesRepara(Frame):
         A4 : 210x297mm
         """
 
+        # -----------------------------------------------------------------------------------
+        # CONFIGURACION INFORME
         # esto siempre debe estar
         pdf = PDF(orientation='P', unit='mm', format='A4')
         # numero de paginas para luego usar en numeracion de pie de pagina
@@ -1894,13 +1887,16 @@ class OrdenesRepara(Frame):
         pdf.set_auto_page_break(auto=True, margin=20)
         # -----------------------------------------------------------------------------------
 
-        # armado de encabezado --------------------------------------------------------------
+        # -----------------------------------------------------------------------------------
+        # ARMADO DE ENCABEZADO
+
         feactual = datetime.now()
         feac = feactual.strftime("%d-%m-%Y %H:%M:%S")
         self.pdf_numero_orden = str(datos_registro_selec[1])
         self.pdf_codigo_cliente = str(datos_registro_selec[4])
         self.pdf_nombre_cliente = datos_registro_selec[5]
         self.pdf_datos_encabezado_orden = (self.pdf_numero_orden)
+        # -----------------------------------------------------------------------------------
 
         # # Imprimo el encabezado de pagina con el numero de orden
         # pdf.set_font('Arial', '', 10)
@@ -1909,6 +1905,8 @@ class OrdenesRepara(Frame):
         # ----------------------------------------------------------------------------------
 
         # ----------------------------------------------------------------------------------
+        # PREPARACION DATOS DEL INFORME
+
         self.pdf_desc = str(datos_registro_selec[6])        # descripcion libre equipo que ingresa (PC-Impresora....)
         self.pdf_grupo = str(datos_registro_selec[7])       # equipo grupo combo (Notebook - PC -Impresora
 
@@ -1933,10 +1931,14 @@ class OrdenesRepara(Frame):
         self.pdf_realizado = datos_registro_selec[19]
         self.pdf_partes = datos_registro_selec[20]
         self.pdf_anotaciones = datos_registro_selec[21]
+        # -----------------------------------------------------------------------------------
+
+        # -----------------------------------------------------------------------------------
+        # ARMADO CUERPOS DE IMPRESION
 
         # datos totales honorarios y partes
-        self.pdf_totpartes = str(datos_registro_selec[22])
-        self.pdf_totmanobra = str(datos_registro_selec[23])
+        self.pdf_totmanobra = str(datos_registro_selec[22])
+        self.pdf_totpartes = str(datos_registro_selec[23])
         self.totalpagar = str(datos_registro_selec[22]+datos_registro_selec[23])
 
         cuerpo_1 = 'Equipo: '+self.pdf_grupo+' - '+self.pdf_desc
@@ -1944,27 +1946,17 @@ class OrdenesRepara(Frame):
                     self.pdf_discos+' - Sistema Operativo: ' + self.pdf_sist_oper +
                     ' - Observaciones: '+self.pdf_observaciones)
         cuerpo_3 = 'Requerimiento: '+self.pdf_requerido
-
         cuerpo_4 = 'Diagnostico: '+self.pdf_diagnostico
-
         cuerpo_5 = 'Trabajo realizado: '+self.pdf_realizado
-
         cuerpo_6 = 'Anotaciones: '+self.pdf_anotaciones
-
         cuerpo_7 = 'Partes reemplazadas: '+self.pdf_partes
-
         cuerpo_8 = 'Presupuesto: '+self.pdf_presupuesto
-
         cuerpo_10 = 'Total partes $ : '+self.pdf_totpartes+\
                     ' - Total Mano de Obra $: '+self.pdf_totmanobra+' - Total a pagar $: '+self.totalpagar
+        # -----------------------------------------------------------------------------------
 
-        # cuerpo_2 = 'Accesorios: '+self.pdf_acces
-        # cuerpo_12 = 'Estado del equipo: '+self.pdf_estado
-        # cuerpo_3 = 'Cuentas y contraseñas: '+self.pdf_cuenta
-        # cuerpo_4 = 'Requerimiento: '+self.pdf_requerido
-        # cuerpo_11 = ('NOTA: Pasado 90 dias de recibir su equipo, la casa no se responsabiliza por el estado '
-        #              'ni el reintegro del mismo')
-        # ----------------------------------------------------------------------------------
+        # -----------------------------------------------------------------------------------
+        # IMPRESION
 
         # Encabezado
         pdf.set_font('Arial', 'B', 12)
@@ -2045,14 +2037,6 @@ class OrdenesRepara(Frame):
 
 
 
-
-
-
-
-
-
-
-
 #         # -------------------------------------------------------------
 #
 #         self.pantalla_estad = Toplevel()
@@ -2096,3 +2080,5 @@ class OrdenesRepara(Frame):
 #         self.pantalla_estad.focus_set()
 #
 #         mainloop()
+
+

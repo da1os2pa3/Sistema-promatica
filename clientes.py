@@ -1,9 +1,12 @@
+from Tools.scripts.ptags import tags
+
 from funciones import *
 from clientes_ABM import *
 #-------------------------------------------------
 from tkinter import messagebox
 #import tkinter as tk
 import tkinter.font as tkFont
+from tktooltip import ToolTip
 #-------------------------------------------------
 from datetime import date
 from datetime import datetime
@@ -42,7 +45,7 @@ class Ventana(Frame):
         htotal = master.winfo_screenheight()
         # Guardamos el largo y alto de la ventana
         wventana = 980
-        hventana = 615
+        hventana = 620
         # Aplicamos la siguiente formula para calcular donde debería posicionarse
         pwidth = round(wtotal / 2 - wventana / 2) + 0
         pheight = round(htotal / 2 - hventana / 2) + 0
@@ -69,31 +72,32 @@ class Ventana(Frame):
 
     def create_widgets(self):
 
-        # --------------------------------------------------------------------------
+        # -----------------------------------------------------------------------------
         # TITULOS -*-
-        # ---------------------------------------------------------------------------------
-
+        # -----------------------------------------------------------------------------
         # Encabezado logo y titulo con PACK
         self.frame_titulo_top = Frame(self.master)
 
-        # Armo el logo y el titulo
+        # LOGO
         self.photo3 = Image.open('clientes4.png')
-        self.photo3 = self.photo3.resize((75, 75), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo3 = self.photo3.resize((105, 75), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.png_clientes = ImageTk.PhotoImage(self.photo3)
-        self.lbl_png_clientes = Label(self.frame_titulo_top, image=self.png_clientes, bg="red", relief=RIDGE, bd=5,
-                                      padx=7)
+        self.lbl_png_clientes = Label(self.frame_titulo_top, image=self.png_clientes, bg="red", relief="ridge", bd=5, padx=5)
+        # TITULO
         self.lbl_titulo = Label(self.frame_titulo_top, width=25, text="Clientes", bg="black", fg="gold",
-                                font=("Arial bold", 38, "bold"), bd=5, relief=RIDGE)
-        # Coloco logo y titulo en posicion de pantalla
-        self.lbl_png_clientes.grid(row=0, column=0, sticky=W, padx=8, ipadx=20)
-        self.lbl_titulo.grid(row=0, column=1, sticky="nsew", padx=20)
-        self.frame_titulo_top.pack(side=TOP, fill=X, padx=8, pady=5)
+                                font=("Arial bold", 38, "bold"), bd=5, relief="ridge")
+
+        # COLOCO EL LOGO A LA IZQUIERDA Y EL TITULO AL LADO
+        self.lbl_png_clientes.grid(row=0, column=0, sticky=W, padx=5, ipadx=20)
+        self.lbl_titulo.grid(row=0, column=1, sticky="nsew", padx=12)
+
+        # CIERRO EL FRAME PEINCIPAL
+        self.frame_titulo_top.pack(side="top", fill="x", padx=8, pady=5)
         # --------------------------------------------------------------------------
 
         # --------------------------------------------------------------------------
         # STRINGVARS -*-
-        # ---------------------------------------------------------------------------------
-
+        # --------------------------------------------------------------------------
         self.strvar_codigo = tk.StringVar(value="")
         self.strvar_apellido = tk.StringVar(value="")
         self.strvar_nombres = tk.StringVar(value="")
@@ -109,271 +113,62 @@ class Ventana(Frame):
         self.strvar_fecha_ingreso = tk.StringVar(value="")
         self.strvar_observaciones = tk.StringVar(value="")
         self.strvar_cant_clientes = tk.StringVar(value="0")
-        # --------------------------------------------------------------------------
 
         # --------------------------------------------------------------------------
-        # BOTONES -*-
-        # ---------------------------------------------------------------------------------
+        # BARRA LATERAL DE MENU
+        # --------------------------------------------------------------------------
 
-        # BOTONES NUEVO - ELIMINAR - EDITAR - GUARDAR - CANCELAR
+        # cuadro principal contenedor
         barra_botones = LabelFrame(self.master)
 
-        botones1 = LabelFrame(barra_botones, bd=5, relief="ridge")
+        # BOTONES GRID - BOTONES 1
+        self.botones1 = LabelFrame(barra_botones, bd=5, relief="ridge")
+        self.cuadro_botones_grid()
+        self.botones1.pack(side="top", padx=3, pady=3, fill="y")
 
-        # Instalacion botones
-        self.btnNuevo=Button(botones1, text="Nuevo", command=self.fNuevo, bg="blue", fg="white", width=10)
-        self.btnNuevo.grid(row=0, column=0, padx=5, pady=3, ipadx=10)
-        self.btnEditar=Button(botones1, text="Editar", command=self.fEditar, bg="blue", fg="white", width=10)
-        self.btnEditar.grid(row=1, column=0, padx=5, pady=3, ipadx=10)
-        self.btnEliminar=Button(botones1, text="Eliminar", command=self.fEliminar, bg="red", fg="white", width=10)
-        self.btnEliminar.grid(row=2, column=0, padx=5, pady=3, ipadx=10)
-        self.btnGuardar=Button(botones1, text="Guardar", command=self.fGuardar, bg="green", fg="white", width=10)
-        self.btnGuardar.grid(row=3, column=0, padx=5, pady=3, columnspan=2)
-        self.btnCancelar=Button(botones1, text="Cancelar", command=self.fCancelar, bg="black", fg="white", width=10)
-        self.btnCancelar.grid(row=4, column=0, padx=5, pady=3, columnspan=2)
+        # BOTONES ORDEN - TOPE Y FIN DE ARCHIVO - BOTONES 2
+        self.botones2 = LabelFrame(barra_botones, bd=5, relief="ridge")
+        self.cuadro_botones_movimiento()
+        self.botones2.pack(side="top", padx=3, pady=3, fill="y")
 
-        botones1.pack(side="top", padx=3, pady=3, fill="y")
+        # BOTONES SALIDA - BOTONES 3
+        self.botones3 = LabelFrame(barra_botones)
+        self.cuadro_boton_salida()
+        self.botones3.pack(side="top", padx=3, pady=3, fill="y")
 
-        # BOTONES ORDEN - TOPE Y FIN DE ARCHIVO
-        botones2 = LabelFrame(barra_botones, bd=5, relief=RIDGE)
+        # BOTONES ROTULO CANT DE CLIENTES - BOTONES 4
+        self.botones4 = LabelFrame(barra_botones)
+        self.cuadro_cartel_clientes()
+        self.botones4.pack(side="top", padx=3, pady=3, fill="y")
 
-        self.btn_orden_codigo = Button(botones2, text="Orden Codigo", width=11, command=self.forden_codigo, bg="grey",
-                                       fg="white")
-        self.btn_orden_codigo.grid(row=0, column=0, padx=5, pady=3, ipadx=10)
-        self.btn_orden_apellido = Button(botones2, text="Orden Apellido", width=11, command=self.forden_apellido,
-                                         bg="grey", fg="white")
-        self.btn_orden_apellido.grid(row=1, column=0, padx=5, pady=3, ipadx=10)
-        self.btn_reset = Button(botones2, text="Reset", width=11, command=self.fReset, bg="black", fg="white")
-        self.btn_reset.grid(row=2, column=0, padx=5, pady=3, ipadx=10)
-        # botones para ir al tope y al fin del archivo
-        self.photo4 = Image.open('toparch.png')
-        self.photo4 = self.photo4.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
-        self.photo4 = ImageTk.PhotoImage(self.photo4)
-        self.btnToparch = Button(botones2, text="", image=self.photo4, command=self.fToparch, bg="grey", fg="white")
-        self.btnToparch.grid(row=3, column=0, padx=5, sticky="nsew", pady=3)
-        # ToolTip(self.btnToparch, msg="Ir a principio de archivo")
-        self.photo5 = Image.open('finarch.png')
-        self.photo5 = self.photo5.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
-        self.photo5 = ImageTk.PhotoImage(self.photo5)
-        self.btnFinarch = Button(botones2, text="", image=self.photo5, command=self.fFinarch, bg="grey", fg="white")
-        self.btnFinarch.grid(row=4, column=0, padx=5, sticky="nsew", pady=3)
-        # ToolTip(self.btnFinarch, msg="Ir al final del archivo")
-
-        botones2.pack(side=TOP, padx=3, pady=3, fill=Y)
-
-        # BOTONES SALIDA
-        botones3 = LabelFrame(barra_botones)
-
-        self.photo3 = Image.open('salida.png')
-        self.photo3 = self.photo3.resize((50, 50), Image.LANCZOS)  # Redimension (Alto, Ancho)
-        self.photo3 = ImageTk.PhotoImage(self.photo3)
-        self.btnSalir=Button(botones3, text="Salir", image=self.photo3, command=self.fSalir, bg="yellow", fg="white")
-        self.btnSalir.grid(row=0, column=0, padx=5, pady=3, sticky="nsew")
-
-        botones3.pack(side=TOP, padx=3, pady=3, fill=Y)
-
-        botones4 = LabelFrame(barra_botones)
-
-        fff = tkFont.Font(family="Arial", size=9, weight="bold")
-        self.lbl_cant_clientes = Label(botones4, text="Clientes", font=fff)
-        self.lbl_cant_clientes1= Label(botones4, textvariable=self.strvar_cant_clientes, font=fff)
-        self.lbl_cant_clientes.grid(row=0, column=0, padx=5, pady=3, columnspan=2, sticky='nsew')
-        self.lbl_cant_clientes1.grid(row=1, column=0, padx=5, pady=3, columnspan=2, sticky='nsew')
-
-        botones4.pack(side="top", padx=3, pady=3, fill="y")
-        # --------------------------------------------------------------------------
-
-        # --------------------------------------------------------------------------
-        # PACK - frame de botones
         barra_botones.pack(side="left", padx=10, pady=5, ipady=5, fill="y")
         # --------------------------------------------------------------------------
 
         # --------------------------------------------------------------------------
-        # BUSQUEDA DE CLIENTES -*-
-        # ---------------------------------------------------------------------------------
-
+        # CUADRO PRINCIPAL CONTENEDOR DEL GRID Y BARRA DE BUSQUEDAS
         self.frame_tv = Frame(self.master)
-        # FRAME dentro del frame principal para poner la llinea de busqueda
-        self.frame_buscar = LabelFrame(self.frame_tv)
 
-        # BUSCAR Linea de label y entry de busqueda
-        self.lbl_buscar_cliente = Label(self.frame_buscar, text="Buscar: ")
-        self.lbl_buscar_cliente.grid(row=0, column=0, padx=5, pady=2)
-        self.entry_buscar_cliente=Entry(self.frame_buscar, width=50)
-        self.entry_buscar_cliente.grid(row=0, column=1, padx=5, pady=2, sticky=W)
-        self.btn_buscar_cliente = Button(self.frame_buscar, text="Buscar", command=self.fBuscar_en_tabla,
-                                         bg="CadetBlue", fg="white", width=27)
-        self.btn_buscar_cliente.grid(row=0, column=2, padx=5, pady=2, sticky=W)
-        self.btn_mostrar_todo = Button(self.frame_buscar, text="Mostrar todo", command=self.fShowall, bg="CadetBlue",
-                                       fg="white", width=27)
-        self.btn_mostrar_todo.grid(row=0, column=3, padx=5, pady=2, sticky=W)
+        # --------------------------------------------------------------------------
+        # BUSQUEDA DE CLIENTES -*-
+        # --------------------------------------------------------------------------
+        self.frame_buscar = LabelFrame(self.frame_tv)
+        self.cuadro_buscar()
+        self.frame_buscar.pack(side="top", fill="both", expand=1, padx=1, pady=3)
+        # ----------------------------------------------------------------------------
 
         # -----------------------------------------------------------------------------
         # TREEVIEW -*-
         # -----------------------------------------------------------------------------
+        self.cuadro_grid_clientes()
 
-        # STYLE TREEVIEW - un chiche para formas y colores
-        style = ttk.Style(self.frame_tv)
-        style.theme_use("clam")
-        style.configure("Treeview.Heading", background="black", foreground="white")
-
-        self.grid_clientes = ttk.Treeview(self.frame_tv, columns=("col1", "col2", "col3", "col4", "col5", "col6",
-                                                                  "col7", "col8", "col9", "col10", "col11", "col12",
-                                                                  "col13", "col14"))
-
-        self.grid_clientes.bind("<Double-Button-1>", self.DobleClickGrid)
-
-        self.grid_clientes.column("#0", width=60, anchor="center")
-        self.grid_clientes.column("col1", width=60, anchor="center")
-        self.grid_clientes.column("col2", width=180, anchor="w")
-        self.grid_clientes.column("col3", width=220, anchor="w")
-        self.grid_clientes.column("col4", width=220, anchor="w")
-        self.grid_clientes.column("col5", width=120, anchor="center")
-        self.grid_clientes.column("col6", width=90, anchor="center")
-        self.grid_clientes.column("col7", width=60, anchor="center")
-        self.grid_clientes.column("col8", width=200, anchor="center")
-        self.grid_clientes.column("col9", width=200, anchor="center")
-        self.grid_clientes.column("col10", width=200, anchor="center")
-        self.grid_clientes.column("col11", width=150, anchor="center")
-        self.grid_clientes.column("col12", width=100, anchor="center")
-        self.grid_clientes.column("col13", width=100, anchor="center")
-        self.grid_clientes.column("col14", width=200, anchor="center")
-
-        self.grid_clientes.heading("#0", text="Id", anchor="center")
-        self.grid_clientes.heading("col1", text="Codigo", anchor="center")
-        self.grid_clientes.heading("col2", text="Apellido", anchor="center")
-        self.grid_clientes.heading("col3", text="Nombres", anchor="center")
-        self.grid_clientes.heading("col4", text="Direccion", anchor="center")
-        self.grid_clientes.heading("col5", text="Localidad", anchor="center")
-        self.grid_clientes.heading("col6", text="Provincia", anchor="center")
-        self.grid_clientes.heading("col7", text="Postal", anchor="center")
-        self.grid_clientes.heading("col8", text="Telf.Personal", anchor="center")
-        self.grid_clientes.heading("col9", text="Telf.Trabajo", anchor="center")
-        self.grid_clientes.heading("col10", text="E-mail", anchor="center")
-        self.grid_clientes.heading("col11", text="Sit.Fiscal", anchor="center")
-        self.grid_clientes.heading("col12", text="CUIT", anchor="center")
-        self.grid_clientes.heading("col13", text="Fec.Ingreso", anchor="center")
-        self.grid_clientes.heading("col14", text="Observaciones", anchor="center")
-
-        self.grid_clientes.tag_configure('oddrow', background='light grey')
-        self.grid_clientes.tag_configure('evenrow', background='white')
-
-        # SCROLLBAR del Treeview
-        scroll_x = Scrollbar(self.frame_tv, orient="horizontal")
-        scroll_y = Scrollbar(self.frame_tv, orient="vertical")
-        self.grid_clientes.config(xscrollcommand=scroll_x.set)
-        self.grid_clientes.config(yscrollcommand=scroll_y.set)
-        scroll_x.config(command=self.grid_clientes.xview)
-        scroll_y.config(command=self.grid_clientes.yview)
-        scroll_y.pack(side="right", fill="y")
-        scroll_x.pack(side="bottom", fill="x")
-        # -------------------------------------------------------------------------
-
-        # -------------------------------------------------------------------------
-        # PACK - GENERALES
-        self.frame_buscar.pack(side=TOP, fill=BOTH, expand=1, padx=1, pady=3)
-        self. grid_clientes.pack(side= TOP, fill=BOTH, expand=1, padx=1, pady=5)
-        self.frame_tv.pack(side=TOP, fill=BOTH, padx=5, pady=5)
+        self.frame_tv.pack(side="top", fill="both", padx=5, pady=5)
         # --------------------------------------------------------------------------
 
         # --------------------------------------------------------------------------
         # ENTRYS -*-
-        # ---------------------------------------------------------------------------------
-
+        # --------------------------------------------------------------------------
         self.sector_entry = LabelFrame(self.master)
-
-        # CODIGO
-        self.lbl_codigo = Label(self.sector_entry, text="Codigo: ")
-        self.lbl_codigo.grid(row=0, column=0, padx=10, pady=3, sticky=W)
-        self.entry_codigo = Entry(self.sector_entry, textvariable=self.strvar_codigo, justify="right", width=10)
-        self.strvar_codigo.trace("w", lambda *args: self.limitador(self.strvar_codigo, 10))
-        self.entry_codigo.grid(row=0, column=1, padx=10, pady=3, sticky=W)
-        # APELLIDO
-        self.lbl_apellido = Label(self.sector_entry, text="Apellido: ")
-        self.lbl_apellido.grid(row=1, column=0, padx=10, pady=3, sticky=W)
-        self.entry_apellido=Entry(self.sector_entry, textvariable=self.strvar_apellido, justify="left", width=40)
-        self.strvar_apellido.trace("w", lambda *args: self.limitador(self.strvar_apellido, 40))
-        self.entry_apellido.grid(row=1, column=1, padx=10, pady=3, sticky=W)
-        # NOMBRES
-        self.lbl_nombres = Label(self.sector_entry, text="Nombres: ")
-        self.lbl_nombres.grid(row=2, column=0, padx=10, pady=3, sticky=W)
-        self.entry_nombres = Entry(self.sector_entry, textvariable=self.strvar_nombres, justify="left", width=40)
-        self.strvar_nombres.trace("w", lambda *args: self.limitador(self.strvar_nombres, 40))
-        self.entry_nombres.grid(row=2, column=1, padx=10, pady=3, sticky=W)
-        # DIRECCION
-        self.lbl_direccion = Label(self.sector_entry, text="Direccion: ")
-        self.lbl_direccion.grid(row=3, column=0, padx=10, pady=3, sticky=W)
-        self.entry_direccion=Entry(self.sector_entry, textvariable=self.strvar_direccion, justify="left", width=40)
-        self.strvar_direccion.trace("w", lambda *args: self.limitador(self.strvar_direccion, 30))
-        self.entry_direccion.grid(row=3, column=1, padx=10, pady=3, sticky=W)
-        # LOCALIDAD
-        self.lbl_localidad = Label(self.sector_entry, text="Localidad: ")
-        self.lbl_localidad.grid(row=4, column=0, padx=10, pady=3, sticky=W)
-        self.entry_localidad=Entry(self.sector_entry, textvariable=self.strvar_localidad, justify="left", width=40)
-        self.strvar_localidad.trace("w", lambda *args: self.limitador(self.strvar_localidad, 30))
-        self.entry_localidad.grid(row=4, column=1, padx=10, pady=3, sticky=W)
-        # PROVINCIA
-        self.lbl_provincia = Label(self.sector_entry, text="Provincia: ")
-        self.lbl_provincia.grid(row=5, column=0, padx=10, pady=3, sticky=W)
-        self.entry_provincia=Entry(self.sector_entry, textvariable=self.strvar_provincia, justify="left", width=40)
-        self.strvar_provincia.trace("w", lambda *args: self.limitador(self.strvar_provincia, 30))
-        self.entry_provincia.grid(row=5, column=1, padx=10, pady=3, sticky=W)
-        # POSTAL
-        self.lbl_postal = Label(self.sector_entry, text="Cod. Postal: ")
-        self.lbl_postal.grid(row=6, column=0, padx=10, pady=3, sticky=W)
-        self.entry_postal=Entry(self.sector_entry, textvariable=self.strvar_postal, justify="left", width=40)
-        self.strvar_postal.trace("w", lambda *args: self.limitador(self.strvar_postal, 30))
-        self.entry_postal.grid(row=6, column=1, padx=10, pady=3, sticky=W)
-        # TELEFONO PERSONAL
-        self.lbl_telefono_pers = Label(self.sector_entry, text="Telefono Personal: ")
-        self.lbl_telefono_pers.grid(row=0, column=2, padx=10, pady=3, sticky=W)
-        self.entry_telefono_pers=Entry(self.sector_entry, textvariable=self.strvar_telef_pers, justify="left", width=40)
-        self.strvar_telef_pers.trace("w", lambda *args: self.limitador(self.strvar_telef_pers, 30))
-        self.entry_telefono_pers.grid(row=0, column=3, padx=10, pady=3, sticky=W)
-        # TELEFONO TRABAJO
-        self.lbl_telefono_trab = Label(self.sector_entry, text="Telefono Trabajo: ")
-        self.lbl_telefono_trab.grid(row=1, column=2, padx=10, pady=3, sticky=W)
-        self.entry_telefono_trab=Entry(self.sector_entry, textvariable=self.strvar_telef_trab, justify="left", width=40)
-        self.strvar_telef_trab.trace("w", lambda *args: self.limitador(self.strvar_telef_trab, 30))
-        self.entry_telefono_trab.grid(row=1, column=3, padx=10, pady=3, sticky=W)
-        # CORREO ELECTRONICO
-        self.lbl_mail = Label(self.sector_entry, text="Correo Electronico: ")
-        self.lbl_mail.grid(row=2, column=2, padx=10, pady=3, sticky=W)
-        self.entry_mail=Entry(self.sector_entry, textvariable=self.strvar_mail, justify="left", width=40)
-        self.strvar_mail.trace("w", lambda *args: self.limitador(self.strvar_mail, 30))
-        self.entry_mail.grid(row=2, column=3, padx=10, pady=5, sticky=W)
-        # SITUACION FISCAL - COMBOBOX
-        self.lbl_sit_fiscal = Label(self.sector_entry, text="Situacion Fiscal: ")
-        self.lbl_sit_fiscal.grid(row=3, column=2, padx=10, pady=3, sticky=W)
-        self.combo_sit_fiscal = ttk.Combobox(self.sector_entry, textvariable=self.strvar_sit_fis, state='readonly',
-                                             width=40)
-        # self.cargar_combo = self.varClientes.llenar_combo_rubro()
-        self.combo_sit_fiscal["values"] = ["CF - Consumidor Final", "RI - Responsable Inscripto",
-                                           "RM - Responsable Monotributo", "EX - Exento",
-                                           "RN - Responsable no inscripto"]
-        self.combo_sit_fiscal.grid(row=3, column=3, padx=10, pady=5, sticky=W)
-        # CUIT
-        self.lbl_cuit = Label(self.sector_entry, text="CUIT - CUIL: ")
-        self.lbl_cuit.grid(row=4, column=2, padx=10, pady=3, sticky=W)
-        self.entry_cuit=Entry(self.sector_entry, textvariable= self.strvar_cuit, justify="left", width=40)
-        self.strvar_cuit.trace("w", lambda *args: self.limitador(self.strvar_cuit, 11))
-        self.entry_cuit.grid(row=4, column=3, padx=10, pady=3, sticky=W)
-        # FECHA DE INGRESO
-        self.lbl_fecha_ingreso = Label(self.sector_entry, text="Fecha Ingreso: ")
-        self.lbl_fecha_ingreso.grid(row=5, column=2, padx=10, pady=3, sticky=W)
-        self.entry_fecha_ingreso=Entry(self.sector_entry, textvariable=self.strvar_fecha_ingreso, justify="left",
-                                       width=40)
-        self.entry_fecha_ingreso.bind("<FocusOut>", self.formato_fecha)
-        self.entry_fecha_ingreso.grid(row=5, column=3, padx=10, pady=3, sticky=W)
-        # Label y entry OBSERVACIONES
-        self.lbl_observaciones = Label(self.sector_entry, text="Observaciones: ")
-        self.lbl_observaciones.grid(row=6, column=2, padx=10, pady=3, sticky=W)
-        self.entry_observaciones = Entry(self.sector_entry, textvariable=self.strvar_observaciones, justify="left",
-                                         width=40)
-        self.strvar_observaciones.trace("w", lambda *args: self.limitador(self.strvar_observaciones, 50))
-        self.entry_observaciones.grid(row=6, column=3, padx=10, pady=3, sticky=W)
-
-        # PACK del frame "sector_entry"
+        self.cuadro_entrys()
         self.sector_entry.pack(expand=1, fill="both", pady=5, padx=5)
         # --------------------------------------------------------------------------
 
@@ -404,9 +199,10 @@ class Ventana(Frame):
             # convierto fecha de 2024-12-19 a 19/12/2024
             forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[13], '%Y-%m-%d'), "hora_no")
 
-            self.grid_clientes.insert("", END, tags=color, text=row[0], values=(row[1], row[2], row[3], row[4],
-                                                                      row[5], row[6], row[7], row[8], row[9], row[10],
-                                                                      row[11], row[12], forma_normal, row[14]))
+            self.grid_clientes.insert("", "end", tags=color, text=row[0], values=(row[1], row[2], row[3],
+                                                                                  row[4], row[5], row[6], row[7],
+                                                                                  row[8], row[9], row[10], row[11],
+                                                                                  row[12], forma_normal, row[14]))
 
         if len(self.grid_clientes.get_children()) > 0:
             self.grid_clientes.selection_set(self.grid_clientes.get_children()[0])
@@ -479,7 +275,7 @@ class Ventana(Frame):
         self.entry_telefono_pers.delete(0, END)
         self.entry_telefono_trab.delete(0, END)
         self.entry_mail.delete(0, END)
-        self.entry_fecha_ingreso.delete(0, END)
+        #self.entry_fecha_ingreso.delete(0, END)
         self.combo_sit_fiscal.set("")
         self.combo_sit_fiscal.current(0)
         self.entry_cuit.delete(0, END)
@@ -514,9 +310,9 @@ class Ventana(Frame):
 
     def habilitar_btn_A(self, estado):
 
-        self.btnNuevo.configure(state=estado)
-        self.btnEliminar.configure(state=estado)
-        self.btnEditar.configure(state=estado)
+        self.btn_nuevo.configure(state=estado)
+        self.btn_eliminar.configure(state=estado)
+        self.btn_editar.configure(state=estado)
         self.entry_buscar_cliente.configure(state=estado)
         self.btn_buscar_cliente.configure(state=estado)
         self.btn_mostrar_todo.configure(state=estado)
@@ -529,7 +325,7 @@ class Ventana(Frame):
 
     def habilitar_btn_B(self, estado):
 
-        self.btnGuardar.configure(state=estado)
+        self.btn_guardar.configure(state=estado)
 
     def fCancelar(self):
 
@@ -616,6 +412,7 @@ class Ventana(Frame):
             # convierto fecha de date a string y cambio a visualizacion español
             fecha_convertida = fecha_str_reves_normal(self, datetime.strftime(row[13], "%Y-%m-%d"), "hora_no")
             self.entry_fecha_ingreso.insert(0, fecha_convertida)
+            self.strvar_fecha_ingreso.set(value=fecha_convertida)
             self.entry_observaciones.insert(0, row[14])
 
         self.entry_codigo.configure(state="readonly")
@@ -659,7 +456,6 @@ class Ventana(Frame):
 
         #-----------------------------------------------------------------
         # VALIDACIONES
-        #-----------------------------------------------------------------
 
         # CONTROLO CODIGO REPETIDO - control de codigo de cliente repetido (en funciones)
         codrep = codigo_repetido(self.strvar_codigo.get(), "clientes", "codigo")
@@ -670,9 +466,7 @@ class Ventana(Frame):
                 messagebox.showerror("Error", "El codigo ya existe en la tabla - verifique", parent=self)
                 self.entry_apellido.focus()
                 return
-        # ----------------------------------------------------------------
 
-        # ----------------------------------------------------------------
         # VALIDACION QUE EXISTA APELLIDO y NOMBRE
 
         if self.strvar_apellido.get() == "":
@@ -886,3 +680,346 @@ class Ventana(Frame):
             self.grid_clientes.focus(rg)
             # lleva el foco al final del treeview
             self.grid_clientes.yview(self.grid_clientes.index(self.grid_clientes.get_children()[-1]))
+
+    def cuadro_botones_grid(self):
+
+        # for c in range(5):
+        #     self.botones1.grid_rowconfigure(c, weight=1, minsize=30)
+
+        for c in range(1):
+            self.botones1.grid_columnconfigure(c, weight=1, minsize=140)
+
+        # Columnas mas cortas
+        # self.botones1.grid_rowconfigure(0, weight=3, minsize=60)
+        # self.frame_buscar.grid_columnconfigure(3, weight=1, minsize=50)
+        # self.frame_buscar.grid_columnconfigure(2, weight=3, minsize=50)
+
+        #self.botones1.grid_columnconfigure(0, weight=1, minsize=90)
+
+        # Nuevo cliente
+        img = Image.open("archivo-nuevo.png").resize((18, 18))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_nuevo=Button(self.botones1, text=" Nuevo", command=self.fNuevo, bg="blue", fg="white", compound="left")
+        self.btn_nuevo.image = icono
+        self.btn_nuevo.config(image=icono)
+        self.btn_nuevo.grid(row=0, column=0, padx=5, pady=3, ipadx=10)
+        ToolTip(self.btn_nuevo, msg="Ingresar un nuevo cliente")
+
+        # Modificar un cliente
+        img = Image.open("editar.png").resize((18, 18))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_editar=Button(self.botones1, text=" Editar", command=self.fEditar, bg="blue", fg="white",
+                               compound="left")
+        self.btn_editar.image = icono
+        self.btn_editar.config(image=icono)
+        self.btn_editar.grid(row=1, column=0, padx=5, pady=3, ipadx=10)
+        ToolTip(self.btn_editar, msg="Modificar datos de un cliente")
+
+        # Eliminar un cliente
+        img = Image.open("eliminar.png").resize((18, 18))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_eliminar=Button(self.botones1, text=" Eliminar", command=self.fEliminar, bg="red", fg="white",
+                                 compound="left")
+        self.btn_eliminar.image = icono
+        self.btn_eliminar.config(image=icono)
+        self.btn_eliminar.grid(row=2, column=0, padx=5, pady=3, ipadx=10)
+        ToolTip(self.btn_eliminar, msg="Elimina un cliente")
+
+        # Guardar datos del cliente
+        img = Image.open("guardar.png").resize((18, 18))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_guardar=Button(self.botones1, text=" Guardar", command=self.fGuardar, bg="green", fg="white",
+                                compound="left")
+        self.btn_guardar.image = icono
+        self.btn_guardar.config(image=icono)
+        self.btn_guardar.grid(row=3, column=0, padx=5, pady=3, ipadx=10)
+        ToolTip(self.btn_guardar, msg="Guarda los datos del cliente")
+
+        # Guardar datos del cliente
+        img = Image.open("cancelar.png").resize((18, 18))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_cancelar=Button(self.botones1, text=" Cancelar", command=self.fCancelar, bg="black", fg="white",
+                                 compound="left")
+        self.btn_cancelar.image = icono
+        self.btn_cancelar.config(image=icono)
+        self.btn_cancelar.grid(row=4, column=0, padx=5, pady=3, ipadx=10)
+        ToolTip(self.btn_cancelar, msg="Cancela lo que se este realizando")
+
+        # reordenamiento de self.frame_botones_grid
+        for widg in self.botones1.winfo_children():
+            widg.grid_configure(padx=6, pady=3, sticky='nsew')
+
+    def cuadro_botones_movimiento(self):
+
+        for c in range(3):
+            self.botones2.grid_rowconfigure(c, weight=1, minsize=30)
+
+        # Ordena datos por codigo de cliente
+        img = Image.open("ordenar.png").resize((18, 18))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_orden_codigo = Button(self.botones2, text=" Orden Codigo", command=self.forden_codigo,
+                                       bg="grey", fg="white", compound="left")
+        self.btn_orden_codigo.image = icono
+        self.btn_orden_codigo.config(image=icono)
+        self.btn_orden_codigo.grid(row=0, column=0, padx=5, pady=3, ipadx=10)
+        ToolTip(self.btn_orden_codigo, msg="Ordena la informacion por codigo de cliente")
+
+        # Ordenar los datos ppor apellido y nombre
+        img = Image.open("ordenar.png").resize((18, 18))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_orden_apellido = Button(self.botones2, text=" Orden Apellido", command=self.forden_apellido,
+                                         bg="grey", fg="white", compound="left")
+        self.btn_orden_apellido.image = icono
+        self.btn_orden_apellido.config(image=icono)
+        self.btn_orden_apellido.grid(row=1, column=0, padx=5, pady=3, ipadx=10)
+        ToolTip(self.btn_orden_apellido, msg="Ordena la informacion por Apellido y nombre de cliente")
+
+        # Guardar datos del cliente
+        img = Image.open("reset.png").resize((18, 18))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_reset = Button(self.botones2, text=" Reset", command=self.fReset, bg="black", fg="white",
+                                compound="left")
+        self.btn_reset.image = icono
+        self.btn_reset.config(image=icono)
+        self.btn_reset.grid(row=2, column=0, padx=5, pady=3, ipadx=10)
+        ToolTip(self.btn_reset, msg="Vuelve al estado inicial")
+
+        # botones para ir al tope y al fin del archivo
+        self.photo4 = Image.open('toparch.png')
+        self.photo4 = self.photo4.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo4 = ImageTk.PhotoImage(self.photo4)
+        self.btnToparch = Button(self.botones2, text="", image=self.photo4, command=self.fToparch, bg="grey", fg="white")
+        self.btnToparch.grid(row=3, column=0, padx=5, sticky="nsew", pady=3)
+
+        # ToolTip(self.btnToparch, msg="Ir a principio de archivo")
+        self.photo5 = Image.open('finarch.png')
+        self.photo5 = self.photo5.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo5 = ImageTk.PhotoImage(self.photo5)
+        self.btnFinarch = Button(self.botones2, text="", image=self.photo5, command=self.fFinarch, bg="grey", fg="white")
+        self.btnFinarch.grid(row=4, column=0, padx=5, sticky="nsew", pady=3)
+        # ToolTip(self.btnFinarch, msg="Ir al final del archivo")
+
+        # reordenamiento de self.frame_botones_grid
+        for widg in self.botones2.winfo_children():
+            widg.grid_configure(padx=6, pady=3, sticky='nsew')
+
+    def cuadro_boton_salida(self):
+
+        self.photo3 = Image.open('salida.png')
+        self.photo3 = self.photo3.resize((50, 50), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo3 = ImageTk.PhotoImage(self.photo3)
+        self.btnSalir=Button(self.botones3, text="Salir", image=self.photo3, command=self.fSalir, bg="yellow", fg="white")
+        self.btnSalir.grid(row=0, column=0, padx=5, pady=3, sticky="nsew")
+
+    def cuadro_cartel_clientes(self):
+
+        fff = tkFont.Font(family="Arial", size=9, weight="bold")
+        self.lbl_cant_clientes = Label(self.botones4, text="Clientes", font=fff)
+        self.lbl_cant_clientes1= Label(self.botones4, textvariable=self.strvar_cant_clientes, font=fff)
+        self.lbl_cant_clientes.grid(row=0, column=0, padx=5, pady=3, columnspan=2, sticky='nsew')
+        self.lbl_cant_clientes1.grid(row=1, column=0, padx=5, pady=3, columnspan=2, sticky='nsew')
+
+    def cuadro_entrys(self):
+
+        # CODIGO
+        self.lbl_codigo = Label(self.sector_entry, text="Codigo: ")
+        self.lbl_codigo.grid(row=0, column=0, padx=10, pady=3, sticky=W)
+        self.entry_codigo = Entry(self.sector_entry, textvariable=self.strvar_codigo, justify="right", width=10)
+        self.strvar_codigo.trace("w", lambda *args: self.limitador(self.strvar_codigo, 10))
+        self.entry_codigo.grid(row=0, column=1, padx=10, pady=3, sticky=W)
+        # APELLIDO
+        self.lbl_apellido = Label(self.sector_entry, text="Apellido: ")
+        self.lbl_apellido.grid(row=1, column=0, padx=10, pady=3, sticky=W)
+        self.entry_apellido=Entry(self.sector_entry, textvariable=self.strvar_apellido, justify="left", width=40)
+        self.strvar_apellido.trace("w", lambda *args: self.limitador(self.strvar_apellido, 40))
+        self.entry_apellido.grid(row=1, column=1, padx=10, pady=3, sticky=W)
+        # NOMBRES
+        self.lbl_nombres = Label(self.sector_entry, text="Nombres: ")
+        self.lbl_nombres.grid(row=2, column=0, padx=10, pady=3, sticky=W)
+        self.entry_nombres = Entry(self.sector_entry, textvariable=self.strvar_nombres, justify="left", width=40)
+        self.strvar_nombres.trace("w", lambda *args: self.limitador(self.strvar_nombres, 40))
+        self.entry_nombres.grid(row=2, column=1, padx=10, pady=3, sticky=W)
+        # DIRECCION
+        self.lbl_direccion = Label(self.sector_entry, text="Direccion: ")
+        self.lbl_direccion.grid(row=3, column=0, padx=10, pady=3, sticky=W)
+        self.entry_direccion=Entry(self.sector_entry, textvariable=self.strvar_direccion, justify="left", width=40)
+        self.strvar_direccion.trace("w", lambda *args: self.limitador(self.strvar_direccion, 30))
+        self.entry_direccion.grid(row=3, column=1, padx=10, pady=3, sticky=W)
+        # LOCALIDAD
+        self.lbl_localidad = Label(self.sector_entry, text="Localidad: ")
+        self.lbl_localidad.grid(row=4, column=0, padx=10, pady=3, sticky=W)
+        self.entry_localidad=Entry(self.sector_entry, textvariable=self.strvar_localidad, justify="left", width=40)
+        self.strvar_localidad.trace("w", lambda *args: self.limitador(self.strvar_localidad, 30))
+        self.entry_localidad.grid(row=4, column=1, padx=10, pady=3, sticky=W)
+        # PROVINCIA
+        self.lbl_provincia = Label(self.sector_entry, text="Provincia: ")
+        self.lbl_provincia.grid(row=5, column=0, padx=10, pady=3, sticky=W)
+        self.entry_provincia=Entry(self.sector_entry, textvariable=self.strvar_provincia, justify="left", width=40)
+        self.strvar_provincia.trace("w", lambda *args: self.limitador(self.strvar_provincia, 30))
+        self.entry_provincia.grid(row=5, column=1, padx=10, pady=3, sticky=W)
+        # POSTAL
+        self.lbl_postal = Label(self.sector_entry, text="Cod. Postal: ")
+        self.lbl_postal.grid(row=6, column=0, padx=10, pady=3, sticky=W)
+        self.entry_postal=Entry(self.sector_entry, textvariable=self.strvar_postal, justify="left", width=40)
+        self.strvar_postal.trace("w", lambda *args: self.limitador(self.strvar_postal, 30))
+        self.entry_postal.grid(row=6, column=1, padx=10, pady=3, sticky=W)
+        # TELEFONO PERSONAL
+        self.lbl_telefono_pers = Label(self.sector_entry, text="Telefono Personal: ")
+        self.lbl_telefono_pers.grid(row=0, column=2, padx=10, pady=3, sticky=W)
+        self.entry_telefono_pers=Entry(self.sector_entry, textvariable=self.strvar_telef_pers, justify="left", width=40)
+        self.strvar_telef_pers.trace("w", lambda *args: self.limitador(self.strvar_telef_pers, 30))
+        self.entry_telefono_pers.grid(row=0, column=3, padx=10, pady=3, sticky=W)
+        # TELEFONO TRABAJO
+        self.lbl_telefono_trab = Label(self.sector_entry, text="Telefono Trabajo: ")
+        self.lbl_telefono_trab.grid(row=1, column=2, padx=10, pady=3, sticky=W)
+        self.entry_telefono_trab=Entry(self.sector_entry, textvariable=self.strvar_telef_trab, justify="left", width=40)
+        self.strvar_telef_trab.trace("w", lambda *args: self.limitador(self.strvar_telef_trab, 30))
+        self.entry_telefono_trab.grid(row=1, column=3, padx=10, pady=3, sticky=W)
+        # CORREO ELECTRONICO
+        self.lbl_mail = Label(self.sector_entry, text="Correo Electronico: ")
+        self.lbl_mail.grid(row=2, column=2, padx=10, pady=3, sticky=W)
+        self.entry_mail=Entry(self.sector_entry, textvariable=self.strvar_mail, justify="left", width=40)
+        self.strvar_mail.trace("w", lambda *args: self.limitador(self.strvar_mail, 30))
+        self.entry_mail.grid(row=2, column=3, padx=10, pady=5, sticky=W)
+        # SITUACION FISCAL - COMBOBOX
+        self.lbl_sit_fiscal = Label(self.sector_entry, text="Situacion Fiscal: ")
+        self.lbl_sit_fiscal.grid(row=3, column=2, padx=10, pady=3, sticky=W)
+        self.combo_sit_fiscal = ttk.Combobox(self.sector_entry, textvariable=self.strvar_sit_fis, state='readonly',
+                                             width=40)
+        # self.cargar_combo = self.varClientes.llenar_combo_rubro()
+        self.combo_sit_fiscal["values"] = ["CF - Consumidor Final", "RI - Responsable Inscripto",
+                                           "RM - Responsable Monotributo", "EX - Exento",
+                                           "RN - Responsable no inscripto"]
+        self.combo_sit_fiscal.grid(row=3, column=3, padx=10, pady=5, sticky=W)
+        # CUIT
+        self.lbl_cuit = Label(self.sector_entry, text="CUIT - CUIL: ")
+        self.lbl_cuit.grid(row=4, column=2, padx=10, pady=3, sticky=W)
+        self.entry_cuit=Entry(self.sector_entry, textvariable= self.strvar_cuit, justify="left", width=40)
+        self.strvar_cuit.trace("w", lambda *args: self.limitador(self.strvar_cuit, 11))
+        self.entry_cuit.grid(row=4, column=3, padx=10, pady=3, sticky=W)
+        # FECHA DE INGRESO
+        self.lbl_fecha_ingreso = Label(self.sector_entry, text="Fecha Ingreso: ")
+        self.lbl_fecha_ingreso.grid(row=5, column=2, padx=10, pady=3, sticky=W)
+        self.entry_fecha_ingreso=Entry(self.sector_entry, textvariable=self.strvar_fecha_ingreso, justify="left",
+                                       width=40)
+        self.entry_fecha_ingreso.bind("<FocusOut>", self.formato_fecha)
+        self.entry_fecha_ingreso.grid(row=5, column=3, padx=10, pady=3, sticky=W)
+        # Label y entry OBSERVACIONES
+        self.lbl_observaciones = Label(self.sector_entry, text="Observaciones: ")
+        self.lbl_observaciones.grid(row=6, column=2, padx=10, pady=3, sticky=W)
+        self.entry_observaciones = Entry(self.sector_entry, textvariable=self.strvar_observaciones, justify="left",
+                                         width=40)
+        self.strvar_observaciones.trace("w", lambda *args: self.limitador(self.strvar_observaciones, 50))
+        self.entry_observaciones.grid(row=6, column=3, padx=10, pady=3, sticky=W)
+
+    def cuadro_buscar(self):
+
+        for c in range(4):
+            self.frame_buscar.grid_columnconfigure(c, weight=2, minsize=50)
+
+        # COLUMNAS MAS CORTAS
+        self.frame_buscar.grid_columnconfigure(0, weight=1, minsize=50)
+        # self.frame_buscar.grid_columnconfigure(3, weight=1, minsize=50)
+        # self.frame_buscar.grid_columnconfigure(2, weight=3, minsize=50)
+        # self.frame_botones_grid.grid_columnconfigure(8, weight=1, minsize=50)
+
+        # BUSCAR UN CLIENTE
+        img = Image.open("buscar.png").resize((18, 18))
+        icono = ImageTk.PhotoImage(img)
+        self.lbl_buscar_cliente = Label(self.frame_buscar, text="Buscar: ", compound="left")
+        self.lbl_buscar_cliente.image = icono
+        self.lbl_buscar_cliente.config(image=icono)
+        self.lbl_buscar_cliente.grid(row=0, column=0, padx=5, pady=2, sticky="nsew")
+
+        # ENTRY BUSCAR CLIENTE
+        self.entry_buscar_cliente=Entry(self.frame_buscar)
+        self.entry_buscar_cliente.grid(row=0, column=1, padx=5, pady=2, sticky="nsew")
+        ToolTip(self.entry_buscar_cliente, msg="Escriba el nombre o apellido del cliente buscado")
+
+        # BOTON BUSCAR UN CLIENTE
+        img = Image.open("filtrar.png").resize((18, 18))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_buscar_cliente = Button(self.frame_buscar, text=" Buscar", command=self.fBuscar_en_tabla,
+                                         bg="CadetBlue", fg="white", width=30, compound="left")
+        self.btn_buscar_cliente.image = icono
+        self.btn_buscar_cliente.config(image=icono)
+        self.btn_buscar_cliente.grid(row=0, column=2, padx=5, pady=2, sticky="nsew")
+        ToolTip(self.btn_buscar_cliente, msg="Presenta los clientes que coinciden con la busqueda")
+
+        # BOTON MOSTRAR TODOS LOS CLIENTES
+        img = Image.open("ver_todo.png").resize((18, 18))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_mostrar_todo = Button(self.frame_buscar, text=" Mostrar todo", command=self.fShowall, bg="CadetBlue",
+                                       width=30, fg="white", compound="left")
+        self.btn_mostrar_todo.image = icono
+        self.btn_mostrar_todo.config(image=icono)
+        self.btn_mostrar_todo.grid(row=0, column=3, padx=5, pady=2, sticky="nsew")
+        ToolTip(self.btn_mostrar_todo, msg="Muestra todos los clientes")
+
+        # reordenamiento de self.frame_botones_grid
+        for widg in self.frame_buscar.winfo_children():
+            widg.grid_configure(padx=5, pady=3, sticky='nsew')
+
+    def cuadro_grid_clientes(self):
+
+        # STYLE TREEVIEW - un chiche para formas y colores
+        style = ttk.Style(self.frame_tv)
+        style.theme_use("clam")
+        style.configure("Treeview.Heading", background="black", foreground="white")
+
+        self.grid_clientes = ttk.Treeview(self.frame_tv, height=10, columns=("col1", "col2", "col3", "col4", "col5", "col6",
+                                                                  "col7", "col8", "col9", "col10", "col11", "col12",
+                                                                  "col13", "col14"))
+
+        self.grid_clientes.bind("<Double-Button-1>", self.DobleClickGrid)
+
+        self.grid_clientes.column("#0", width=60, anchor="center")
+        self.grid_clientes.column("col1", width=60, anchor="center")
+        self.grid_clientes.column("col2", width=180, anchor="w")
+        self.grid_clientes.column("col3", width=220, anchor="w")
+        self.grid_clientes.column("col4", width=220, anchor="w")
+        self.grid_clientes.column("col5", width=120, anchor="center")
+        self.grid_clientes.column("col6", width=90, anchor="center")
+        self.grid_clientes.column("col7", width=60, anchor="center")
+        self.grid_clientes.column("col8", width=200, anchor="center")
+        self.grid_clientes.column("col9", width=200, anchor="center")
+        self.grid_clientes.column("col10", width=200, anchor="center")
+        self.grid_clientes.column("col11", width=150, anchor="center")
+        self.grid_clientes.column("col12", width=100, anchor="center")
+        self.grid_clientes.column("col13", width=100, anchor="center")
+        self.grid_clientes.column("col14", width=200, anchor="center")
+
+        self.grid_clientes.heading("#0", text="Id", anchor="center")
+        self.grid_clientes.heading("col1", text="Codigo", anchor="center")
+        self.grid_clientes.heading("col2", text="Apellido", anchor="center")
+        self.grid_clientes.heading("col3", text="Nombres", anchor="center")
+        self.grid_clientes.heading("col4", text="Direccion", anchor="center")
+        self.grid_clientes.heading("col5", text="Localidad", anchor="center")
+        self.grid_clientes.heading("col6", text="Provincia", anchor="center")
+        self.grid_clientes.heading("col7", text="Postal", anchor="center")
+        self.grid_clientes.heading("col8", text="Telf.Personal", anchor="center")
+        self.grid_clientes.heading("col9", text="Telf.Trabajo", anchor="center")
+        self.grid_clientes.heading("col10", text="E-mail", anchor="center")
+        self.grid_clientes.heading("col11", text="Sit.Fiscal", anchor="center")
+        self.grid_clientes.heading("col12", text="CUIT", anchor="center")
+        self.grid_clientes.heading("col13", text="Fec.Ingreso", anchor="center")
+        self.grid_clientes.heading("col14", text="Observaciones", anchor="center")
+
+        self.grid_clientes.tag_configure('oddrow', background='light grey')
+        self.grid_clientes.tag_configure('evenrow', background='white')
+
+        # SCROLLBAR del Treeview
+        scroll_x = Scrollbar(self.frame_tv, orient="horizontal")
+        scroll_y = Scrollbar(self.frame_tv, orient="vertical")
+        self.grid_clientes.config(xscrollcommand=scroll_x.set)
+        self.grid_clientes.config(yscrollcommand=scroll_y.set)
+        scroll_x.config(command=self.grid_clientes.xview)
+        scroll_y.config(command=self.grid_clientes.yview)
+        scroll_y.pack(side="right", fill="y")
+        scroll_x.pack(side="bottom", fill="x")
+        # -------------------------------------------------------------------------
+
+        # -------------------------------------------------------------------------
+        # PACK - GENERALES
+        self.grid_clientes.pack(side= "top", fill="both", expand=1, padx=1, pady=5)
+

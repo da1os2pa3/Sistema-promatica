@@ -171,7 +171,7 @@ class datosPresupuestos:
                                  parent=self.master)
             exit()
 
-    def insertar_resupresup(self, nroventa, fechavta, codcli, nomcli, sitfiscal, cuit, dolarhoy, tasaganancia, total_real,
+    def insertar_presu_entregado(self, nroventa, fechavta, codcli, nomcli, sitfiscal, cuit, dolarhoy, tasaganancia, total_real,
                             total_redondo, forma_pago, detapago, detalle):
 
         try:
@@ -221,7 +221,7 @@ class datosPresupuestos:
                                  parent=self.master)
             exit()
 
-    def eliminar_resupresup2(self, nroventa):
+    def eliminar_presu_entregado2(self, nroventa):
 
         try:
             cur = self.cnn.cursor()
@@ -236,7 +236,7 @@ class datosPresupuestos:
                                  parent=self.master)
             exit()
 
-    def eliminar_resupresup1(self, Id):
+    def eliminar_presu_entregado1(self, Id):
 
         try:
             cur = self.cnn.cursor()
@@ -280,3 +280,17 @@ class datosPresupuestos:
             messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=Traer detapresup-",
                                  parent=self.master)
             exit()
+
+    def marcar_presup_aceptado(self,id_tabla, estado):
+
+        cur = self.cnn.cursor()
+
+        cur.execute("UPDATE resu_presup SET rp_aceptado = %s WHERE id = %s",
+        (estado, id_tabla))
+
+        self.cnn.commit()
+        cur.close()
+
+
+
+

@@ -24,6 +24,10 @@ class datosCtacte:
             aux = aux + str(row) + "\n"
         return aux
 
+    # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    # CRUD
+    # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
     def consultar_ctacte(self, tofil):
 
         try:
@@ -54,25 +58,25 @@ class datosCtacte:
                          parent=self.master)
             exit()
 
-    def eliminar_item_ctacte_xmodif(self, clave_movimiento):
-
-        """
-        Este metodo elimina el movimiento en cuenta corriente corresondiente a la clave de movimiento pasada
-        como parametro, esto pasa cuando se modifica un item de planilla de caja con imputacion a cuenta corriente
-        """
-
-        try:
-            cur = self.cnn.cursor()
-            sql = '''DELETE FROM ctacte WHERE cc_clavemov = ''' + clave_movimiento
-            cur.execute(sql)
-            n = cur.rowcount
-            self.cnn.commit()
-            cur.close()
-            return n
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=eliminar_item_ctacte_xmodif-",
-                         parent=self.master)
-            exit()
+    # def eliminar_item_ctacte_xmodif(self, clave_movimiento):
+    #
+    #     """
+    #     Este metodo elimina el movimiento en cuenta corriente corresondiente a la clave de movimiento pasada
+    #     como parametro, esto pasa cuando se modifica un item de planilla de caja con imputacion a cuenta corriente
+    #     """
+    #
+    #     try:
+    #         cur = self.cnn.cursor()
+    #         sql = '''DELETE FROM ctacte WHERE cc_clavemov = ''' + clave_movimiento
+    #         cur.execute(sql)
+    #         n = cur.rowcount
+    #         self.cnn.commit()
+    #         cur.close()
+    #         return n
+    #     except:
+    #         messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=eliminar_item_ctacte_xmodif-",
+    #                      parent=self.master)
+    #         exit()
 
     def eliminar_item_ctacte(self, Id):
 
@@ -125,6 +129,44 @@ class datosCtacte:
             messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=buscar_entabla-",
                          parent=self.master)
             exit()
+
+    # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    # COMPACTACION
+    # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+    def sumar_campactar(self, tofil):
+
+        cur = self.cnn.cursor()
+        cur.execute(tofil)
+        total_ing, total_egr = cur.fetchone()
+        datos = cur.fetchall()
+        self.cnn.commit()
+        cur.close()
+
+        return [total_ing, total_egr]
+
+    def borrar_campactar(self, tofil):
+
+        cur = self.cnn.cursor()
+        cur.execute(tofil)
+        # datos = cur.fetchall()
+        self.cnn.commit()
+        cur.close()
+        return True
+
+    def sumar_saldo_control(self, tofil):
+
+        cur = self.cnn.cursor()
+        cur.execute(tofil)
+        nuevo_saldo = cur.fetchone()
+        datos = cur.fetchall()
+        self.cnn.commit()
+        cur.close()
+        return nuevo_saldo
+
+    # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    # OTRAS
+    # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
     def traer_ultimo(self, xparametro):
 
