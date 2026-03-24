@@ -1,3 +1,5 @@
+import tkinter
+
 from funciones import *
 from funcion_new import *
 from presupuestos_ABM import *
@@ -20,7 +22,7 @@ class clase_presupuestos(Frame):
 
     def __init__(self, master=None):
 
-        super().__init__(master, width=880, height=510)
+        super().__init__(master, width=880, height=520)
         self.master = master
 
         self.master.grab_set()
@@ -36,24 +38,23 @@ class clase_presupuestos(Frame):
         # PANTALLA
         # ----------------------------------------------------------------------------------
 
-        # Esto esta agregado para centrar las ventanas en la pantalla
-        # master.geometry("880x510")
         self.master.resizable(0, 0)
 
-        """ Actualizamos el contenido de la ventana (la ventana pude crecer si se le agrega mas widgets).Esto 
-        actualiza el ancho y alto de la ventana en caso de crecer. """
+        """ Actualizamos el contenido de la ventana (la ventana pude crecer si se le agrega
+            mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer.
+            Obtenemos el alto y  ancho de la pantalla """
 
-        #Obtenemos el ancho y alto de la pantalla
-        wtotal = self.master.winfo_screenwidth()
-        htotal = self.master.winfo_screenheight()
-        # Asiganamos medidas a la ventana
-        wventana = 1045
-        hventana = 780
-        # Formula para calcular el centro, si le sumos valores puedo correrla a partir del centro
-        pwidth = round(wtotal / 2 - wventana / 2) + 0
-        pheight = round(htotal / 2 - hventana / 2) + 0
-        # Se lo aplicamos a la geometría de la ventana
-        self.master.geometry(str(wventana) + "x" + str(hventana) + "+" + str(pwidth) + "+" + str(pheight))
+        ancho = self.master.winfo_screenwidth()
+        alto = self.master.winfo_screenheight()
+
+        # Asigno fijo un ancho y un alto
+        ancho_ventana = 1045
+        alto_ventana = 775
+
+        # X e Y son las coordenadas para el posicionamiento del vertice superior izquierdo
+        x = int((ancho - ancho_ventana) / 2)
+        y = int((alto - alto_ventana) / 2)
+        self.master.geometry(f"{ancho_ventana}x{alto_ventana}+{x}+{y}")
         # ------------------------------------------------------------------------------
 
         #-------------------------------------------------------------------------------
@@ -101,8 +102,7 @@ class clase_presupuestos(Frame):
 
         # ----------------------------------------------------------------------
         #  TITULOS
-        # ----------------------------------------------------------------------
-
+        # ---------------------------------------------------------------------
         # Encabezado logo y titulo con PACK
         # self.frame_titulo_top = Frame(self.master)
         # # Armo el logo y el titulo
@@ -326,7 +326,7 @@ class clase_presupuestos(Frame):
         # ----------------------------------------------------------------------
         # ENTRYS DATOS ARTICULO/COMPONENTE A VENDER
         # ----------------------------------------------------------------------
-        self.frame_componentes = LabelFrame(self.master, text="", bg="#CEF2EF", borderwidth=2, relief="solid",
+        self.frame_componentes = LabelFrame(self.master, text="", bg="#81EBCD", borderwidth=2, relief="solid",
                                         highlightbackground="blue")
         self.entrys_componentes()
         self.frame_componentes.pack(side="top", fill="both", expand=0, padx=5, pady=2)
@@ -335,7 +335,7 @@ class clase_presupuestos(Frame):
         # ----------------------------------------------------------------------
         # ENTRYS IMPORTES DEL PRESUPUESTO - Linea de totales del item a cargar
         # ----------------------------------------------------------------------
-        self.frame_importes_articulo = LabelFrame(self.master, text="", foreground="black", relief="solid")
+        self.frame_importes_articulo = LabelFrame(self.master, text="", bg="#81EBCD", foreground="black", relief="solid")
         self.entrys_precios_componentes()
         #self.frame_importes_articulo_uno.pack(side="left", fill=BOTH, expand=1, padx=5, pady=2)
         self.frame_importes_articulo.pack(side="top", fill="both", expand=0, padx=5, pady=2)
@@ -354,10 +354,8 @@ class clase_presupuestos(Frame):
 
     def estado_inicial(self):
 
-        """ Cuando entro al modulo """
-
         self.filtro_activo_resu_presup = "resu_presup ORDER BY rp_fecha, rp_numero ASC"
-        self.filtro_activo_auxiliar = "aux_presup"
+        self.filtro_activo_auxiliar = "aux_presup ORDER BY ax_orden ASC"
         self.dato_seleccion = ""
         self.alta_modif_aux = 0         # tabla aux_presu
         self.alta_modif_presup = 0      # tabla resu_presu
@@ -452,8 +450,8 @@ class clase_presupuestos(Frame):
         self.btn_aceptado_presup.configure(state=estado)
         self.btn_showall.configure(state=estado)
         self.btn_buscar.configure(state=estado)
-        self.btn_imprime_presup_int.configure(state=estado)
-        self.btn_imprime_presup_ext.configure(state=estado)
+        self.btn_imprime_presupuesto.configure(state=estado)
+        #self.btn_imprime_presup_ext.configure(state=estado)
         self.entry_busqueda_presup.configure(state=estado)
 
         if self.alta_modif_presup == 1:
@@ -574,7 +572,7 @@ class clase_presupuestos(Frame):
                 """
 
                 # convierto fecha de 2024-12-19 a 19/12/2024
-                forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[2], '%Y-%m-%d'), "hora_no")
+                forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[2], '%Y-%m-%d'), False)
 
                 self.grid_tvw_presu_entregado.insert("", "end", tags=color, text=row[0], values=(row[1],
                                                                 forma_normal, row[4], row[7], row[8], row[9], row[10]))
@@ -640,12 +638,12 @@ class clase_presupuestos(Frame):
         try:
 
             datos = self.varPresupuestos.consultar_presupuestos(self.filtro_activo_auxiliar)
-
+            orden = 1
             for row in datos:
-                self.grid_tvw_auxcomp.insert("", "end", text=row[0], values=(row[1], row[2], row[3], row[4],
+                self.grid_tvw_auxcomp.insert("", "end", text=row[0], values=(orden, row[2], row[3], row[4],
                                                                                   row[5], row[6], row[7], row[8],
-                                                                                  row[9], row[10]))
-
+                                                                                  row[9], row[10], row[11]))
+                orden += 1
             if len(self.grid_tvw_auxcomp.get_children()) > 0:
                    self.grid_tvw_auxcomp.selection_set(self.grid_tvw_auxcomp.get_children()[0])
 
@@ -710,7 +708,7 @@ class clase_presupuestos(Frame):
         self.estado_botones_uno("disabled")
         self.estado_botones_dos("normal")
         self.limpiar_entrys_total()
-        self.strvar_nro_presup.set(value=(int(self.varPresupuestos.traer_ultimo(1)) + 1))
+        self.strvar_nro_presup.set(value=str(int(self.varPresupuestos.traer_ultimo(1)) + 1))
         self.entry_fecha_presup.focus()
 
     def fEdito_presupuesto(self):
@@ -759,18 +757,24 @@ class clase_presupuestos(Frame):
 
         for row in datos_detapresup:
 
-            dolar_a_pesos = float(row[7]) * float(self.strvar_valor_dolar_hoy.get())
-            iva_a_cargar = dolar_a_pesos * (float(row[5]) / 100)
+            dolar_a_pesos = float(row[8]) * float(self.strvar_valor_dolar_hoy.get())
+            iva_a_cargar = dolar_a_pesos * (float(row[6]) / 100)
             ganancia_a_cargar = (dolar_a_pesos + iva_a_cargar) * (float(self.strvar_tasa_ganancia.get()) / 100)
             total_presupuesto = dolar_a_pesos + iva_a_cargar + ganancia_a_cargar
 
-            self.varPresupuestos.insertar_auxpresup(row[2], row[3], row[4], row[5], row[6], row[7],
-                                                    total_presupuesto, row[8], ganancia_a_cargar, dolar_a_pesos)
+            self.varPresupuestos.insertar_auxpresup(row[1], row[3], row[4], row[5], row[6], row[7], row[8],
+                                                    total_presupuesto, row[9], ganancia_a_cargar, dolar_a_pesos)
 
         self.calcular("completo")
         self.calcular("totalpresupuesto")
         self.limpiar_Grid_auxiliar()
         self.llena_grilla_auxiliar("")
+
+
+
+
+
+
 
     def fBorro_presupuesto(self):
 
@@ -872,6 +876,10 @@ class clase_presupuestos(Frame):
 
         self.limpiar_Grid_auxiliar()
         self.llena_grilla_auxiliar(self.clave_ant)
+
+        # reordenar numeros de orden para que se acomoden los numeros de orden
+        self.reordenar(self.grid_tvw_auxcomp)
+
         messagebox.showinfo("Eliminar", "Registro eliminado correctamente", parent=self)
 
         self.calcular("totalventa")
@@ -901,14 +909,30 @@ class clase_presupuestos(Frame):
             # que pone la BD automaticamente al dar el alta
             self.clave = self.grid_tvw_auxcomp.item(self.selected, 'text')
 
-            n = self.varPresupuestos.eliminar_auxpresup(self.clave)
+            # ----------------------------------------------------------------
+            # Si es una modificacion, guardo el numero de orden que tenia
+            # ----------------------------------------------------------------
+            # primer elemento de la seleccion (I001 ò I002..), NO del grid no siempre coincide con el que tiene el foco
+            item = self.grid_tvw_auxcomp.selection()[0]
+            # Obtener todos los valores de la fila
+            valores = self.grid_tvw_auxcomp.item(item, "values")
+            # "Orden" está en la columna 0 guardo el orden que tenia
+            orden_item = valores[0]
+            # ----------------------------------------------------------------
+
+            self.varPresupuestos.eliminar_auxpresup(self.clave)
+
+        else:
+
+            total = len(self.grid_tvw_auxcomp.get_children())
+            orden_item = total + 1
 
         # vuelvo a cero la bandera de modificacion
         self.alta_modif_aux = 0
 
         # Insertamos el componente en el auxilliar de presupuesto (aux_presup)
 
-        self.varPresupuestos.insertar_auxpresup(self.strvar_proveedor.get(), self.strvar_codigo_componente.get(),
+        self.varPresupuestos.insertar_auxpresup(orden_item, self.strvar_proveedor.get(), self.strvar_codigo_componente.get(),
                                                 self.strvar_componente.get(), self.strvar_combo_tasa_iva.get(),
                                                 self.strvar_cantidad_vendida.get(), self.strvar_neto_dolar.get(),
                                                 self.strvar_precio_final_xcanti.get(),
@@ -967,13 +991,13 @@ class clase_presupuestos(Frame):
         # En la lista valores cargo toda la liena del treeview completa
         valores = self.grid_tvw_auxcomp.item(self.selected, 'values')
 
-        self.strvar_proveedor.set(value=valores[0])
-        self.strvar_codigo_componente.set(value=valores[1])
-        self.strvar_componente.set(value=valores[2])
-        self.strvar_combo_tasa_iva.set(value=valores[3])
-        self.strvar_cantidad_vendida.set(value=valores[4])
-        self.strvar_neto_dolar.set(value=valores[5])
-        self.strvar_total_item_redondo.set(value=valores[7])
+        self.strvar_proveedor.set(value=valores[1])
+        self.strvar_codigo_componente.set(value=valores[2])
+        self.strvar_componente.set(value=valores[3])
+        self.strvar_combo_tasa_iva.set(value=valores[4])
+        self.strvar_cantidad_vendida.set(value=valores[5])
+        self.strvar_neto_dolar.set(value=valores[6])
+        self.strvar_total_item_redondo.set(value=valores[8])
 
         self.calcular("completo")
 
@@ -1007,65 +1031,80 @@ class clase_presupuestos(Frame):
 
         # VALIDACIONES
 
-        # valido que haya items en venta
+        # --------------------------------------------------------------------
+        # valido que haya items en venta - Grid vacio
         if len(self.grid_tvw_auxcomp.get_children()) <= 0:
             messagebox.showerror("Error", "No hay items cargados", parent=self)
             return
-        # velido nro venta
+        # valido nro venta - no hay numero de venta
         if self.strvar_nro_presup.get() == 0:
             messagebox.showerror("Error", "Verifique numero de venta", parent=self)
             return
-        # valido fecha venta
+        # valido fecha venta - no hay feca de venta
         if self.strvar_fecha_presup.get() == "":
             messagebox.showerror("Error", "Verifique fecha de venta", parent=self)
             return
-        # valido nombre de cliente
+        # valido nombre de cliente - no hay cliente asignado
         if self.strvar_nombre_cliente.get() == "":
             messagebox.showerror("Error", "Ingrese nombre de cliente", parent=self)
             return
         # --------------------------------------------------------------------
 
+        # --------------------------------------------------------------------
         if parametro == "normal":
+            # Es una carga normal
             r = messagebox.askquestion("Cerrar presupuesto", "Guardamos el presupuesto? ", parent=self)
             if r == messagebox.NO:
                 return
 
         if parametro == "como":
-            r = messagebox.askquestion("Cerrar presupuesto", "Guardar como... asignando numero siguiente ",
-                                       parent=self)
+            # Es guardar como para generar un presupuesto igual pero con otro numero
+            r = messagebox.askquestion("Presupuesto", "Duplicar presupuesto... asignando numero siguiente ", parent=self)
             if r == messagebox.NO:
                 return
 
         if parametro == "normal":
 
-            # borrar este numero de venta si existiera como en el caso de una modificacion en resu_presup y
-            # en deta_presup
+            # Borro el presupuesto en resu_presup - por las dudas sea modificacion
             self.varPresupuestos.eliminar_detapresup(self.strvar_nro_presup.get())
+            # Borro en deta_presup - por las dudas sea modificacion
             self.varPresupuestos.eliminar_presu_entregado2(self.strvar_nro_presup.get())
 
         if parametro == "como":
 
             # Si es -guardar_como- busco solamente aignar un  numero mas de presupuesto como si fuera uno nuevo
-            self.strvar_nro_presup.set(value=(int(self.varPresupuestos.traer_ultimo(1)) + 1))
+            self.strvar_nro_presup.set(value=str(int(self.varPresupuestos.traer_ultimo(1)) + 1))
+        # --------------------------------------------------------------------
 
-        # Inserto en deta_presup
+        # --------------------------------------------------------------------
+        # Antes de insertar los presupuestos en las tablas principales, debo actualizar desde
+        # el Grid a la tabla aux_presup - Elimino all y lo vuelvo a cargar desde el Grid
+
+        self.varPresupuestos.actualizar_auxpresup(self.grid_tvw_auxcomp)
+        # --------------------------------------------------------------------
+
+        # --------------------------------------------------------------------
+        # CARGA DE LAS TABLAS - CIERRE DE PRESUPUESTO
+        # Inserto en DETA_PRESUP
         datos = self.varPresupuestos.consultar_detalle_auxpresup("aux_presup")
 
         for row in datos:
 
             # inserto en tabla DETA_PRESUP
-            self.varPresupuestos.insertar_detapresup(self.strvar_nro_presup.get(),
-                                             row[1],  # nombre proveedor
-                                             row[2],  # codigo componente proveedor
-                                             row[3],  # descripcion del componente
-                                             row[4],  # tasa IVA del componente
-                                             row[5],  # cantidad presupuestada
-                                             row[6],  # costo neto componente en dolares
-                                             row[8])  # Total en pesos redondeado
+            self.varPresupuestos.insertar_detapresup(row[1], self.strvar_nro_presup.get(),
+                                             row[2],  # nombre proveedor
+                                             row[3],  # codigo componente proveedor
+                                             row[4],  # descripcion del componente
+                                             row[5],  # tasa IVA del componente
+                                             row[6],  # cantidad presupuestada
+                                             row[7],  # costo neto componente en dolares
+                                             row[9])  # Total en pesos redondeado
+        # ---------------------------------------------------------------------------------
 
+        # ---------------------------------------------------------------------------------
         self.nuevo_presupuesto = self.strvar_nro_presup.get()
 
-        # Inserto en resu_presup
+        # Inserto en RESU_PRESUP
         fecha_aux = datetime.strptime(self.strvar_fecha_presup.get(), '%d/%m/%Y')
         self.varPresupuestos.insertar_presu_entregado(self.strvar_nro_presup.get(), fecha_aux,
                                          self.strvar_codigo_cliente.get(), self.strvar_nombre_cliente.get(),
@@ -1074,6 +1113,7 @@ class clase_presupuestos(Frame):
                                          self.strvar_total_presupuesto.get(), self.strvar_total_presup_redondo.get(),
                                          self.combo_formapago.get(), self.strvar_detalle_pago.get(),
                                          self.text_especificaciones.get(1.0, 'end-1c'))
+        # ---------------------------------------------------------------------------------
 
         messagebox.showinfo("Guardar", "Ingreso correcto detalle y resumen", parent=self)
 
@@ -1122,6 +1162,93 @@ class clase_presupuestos(Frame):
     def fFinarch(self):
         self.mover_puntero_topend('END')
 
+    def fSubir_uno(self):
+
+        # Obtengo Id del item actual en el grid I001....
+        actual = self.grid_tvw_auxcomp.focus()
+        if not actual:
+            messagebox.showwarning("Aviso", "No hay nada seleccionado", parent=self)
+            return
+
+        # 👉 (posicion del item - arranca en cero) índice del ítem dentro de su contenedor(posición) (1, 2, 3....
+        #     orden de posicion o renglon
+        index = self.grid_tvw_auxcomp.index(actual)
+        if index == 0:
+            messagebox.showwarning("Aviso", "Llegamos al principio", parent=self)
+            self.grid_tvw_auxcomp.focus(actual)
+            self.grid_tvw_auxcomp.selection_set(actual)
+            return
+
+        if index > 0:
+            # muevo toda la inea actual a un index menor, o sea para arriba
+            # Las ' ' son el parámetro el parent(padre) del ítem dentro del Treeview - vacio es raiz
+            self.grid_tvw_auxcomp.move(actual, '', index - 1)
+            self.grid_tvw_auxcomp.see(actual)  # 👈 también acá
+
+        # me posiciono en el que estaba pero un renglon mas arriba
+        self.grid_tvw_auxcomp.focus(actual)
+        self.grid_tvw_auxcomp.selection_set(actual)
+
+        self.reordenar(self.grid_tvw_auxcomp)
+
+    def fBajar_uno(self):
+
+        # Obtengo Id del item actual en el grid I001....
+        actual = self.grid_tvw_auxcomp.focus()
+        if not actual:
+            messagebox.showwarning("Aviso", "No hay nada seleccionado", parent=self)
+            return
+
+        # 👉 (posicion del item - arranca en cero) índice del ítem dentro de su contenedor(posición) (1, 2, 3....
+        #     orden de posicion o renglon
+        index = self.grid_tvw_auxcomp.index(actual)
+        total = len(self.grid_tvw_auxcomp.get_children())
+
+        if index >= total - 1:
+            messagebox.showwarning("Aviso", "Llegamos al final", parent=self)
+            self.grid_tvw_auxcomp.focus(actual)
+            self.grid_tvw_auxcomp.selection_set(actual)
+            return
+
+        if index < total - 1:
+            # muevo toda la inea actual a un index mayor, o sea para abajo
+            # Las ' ' son el parámetro el parent(padre) del ítem dentro del Treeview - vacio es raiz
+            # .see lo hace visible dentro del grid or si os vamos muy para abajo fuera del area visible
+            self.grid_tvw_auxcomp.move(actual, '', index + 1)
+            self.grid_tvw_auxcomp.see(actual)  # 👈 clave
+
+        # me posiciono en el que estaba pero un renglon mas abajo
+        self.grid_tvw_auxcomp.focus(actual)
+        self.grid_tvw_auxcomp.selection_set(actual)
+
+        self.reordenar(self.grid_tvw_auxcomp)
+
+    def reordenar(self, tree):
+
+        """
+        👉  enumerate(..., start=1)
+            Recorre esa lista y te da dos cosas en cada vuelta:
+
+            i → contador(1, 2, 3, ...)
+            item → el
+            id('I001', etc.)
+
+            ✔ start = 1 hace que empiece en 1(no en 0)
+        """
+
+        for i, item in enumerate(tree.get_children(), start=1):
+
+            # (tree.item(item, "values") Devuelve una tupla con los valores de la linea del grid
+            # "list" Convierte la tupla en lista para poder modificarla
+            valores = list(tree.item(item, "values"))
+
+            # Cambia el primer valor de la lista
+            valores[0] = i  # 👈 columna orden (ajustá índice si no es 0)
+
+            # Es la que actualiza el contenido completo de la fila en el Treeview de Tkinter.
+            # item es el index del registro del treeview I001, I002...
+            tree.item(item, values=valores)
+
     def mover_puntero_topend(self, param_topend):
 
         # Si es tope de archivo
@@ -1135,12 +1262,16 @@ class clase_presupuestos(Frame):
             if rg == "":
                 return
 
-            # selecciono el Id primero de la lista en este caso
-            self.grid_tvw_presu_entregado.selection_set(rg)
             # pone el primero Id
             self.grid_tvw_presu_entregado.focus(rg)
-            # lle principio del treeview con esta instruccion que encontre
+            # selecciono el Id primero de la lista en este caso
+            self.grid_tvw_presu_entregado.selection_set(rg)
+
+            # le principio del treeview con esta instruccion que encontre
             self.grid_tvw_presu_entregado.yview(self.grid_tvw_presu_entregado.index(self.grid_tvw_presu_entregado.get_children()[0]))
+
+        # self.grid_tvw_auxcomp.focus(actual)
+        # self.grid_tvw_auxcomp.selection_set(actual)
 
         elif param_topend == 'END':
 
@@ -1153,11 +1284,11 @@ class clase_presupuestos(Frame):
             if rg == "":
                 return
 
-            # Selecciono el ultimo Id en este caso
-            self.grid_tvw_presu_entregado.selection_set(rg)
             # Pongo el foco alultimo elemento de la lista (al final)
             self.grid_tvw_presu_entregado.focus(rg)
-            # lleva el foco al final del treeview  -------------------------
+            # Selecciono el ultimo Id en este caso
+            self.grid_tvw_presu_entregado.selection_set(rg)
+            # lleva el foco al final del treeview
             self.grid_tvw_presu_entregado.yview(self.grid_tvw_presu_entregado.index(self.grid_tvw_presu_entregado.get_children()[-1]))
 
     def fShowall(self):
@@ -1177,9 +1308,9 @@ class clase_presupuestos(Frame):
         #Esta funcion solo controla todos los Entrys numericos que no contengan el valor "" o mas de un "-" o un "."
         self.control_valores()
 
-        #ii = 1
-        try:
-        #if ii == 1:
+        ii = 1
+        #try:
+        if ii == 1:
 
             if que_campo == "completo":
 
@@ -1205,8 +1336,8 @@ class clase_presupuestos(Frame):
                                         float(self.strvar_combo_tasa_iva.get())) / 100) *
                                         float(self.strvar_cantidad_vendida.get()))
 
-                self.strvar_importe_iva_unidad.set(value=round(importe_iva, 2))
-                self.strvar_importe_iva_xcanti.set(value=round(importe_ivaxcanti, 2))
+                self.strvar_importe_iva_unidad.set(value=str(round(importe_iva, 2)))
+                self.strvar_importe_iva_xcanti.set(value=str(round(importe_ivaxcanti, 2)))
                 # -------------------------------------------------------------
 
                 # -------------------------------------------------------------
@@ -1250,7 +1381,6 @@ class clase_presupuestos(Frame):
 
                 """ Guardo todos los items que compnen el presupuesto """
                 datos = self.varPresupuestos.consultar_presupuestos("aux_presup")
-
                 sumatot_presu = 0
                 sumatot_redondo = 0
                 sumatot_costos = 0
@@ -1259,9 +1389,9 @@ class clase_presupuestos(Frame):
                 for row in datos:
 
                     # total costos mas IVA
-                    sumatot_costos += (row[10] * (1 + (row[4]/100)))
-                    sumatot_presu += row[7]
-                    sumatot_redondo += row[8]
+                    sumatot_costos += (row[11] * (1 + (row[5]/100)))
+                    sumatot_presu += row[8]
+                    sumatot_redondo += row[9]
 
                 """ La ganancia la calculo entre el total redondeado y el costo total bruto para todos los 
                 articulos o componentes ingresadosde los articulos """
@@ -1277,8 +1407,8 @@ class clase_presupuestos(Frame):
                 # total presupuesto redondeado
                 self.strvar_total_presup_redondo.set(value=str(round(sumatot_redondo, 2)))
 
-        #else:
-        except:
+        else:
+        #except:
 
             messagebox.showerror("Error", "Error en funcion de Calculos - revise entradas numericas", parent=self)
             return
@@ -1327,7 +1457,7 @@ class clase_presupuestos(Frame):
     # INFORMES
     # ------------------------------------------------------------------------
 
-    def creopdfext(self):
+    def creopdfext(self, precios):
 
         # traigo el registro que quiero imprimir de la base datos de ordenes reparacion
         self.selected = self.grid_tvw_presu_entregado.focus()
@@ -1419,7 +1549,12 @@ class clase_presupuestos(Frame):
             #pdf.cell(w=20, h=5, txt=str(row[7]), border=0, align='R', fill=0, ln=0)
             #pdf.cell(w=20, h=5, txt=str(formatear_cifra(round(bruto_dolar, 2))), border=0, align='R', fill=0, ln=0)
             #pdf.cell(w=20, h=5, txt=str(formatear_cifra(round(sumo_precio_final_conganancia, 2))), border=0, align='R', fill=0)
-            pdf.multi_cell(w=0, h=5, txt=str(formatear_cifra(row[8])), border=0, align='R', fill=0)
+            if precios == "S":
+                # con precios de componentes
+                pdf.multi_cell(w=0, h=5, txt=str(formatear_cifra(row[8])), border=0, align='R', fill=0)
+            else:
+                # sin precios de componentes
+                pdf.multi_cell(w=0, h=5, txt="")
             #pdf.cell(w=0, h=5, txt="", border=0, align='R', fill=0, ln=1)
 
         # Espaciado -----------------------------------------------------------------------
@@ -1865,7 +2000,7 @@ class clase_presupuestos(Frame):
 
         img = Image.open("guardar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_cerrar_presupuesto=Button(self.frame_cuadro2, text=" Cerrar/Guardar\n presupuesto",
+        self.btn_cerrar_presupuesto=Button(self.frame_cuadro2, text=" Actualizar/Guardar\n presupuesto",
                                            command=self.fGuardar, width=17, bg='green', fg='white', compound="left")
         self.btn_cerrar_presupuesto.image = icono
         self.btn_cerrar_presupuesto.config(image=icono)
@@ -1895,8 +2030,11 @@ class clase_presupuestos(Frame):
 
         # Botones +componente -com ponente Ingresar componente al presupuesto
 
-        for c in range(1):
-            self.frame_cuadro3.grid_columnconfigure(c, weight=1, minsize=140)
+        # for c in range(1):
+        #     self.frame_cuadro3.grid_columnconfigure(c, weight=1, minsize=140)
+
+        for c in range(2):
+            self.frame_cuadro3.grid_columnconfigure(c, weight=1, minsize=70)
 
         # AGREGAR UN COMPONENTE
         img = Image.open("signo_mas.png").resize((18, 18))
@@ -1905,7 +2043,7 @@ class clase_presupuestos(Frame):
                                        width=17, bg='blue', fg='white', compound="left")
         self.btn_mas_componente.image = icono
         self.btn_mas_componente.config(image=icono)
-        self.btn_mas_componente.grid(row=6, column=0, padx=3, pady=3, sticky=W)
+        self.btn_mas_componente.grid(row=6, column=0, columnspan=2, padx=3, pady=3, sticky="nsew")
 
         # QUITAR UN COMPONENTE
         img = Image.open("signo_menos.png").resize((18, 18))
@@ -1914,7 +2052,7 @@ class clase_presupuestos(Frame):
                                          width=17, bg='blue', fg='white', compound="left")
         self.btn_menos_componente.image = icono
         self.btn_menos_componente.config(image=icono)
-        self.btn_menos_componente.grid(row=7, column=0, padx=3, pady=3, sticky=W)
+        self.btn_menos_componente.grid(row=7, column=0, columnspan=2, padx=3, pady=3, sticky="nsew")
 
         # EDITAR COMPONENTE
         img = Image.open("editar.png").resize((18, 18))
@@ -1923,38 +2061,53 @@ class clase_presupuestos(Frame):
                                            command=self.fEditar_item_auxpresup, width=17, bg='blue', fg='white', compound="left")
         self.btn_editar_componente.image = icono
         self.btn_editar_componente.config(image=icono)
-        self.btn_editar_componente.grid(row=8, column=0, padx=3, pady=3, sticky=W)
+        self.btn_editar_componente.grid(row=8, column=0, columnspan=2, padx=3, pady=3, sticky="nsew")
 
         # INGRESAR COMPONENTE AL GRID DE PRESUPUESTO ACTUAL
-        img = Image.open("guardar.png").resize((18, 18))
+        img = Image.open("agregar-producto.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_ingresar_componente=Button(self.frame_cuadro3, text=" Ingr. componente\nal presupuesto",
-                                           command=self.fInsertar_item_auxpresup, width=17, bg='light green', fg='black', compound="left")
+        self.btn_ingresar_componente=Button(self.frame_cuadro3, text=" Actualizar\ncomponente",
+                                           command=self.fInsertar_item_auxpresup, width=17, bg='blue',
+                                           fg='white', compound="left")
         self.btn_ingresar_componente.image = icono
         self.btn_ingresar_componente.config(image=icono)
-        self.btn_ingresar_componente.grid(row=9, column=0, padx=3, pady=3, sticky=W)
+        self.btn_ingresar_componente.grid(row=9, column=0, columnspan=2, padx=3, pady=3, sticky="nsew")
 
         # CANCELAR LA CARGA DEL COMPONENTE AL GRID DE PRESUPUESTO ACTUAL
         img = Image.open("cancelar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_reset_componente=Button(self.frame_cuadro3, text=" Cancelar ingreso\nde componente",
+        self.btn_reset_componente=Button(self.frame_cuadro3, text=" Anular ingreso\nde componente",
                                          command=self.fReset_articulo, width=17, bg='black', fg='white', compound="left")
         self.btn_reset_componente.image = icono
         self.btn_reset_componente.config(image=icono)
-        self.btn_reset_componente.grid(row=10, column=0, padx=2, pady=2, sticky=W)
+        self.btn_reset_componente.grid(row=10, column=0, columnspan=2, padx=2, pady=2, sticky="nsew")
+
+        img = Image.open("flecha_arriba.png").resize((18, 18))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_flecha_sube=Button(self.frame_cuadro3, text="", command=self.fSubir_uno, width=5, bg='white', fg='black')
+        self.btn_flecha_sube.image = icono
+        self.btn_flecha_sube.config(image=icono)
+        self.btn_flecha_sube.grid(row=11, column=0, padx=2, pady=2, sticky="nsew")
+
+        img = Image.open("flecha_abajo.png").resize((18, 18))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_flecha_baja=Button(self.frame_cuadro3, text="", command=self.fBajar_uno, width=5, bg='white', fg='black')
+        self.btn_flecha_baja.image = icono
+        self.btn_flecha_baja.config(image=icono)
+        self.btn_flecha_baja.grid(row=11, column=1, padx=2, pady=2, sticky="nsew")
 
         # reordenamiento del frame
         for widg in self.frame_cuadro3.winfo_children():
-            widg.grid_configure(padx=6, pady=3, sticky='nsew')
+            widg.grid_configure(padx=3, pady=3, sticky='nsew')
 
     def cuadro_botones_grid_entregados_4(self):
 
         self.photo3 = Image.open('salida.png')
         self.photo3 = self.photo3.resize((35, 35), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo3 = ImageTk.PhotoImage(self.photo3)
-        self.btnSalir=Button(self.frame_cuadro4, text="Salir", image=self.photo3, width=133, height=45, command=self.fSalir,
+        self.btnSalir=Button(self.frame_cuadro4, text="Salir", image=self.photo3, width=133, height=40, command=self.fSalir,
                              bg="yellow", fg="white")
-        self.btnSalir.grid(row=11, column=0, padx=3, pady=3, sticky = 'nsew')
+        self.btnSalir.grid(row=0, column=0, padx=3, pady=3, sticky = 'nsew')
 
     def cuadro_buscar_presup_entregado(self):
 
@@ -2001,20 +2154,20 @@ class clase_presupuestos(Frame):
         img = Image.open("impresora.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
         self.btn_showall.grid(row=0, column=3, padx=4, pady=2, sticky=W)
-        self.btn_imprime_presup_int=Button(self.frame_busqueda_presu_entregado, text=" Presup. interno",
-                                           command=self.creopdfint, width=105, bg='#5F9EF5', fg='white', compound="left")
-        self.btn_imprime_presup_int.image = icono
-        self.btn_imprime_presup_int.config(image=icono)
-        self.btn_imprime_presup_int.grid(row=0, column=4, padx=4, pady=2, sticky="nsew")
+        self.btn_imprime_presupuesto=Button(self.frame_busqueda_presu_entregado, text=" Presupuesto",
+                                           command=self.creopdfinta, width=105, bg='#5F9EF5', fg='white', compound="left")
+        self.btn_imprime_presupuesto.image = icono
+        self.btn_imprime_presupuesto.config(image=icono)
+        self.btn_imprime_presupuesto.grid(row=0, column=4, padx=4, pady=2, sticky="nsew")
 
-        # IMPRIMIR PRESUPUESTO INTERNO
-        img = Image.open("impresora.png").resize((18, 18))
-        icono = ImageTk.PhotoImage(img)
-        self.btn_imprime_presup_ext=Button(self.frame_busqueda_presu_entregado, text=" Presup. externo",
-                                           command=self.creopdfext, width=105, bg='#5F9EF5', fg='white', compound="left")
-        self.btn_imprime_presup_ext.image = icono
-        self.btn_imprime_presup_ext.config(image=icono)
-        self.btn_imprime_presup_ext.grid(row=0, column=5, padx=4, pady=2, sticky="nsew")
+        # # IMPRIMIR PRESUPUESTO INTERNO
+        # img = Image.open("impresora.png").resize((18, 18))
+        # icono = ImageTk.PhotoImage(img)
+        # self.btn_imprime_presup_ext=Button(self.frame_busqueda_presu_entregado, text=" Presup. externo",
+        #                                    command=self.creopdfext, width=105, bg='#5F9EF5', fg='white', compound="left")
+        # self.btn_imprime_presup_ext.image = icono
+        # self.btn_imprime_presup_ext.config(image=icono)
+        # self.btn_imprime_presup_ext.grid(row=0, column=5, padx=4, pady=2, sticky="nsew")
         # ----------------------------------------------------------------------
 
         # ----------------------------------------------------------------------
@@ -2036,7 +2189,7 @@ class clase_presupuestos(Frame):
 
         # reordenamiento del frame
         for widg in self.frame_busqueda_presu_entregado.winfo_children():
-            widg.grid_configure(padx=2, pady=3, sticky='nsew')
+            widg.grid_configure(padx=4, pady=3, sticky='nsew')
 
     def cuadro_caja_texto_detalles_extensos(self):
 
@@ -2054,35 +2207,39 @@ class clase_presupuestos(Frame):
         style = ttk.Style(self.frame_grid_presup_actual)
         style.theme_use("clam")
         style.configure("Treeview.Heading", background="black", foreground="white")
-        self.grid_tvw_auxcomp = ttk.Treeview(self.frame_grid_presup_actual, height=6, columns=("col1", "col2", "col3",
+        self.grid_tvw_auxcomp = ttk.Treeview(self.frame_grid_presup_actual, height=7, columns=("col1", "col2", "col3",
                                                                                                "col4", "col5", "col6",
                                                                                                "col7", "col8", "col9",
-                                                                                               "col10"))
+                                                                                               "col10", "col11"))
 
         #self.grid_venta_articulos.bind("<Double-Button-1>", self.DobleClickGrid)
-        self.grid_tvw_auxcomp.column("#0", width=60, anchor="center", minwidth=60)
-        self.grid_tvw_auxcomp.column("col1", width=100, anchor="w", minwidth=100)
-        self.grid_tvw_auxcomp.column("col2", width=30, anchor="w", minwidth=30)
-        self.grid_tvw_auxcomp.column("col3", width=160, anchor="center", minwidth=130)
-        self.grid_tvw_auxcomp.column("col4", width=60, anchor="center", minwidth=60)
-        self.grid_tvw_auxcomp.column("col5", width=60, anchor="center", minwidth=60)
-        self.grid_tvw_auxcomp.column("col6", width=100, anchor="center", minwidth=80)
-        self.grid_tvw_auxcomp.column("col7", width=100, anchor="center", minwidth=80)
-        self.grid_tvw_auxcomp.column("col8", width=100, anchor="center", minwidth=80)
-        self.grid_tvw_auxcomp.column("col9", width=100, anchor="center", minwidth=80)
-        self.grid_tvw_auxcomp.column("col10", width=100, anchor="center", minwidth=80)
+        self.grid_tvw_auxcomp.column("#0", width=50, anchor="center", minwidth=50)
+        self.grid_tvw_auxcomp.column("col1", width=30, anchor="w", minwidth=30)
+        self.grid_tvw_auxcomp.column("col2", width=45, anchor="w", minwidth=45)
+        self.grid_tvw_auxcomp.column("col3", width=90, anchor="center", minwidth=90)
+        self.grid_tvw_auxcomp.column("col4", width=250, anchor="center", minwidth=250)
+        self.grid_tvw_auxcomp.column("col5", width=50, anchor="center", minwidth=50)
+        self.grid_tvw_auxcomp.column("col6", width=30, anchor="center", minwidth=30)
+        self.grid_tvw_auxcomp.column("col7", width=100, anchor="center", minwidth=100)
+        self.grid_tvw_auxcomp.column("col8", width=80, anchor="center", minwidth=80)
+        self.grid_tvw_auxcomp.column("col9", width=90, anchor="center", minwidth=90)
+        self.grid_tvw_auxcomp.column("col10", width=80, anchor="center", minwidth=80)
+        self.grid_tvw_auxcomp.column("col11", width=80, anchor="center", minwidth=80)
+        #self.grid_tvw_auxcomp.column("col12", width=100, anchor="center", minwidth=80)
 
         self.grid_tvw_auxcomp.heading("#0", text="Id", anchor="center")
-        self.grid_tvw_auxcomp.heading("col1", text="Proveedor", anchor="w")
-        self.grid_tvw_auxcomp.heading("col2", text="Cod.Componente", anchor="w")
-        self.grid_tvw_auxcomp.heading("col3", text="Componente", anchor="center")
-        self.grid_tvw_auxcomp.heading("col4", text="%IVA", anchor="center")
-        self.grid_tvw_auxcomp.heading("col5", text="Cantidad", anchor="center")
-        self.grid_tvw_auxcomp.heading("col6", text="Costo Neto dolar", anchor="center")
-        self.grid_tvw_auxcomp.heading("col7", text="Total Presupuesto", anchor="center")
-        self.grid_tvw_auxcomp.heading("col8", text="Total redondeo", anchor="center")
-        self.grid_tvw_auxcomp.heading("col9", text="Total Ganancia", anchor="center")
-        self.grid_tvw_auxcomp.heading("col10", text="Total Costo", anchor="center")
+        self.grid_tvw_auxcomp.heading("col1", text="Ord.", anchor="w")
+        self.grid_tvw_auxcomp.heading("col2", text="Prov.", anchor="w")
+        self.grid_tvw_auxcomp.heading("col3", text="Cod.Compon.", anchor="w")
+        self.grid_tvw_auxcomp.heading("col4", text="Componente", anchor="center")
+        self.grid_tvw_auxcomp.heading("col5", text="%IVA", anchor="center")
+        self.grid_tvw_auxcomp.heading("col6", text="Cant.", anchor="center")
+        self.grid_tvw_auxcomp.heading("col7", text="Costo Neto U$S", anchor="center")
+        self.grid_tvw_auxcomp.heading("col8", text="Tot. Presupuesto", anchor="center")
+        self.grid_tvw_auxcomp.heading("col9", text="Tot. Redondeo", anchor="center")
+        self.grid_tvw_auxcomp.heading("col10", text="Tot. Ganancia", anchor="center")
+        self.grid_tvw_auxcomp.heading("col11", text="Tot. Costo", anchor="center")
+        #self.grid_tvw_auxcomp.heading("col12", text="Total Costo", anchor="center")
 
         # SCROLLBAR del Treeview
         scroll_x = Scrollbar(self.frame_grid_presup_actual, orient="horizontal")
@@ -2154,38 +2311,41 @@ class clase_presupuestos(Frame):
         fff = tkFont.Font(family="Arial", size=8, weight="bold")
         www = tkFont.Font(family="Arial", size=10, weight="bold")
 
+        for c in range(15):
+            self.frame_cliente.grid_columnconfigure(c, weight=1, minsize=30)
+
         # NUMERO DE PRESUPUESTO
-        self.lbl_nro_presup = Label(self.frame_cliente, text="Nº: ", font=www, fg="red", bg="#CEF2EF", justify="right")
+        self.lbl_nro_presup = Label(self.frame_cliente, text="Nº: ", width=2, font=www, fg="red", bg="#CEF2EF", justify="right")
         self.lbl_nro_presup.grid(row=0, column=0, padx=2, pady=2, sticky=W)
-        self.lbl_nro_presup2 = Label(self.frame_cliente, textvariable=self.strvar_nro_presup, font=www, bg="#CEF2EF",
-                                     fg="red", width=5)
+        self.lbl_nro_presup2 = Label(self.frame_cliente, textvariable=self.strvar_nro_presup, font=www, width=2, bg="#CEF2EF",
+                                     fg="red")
         self.lbl_nro_presup2.grid(row=0, column=1, padx=2, pady=2, sticky=W)
 
         # FECHA DE VENTA
         self.lbl_fecha_presup = Label(self.frame_cliente, text="Fecha: ", bg="#CEF2EF", justify="right")
         self.lbl_fecha_presup.grid(row=0, column=2, padx=2, pady=2, sticky=W)
-        self.entry_fecha_presup = Entry(self.frame_cliente, textvariable=self.strvar_fecha_presup, width=10)
+        self.entry_fecha_presup = Entry(self.frame_cliente, textvariable=self.strvar_fecha_presup, width=11)
         self.entry_fecha_presup.grid(row=0, column=3, padx=2, pady=2, sticky=W)
         self.entry_fecha_presup.bind("<FocusOut>", self.formato_fecha)
 
         # BOTON BUSCAR CLIENTE
         self.photo_bus_cli = Image.open('buscar.png')
-        self.photo_bus_cli = self.photo_bus_cli.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo_bus_cli = self.photo_bus_cli.resize((18, 18), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo_bus_cli = ImageTk.PhotoImage(self.photo_bus_cli)
         self.btn_bus_cli = Button(self.frame_cliente, text="", image=self.photo_bus_cli, command=self.fBuscli,
                                   fg="white")
-        self.btn_bus_cli.grid(row=0, column=4, padx=4, pady=2, sticky='nsew')
+        self.btn_bus_cli.grid(row=0, column=4, padx=3, pady=2, sticky='nsew')
 
         # NOMBRE CLIENTE
         self.lbl_texto_nombre_cliente = Label(self.frame_cliente, text="Cliente: ", bg="#CEF2EF", justify="left")
-        self.lbl_texto_nombre_cliente.grid(row=0, column=5, padx=2, pady=2, sticky=W)
+        self.lbl_texto_nombre_cliente.grid(row=0, column=5, padx=3, pady=2, sticky=W)
         self.entry_nombre_cliente = Entry(self.frame_cliente, textvariable=self.strvar_nombre_cliente, width=40)
-        self.entry_nombre_cliente.grid(row=0, column=6, padx=2, pady=2, sticky=W)
+        self.entry_nombre_cliente.grid(row=0, column=6, padx=3, pady=2, sticky=W)
         self.strvar_nombre_cliente.trace("w", lambda *args: limitador(self.strvar_nombre_cliente, 50))
 
         # SITUACION FISCAL DEL CLIENTE
-        self.lbl_sit_fiscal_cliente = Label(self.frame_cliente, text="", bg="#CEF2EF")
-        self.lbl_sit_fiscal_cliente.grid(row=0, column=7, padx=2, pady=2, sticky=W)
+        self.lbl_sit_fiscal_cliente = Label(self.frame_cliente, text="SF", bg="#CEF2EF")
+        self.lbl_sit_fiscal_cliente.grid(row=0, column=7, padx=3, pady=2, sticky=W)
         self.combo_sit_fiscal_cliente = ttk.Combobox(self.frame_cliente, textvariable=self.strvar_sit_fiscal,
                                                      justify="left", state='readonly', width=22)
         # self.cargar_combo = self.varClientes.llenar_combo_rubro()
@@ -2197,28 +2357,34 @@ class clase_presupuestos(Frame):
 
         # CUIT CLIENTE
         self.lbl_texto_cuit_cliente = Label(self.frame_cliente, text="CUIT:", bg="#CEF2EF", justify="left")
-        self.lbl_texto_cuit_cliente.grid(row=0, column=9, padx=2, pady=2, sticky=W)
-        self.entry_cuit_cliente = Entry(self.frame_cliente, textvariable=self.strvar_cuit, justify="right", width=12)
-        self.entry_cuit_cliente.grid(row=0, column=10, padx=2, pady=2, sticky=W)
+        self.lbl_texto_cuit_cliente.grid(row=0, column=9, padx=3, pady=2, sticky=W)
+        self.entry_cuit_cliente = Entry(self.frame_cliente, textvariable=self.strvar_cuit, justify="right", width=13)
+        self.entry_cuit_cliente.grid(row=0, column=10, padx=3, pady=2, sticky=W)
 
         # % GANANCIA
         self.lbl_tasa_ganancia = Label(self.frame_cliente, text="Gan.%: ", bg="#CEF2EF", justify="left")
         self.lbl_tasa_ganancia.grid(row=0, column=11, padx=3, pady=2, sticky=W)
-        self.entry_tasa_ganancia = Entry(self.frame_cliente, textvariable=self.strvar_tasa_ganancia, width=5,
+        self.entry_tasa_ganancia = Entry(self.frame_cliente, textvariable=self.strvar_tasa_ganancia, width=6,
                                          justify="right")
-        self.entry_tasa_ganancia.grid(row=0, column=12, padx=2, pady=2, sticky=E)
+        self.entry_tasa_ganancia.grid(row=0, column=12, padx=3, pady=2, sticky=E)
         self.entry_tasa_ganancia.config(validate="key", validatecommand=self.vcmd)
         self.entry_tasa_ganancia.bind('<Tab>', lambda e: self.calcular("completo"))
 
         # COTIZACION DEL DOLAR DEL DIA
         #fff = tkFont.Font(family="Arial", size=8, weight="bold")
         self.lbl_dolarhoy1 = Label(self.frame_cliente, text="Dolar:", justify="left", bg="#CEF2EF", foreground="red")
-        self.lbl_dolarhoy1.grid(row=0, column=13, padx=4, pady=2, sticky=W)
-        self.entry_dolarhoy2 = Entry(self.frame_cliente, textvariable=self.strvar_valor_dolar_hoy, width=8,
+        self.lbl_dolarhoy1.grid(row=0, column=13, padx=3, pady=2, sticky=W)
+        self.entry_dolarhoy2 = Entry(self.frame_cliente, textvariable=self.strvar_valor_dolar_hoy, width=10,
                                      justify="right", foreground="red")
-        self.entry_dolarhoy2.grid(row=0, column=14, padx=2, pady=2, sticky=E)
+        self.entry_dolarhoy2.grid(row=0, column=14, padx=3, pady=2, sticky=E)
+
+        for widg in self.frame_cliente.winfo_children():
+            widg.grid_configure(padx=3, pady=3, sticky='nsew')
 
     def entrys_formas_pago(self):
+
+        for c in range(4):
+            self.frame_forma_pago.grid_columnconfigure(c, weight=1, minsize=30)
 
         # forma de pago y detalle
         self.lbl_combo_formapago = Label(self.frame_forma_pago, text="Forma de Pago: ", bg="#CEF2EF", justify="left")
@@ -2236,18 +2402,24 @@ class clase_presupuestos(Frame):
         self.entry_deta_formapago = Entry(self.frame_forma_pago, textvariable=self.strvar_detalle_pago, width=123)
         self.entry_deta_formapago.grid(row=0, column=3, padx=4, pady=2, sticky=W)
 
+        for widg in self.frame_forma_pago.winfo_children():
+            widg.grid_configure(padx=3, pady=3, sticky='nsew')
+
     def entrys_componentes(self):
+
+        for c in range(13):
+            self.frame_componentes.grid_columnconfigure(c, weight=1, minsize=30)
 
         # BOTON DE  BUSQUEDA DE ARTICULO SI CORRESPONDE AL DETALLE
         self.photo_bus_art = Image.open('ver.png')
-        self.photo_bus_art = self.photo_bus_art.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo_bus_art = self.photo_bus_art.resize((18, 18), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo_bus_art = ImageTk.PhotoImage(self.photo_bus_art)
         self.btn_bus_art = Button(self.frame_componentes, text="", image=self.photo_bus_art, command=self.fBusart,
                                   bg="grey", fg="white")
         self.btn_bus_art.grid(row=0, column=0, padx=2, pady=2, sticky=E)
 
         # ENTRY ARTICULO
-        self.lbl_componente = Label(self.frame_componentes, text="Componente: ", bg="#CEF2EF", justify="left")
+        self.lbl_componente = Label(self.frame_componentes, text="Componente: ", bg="#81EBCD", justify="left")
         self.lbl_componente.grid(row=0, column=1, padx=2, pady=2, sticky=W)
         self.entry_componente = Entry(self.frame_componentes, textvariable=self.strvar_componente, width=51,
                                       justify="left")
@@ -2255,7 +2427,7 @@ class clase_presupuestos(Frame):
         self.strvar_componente.trace("w", lambda *args: limitador(self.strvar_componente, 95))
 
         # COMBO TASA IVA
-        self.lbl_combo_tasa_iva = Label(self.frame_componentes, justify="left", foreground="black", bg="#CEF2EF",
+        self.lbl_combo_tasa_iva = Label(self.frame_componentes, justify="left", foreground="black", bg="#81EBCD",
                                         text="IVA %")
         self.lbl_combo_tasa_iva.grid(row=0, column=3, padx=2, pady=2, sticky=W)
         self.combo_tasa_iva = ttk.Combobox(self.frame_componentes, textvariable=self.strvar_combo_tasa_iva,
@@ -2266,7 +2438,7 @@ class clase_presupuestos(Frame):
         self.combo_tasa_iva.bind('<Tab>', lambda e: self.calcular("completo"))
 
         # ENTRY CANTIDAD
-        self.lbl_cantidad = Label(self.frame_componentes, text="Cant.: ", bg="#CEF2EF", justify="left")
+        self.lbl_cantidad = Label(self.frame_componentes, text="Cant.: ", bg="#81EBCD", justify="left")
         self.lbl_cantidad.grid(row=0, column=7, padx=2, pady=2, sticky=W)
         self.entry_cantidad = Entry(self.frame_componentes, textvariable=self.strvar_cantidad_vendida, width=4,
                                     justify="right")
@@ -2275,7 +2447,7 @@ class clase_presupuestos(Frame):
         self.entry_cantidad.bind('<Tab>', lambda e: self.calcular("completo"))
 
         # ENTRY NETO DOLAR
-        self.lbl_neto_dolar = Label(self.frame_componentes, text="Neto dolar: ", bg="#CEF2EF", justify="left")
+        self.lbl_neto_dolar = Label(self.frame_componentes, text="Neto dolar: ", bg="#81EBCD", justify="left")
         self.lbl_neto_dolar.grid(row=0, column=9, padx=2, pady=2, sticky=W)
         self.entry_neto_dolar = Entry(self.frame_componentes, textvariable=self.strvar_neto_dolar, width=8,
                                       justify="right")
@@ -2283,23 +2455,29 @@ class clase_presupuestos(Frame):
         self.entry_neto_dolar.config(validate="key", validatecommand=self.vcmd)
         self.entry_neto_dolar.bind('<Tab>', lambda e: self.calcular("completo"))
 
-        self.lbl_proved = Label(self.frame_componentes, text="Prov.: ", bg="#CEF2EF", justify="left")
+        self.lbl_proved = Label(self.frame_componentes, text="Prov.: ", bg="#81EBCD", justify="left")
         self.lbl_proved.grid(row=0, column=11, padx=2, pady=2, sticky=W)
         self.entry_proved = Entry(self.frame_componentes, textvariable=self.strvar_proveedor, width=15, justify="left")
         self.entry_proved.grid(row=0, column=12, padx=2, pady=2, sticky=W)
 
-        self.lbl_codigo_componente = Label(self.frame_componentes, text="Cod.: ", bg="#CEF2EF", justify="left")
+        self.lbl_codigo_componente = Label(self.frame_componentes, text="Cod.: ", bg="#81EBCD", justify="left")
         self.lbl_codigo_componente.grid(row=0, column=13, padx=2, pady=2, sticky=W)
         self.entry_codigo_componente = Entry(self.frame_componentes, textvariable=self.strvar_codigo_componente,
                                              width=15, justify="left")
         self.entry_codigo_componente.grid(row=0, column=14, padx=2, pady=2, sticky=W)
 
+        for widg in self.frame_componentes.winfo_children():
+            widg.grid_configure(padx=3, pady=3, sticky='nsew')
+
     def entrys_precios_componentes(self):
 
         fff = tkFont.Font(family="Arial", size=9, weight="bold")
 
+        for c in range(12):
+            self.frame_importes_articulo.grid_columnconfigure(c, weight=1, minsize=30)
+
         # COSTO PESOS CON IVA
-        self.lbl_costo_pesos_bruto_unidad = Label(self.frame_importes_articulo, text="Costo Unidad: ", justify="left")
+        self.lbl_costo_pesos_bruto_unidad = Label(self.frame_importes_articulo, text="Costo Unidad: ", bg="#81EBCD", justify="left")
         self.lbl_costo_pesos_bruto_unidad.grid(row=2, column=0, padx=1, pady=2, sticky=W)
         self.lbl_costo_pesos_bruto_unidad2 = Label(self.frame_importes_articulo,
                                                   textvariable=self.strvar_costo_bruto_pesos_unidad, width=10,
@@ -2307,7 +2485,7 @@ class clase_presupuestos(Frame):
         self.lbl_costo_pesos_bruto_unidad2.grid(row=2, column=1, padx=1, pady=2, sticky=E)
 
         # COSTO PESOS CON IVA * CANTIDAD
-        self.lbl_costo_bruto_pesos_xcanti = Label(self.frame_importes_articulo, text="Costo total: ", justify="left")
+        self.lbl_costo_bruto_pesos_xcanti = Label(self.frame_importes_articulo, text="Costo total: ", bg="#81EBCD", justify="left")
         self.lbl_costo_bruto_pesos_xcanti.grid(row=2, column=2, padx=1, pady=2, sticky=W)
         self.lbl_costo_bruto_pesos_xcanti2 = Label(self.frame_importes_articulo,
                                                   textvariable=self.strvar_costo_bruto_pesos_xcanti, width=10,
@@ -2315,7 +2493,7 @@ class clase_presupuestos(Frame):
         self.lbl_costo_bruto_pesos_xcanti2.grid(row=2, column=3, padx=1, pady=2, sticky=E)
 
         # IMPORTE PESOS GANANCIA * CANTIDAD
-        self.lbl_importe_ganancia_xcanti = Label(self.frame_importes_articulo, text="Ganancia: ", justify="left")
+        self.lbl_importe_ganancia_xcanti = Label(self.frame_importes_articulo, text="Ganancia: ", bg="#81EBCD", justify="left")
         self.lbl_importe_ganancia_xcanti.grid(row=2, column=4, padx=1, pady=2, sticky=W)
         self.lbl_importe_ganancia_xcanti2 = Label(self.frame_importes_articulo,
                                                   textvariable=self.strvar_importe_ganancia_xcanti, width=10,
@@ -2323,7 +2501,7 @@ class clase_presupuestos(Frame):
         self.lbl_importe_ganancia_xcanti2.grid(row=2, column=5, padx=1, pady=2, sticky=E)
 
         # PRECIO DE VENTA
-        self.lbl_precio_final_xcanti = Label(self.frame_importes_articulo, text="Precio venta: ", justify="left")
+        self.lbl_precio_final_xcanti = Label(self.frame_importes_articulo, text="Precio venta: ", bg="#81EBCD", justify="left")
         self.lbl_precio_final_xcanti.grid(row=2, column=6, padx=1, pady=2, sticky=W)
         self.lbl_precio_final_xcanti2 = Label(self.frame_importes_articulo,
                                                   textvariable=self.strvar_precio_final_xcanti, width=10,
@@ -2331,7 +2509,7 @@ class clase_presupuestos(Frame):
         self.lbl_precio_final_xcanti2.grid(row=2, column=7, padx=1, pady=2, sticky=E)
 
         # Redondeo del total del Item
-        self.lbl_total_item_redondo = Label(self.frame_importes_articulo, text="Redondeo: ", justify="left")
+        self.lbl_total_item_redondo = Label(self.frame_importes_articulo, text="Redondeo: ", bg="#81EBCD", justify="left")
         self.lbl_total_item_redondo.grid(row=2, column=8, padx=1, pady=2, sticky=W)
         self.entry_total_item_redondo = Entry(self.frame_importes_articulo, textvariable=self.strvar_total_item_redondo,
                                               width=15, justify="right")
@@ -2347,9 +2525,15 @@ class clase_presupuestos(Frame):
                                                 command=self.fVerArticulos, width=16, bg='blue', fg='white')
         self.btn_articulo.grid(row=2, column=11, padx=5, pady=2, sticky=W)
 
+        for widg in self.frame_importes_articulo.winfo_children():
+            widg.grid_configure(padx=3, pady=3, sticky='nsew')
+
     def labels_totales_generales(self):
 
         fff = tkFont.Font(family="Arial", size=9, weight="bold")
+
+        for c in range(8):
+            self.frame_totales_generales.grid_columnconfigure(c, weight=1, minsize=30)
 
         # TOTAL COSTO BRUTO
         self.lbl_total_costos = Label(self.frame_totales_generales, text="Total Costos: ", justify="left", font=fff,
@@ -2383,6 +2567,9 @@ class clase_presupuestos(Frame):
                                                textvariable=self.strvar_total_presup_redondo, width=15, justify="right",
                                                font=fff, foreground="#ff33f6")
         self.lbl_total_presup_redondo2.grid(row=0, column=7, padx=8, pady=2, sticky=E)
+
+        for widg in self.frame_totales_generales.winfo_children():
+            widg.grid_configure(padx=3, pady=3, sticky='nsew')
 
     def fPresupuesto_aceptado(self):
 
@@ -2426,3 +2613,148 @@ class clase_presupuestos(Frame):
 
         self.limpiar_Grid_resu_presup()
         self.llena_grilla_resu_presup(self.clave)
+
+    # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    # SELECCION DE IMPRESION
+    # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+    def creopdfinta(self):
+
+        # ---------------------------------------------------------------------------
+        # VALIDACIONES
+
+        # # verifico que existan movimientos vargador en el grid
+        # self.mover_puntero_topend("TOP")
+        # self.selected = self.grid_ctacte.focus()
+        # if self.selected == "":
+        #     messagebox.showwarning("Cuidado", "No existen movimientos o no selecciono cuenta", parent=self)
+        #     return
+        # # Verifico que exista una cuenta cargada
+        # if self.strvar_codigo_cliente.get() == "" or self.strvar_codigo_cliente.get() == "0":
+        #     messagebox.showwarning("Cuidado", "Seleccione una cuenta", parent=self)
+        #     return
+        # # ---------------------------------------------------------------------------
+
+        # ---------------------------------------------------------------------------
+        # DEFINO PANTALLA FLOTANTE
+
+        self.pantalla_imprimir = Toplevel()
+        self.pantalla_imprimir.geometry('630x260+660+380')
+        self.pantalla_imprimir.transient(master=self.master)
+        self.pantalla_imprimir.config(bg='light green', padx=5, pady=5)
+        self.pantalla_imprimir.resizable(False, False)
+        self.pantalla_imprimir.title("Seleccion formato Informe")
+        # ---------------------------------------------------------------------------
+
+        # ---------------------------------------------------------------------------
+        # TITULOS
+
+        self.frame_titulo_impresion = Frame(self.pantalla_imprimir, bg="light green")
+
+        # Armo el logo y el titulo
+        self.photo = Image.open('impresora.png')
+        self.photo = self.photo.resize((30, 30), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.png_select = ImageTk.PhotoImage(self.photo)
+        self.lbl_png_select = tk.Label(self.frame_titulo_impresion, image=self.png_select, bg="red", relief="ridge", bd=5)
+
+        self.lbl_tit = tk.Label(self.frame_titulo_impresion, width=29, text="Seleccion formato Informe",
+                             bg="black", fg="gold", font=("Arial bold", 20, "bold"), bd=5, relief="ridge", padx=5)
+
+        # Coloco logo y titulo en posicion de pantalla
+        self.lbl_png_select.grid(row=0, column=0, sticky=W, padx=5, ipadx=22)
+        self.lbl_tit.grid(row=0, column=1, sticky="nsew")
+        self.frame_titulo_impresion.pack(side="top", fill="x", padx=5, pady=2)
+        # ---------------------------------------------------------------------------
+
+        # ---------------------------------------------------------------------------
+        # Seleccion del informe
+
+        # Variable compartida
+        opcion_listado = tk.IntVar(value=1)  # Listado 1 por defecto
+
+        # ===== Frame de opciones =====
+        frame_opciones = tk.LabelFrame(
+            self.pantalla_imprimir,
+            bg="light green",
+            text="Seleccion de listado"
+        )
+        frame_opciones.pack(padx=15, pady=15, fill="x")
+
+        tk.Radiobutton(
+            frame_opciones,
+            text="Impresion presupuesto Interno, con todo el detalle de precios por componente.                   ",
+            variable=opcion_listado,
+            bg="light green",
+            value=1
+        ).pack(anchor="center", padx=15, pady=5)
+
+        tk.Radiobutton(
+            frame_opciones,
+            text="Impresion presupuesto externo solo con los componentes CON precio final de cada uno.   ",
+            variable=opcion_listado,
+            bg="light green",
+            value=2
+        ).pack(anchor="center", padx=15, pady=5)
+
+        tk.Radiobutton(
+            frame_opciones,
+            text="Impresion presupuesto externo solo con los componentes SIN precio de cada uno de ellos.",
+            variable=opcion_listado,
+            bg="light green",
+            value=3
+        ).pack(anchor="center", padx=15, pady=5)
+        # ----------------------------------------------------------------------
+
+        # ----------------------------------------------------------------------
+        # ===== Funciones =====
+        def continuar():
+            opcion = opcion_listado.get()
+
+            if opcion == 1:
+                # Presupuesto interno con all detalle precios y ganancias
+                self.creopdfint()
+            elif opcion == 2:
+                # Presupuesto externo con precios por componente
+                self.creopdfext("S")
+            elif opcion == 3:
+                # Presupuesto externo SIN precios por componente
+                self.creopdfext("N")
+
+            # self.pantalla_imprimir.destroy()  # cerrás la ventana si querés
+
+        def cancelar():
+
+            self.pantalla_imprimir.destroy()
+            # ----------------------------------------------------------------------
+
+            # ----------------------------------------------------------------------
+            # BOTONES INFORME
+
+            # ===== Frame de botones =====
+            frame_botones = tk.Frame(self.pantalla_imprimir, bg="light green")
+            frame_botones.pack(pady=10)
+
+            tk.Button(
+                frame_botones,
+                text="Continuar",
+                width=20,
+                command=continuar
+            ).grid(row=0, column=0, padx=10)
+
+            tk.Button(
+                frame_botones,
+                text="Salir",
+                width=20,
+                command=cancelar
+            ).grid(row=0, column=1, padx=10)
+            # ----------------------------------------------------------------------
+
+            self.pantalla_imprimir.grab_set()
+            self.pantalla_imprimir.focus_set()
+
+            mainloop()
+
+
+
+
+

@@ -1,6 +1,8 @@
 from tkinter import messagebox
 from tkinter import *
 from tkinter import ttk
+import tkinter as tk
+
 # --------------------------------------
 import mysql.connector
 from mysql.connector import Error
@@ -20,9 +22,24 @@ class ClaseFuncion_new:
 
         self.master = root
 
-    # --------------------------------------------------------------------------
-    # FUNCION SEL
-    # --------------------------------------------------------------------------
+    '''
+    # Toma una cifra y le pone los puntos de los miles y las comas decimales
+    cifra debe venir tipo numerico
+    '''
+
+    def formatear_cifra(self, cifra):
+        numero = cifra
+        salida1 = "{:,.2f}".format(numero)
+        salida2 = salida1.replace(',', 'n')
+        salida3 = salida2.replace('.', ',')
+        salida4 = salida3.replace('n', '.')
+        return salida4
+
+
+    # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    # IMPORTANT - FUNCION SEL
+    # Ventana SEL utilizado en todos los modulos
+    # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
     def ventana_selec(self, xtabla, campo1, campo2, campo3, titu1, titu2, titu3, filtro, titulo, pesos):
 
@@ -69,32 +86,32 @@ class ClaseFuncion_new:
         # use lambda para asi poder pasar parametro con la tabla
         self.grid_funcsel.bind("<Double-Button-1>", lambda e: self.DobleClickGrid(e, xtabla))
 
-        self.grid_funcsel.column("#0", width=20, anchor=CENTER, minwidth=20)
-        self.grid_funcsel.column("col1", width=300, anchor=CENTER, minwidth=270)
-        self.grid_funcsel.column("col2", width=150, anchor=CENTER, minwidth=120)
-        self.grid_funcsel.column("col3", width=150, anchor=CENTER, minwidth=120)
+        self.grid_funcsel.column("#0", width=20, anchor="center", minwidth=20)
+        self.grid_funcsel.column("col1", width=300, anchor="center", minwidth=270)
+        self.grid_funcsel.column("col2", width=150, anchor="center", minwidth=120)
+        self.grid_funcsel.column("col3", width=150, anchor="center", minwidth=120)
 
-        self.grid_funcsel.heading("#0", text="Id", anchor=CENTER)
-        self.grid_funcsel.heading("col1", text=titu1, anchor=CENTER)
-        self.grid_funcsel.heading("col2", text=titu2, anchor=CENTER)
-        self.grid_funcsel.heading("col3", text=titu3, anchor=CENTER)
+        self.grid_funcsel.heading("#0", text="Id", anchor="center")
+        self.grid_funcsel.heading("col1", text=titu1, anchor="center")
+        self.grid_funcsel.heading("col2", text=titu2, anchor="center")
+        self.grid_funcsel.heading("col3", text=titu3, anchor="center")
 
         self.grid_funcsel.tag_configure('oddrow', background='light green')
         self.grid_funcsel.tag_configure('evenrow', background='white')
 
         # SCROLLBAR del Treeview
-        scroll_x = Scrollbar(self.frame_select, orient=HORIZONTAL)
-        scroll_y = Scrollbar(self.frame_select, orient=VERTICAL)
+        scroll_x = Scrollbar(self.frame_select, orient="horizontal")
+        scroll_y = Scrollbar(self.frame_select, orient="vertical")
         self.grid_funcsel.config(xscrollcommand=scroll_x.set)
         self.grid_funcsel.config(yscrollcommand=scroll_y.set)
         scroll_x.config(command=self.grid_funcsel.xview)
         scroll_y.config(command=self.grid_funcsel.yview)
-        scroll_y.pack(side=RIGHT, fill=Y)
-        scroll_x.pack(side=BOTTOM, fill=X)
+        scroll_y.pack(side=RIGHT, fill="y")
+        scroll_x.pack(side=BOTTOM, fill="x")
         self.grid_funcsel['selectmode'] = 'browse'
 
-        self.grid_funcsel.pack(side=TOP, fill=BOTH, expand=1, padx=0, pady=0)
-        self.frame_select.pack(side=TOP, fill=BOTH, padx=0, pady=0)
+        self.grid_funcsel.pack(side="top", fill="both", expand=1, padx=0, pady=0)
+        self.frame_select.pack(side="top", fill="both", padx=0, pady=0)
 
         # --------------------------------------------------------------------------
         # LIMPIAR EL GRID
@@ -116,7 +133,7 @@ class ClaseFuncion_new:
         """ Aqui solicitamos a la funcion que nos devuelva todos los registros de la tabla especificada que 
         cumplan con la condicion de busqueda, puede que ninguno la cumpla o varios la tengan. Es lo que 
         presentaria (mostrar) el Grid para que yo elija el que quiero """
-        retorno = self.buscar_entabla(que_busco) # el primero delretorno es el Id
+        retorno = self.buscar_entabla(que_busco) # el primero del retorno es el Id
 
         # --------------------------------------------------------------------------
         # CARGO EL GRID
@@ -173,10 +190,10 @@ class ClaseFuncion_new:
                 precio_venta = ((float(reto[valor3]) * float(self.strvar_dolar_hoy.get())) * (1 + (float(reto[7]/100)))
                                 * (1 + (float(reto[9]/100))))
 
-                self.grid_funcsel.insert("", END, tags=color, text=reto[0], values=(reto[valor1], reto[valor2],
+                self.grid_funcsel.insert("", "end", tags=color, text=reto[0], values=(reto[valor1], reto[valor2],
                                                                                         round(precio_venta, 2)))
             else:
-                self.grid_funcsel.insert("", END, tags=color, text=reto[0], values=(reto[valor1], reto[valor2],
+                self.grid_funcsel.insert("", "end", tags=color, text=reto[0], values=(reto[valor1], reto[valor2],
                                                                                         reto[valor3]))
 
         if len(self.grid_funcsel.get_children()) > 0:
@@ -320,15 +337,119 @@ class ClaseFuncion_new:
         for row in dev_informa:
             return row[21]
 
+    # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    # FIN METODO SEL
+    # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+
+    """
+    #------------------------------------------------------------------------------
     #------------------------------------------------------------------------------
     # VALIDACIONES
     #------------------------------------------------------------------------------
+    #------------------------------------------------------------------------------
+    """
 
+    # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    # IMPORTANT - METODO VALIDAR
+    # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     """ Valida los caracteres que ingresan en los campos numericos - solo numeros, punto y guion. """
-
     def validar(self, value):
-        codigo = value
-        for i in codigo:
-            if i not in '0123456789.-':
-                return  False
+        # codigo = value
+        # for i in codigo:
+        #     if i not in '0123456789.-':
+        #         return  False
+        # return True
+        if value == "":
+            return True  # permitir borrar
+            # Solo caracteres válidos
+        for c in value:
+            if c not in "0123456789.-":
+                return False
+            # Solo un signo menos y al inicio
+        if value.count("-") > 1 or ("-" in value and not value.startswith("-")):
+            return False
+            # Solo un punto decimal
+        if value.count(".") > 1:
+            return False
         return True
+    # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    # FIN METODO VALIDAR
+    # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+    # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    # METODO MOSTRAR TOAST
+    # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+    # --------------------------------------------------------------------------
+    # IMPORTANT - METODO MOSTRAR TOAST
+    # Por ahora la uso desde ctacte con los siguientes llamados:
+    # self.varFuncion_new.mostrar_toast(self.pantalla_estad, "🧹 Iniciando borrado de registros...", "green", 2500, "")
+    # --- proceso real ---
+    # self.pantalla_estad.after(3000, lambda: self.varFuncion_new.mostrar_toast(self.pantalla_estad, "✅ Proceso finalizado", "green", 2500, ""))
+    # --------------------------------------------------------------------------
+
+    def mostrar_toast(self, pantalla_padre, mensaje, pa_color, duracion=3000, tipo="info"):
+
+        tipo = str(tipo).strip().lower()
+
+        colores = {
+            "success": "#1e7e34",  # verde
+            "error": "#c82333",  # rojo
+            "info": "#222222"  # gris
+        }
+
+        bg_color = colores.get(tipo, "#222222")
+
+        """ toast.overrideredirect(True)        # sin bordes
+            toast.attributes("-topmost", True)  # siempre arriba
+            toast = tk.Toplevel(self.pantalla_estad) # asignamos la clase a variable toast"""
+
+        toast = tk.Toplevel(pantalla_padre)
+        toast.overrideredirect(True)  # sin bordes
+        toast.attributes("-topmost", True)
+        toast.configure(bg=bg_color)
+
+        # Estilo
+        frame = tk.Frame(toast, bg=pa_color, padx=20, pady=10)
+        frame.pack()
+
+        tk.Label(
+            frame,
+            text=mensaje,
+            fg="white",
+            bg=pa_color,
+            font=("Segoe UI", 10)
+        ).pack()
+
+        # 🔔 sonido solo para error (Windows)
+        if tipo == "error":
+            try:
+                import winsound
+                winsound.MessageBeep(winsound.MB_ICONHAND)
+            except Exception:
+                pass
+
+        # Posición (abajo a la derecha)
+        pantalla_padre.update_idletasks()
+        toast.update_idletasks()
+
+        ventana_x = pantalla_padre.winfo_rootx()
+        ventana_y = pantalla_padre.winfo_rooty()
+        ventana_ancho = pantalla_padre.winfo_width()
+        ventana_alto = pantalla_padre.winfo_height()
+
+        toast_ancho = toast.winfo_width()
+        toast_alto = toast.winfo_height()
+
+        x = ventana_x + ventana_ancho - toast_ancho - 20
+        y = ventana_y + ventana_alto - toast_alto - 50
+
+        toast.geometry(f"+{x}+{y}")
+
+        # Auto cerrar
+        toast.after(duracion, toast.destroy)
+
+    #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    # FIN METODO MOSTRAR TOAST
+    #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

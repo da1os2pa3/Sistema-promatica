@@ -76,72 +76,122 @@ class datosClientes:
                                  parent=self.master)
             exit()
 
-    def insertar_clientes(self, codigo, apellido, nombres, direccion, localidad, provincia, postal, telef_pers,
-                          telef_trab, mail, fecha_ingreso, sit_fis, cuit, observaciones, apenombre):
+    # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    # CRUD
+    # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+    def insertar_clientes(self, cliente):
 
         try:
-            # Convierto fecha nuevamente de String a Datetime para guardar en SQL
-            fecha_ingreso = datetime.strptime(fecha_ingreso, '%d/%m/%Y')
-
-            cur = self.cnn.cursor()
-            sql = '''INSERT INTO clientes (codigo, apellido, nombres, direccion, localidad, provincia, postal, 
-            telef_pers, telef_trab, mail, fecha_ingreso, sit_fis, cuit, observaciones, apenombre) VALUES('{}', '{}', 
-            '{}', '{}', '{}','{}','{}', '{}', '{}','{}','{}','{}','{}','{}','{}')'''.format(codigo, apellido,
-            nombres, direccion, localidad, provincia, postal, telef_pers, telef_trab, mail, fecha_ingreso, sit_fis,
-            cuit, observaciones, apenombre)
-
-            cur.execute(sql)
-            #n = cur.rowcount
-            self.cnn.commit()
-            cur.close()
-            #return n
-            return
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=insertar_clientes",
-                                 parent=self.master)
-            exit()
-
-    def modificar_clientes(self, Id, codigo, apellido, nombres, direccion, localidad, provincia, postal, telef_pers,
-                           telef_trab, mail, fecha_ingreso, sit_fis, cuit, observaciones, apenombre):
-
-        try:
-
-            # Convierto fecha nuevamente de String a Datetime para guardar en SQL
-            fecha_ingreso = datetime.strptime(fecha_ingreso, '%d/%m/%Y')
+            fecha_ingreso = datetime.strptime(cliente["fecha_ingreso"], '%d/%m/%Y')
 
             cur = self.cnn.cursor()
 
-            sql = '''UPDATE clientes SET codigo='{}', apellido='{}', nombres='{}', direccion='{}', localidad='{}', 
-            provincia='{}', postal='{}', telef_pers='{}', telef_trab='{}', mail='{}', fecha_ingreso='{}', sit_fis='{}', 
-            cuit='{}', observaciones='{}', apenombre='{}'
-            WHERE Id={}'''.format(codigo, apellido, nombres, direccion, localidad, provincia, postal, telef_pers,
-                                  telef_trab, mail, fecha_ingreso, sit_fis, cuit, observaciones, apenombre, Id)
+            sql = """
+                  INSERT INTO clientes (codigo, apellido, nombres, direccion, localidad, provincia, postal, \
+                                        telef_pers, telef_trab, mail, fecha_ingreso, sit_fis, cuit, \
+                                        observaciones, apenombre) \
+                  VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) \
+                  """
 
-            cur.execute(sql)
-            #n = cur.rowcount
+            valores = (
+                cliente["codigo"], cliente["apellido"], cliente["nombres"], cliente["direccion"],
+                cliente["localidad"], cliente["provincia"], cliente["postal"],
+                cliente["telef_pers"], cliente["telef_trab"], cliente["mail"],
+                fecha_ingreso, cliente["sit_fis"], cliente["cuit"],
+                cliente["observaciones"], cliente["apenombre"]
+            )
+
+            cur.execute(sql, valores)
+            self.cnn.commit()
+            id_nuevo = cur.lastrowid  # devolvemos el Id generado
+
+        except Exception as e:
+
+            self.cnn.rollback()
+            messagebox.showerror("Error inesperado", str(e), parent=self.master)
+            id_nuevo = None
+
+        finally:
+            cur.close()
+
+        return id_nuevo
+
+    def modificar_clientes(self, cliente):
+
+        try:
+
+            # Convierto fecha nuevamente de String a Datetime para guardar en SQL
+            fecha_ingreso = datetime.strptime(cliente["fecha_ingreso"], '%d/%m/%Y')
+
+            cur = self.cnn.cursor()
+
+            sql = """
+                  UPDATE clientes \
+                  SET codigo=%s, \
+                      apellido=%s, \
+                      nombres=%s, \
+                      direccion=%s, \
+                      localidad=%s, \
+                      provincia=%s, \
+                      postal=%s, \
+                      telef_pers=%s, \
+                      telef_trab=%s, \
+                      mail=%s, \
+                      fecha_ingreso=%s, \
+                      sit_fis=%s, \
+                      cuit=%s, \
+                      observaciones=%s, \
+                      apenombre=%s
+                  WHERE Id = %s \
+                  """
+
+            # Creo tupla valores a partir del diccionario : dame el valor de la clave cliente[codigo]
+            # y asi se genera la tupla
+            valores = (
+                cliente["codigo"],
+                cliente["apellido"],
+                cliente["nombres"],
+                cliente["direccion"],
+                cliente["localidad"],
+                cliente["provincia"],
+                cliente["postal"],
+                cliente["telef_pers"],
+                cliente["telef_trab"],
+                cliente["mail"],
+                fecha_ingreso,
+                cliente["sit_fis"],
+                cliente["cuit"],
+                cliente["observaciones"],
+                cliente["apenombre"],
+                cliente["Id"]
+            )
+
+            cur.execute(sql, valores)
             self.cnn.commit()
             cur.close()
-            #return n
             return
 
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=modificar_clientes",
-                                 parent=self.master)
-            exit()
+        except Exception as e:
+            messagebox.showerror("Error inesperado", f"{e}", parent=self.master)
 
     def eliminar_clientes(self, Id):
 
-        try:
+        cur = self.cnn.cursor()
 
-            cur = self.cnn.cursor()
-            sql = '''DELETE FROM clientes WHERE Id = {}'''.format(Id)
-            cur.execute(sql)
+        try:
+            sql = "DELETE FROM clientes WHERE Id = %s"
+            # 1 parámetro → (valor,)
+            # varios → (v1, v2, v3)
+            cur.execute(sql, (Id,))
             n = cur.rowcount
             self.cnn.commit()
-            cur.close()
             return n
 
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=eliminar_clientes",
-                                 parent=self.master)
-            exit()
+        except Exception as e:
+            self.cnn.rollback()
+            messagebox.showerror("Error inesperado", str(e), parent=self.master)
+            return 0
+
+        finally:
+            cur.close()

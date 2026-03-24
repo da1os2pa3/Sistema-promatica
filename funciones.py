@@ -197,20 +197,34 @@ Toma una fecha al reves y la pone normal de 2024-12-19 a 19/12/2024
 La fecha debe venir como string en parametro -par-
 Puedo retornar la fecha con la hora o sola
 """
-def fecha_str_reves_normal(self, par, con_hora):
+def fecha_str_reves_normal(self, par, con_hora=False):
 
-    if con_hora == "hora_si":
-        # paso a date pero sigue al reves
-        date_al_reves = datetime.strptime(par, '%Y-%m-%d %H:%M')
-        # paso otra vez a str pero ahora al derecha
-        str_al_derecho = date_al_reves.strftime('%d/%m/%Y %H:%M')
-    else:
-        # paso a date pero sigue al reves
-        date_al_reves = datetime.strptime(par, '%Y-%m-%d')
-        # paso otra vez a str pero ahora al derecha
-        str_al_derecho = date_al_reves.strftime('%d/%m/%Y')
+    try:
+        if con_hora:
+            formato_entrada = '%Y-%m-%d %H:%M'
+            formato_salida = '%d/%m/%Y %H:%M'
+        else:
+            formato_entrada = '%Y-%m-%d'
+            formato_salida = '%d/%m/%Y'
 
-    return str_al_derecho
+        fecha_dt = datetime.strptime(par, formato_entrada)
+        return fecha_dt.strftime(formato_salida)
+
+    except ValueError:
+        return ""  # o podrías devolver None o lanzar error
+
+    # if con_hora == True:
+    #     # paso a date pero sigue al reves
+    #     date_al_reves = datetime.strptime(par, '%Y-%m-%d %H:%M')
+    #     # paso otra vez a str pero ahora al derecha
+    #     str_al_derecho = date_al_reves.strftime('%d/%m/%Y %H:%M')
+    # else:
+    #     # paso a date pero sigue al reves
+    #     date_al_reves = datetime.strptime(par, '%Y-%m-%d')
+    #     # paso otra vez a str pero ahora al derecha
+    #     str_al_derecho = date_al_reves.strftime('%d/%m/%Y')
+    #
+    # return str_al_derecho
 
 
 """

@@ -133,16 +133,17 @@ class datosPresupuestos:
                                  parent=self.master)
             exit()
 
-    def insertar_auxpresup(self, proveedor, codcomponente, componente, tasaiva, cantidad, netodolar, totpresup, totredondo,
-                                 totganancia, totcostos):
+    def insertar_auxpresup(self, orden, proveedor, codcomponente, componente, tasaiva, cantidad, netodolar, totpresup,
+                           totredondo, totganancia, totcostos):
 
         try:
             cur = self.cnn.cursor()
-            sql = '''INSERT INTO aux_presup (ax_proved, ax_codcomp, ax_componente, ax_iva, ax_cantidad, ax_neto_dolar, 
-                                             ax_total_presup, ax_total_redondo, ax_total_ganancia, ax_total_costos) 
-                                             VALUES('{}', '{}', '{}', '{}', '{}', '{}','{}', '{}', '{}', '{}')'''.format(proveedor,
-                                             codcomponente, componente, tasaiva, cantidad, netodolar, totpresup, totredondo,
-                                             totganancia, totcostos)
+            sql = '''INSERT INTO aux_presup (ax_orden, ax_proved, ax_codcomp, ax_componente, ax_iva, ax_cantidad, 
+                                             ax_neto_dolar, ax_total_presup, ax_total_redondo, ax_total_ganancia, 
+                                             ax_total_costos) VALUES('{}', '{}', '{}', '{}', '{}', '{}','{}', '{}', 
+                                             '{}', '{}', '{}')'''.format(orden, proveedor, codcomponente,
+                                                                         componente, tasaiva, cantidad, netodolar,
+                                                                         totpresup, totredondo, totganancia, totcostos)
             cur.execute(sql)
             n = cur.rowcount
             self.cnn.commit()
@@ -153,15 +154,17 @@ class datosPresupuestos:
             exit()
 
 
-    def insertar_detapresup(self, nroventa, proveedor, codigo_comp_proved, componente, tasaiva, cantidad, costo_neto_dolar, total_redondo):
+    def insertar_detapresup(self, orden_item, nroventa, proveedor, codigo_comp_proved, componente, tasaiva, cantidad,
+                            costo_neto_dolar, total_redondo):
 
         # Inserta los componentes presupuestados la tabla de detalle de los presupuestos realizados
         try:
             cur = self.cnn.cursor()
-            sql = '''INSERT INTO deta_presup (dp_numero, dp_proved, dp_codcomp, dp_componente, dp_iva, dp_cantidad, 
-                                              dp_neto_dolar, dp_redondo) VALUES('{}','{}','{}','{}','{}', '{}','{}',
-                                              '{}')'''.format(nroventa, proveedor, codigo_comp_proved, componente,
-                                                              tasaiva, cantidad, costo_neto_dolar, total_redondo)
+            sql = '''INSERT INTO deta_presup (dp_orden, dp_numero, dp_proved, dp_codcomp, dp_componente, dp_iva, 
+                                              dp_cantidad, dp_neto_dolar, dp_redondo) VALUES('{}','{}','{}','{}','{}', 
+                                              '{}','{}','{}','{}')'''.format(orden_item, nroventa, proveedor,
+                                                                             codigo_comp_proved, componente, tasaiva,
+                                                                             cantidad, costo_neto_dolar, total_redondo)
             cur.execute(sql)
             n = cur.rowcount
             self.cnn.commit()
@@ -206,11 +209,12 @@ class datosPresupuestos:
                                  parent=self.master)
             exit()
 
-    def eliminar_detapresup(self, nroventa):
+    def eliminar_detapresup(self, nropresup):
 
+        # Elimina un presupuesto completo de la table segun numero parametro
         try:
             cur = self.cnn.cursor()
-            sql = '''DELETE FROM deta_presup WHERE dp_numero = {}'''.format(nroventa)
+            sql = '''DELETE FROM deta_presup WHERE dp_numero = {}'''.format(nropresup)
             cur.execute(sql)
             n = cur.rowcount
             self.cnn.commit()
@@ -221,11 +225,12 @@ class datosPresupuestos:
                                  parent=self.master)
             exit()
 
-    def eliminar_presu_entregado2(self, nroventa):
+    def eliminar_presu_entregado2(self, nropresup):
 
+        # Elimina detalle de un presupuesto completo de la table segun numero parametro
         try:
             cur = self.cnn.cursor()
-            sql = '''DELETE FROM resu_presup WHERE rp_numero = {}'''.format(nroventa)
+            sql = '''DELETE FROM resu_presup WHERE rp_numero = {}'''.format(nropresup)
             cur.execute(sql)
             n = cur.rowcount
             self.cnn.commit()
@@ -291,6 +296,68 @@ class datosPresupuestos:
         self.cnn.commit()
         cur.close()
 
+    def actualizar_auxpresup(self, grid):
 
+        cur = self.cnn.cursor()
 
+        sql = """
+              INSERT INTO aux_presup (id, ax_orden, ax_proved, ax_codcomp, ax_componente, ax_iva, ax_cantidad, \
+                                      ax_neto_dolar, ax_total_presup, ax_total_redondo, ax_total_ganancia, \
+                                      ax_total_costos) \
+              VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) \
+              """
+
+        datos_total = []
+
+        for i, item in enumerate(grid.get_children(), start=1):
+
+            # Aca cargo valores con los items del grid en una lista y guardo la clave del item del grid
+            clave = grid.item(item, "text")
+            valores = list(grid.item(item, "values"))
+
+            valores[0] = i  # asegurar orden correcto
+
+            if len(valores) != 11:
+                print("Error en fila:", valores)
+                continue
+
+            """
+                valores es (seguramente) una lista o tupla.
+                El *valores la desempaqueta.
+                Entonces estás creando una tupla nueva que queda así:
+                (clave, valor1, valor2, valor3, ...)
+                y la agregás a datos_total.
+
+                🔹 Ejemplo concreto
+                clave = 10
+                valores = ("A", "B", "C")
+                datos_total = []
+                datos_total.append((clave, *valores))
+
+                Resultado:
+                datos_total = [(10, "A", "B", "C")]
+            """
+
+            datos_total.append((clave, *valores))
+
+        try:
+
+            cur.execute("DELETE FROM aux_presup")
+            cur.executemany(sql, datos_total)
+            self.cnn.commit()
+
+        except Exception as e:
+
+            """
+                Revierte todos los cambios NO confirmados desde el último commit().
+                👉 O sea:
+                Si hiciste INSERT, UPDATE o DELETE
+                Pero todavía no hiciste commit()
+                Entonces:
+                self.cnn.rollback()
+                👉 deja la base como si nunca hubieras ejecutado esas operaciones.
+            """
+
+            self.cnn.rollback()
+            print("Error al actualizar aux_presup:", e)
 

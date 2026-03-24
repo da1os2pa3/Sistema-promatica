@@ -10,13 +10,13 @@ class datosCotiz:
         except Error as ex:
             print("Error de conexion: {0}".format(ex))
 
-    def __str__(self):
-
-        datos = self.consultar_articulo()
-        aux = ""
-        for row in datos:
-            aux = aux + str(row) + "\n"
-        return aux
+    # def __str__(self):
+    #
+    #     datos = self.consultar_articulo()
+    #     aux = ""
+    #     for row in datos:
+    #         aux = aux + str(row) + "\n"
+    #     return aux
 
     def consultar_articulo(self, tofil):
         cur = self.cnn.cursor()
@@ -87,22 +87,29 @@ class datosCotiz:
         cur.close()
         return datos
 
-    def traer_ultimo(self):
+    def traer_ultimo(self, xparametro):
 
-        # Trae el ultimo codigo de cliente en la tabla para proponer el nuevo numero en alta -----------------------
+        """ Devuelve el Id. del ultimo registro de la tabla (primer valor autocompletado por la tabla) """
 
-        cur = self.cnn.cursor()
-        cur.execute("SELECT * FROM resu_ventas ORDER BY rv_numero ASC")
-        datos = cur.fetchall()
-        aux = ""
-        for row in datos:
-            aux = str(row[1]) + "\n"
-        self.cnn.commit()
-        cur.close()
-        if aux == "":
-            aux = 0
-
-        return aux
+        try:
+            cur = self.cnn.cursor()
+            cur.execute("SELECT * FROM resu_ventas ORDER BY rv_numero ASC")
+            datos = cur.fetchall()
+            aux = ""
+            for row in datos:
+                if xparametro == 1:
+                    aux = str(row[1]) + "\n"
+                else:
+                    aux = str(row[0]) + "\n"
+            self.cnn.commit()
+            cur.close()
+            if aux == "":
+                aux = 0
+            return aux
+        except:
+            pass
+            # messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo-Traer ultimo Id-", parent=self.master)
+            # exit()
 
     def consultar_informa(self):
         cur = self.cnn.cursor()
@@ -114,17 +121,19 @@ class datosCotiz:
         cur.close()
         return datos_inf
 
-    def insertar_auxventa(self, codart, descart, marcaart, cantidad, total_pesos, total_neto, imporiva21, imporiva105,
-                          imporganancia, costobruto, costodolar, tasaiva):
+    def insertar_auxventa(self, codart, descart, marcaart, cantidad, total_uni_conta, total_uni_lista,
+                          neto_pesos_unidad, iva21, iva105, uni_tot_ganancia, uni_costo_bruto_pesos, costodolar, tasaiva):
 
         cur = self.cnn.cursor()
 
-        sql = '''INSERT INTO aux_ventas (av_codigo_art, av_desc_art, av_marca_art, av_cantidad, av_total_pesos, av_netoventa, 
-                                         av_impor_iva21, av_impor_iva105,    
-                                         av_impor_ganancia, av_costo_bruto, av_costo_dolar, av_tasaiva) VALUES('{}',
-                                         '{}','{}', '{}','{}', '{}','{}','{}','{}','{}','{}','{}')'''.format(codart,
-                                         descart, marcaart, cantidad, total_pesos, total_neto, imporiva21, imporiva105,
-                                         imporganancia, costobruto, costodolar, tasaiva)
+        sql = '''INSERT INTO aux_ventas (av_codigo_art, av_desc_art, av_marca_art, av_cantidad, av_tot_uni_conta, 
+                                         av_tot_uni_lista, av_neto_unidad, av_impor_iva21, av_impor_iva105, 
+                                         av_impor_ganancia, av_costo_bruto, av_costo_dolar, av_tasaiva) 
+                                         VALUES('{}', '{}','{}', '{}','{}', '{}','{}', '{}','{}','{}','{}',
+                                         '{}','{}')'''.format(codart, descart, marcaart, cantidad,
+                                                              total_uni_conta, total_uni_lista, neto_pesos_unidad,
+                                                              iva21, iva105, uni_tot_ganancia, uni_costo_bruto_pesos,
+                                                              costodolar, tasaiva)
 
         cur.execute(sql)
         n = cur.rowcount
@@ -133,31 +142,42 @@ class datosCotiz:
 
     def insertar_resuventa(self, nroventa, fechavta, codcli, nomcli, sitfis, cuit, tipopago, detapago, dolarhoy, totalventa):
 
+        '''
+        Esto lo da chapgpt cmo correcto y seguro
+        sql = """
+              INSERT INTO resu_ventas (...)
+              VALUES (%s, %s, %s) \
+              """
+        cursor.execute(sql, (nroventa, fechavta, codcli))
+        '''
+
         # Inserta en la tabla de resumen de ventas realizadas el registro con los datos base de la venta
         cur = self.cnn.cursor()
 
         sql = '''INSERT INTO resu_ventas (rv_numero, rv_fecha, rv_cod_cliente, rv_cliente, rv_sitfis, rv_cuit,
         rv_tipo_pago, rv_detalle_pago, rv_dolarhoy, rv_total) VALUES('{}','{}','{}','{}', '{}', '{}','{}','{}',
-        '{}', '{}')'''.format(nroventa, fechavta, codcli, nomcli, sitfis, cuit, tipopago, detapago, dolarhoy, totalventa)
+        '{}', '{}')'''.format(nroventa, fechavta, codcli, nomcli, sitfis, cuit, tipopago, detapago,
+                              dolarhoy, totalventa)
 
         cur.execute(sql)
         n = cur.rowcount
         self.cnn.commit()
         cur.close()
 
-    def insertar_detaventa(self, nroventa, codigoart, nombreart, marcaart, cantidad, finalventa, netoventa,
-                           imporiva21, imporiva105,imporganan, costodolar, costobruto, tasaiva):
+    def insertar_detaventa(self, nroventa, codigoart, nombreart, marcaart, cantidad, finalventacontado, finalventalista,
+                           netoventa, imporiva21, imporiva105, imporganan, costodolar, costobruto, tasaiva):
 
         # Inserta los articulos vendidos en la tabla de detalle de las ventas realizadas
 
         cur = self.cnn.cursor()
 
-        sql = '''INSERT INTO deta_ventas (dv_numero, dv_codigo_art, dv_desc_art, dv_marca_art, dv_cantidad, dv_final_venta, 
-                                          dv_neto_venta, dv_impor_iva21, dv_impor_iva105, 
-                                          dv_impor_ganancia, dv_costo_dolar, dv_costo_bruto, dv_tasaiva) VALUES('{}','{}',
-                                          '{}','{}','{}', '{}','{}', '{}','{}','{}','{}','{}','{}')'''.format(nroventa,
-                                          codigoart, nombreart, marcaart, cantidad, finalventa, netoventa, imporiva21,
-                                          imporiva105, imporganan, costodolar, costobruto, tasaiva)
+        sql = '''INSERT INTO deta_ventas (dv_numero, dv_codigo_art, dv_desc_art, dv_marca_art, dv_cantidad, 
+                                          dv_tot_uni_conta, dv_tot_uni_lista, dv_neto_venta, dv_impor_iva21, 
+                                          dv_impor_iva105, dv_impor_ganancia, dv_costo_dolar, dv_costo_bruto, 
+                                          dv_tasaiva) VALUES('{}','{}', '{}','{}','{}', '{}','{}', '{}','{}','{}',
+                                          '{}','{}','{}','{}')'''.format(nroventa, codigoart, nombreart, marcaart,
+                                                   cantidad, finalventacontado, finalventalista, netoventa, imporiva21,
+                                                   imporiva105, imporganan, costodolar, costobruto, tasaiva)
 
         cur.execute(sql)
         n = cur.rowcount
@@ -222,11 +242,9 @@ class datosCotiz:
         cur.close()
         return n
 
-
     # -----------------------------------------------------------------------------------------------
     # ------------------- METODOS DE USO GENERAL ----------------------------------------------------
     # -----------------------------------------------------------------------------------------------
-
 
     # Llenar un combobox con datos xe una tabla
     def combo_input(self, xcampo, xtabla, xorden):

@@ -64,31 +64,31 @@ class datosCompras:
             messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo buscar en tabla", parent=self.master)
             exit()
 
-    def insertar_registro(self, fecha, articulo, estado):
+    def insertar_registro(self, fecha, articulo, estado, observaciones):
 
         try:
             algo = fecha
             fecha_ingreso = datetime.strptime(algo, '%d/%m/%Y')
             cur = self.cnn.cursor()
-            sql = '''INSERT INTO faltantes (fa_fecha, fa_articulo, fa_estado) VALUES('{}','{}','{}')'''.format(fecha_ingreso,
-                                                            articulo, estado)
+            sql = '''INSERT INTO faltantes (fa_fecha, fa_articulo, fa_estado, fa_observaciones) 
+                     VALUES('{}','{}','{}','{}')'''.format(fecha_ingreso, articulo, estado, observaciones)
             cur.execute(sql)
-            cur.rowcount
+            #cur.rowcount
             self.cnn.commit()
             cur.close()
         except:
             messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo insertar registro", parent=self.master)
             exit()
 
-    def modificar_registro(self, Id, fecha, articulo, estado):
+    def modificar_registro(self, Id, fecha, articulo, estado, observaciones):
 
         try:
             # Convierto fecha nuevamente de String a Datetime para guardar en SQL
             algo = fecha
             fecha_ingreso = datetime.strptime(algo, '%d/%m/%Y')
             cur = self.cnn.cursor()
-            sql = '''UPDATE faltantes SET fa_fecha='{}', fa_articulo='{}', fa_estado='{}' WHERE Id={}'''.format(fecha_ingreso,
-                                                    articulo, estado, Id)
+            sql = '''UPDATE faltantes SET fa_fecha='{}', fa_articulo='{}', fa_estado='{}', fa_observaciones='{}' 
+                     WHERE Id={}'''.format(fecha_ingreso, articulo, estado, observaciones, Id)
             cur.execute(sql)
             n = cur.rowcount
             self.cnn.commit()

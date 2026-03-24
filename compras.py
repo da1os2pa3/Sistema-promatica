@@ -1,18 +1,16 @@
 from compras_ABM import *
-from funciones import *
 from funcion_new import *
+from funciones import *
 #----------------------------
 #from tkinter import *
 #from tkinter import ttk
-from tkinter import messagebox
 #import tkinter as tk
-import tkinter.font as tkFont
 #from tkinter.scrolledtext import *     # para campos text
 #----------------------------
 import os
-from PDF_clase import *
-from datetime import date, datetime
+from datetime import date
 from PIL import Image, ImageTk
+from PDF_clase import *
 
 class clase_compras(Frame):
 
@@ -29,24 +27,26 @@ class clase_compras(Frame):
         self.varCompras = datosCompras(self.master)
         self.varFuncion_new = ClaseFuncion_new(self.master)
 
-        # ----------------------------------------------------------------------------------
-        # Esto esta agregado para centrar las ventanas en la pantalla
-        # ----------------------------------------------------------------------------------
-        #master.geometry("880x510")
+        # --------------------------------------------------------------------
+        # PANTALLA
+        # --------------------------------------------------------------------
         self.master.resizable(0, 0)
-        # Actualizamos el contenido de la ventana (la ventana pude crecer si se le agrega
-        # mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer.
-        # ------ Obtenemos el largo y  ancho de la pantalla
-        wtotal = self.master.winfo_screenwidth()
-        htotal = self.master.winfo_screenheight()
-        # ------ Guardamos el largo y alto de la ventana
-        wventana = 1035
-        hventana = 380
-        # ------ Aplicamos la siguiente formula para calcular donde debería posicionarse
-        pwidth = round(wtotal / 2 - wventana / 2) + 100
-        pheight = round(htotal / 2 - hventana / 2) - 50
-        # ------ Se lo aplicamos a la geometría de la ventana
-        self.master.geometry(str(wventana) + "x" + str(hventana) + "+" + str(pwidth) + "+" + str(pheight))
+
+        """ Actualizamos el contenido de la ventana (la ventana pude crecer si se le agrega
+            mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer.
+            Obtenemos el alto y  ancho de la pantalla """
+
+        ancho = self.master.winfo_screenwidth()
+        alto = self.master.winfo_screenheight()
+
+        # Asigno fijo un ancho y un alto
+        ancho_ventana = 1035
+        alto_ventana = 420
+
+        # X e Y son las coordenadas para el posicionamiento del vertice superior izquierdo
+        x = int((ancho - ancho_ventana) / 2)
+        y = int((alto - alto_ventana) / 2)
+        self.master.geometry(f"{ancho_ventana}x{alto_ventana}+{x}+{y}")
         # ------------------------------------------------------------------------------
 
         self.create_widgets()
@@ -78,211 +78,76 @@ class clase_compras(Frame):
         # -------------------------------------------------------------------
         # TITULOS
         # -------------------------------------------------------------------
-
-        # Encabezado logo y titulo con PACK
+        # Encabezado logo y titulo
         self.frame_titulo_top = Frame(self.master)
-
-        # Armo el logo y el titulo
-        self.photo3 = Image.open('comprasmay.png')
-        self.photo3 = self.photo3.resize((60, 60), Image.LANCZOS)  # Redimension (Alto, Ancho)
-        self.png_compras = ImageTk.PhotoImage(self.photo3)
-        self.lbl_png_compras = Label(self.frame_titulo_top, image=self.png_compras, bg="red", relief=RIDGE, bd=5)
-
-        self.lbl_titulo = Label(self.frame_titulo_top, width=49, text="Articulos faltantes", bg="black", fg="gold",
-                                                       font=("Arial bold", 22, "bold"), bd=5, relief=RIDGE, padx=5)
-
-        # Coloco logo y titulo en posicion de pantalla
-        self.lbl_png_compras.grid(row=0, column=0, sticky=W, padx=5, ipadx=22)
-        self.lbl_titulo.grid(row=0, column=1, sticky="nsew")
-        self.frame_titulo_top.pack(side="top", fill=X, padx=5, pady=2)
+        self.cuadro_titulos()
+        self.frame_titulo_top.pack(side="top", fill="x", padx=5, pady=2)
         # ---------------------------------------------------------------------
 
         # ---------------------------------------------------------------------
         # VARIABLES
         # ---------------------------------------------------------------------
-
         # para validar ingresos de numeros en gets numericos
         self.vcmd = (self.register(self.varFuncion_new.validar), "%P")
 
         # ---------------------------------------------------------------------
-
-        # ---------------------------------------------------------------------
         # STRINGVARS
         # ---------------------------------------------------------------------
-
         una_fecha= date.today()
         self.strvar_fecha_anotado = tk.StringVar(value=una_fecha.strftime('%d/%m/%Y'))
         self.strvar_articulo = tk.StringVar(value="")
+        self.strvar_articulo_obser = tk.StringVar(value="")
         self.strvar_estado = tk.StringVar(value="")
         self.strvar_buscostring = tk.StringVar(value="")
         self.strvar_combo_estado = tk.StringVar(value="")
         self.strvar_combo_filtro = tk.StringVar(value="")
 
         # ---------------------------------------------------------------------
-        # GRID
+        # CONTENEDOR
         # ---------------------------------------------------------------------
-
         self.frame_art_faltantes = LabelFrame(self.master, text="Articulos faltantes", foreground="#CD5C5C")
-        self.frame_art_faltantes_uno = LabelFrame(self.frame_art_faltantes, text="", foreground="#CD5C5C")
+
+        # ---------------------------------------------------------------------
+        # CUADRO GRID
+        # ---------------------------------------------------------------------
         self.frame_art_faltantes_dos=LabelFrame(self.frame_art_faltantes, text="", foreground="#CD5C5C")
+        self.cuadro_grid()
+        self.frame_art_faltantes_dos.pack(side="top", fill="both", padx=5, pady=2)
+
+        # ---------------------------------------------------------------------
+        # BOTONES CRUD - BAJO EL GRID
+        # ---------------------------------------------------------------------
+        self.frame_art_faltantes_uno = LabelFrame(self.frame_art_faltantes, text="", foreground="#CD5C5C")
+        self.cuadro_botones_crud()
+        self.frame_art_faltantes_uno.pack(side="left", fill="both", padx=5, pady=2)
+
+        # ---------------------------------------------------------------------
+        # BUSqUEDA EN EL GRID
+        # ---------------------------------------------------------------------
+        # Buscar un articulo en Grid
         self.frame_busqueda_art_faltantes=LabelFrame(self.frame_art_faltantes, text="", border=5, foreground="black",
                                                      background="light blue")
-
-        # STYLE TREEVIEW
-        style = ttk.Style(self.frame_art_faltantes_dos)
-        style.theme_use("clam")
-        style.configure("Treeview.Heading", background="black", foreground="white")
-        self.grid_art_faltantes = ttk.Treeview(self.frame_art_faltantes_dos, height=4, columns=("col1", "col2", "col3"))
-
-        #self.grid_venta_articulos.bind("<Double-Button-1>", self.DobleClickGrid)
-
-        self.grid_art_faltantes.column("#0", width=50, anchor="center", minwidth=50)
-        self.grid_art_faltantes.column("col1", width=60, anchor="w", minwidth=60)
-        self.grid_art_faltantes.column("col2", width=250, anchor="w", minwidth=250)
-        self.grid_art_faltantes.column("col3", width=40, anchor="center", minwidth=40)
-
-        self.grid_art_faltantes.heading("#0", text="Id", anchor="center")
-        self.grid_art_faltantes.heading("col1", text="Fecha", anchor="w")
-        self.grid_art_faltantes.heading("col2", text="Articulo", anchor="w")
-        self.grid_art_faltantes.heading("col3", text="Estado", anchor="center")
-
-        # SCROLLBAR del Treeview
-        scroll_x = Scrollbar(self.frame_art_faltantes_dos, orient=HORIZONTAL)
-        scroll_y = Scrollbar(self.frame_art_faltantes_dos, orient=VERTICAL)
-        self.grid_art_faltantes.config(xscrollcommand=scroll_x.set)
-        self.grid_art_faltantes.config(yscrollcommand=scroll_y.set)
-        scroll_x.config(command=self.grid_art_faltantes.xview)
-        scroll_y.config(command=self.grid_art_faltantes.yview)
-        scroll_y.pack(side=RIGHT, fill=Y)
-        scroll_x.pack(side=BOTTOM, fill=X)
-        self.grid_art_faltantes['selectmode'] = 'browse'
-        self.grid_art_faltantes.pack(side="top", fill=BOTH, expand=1, padx=5, pady=2)
-
-        # Botones CRUD
-        self.btn_nuevo_articulo=Button(self.frame_art_faltantes_uno, text="Nuevo articulo",
-                                       command=self.fNuevo_articulo, width=17, bg='blue', fg='white')
-        self.btn_nuevo_articulo.grid(row=0, column=0, padx=3, pady=3, sticky=W)
-        self.btn_edito_articulo=Button(self.frame_art_faltantes_uno, text="Editar articulo",
-                                       command=self.fEdito_articulo, width=17, bg='blue', fg='white')
-        self.btn_edito_articulo.grid(row=1, column=0, padx=3, pady=3, sticky=W)
-        self.btn_borro_articulo=Button(self.frame_art_faltantes_uno, text="Borrar articulo",
-                                       command=self.fBorro_articulo, width=17, bg='blue', fg='white')
-        self.btn_borro_articulo.grid(row=2, column=0, padx=3, pady=3, sticky=W)
-
-        # botones para ir al tope y al fin del archivo
-        self.photo4 = Image.open('toparch.png')
-        self.photo4 = self.photo4.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
-        self.photo4 = ImageTk.PhotoImage(self.photo4)
-        self.btnToparch = Button(self.frame_art_faltantes_uno, text="", image=self.photo4, command=self.fToparch,
-                                 bg="grey", fg="white")
-        self.btnToparch.grid(row=3, column=0, padx=5, sticky="nsew", pady=3)
-        # ToolTip(self.btnToparch, msg="Ir a principio de archivo")
-        self.photo5 = Image.open('finarch.png')
-        self.photo5 = self.photo5.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
-        self.photo5 = ImageTk.PhotoImage(self.photo5)
-        self.btnFinarch = Button(self.frame_art_faltantes_uno, text="", image=self.photo5, command=self.fFinarch,
-                                 bg="grey", fg="white")
-        self.btnFinarch.grid(row=4, column=0, padx=5, sticky="nsew", pady=3)
-        # ToolTip(self.btnFinarch, msg="Ir al final del archivo")
-
-        # Buscar un articulo en Grid
-        self.lbl_busqueda_compra = Label(self.frame_busqueda_art_faltantes, text="Texto a buscar: ", justify="left",
-                                         bg="light blue")
-        self.lbl_busqueda_compra.grid(row=0, column=0, padx=5, pady=2, sticky=W)
-        self.entry_busqueda_compra = Entry(self.frame_busqueda_art_faltantes, textvariable=self.strvar_buscostring,
-                                                  state='normal', width=25, justify=LEFT, bg="light blue")
-        self.entry_busqueda_compra.grid(row=0, column=1, padx=5, pady=2, sticky='nsew')
-
-        self.btn_buscar=Button(self.frame_busqueda_art_faltantes, text="Buscar", command=self.fBuscar_articulo,
-                               width=11, bg='#5F9EA0', fg='white')
-        self.btn_buscar.grid(row=0, column=2, padx=5, pady=2, sticky=W)
-        self.btn_showall=Button(self.frame_busqueda_art_faltantes, text="Mostrar todo", command=self.fShowall,
-                                width=11, bg='#5F9EA0', fg='white')
-        self.btn_showall.grid(row=0, column=3, padx=5, pady=2, sticky=W)
-        self.btn_imprime_presup=Button(self.frame_busqueda_art_faltantes, text="Imprime Compras", command=self.creopdf,
-                                       width=17, bg='#5F9EF5', fg='white')
-        self.btn_imprime_presup.grid(row=0, column=4, padx=2, pady=2, sticky=W)
-
-        self.lbl_filtrar_compra = Label(self.frame_busqueda_art_faltantes, text="Filtro: ", justify="left",
-                                        bg="light blue")
-        self.lbl_filtrar_compra.grid(row=0, column=5, padx=5, pady=2, sticky=W)
-
-        # Combo estado filtrado
-        self.combo_filtro = ttk.Combobox(self.frame_busqueda_art_faltantes, textvariable=self.strvar_combo_filtro,
-                                         state='readonly', width=15)
-        self.combo_filtro['value'] = ["Pendiente", "Comprado", "Finalizado"]
-        self.combo_filtro.current(0)
-        self.combo_filtro.grid(row=0, column=6, padx=3, pady=3, sticky=E)
-        #self.combo_estado.bind('<Tab>', lambda e: self.calcular("completo"))
-
-        self.btn_filtro=Button(self.frame_busqueda_art_faltantes, text="Filtrar", command=self.fFiltrar,
-                               width=11, bg='#5F9EA0', fg='white')
-        self.btn_filtro.grid(row=0, column=7, padx=5, pady=2, sticky=W)
-
-        # PACKS ------------------------------------------------------------------------------
-        self.frame_art_faltantes_uno.pack(side=LEFT, fill=BOTH, padx=5, pady=2)
-        self.frame_art_faltantes_dos.pack(side=TOP, fill=BOTH, padx=5, pady=2)
-        self.frame_busqueda_art_faltantes.pack(expand=0, side="top", fill=BOTH, padx=5, pady=2)
-        self.frame_art_faltantes.pack(side="top", fill=BOTH, padx=5, pady=2)
-        # ------------------------------------------------------------------------------------
+        self.cuadro_busqueda_grid()
+        self.frame_busqueda_art_faltantes.pack(expand=0, side="top", fill="both", padx=5, pady=2)
 
         # ---------------------------------------------------------------------
         # ENTRYS
         # ---------------------------------------------------------------------
-
-        self.frame_ingreso_datos = LabelFrame(self.master, text="", foreground="black")
-
-        # Fecha de Anotacion
-        self.lbl_fecha = Label(self.frame_ingreso_datos, text="Fecha: ", justify=LEFT)
-        self.lbl_fecha.grid(row=0, column=0, padx=3, pady=3, sticky=W)
-        self.entry_fecha = Entry(self.frame_ingreso_datos, textvariable=self.strvar_fecha_anotado, width=13)
-        self.entry_fecha.grid(row=0, column=1, padx=3, pady=3, sticky=E)
-        self.entry_fecha.bind("<FocusOut>", self.formato_fecha)
-
-        # Entry articulo faltante
-        self.lbl_articulo = Label(self.frame_ingreso_datos, text="Articulo: ", justify=LEFT)
-        self.lbl_articulo.grid(row=0, column=2, padx=3, pady=3, sticky=W)
-        self.entry_articulo = Entry(self.frame_ingreso_datos, textvariable=self.strvar_articulo, width=107, justify="left")
-        self.entry_articulo.grid(row=0, column=3, padx=3, pady=3, sticky=W)
-        self.strvar_articulo.trace("w", lambda *args: limitador(self.strvar_articulo, 100))
-
-        # Combo estado
-        self.lbl_combo_estado = Label(self.frame_ingreso_datos, justify=LEFT, foreground="black", text="Estado")
-        self.lbl_combo_estado.grid(row=0, column=4, padx=3, pady=3, sticky=W)
-        self.combo_estado = ttk.Combobox(self.frame_ingreso_datos, textvariable=self.strvar_combo_estado,
-                                         state='readonly', width=15)
-        self.combo_estado['value'] = ["Pendiente", "Comprado", "Finalizado"]
-        self.combo_estado.current(0)
-        self.combo_estado.grid(row=0, column=5, padx=3, pady=3, sticky=E)
-
-        self.frame_ingreso_datos.pack(side="top", fill=BOTH, expand=0, padx=5, pady=5)
-        # ------------------------------------------------------------------------------------------------------
+        self.frame_ingreso_datos = LabelFrame(self.frame_art_faltantes, text="", foreground="black")
+        self.cuadro_entrys()
+        self.frame_ingreso_datos.pack(side="top", fill="both", expand=0, padx=5, pady=5)
 
         # ---------------------------------------------------------------------
-        # BOTONES
+        # BOTONES - GUARDAR - SALIR
         # ---------------------------------------------------------------------
+        self.frame_botones2 = LabelFrame(self.frame_art_faltantes)
+        self.cuadro_botones_guardar()
+        self.frame_botones2.pack(expand=0, side="top", fill="both", pady=2, padx=5)
 
-        self.frame_botones2 = LabelFrame(self.master)
-
-        self.btn_guardar=Button(self.frame_botones2, text="Guardar articulo", command=self.fGuardar, width=60,
-                                bg='Green', fg='white')
-        self.btn_guardar.grid(row=0, column=0, padx=5, pady=3, sticky='nsew')
-
-        self.btn_cancelar=Button(self.frame_botones2, text="Cancelar", command=self.fCancelar, width=60, bg='Red',
-                                 fg='white')
-        self.btn_cancelar.grid(row=0, column=1, padx=5, pady=3, sticky='nsew')
-
-        self.photo3 = Image.open('salida.png')
-        self.photo3 = self.photo3.resize((60, 40), Image.LANCZOS)  # Redimension (Alto, Ancho)
-        self.photo3 = ImageTk.PhotoImage(self.photo3)
-        self.btnSalir=Button(self.frame_botones2, text="Salir", image=self.photo3, width=130, command=self.fSalir,
-                             bg="yellow", fg="white")
-        self.btnSalir.grid(row=0, column=2, padx=2, pady=3)
-
-        # for widg in self.frame_botones2.winfo_children():
-        #     widg.grid_configure(padx=5, pady=3, sticky='nsew')
-
-        self.frame_botones2.pack(expand=0, side="top", fill=BOTH, pady=2, padx=5)
+        # ---------------------------------------------------------------------
+        # PACK CONTENEDOR
+        # ---------------------------------------------------------------------
+        self.frame_art_faltantes.pack(side="top", fill="both", padx=5, pady=2)
 
     # ---------------------------------------------------------------------
     # ESTADOS
@@ -308,6 +173,7 @@ class clase_compras(Frame):
         una_fecha = date.today()
         self.strvar_fecha_anotado.set(value=una_fecha.strftime('%d/%m/%Y'))
         self.strvar_articulo.set(value="")
+        self.strvar_articulo_obser.set(value="")
         self.combo_estado.current(0)
         self.strvar_buscostring.set(value="")
 
@@ -315,6 +181,7 @@ class clase_compras(Frame):
 
         self.entry_fecha.configure(state=estado)
         self.entry_articulo.configure(state=estado)
+        self.entry_articulo_obser.configure(state=estado)
         self.combo_estado.configure(state=estado)
         self.entry_busqueda_compra.configure(state=estado)
 
@@ -330,7 +197,6 @@ class clase_compras(Frame):
         self.entry_busqueda_compra.configure(state=estado)
 
     def estado_botones_dos(self, estado):
-
         self.btn_guardar.configure(state=estado)
 
     # ---------------------------------------------------------------------
@@ -347,7 +213,7 @@ class clase_compras(Frame):
         datos = self.varCompras.consultar_compras(self.filtro_activo)
 
         for row in datos:
-            self.grid_art_faltantes.insert("", END, text=row[0], values=(row[1], row[2], row[3]))
+            self.grid_art_faltantes.insert("", "end", text=row[0], values=(row[1], row[2], row[3], row[4]))
 
         if len(self.grid_art_faltantes.get_children()) > 0:
                self.grid_art_faltantes.selection_set(self.grid_art_faltantes.get_children()[0])
@@ -430,6 +296,7 @@ class clase_compras(Frame):
         self.strvar_fecha_anotado.set(value=una_fecha.strftime('%d/%m/%Y'))
         self.strvar_articulo.set(value=valores[1])
         self.strvar_combo_estado.set(value=valores[2])
+        self.strvar_articulo_obser.set(value=valores[3])
 
     def fBorro_articulo(self):
 
@@ -480,20 +347,19 @@ class clase_compras(Frame):
         if self.alta_modif == 1:
 
             self.varCompras.insertar_registro(self.strvar_fecha_anotado.get(), self.strvar_articulo.get(),
-            self.strvar_combo_estado.get())
+            self.strvar_combo_estado.get(), self.strvar_articulo_obser.get())
 
             messagebox.showinfo("Guardar", "Nuevo registro creado correctamente", parent=self)
 
         elif self.alta_modif == 2:
 
             self.varCompras.modificar_registro(self.var_Id, self.strvar_fecha_anotado.get(),
-            self.strvar_articulo.get(), self.strvar_combo_estado.get())
+            self.strvar_articulo.get(), self.strvar_combo_estado.get(), self.strvar_articulo_obser.get())
 
             self.var_Id == -1
             messagebox.showinfo("Modificacion", "Modificacion de registro exitosa", parent=self)
 
         self.limpiar_Grid()
-        #self.llena_grilla(self.clave)
         self.limpiar_entrys()
         self.estado_entrys("disabled")
         self.estado_botones_uno("normal")
@@ -630,110 +496,6 @@ class clase_compras(Frame):
             self.strvar_fecha_anotado.set(value=retorno_VerFal)
         return ("bien")
 
-#     def puntabla(self, registro, tipo_mov):
-#
-#         # metodo para posicionar el puntero en el TV luego de las distintas acciones sobre los datos
-#
-#         # trae el indice de la tabla "I001", "I002", ......
-#         regis = self.grid_art_faltantes.get_children()
-#         rg = ""
-#         contador = 0
-#         # -----------------------------------------------------------------------------------------------------
-#
-#         # ALTA ------------------------------------------------------------------------------------------------
-#         # aca traigo el codigo del registr0 (cod.cliente, cod. art.... que estoy dando de alta porque aun no tengo ID)
-#         # ALTA
-#         if tipo_mov == "A":
-#             # barro regis que son las Id de cada linea del Treeview
-#             for rg in regis:
-#                 # guardo en buscado cada uno de los valores de esa linea
-#                 buscado = self.grid_art_faltantes.item(rg)['values']
-#                 # en este caso pregunto si el valor 1 es igual al string que pase como parametro en registro
-#                 if str(buscado[1]) == registro:
-#                     # si son iguales salgo y devuelvo en "rg" el Id que tiene el nuevo registro del treeview
-#                     break
-#         # ----------------------------------------------------------------------------------------------------
-#
-#         # MODIFICACION ---------------------------------------------------------------------------------------
-#         # Aca es para acomodar el puntero cuando el registro si existe en la tabla, entonces puedo usar el ID
-#         if tipo_mov == "B":
-#             for rg in regis:
-#                 # En buscado guardo el Id de la tabla (base datos) del que estoy posicionado
-#                 buscado = self.grid_art_faltantes.item(rg)['text']
-#
-#                 # en registro viene "clave" que es el Id del que estoy parado y lo paso a la funcion como parametro
-#                 contador += 1
-#                 # busco el ID de la tabla con el que guarde antes en "clave" - aca busco un Id de la tabla
-#                 # a registro se le paso el Id de la tabla (es distinto la busqueda a ALTA)
-#                 if buscado == registro:
-#                     break
-#         # -----------------------------------------------------------------------------------------------------
-#
-#         # -----------------------------------------------------------------------------------------------------
-#         # BORRAR REGISTRO PARTE 1 -es la parte donde tomo el Id del registro que le sigue al que voy a eliminar
-#         if tipo_mov == 'E':
-#             control = 1
-#             lista = [""]
-#             self.buscado2 = ""
-#             for rg in regis:
-#                 contador += 1
-#                 lista.append(rg)
-#                 if control == 0:
-#                     # guardo Id del que sigue
-#                     buscado = self.grid_art_faltantes.item(rg)['values']
-#                     self.buscado2 = str(buscado[1])
-#
-#                     # ---------------------------------------------------------------------------------------
-#                     # esto agregue para que no se me mueva el puntero al posterior registro del treeview
-#                     xxx = len(lista) - 2
-#                     x_rg = lista[xxx]
-#
-#                     self.grid_art_faltantes.selection_set(x_rg)
-#                     self.grid_art_faltantes.focus(x_rg)
-#                     self.grid_art_faltantes.yview(self.grid_art_faltantes.index(x_rg))
-#
-#                     if rg == "":
-#                         return False
-#                     return True
-#
-# #                    break
-#
-#                 if rg == registro:  # registro seria self.selected o sea el Id de la BD
-#                     control = 0
-#         # -------------------------------------------------------------------------------------------
-#
-#         # -------------------------------------------------------------------------------------------
-#         # BORRAR REGISTRO PARTE 2 - Aca si ya busco poner el puntero en el Id del que obtuve antes
-#         # que es el que sigue al que borre
-#         if tipo_mov == 'F':
-#             for rg in regis:
-#                 buscado = self.grid_art_faltantes.item(rg)['values']
-#                 if self.buscado2 == str(buscado[1]):
-#                     break
-#         # ------------------------------------------------------------------------------------------
-#
-#         # ------------------------------------------------------------------------------------------
-#         # BUSCAR EN TABLA - Viene de la funcion que busca en la tabla lo que se requiere
-#         if tipo_mov == 'S':
-#             if regis != ():
-#                 for rg in regis:
-#                     break
-#                 if rg == "":
-#                     #self.btn_buscar_cliente.configure(state="disabled")
-#                     return
-#         # ----------------------------------------------------------------------------------------
-#
-#         # ----------------------------------------------------------------------------------------
-#         # vuelven los punteros del treeview con el valor Id encontrado en las busquedas anteriores
-#         self.grid_art_faltantes.selection_set(rg)
-#         self.grid_art_faltantes.focus(rg)
-#         self.grid_art_faltantes.yview(self.grid_art_faltantes.index(rg))
-#
-#         if rg == "":
-#             return False
-#         return True
-#         # ---------------------------------------------------------------------------------------------
-
     # ===================================================
     # INFORMES
     # ===================================================
@@ -827,3 +589,234 @@ class clase_compras(Frame):
         self.filtro_activo = "faltantes WHERE fa_estado = '" + self.strvar_combo_filtro.get() + "' ORDER BY fa_fecha"
         self.limpiar_Grid()
         self.llena_grilla("")
+
+    def cuadro_titulos(self):
+
+        # Armo el logo y el titulo
+        self.photo3 = Image.open('comprasmay.png')
+        self.photo3 = self.photo3.resize((60, 60), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.png_compras = ImageTk.PhotoImage(self.photo3)
+        self.lbl_png_compras = Label(self.frame_titulo_top, image=self.png_compras, bg="red", relief="ridge", bd=5)
+
+        self.lbl_titulo = Label(self.frame_titulo_top, width=49, text="Articulos a comprar", bg="black", fg="gold",
+                                                       font=("Arial bold", 22, "bold"), bd=5, relief="ridge", padx=5)
+        # Coloco logo y titulo en posicion de pantalla
+        self.lbl_png_compras.grid(row=0, column=0, sticky=W, padx=5, ipadx=22)
+        self.lbl_titulo.grid(row=0, column=1, sticky="nsew")
+
+    def cuadro_grid(self):
+
+        # STYLE TREEVIEW
+        style = ttk.Style(self.frame_art_faltantes_dos)
+        style.theme_use("clam")
+        style.configure("Treeview.Heading", background="black", foreground="white")
+        self.grid_art_faltantes = ttk.Treeview(self.frame_art_faltantes_dos, height=4, columns=("col1", "col2", "col3"))
+        #self.grid_venta_articulos.bind("<Double-Button-1>", self.DobleClickGrid)
+
+        self.grid_art_faltantes.column("#0", width=30, anchor="center", minwidth=30)
+        self.grid_art_faltantes.column("col1", width=60, anchor="w", minwidth=60)
+        self.grid_art_faltantes.column("col2", width=290, anchor="w", minwidth=290)
+        self.grid_art_faltantes.column("col3", width=40, anchor="center", minwidth=40)
+
+        self.grid_art_faltantes.heading("#0", text="Id", anchor="center")
+        self.grid_art_faltantes.heading("col1", text="Fecha", anchor="w")
+        self.grid_art_faltantes.heading("col2", text="Articulo", anchor="w")
+        self.grid_art_faltantes.heading("col3", text="Estado", anchor="center")
+
+        # SCROLLBAR del Treeview
+        scroll_x = Scrollbar(self.frame_art_faltantes_dos, orient="horizontal")
+        scroll_y = Scrollbar(self.frame_art_faltantes_dos, orient="vertical")
+        self.grid_art_faltantes.config(xscrollcommand=scroll_x.set)
+        self.grid_art_faltantes.config(yscrollcommand=scroll_y.set)
+        scroll_x.config(command=self.grid_art_faltantes.xview)
+        scroll_y.config(command=self.grid_art_faltantes.yview)
+        scroll_y.pack(side="right", fill="y")
+        scroll_x.pack(side="bottom", fill="x")
+        self.grid_art_faltantes['selectmode'] = 'browse'
+
+        self.grid_art_faltantes.pack(side="top", fill="both", expand=1, padx=5, pady=2)
+
+    def cuadro_botones_crud(self):
+
+        for c in range(1):
+            self.frame_art_faltantes_uno.grid_columnconfigure(c, weight=1, minsize=140)
+
+        # Botones CRUD
+        # nuevo pedido articulo
+        img = Image.open("archivo-nuevo.png").resize((18, 18))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_nuevo_articulo=Button(self.frame_art_faltantes_uno, text=" Nuevo articulo",
+                                       command=self.fNuevo_articulo, width=17, bg='blue', fg='white', compound="left")
+        self.btn_nuevo_articulo.image = icono
+        self.btn_nuevo_articulo.config(image=icono)
+        self.btn_nuevo_articulo.grid(row=0, column=0, padx=3, pady=3, sticky=W)
+
+        # editar pedido articulo
+        img = Image.open("editar.png").resize((18, 18))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_edito_articulo=Button(self.frame_art_faltantes_uno, text=" Editar articulo",
+                                       command=self.fEdito_articulo, width=17, bg='blue', fg='white', compound="left")
+        self.btn_edito_articulo.image = icono
+        self.btn_edito_articulo.config(image=icono)
+        self.btn_edito_articulo.grid(row=1, column=0, padx=3, pady=3, sticky=W)
+
+        # borrar  pedido articulo
+        img = Image.open("eliminar.png").resize((18, 18))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_borro_articulo=Button(self.frame_art_faltantes_uno, text=" Borrar articulo",
+                                       command=self.fBorro_articulo, width=17, bg='blue', fg='white', compound="left")
+        self.btn_borro_articulo.image = icono
+        self.btn_borro_articulo.config(image=icono)
+        self.btn_borro_articulo.grid(row=2, column=0, padx=3, pady=3, sticky=W)
+
+        # botones para ir al tope y al fin del archivo
+        self.photo4 = Image.open('toparch.png')
+        self.photo4 = self.photo4.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo4 = ImageTk.PhotoImage(self.photo4)
+        self.btnToparch = Button(self.frame_art_faltantes_uno, text="", image=self.photo4, command=self.fToparch,
+                                 bg="grey", fg="white")
+        self.btnToparch.grid(row=3, column=0, padx=5, sticky="nsew", pady=3)
+        # ToolTip(self.btnToparch, msg="Ir a principio de archivo")
+        self.photo5 = Image.open('finarch.png')
+        self.photo5 = self.photo5.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo5 = ImageTk.PhotoImage(self.photo5)
+        self.btnFinarch = Button(self.frame_art_faltantes_uno, text="", image=self.photo5, command=self.fFinarch,
+                                 bg="grey", fg="white")
+        self.btnFinarch.grid(row=4, column=0, padx=5, sticky="nsew", pady=3)
+        # ToolTip(self.btnFinarch, msg="Ir al final del archivo")
+
+        # reordenamiento de self.frame_botones_grid
+        for widg in self.frame_art_faltantes_uno.winfo_children():
+            widg.grid_configure(padx=6, pady=3, sticky='nsew')
+
+    def cuadro_busqueda_grid(self):
+
+        for c in range(4):
+            self.frame_busqueda_art_faltantes.grid_columnconfigure(c, weight=1, minsize=140)
+
+        # lbl texto de busqueda
+        img = Image.open("buscar.png").resize((18, 18))
+        icono = ImageTk.PhotoImage(img)
+        self.lbl_busqueda_compra = Label(self.frame_busqueda_art_faltantes, text=" Articulo buscado:", justify="left",
+                                         bg="light blue", compound="left")
+        self.lbl_busqueda_compra.image = icono
+        self.lbl_busqueda_compra.config(image=icono)
+        self.lbl_busqueda_compra.grid(row=0, column=0, padx=3, pady=2, sticky=W)
+
+        self.entry_busqueda_compra = Entry(self.frame_busqueda_art_faltantes, textvariable=self.strvar_buscostring,
+                                                  state='normal', width=25, justify="left", bg="light blue")
+        self.entry_busqueda_compra.grid(row=0, column=1, padx=3, pady=2, sticky='nsew')
+
+        # Filtrar la busqueda
+        img = Image.open("filtrar.png").resize((18, 18))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_buscar=Button(self.frame_busqueda_art_faltantes, text=" Filtrar busqueda", command=self.fBuscar_articulo,
+                               width=11, bg='#5F9EA0', fg='white', compound="left")
+        self.btn_buscar.image = icono
+        self.btn_buscar.config(image=icono)
+        self.btn_buscar.grid(row=0, column=2, padx=5, pady=2, sticky=W)
+
+        # Mostrar todos los articulos
+        img = Image.open("ver_todo.png").resize((18, 18))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_showall=Button(self.frame_busqueda_art_faltantes, text=" Mostrar todo", command=self.fShowall,
+                                width=11, bg='#5F9EA0', fg='white', compound="left")
+        self.btn_showall.image = icono
+        self.btn_showall.config(image=icono)
+        self.btn_showall.grid(row=0, column=3, padx=5, pady=2, sticky=W)
+
+        # Boton Imprimir
+        self.photo_imp = Image.open('impresora.png')
+        self.photo_imp = self.photo_imp.resize((18, 18), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo_imp = ImageTk.PhotoImage(self.photo_imp)
+        self.btn_imprime = Button(self.frame_busqueda_art_faltantes, image=self.photo_imp, pady=3, command=self.creopdf,
+                                  border=3)
+        self.btn_imprime.grid(row=0, column=4, padx=4, pady=2)
+
+        self.lbl_filtrar_compra = Label(self.frame_busqueda_art_faltantes, text="Estado: ", justify="left",
+                                        bg="light blue")
+        self.lbl_filtrar_compra.grid(row=0, column=5, padx=5, pady=2, sticky=W)
+
+        # Combo estado filtrado
+        self.combo_filtro = ttk.Combobox(self.frame_busqueda_art_faltantes, textvariable=self.strvar_combo_filtro,
+                                         state='readonly', width=10)
+        self.combo_filtro['value'] = ["Pendiente", "Comprado", "Finalizado"]
+        self.combo_filtro.current(0)
+        self.combo_filtro.grid(row=0, column=6, padx=3, pady=3, sticky=E)
+        #self.combo_estado.bind('<Tab>', lambda e: self.calcular("completo"))
+
+        self.btn_filtro=Button(self.frame_busqueda_art_faltantes, text="Filtrar", command=self.fFiltrar,
+                               width=11, bg='#5F9EA0', fg='white', compound="left")
+        self.btn_filtro.grid(row=0, column=7, padx=5, pady=2, sticky=W)
+
+        # reordenamiento
+        for widg in self.frame_busqueda_art_faltantes.winfo_children():
+            widg.grid_configure(padx=2, pady=3, sticky='nsew')
+
+    def cuadro_entrys(self):
+
+        # Fecha de Anotacion
+        self.lbl_fecha = Label(self.frame_ingreso_datos, text="Fecha: ", justify="left")
+        self.lbl_fecha.grid(row=0, column=0, padx=3, pady=3, sticky=W)
+        self.entry_fecha = Entry(self.frame_ingreso_datos, textvariable=self.strvar_fecha_anotado, width=13)
+        self.entry_fecha.grid(row=0, column=1, padx=3, pady=3, sticky=E)
+        self.entry_fecha.bind("<FocusOut>", self.formato_fecha)
+
+        # Entry articulo faltante
+        self.lbl_articulo = Label(self.frame_ingreso_datos, text="Articulo: ", justify="left")
+        self.lbl_articulo.grid(row=0, column=2, padx=3, pady=3, sticky=W)
+        self.entry_articulo = Entry(self.frame_ingreso_datos, textvariable=self.strvar_articulo, width=70, justify="left")
+        self.entry_articulo.grid(row=0, column=3, padx=3, pady=3, sticky=W)
+        self.strvar_articulo.trace("w", lambda *args: limitador(self.strvar_articulo, 100))
+
+        # Combo estado
+        self.lbl_combo_estado = Label(self.frame_ingreso_datos, justify="left", foreground="black", text="Estado")
+        self.lbl_combo_estado.grid(row=0, column=4, padx=3, pady=3, sticky=W)
+        self.combo_estado = ttk.Combobox(self.frame_ingreso_datos, textvariable=self.strvar_combo_estado,
+                                         state='readonly', width=15)
+        self.combo_estado['value'] = ["Pendiente", "Comprado", "Finalizado"]
+        self.combo_estado.current(0)
+        self.combo_estado.grid(row=0, column=5, padx=3, pady=3, sticky=E)
+
+        # Entry articulo faltante
+        self.lbl_articulo = Label(self.frame_ingreso_datos, text="Observaciones: ", justify="left")
+        self.lbl_articulo.grid(row=1, column=0, padx=3, pady=3, sticky=W)
+        self.entry_articulo_obser = Entry(self.frame_ingreso_datos, textvariable=self.strvar_articulo_obser, width=125,
+                                    justify="left")
+        self.entry_articulo_obser.grid(row=1, column=1, columnspan=5, padx=3, pady=3, sticky=W)
+        self.strvar_articulo_obser.trace("w", lambda *args: limitador(self.strvar_articulo_obser, 150))
+
+    def cuadro_botones_guardar(self):
+
+        for c in range(2):
+            self.frame_botones2.grid_columnconfigure(c, weight=1, minsize=140)
+
+        # Guardar  pedido articulo
+        img = Image.open("guardar.png").resize((18, 18))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_guardar=Button(self.frame_botones2, text="Guardar articulo", command=self.fGuardar, width=48,
+                                bg='Green', fg='white', compound="top")
+        self.btn_guardar.image = icono
+        self.btn_guardar.config(image=icono)
+        self.btn_guardar.grid(row=0, column=0, padx=5, pady=3, sticky='nsew')
+
+        # borrar  pedido articulo
+        img = Image.open("cancelar.png").resize((18, 18))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_cancelar=Button(self.frame_botones2, text="Cancelar", command=self.fCancelar, width=48, bg='black',
+                                 fg='white', compound="top")
+        self.btn_cancelar.image = icono
+        self.btn_cancelar.config(image=icono)
+        self.btn_cancelar.grid(row=0, column=1, padx=5, pady=3, sticky='nsew')
+
+        self.photo3 = Image.open('salida.png')
+        self.photo3 = self.photo3.resize((60, 40), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo3 = ImageTk.PhotoImage(self.photo3)
+        self.btn_salir=Button(self.frame_botones2, text="Salir", image=self.photo3, width=130, command=self.fSalir,
+                             bg="yellow", fg="white")
+        self.btn_salir.grid(row=0, column=2, padx=2, pady=3)
+        # reordenamiento de self.frame_botones_grid
+
+        for widg in self.frame_botones2.winfo_children():
+            widg.grid_configure(padx=6, pady=3, sticky='nsew')
+

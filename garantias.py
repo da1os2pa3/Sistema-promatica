@@ -185,8 +185,8 @@ class clase_garantias(Frame):
             color = ('evenrow',) if cont % 2 else ('oddrow',)
 
             # convierto fecha de 2024-12-19 a 19/12/2024
-            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[1], '%Y-%m-%d'), "hora_no")
-            forma_normal2 = fecha_str_reves_normal(self, datetime.strftime(row[3], '%Y-%m-%d'), "hora_no")
+            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[1], '%Y-%m-%d'), False)
+            forma_normal2 = fecha_str_reves_normal(self, datetime.strftime(row[3], '%Y-%m-%d'), False)
 
             self.grid_garantias.insert("", END, tags=color, text=row[0], values=(forma_normal, row[2],
                                                     forma_normal2, row[4], row[5], row[6], row[7], row[8], row[9]))
@@ -403,8 +403,8 @@ class clase_garantias(Frame):
                 return
 
             # Convierto fechas a dd/mm/aaa
-            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[1], '%Y-%m-%d'), "hora_no")
-            forma_normal2 = fecha_str_reves_normal(self, datetime.strftime(row[3], '%Y-%m-%d'), "hora_no")
+            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[1], '%Y-%m-%d'), False)
+            forma_normal2 = fecha_str_reves_normal(self, datetime.strftime(row[3], '%Y-%m-%d'), False)
 
             self.entry_fecha_movim.insert(0, forma_normal)
             self.strvar_fecha_vto.set(value=forma_normal2)

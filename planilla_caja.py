@@ -348,7 +348,7 @@ class PlaniCaja(Frame):
             color = ('evenrow',) if cont % 2 else ('oddrow',)
 
             # convierto fecha de 2024-12-19 a 19/12/2024
-            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[1], '%Y-%m-%d'), "hora_no")
+            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[1], '%Y-%m-%d'), False)
 
             # cargo la grilla
             self.grid_planilla.insert("", "end", tags=color, text=row[0], values=(forma_normal, row[2],
@@ -788,7 +788,7 @@ class PlaniCaja(Frame):
 
         for row in valores: # Como viene un solo registro, esto NO deberia hacerlo
 
-            fecha_convertida = fecha_str_reves_normal(self, datetime.strftime(row[1], "%Y-%m-%d"), "hora_no")
+            fecha_convertida = fecha_str_reves_normal(self, datetime.strftime(row[1], "%Y-%m-%d"), False)
             self.strvar_fecha_planilla.set(value=fecha_convertida)
             self.strvar_tipomov.set(value=row[2])
             self.strvar_detalle_movim.set(value=row[3])
@@ -1199,7 +1199,7 @@ class PlaniCaja(Frame):
 
         if self.ultima_fecha != 0:
             # Esta funcion la pasa a formato str pero al derecho normal de 2024-12-19 a 19/12/2024 esta en funciones
-            self.fecha_aux = fecha_str_reves_normal(self, self.ultima_fecha, "hora_no")
+            self.fecha_aux = fecha_str_reves_normal(self, self.ultima_fecha, False)
         else:
             # paso la fecha de hoy a string y la asigno a ultima fecha porque no hay otra
             self.fecha_aux = date.today().strftime('%d/%m/%Y')
@@ -1325,21 +1325,21 @@ class PlaniCaja(Frame):
                 self.entry_egreso.focus()
                 return
             else:
-                self.strvar_egreso.set(value=round(float(self.strvar_egreso.get()), 2))
+                self.strvar_egreso.set(value=str(round(float(self.strvar_egreso.get()), 2)))
 
             if self.strvar_pagos_ctacte.get() == "" or self.strvar_pagos_ctacte.get() == "-" or self.strvar_pagos_ctacte.get() == ".":
-                self.strvar_pagos_ctacte.set(value=0)
+                self.strvar_pagos_ctacte.set(value="0")
                 self.entry_pagoscta.focus()
                 return
             else:
-                self.strvar_pagos_ctacte.set(value=round(float(self.strvar_pagos_ctacte.get()), 2))
+                self.strvar_pagos_ctacte.set(value=str(round(float(self.strvar_pagos_ctacte.get()), 2)))
 
             if self.strvar_compras.get() == "" or self.strvar_compras.get() == "-" or self.strvar_compras.get() == ".":
                 self.strvar_compras.set(value="0")
                 self.entry_compras.focus()
                 return
             else:
-                self.strvar_compras.set(value=round(float(self.strvar_compras.get()), 2))
+                self.strvar_compras.set(value=str(round(float(self.strvar_compras.get()), 2)))
 
             # Evaluo segun el parametro de calculo que asigno en el Entry --------------------------------
             if que_campo == "general":

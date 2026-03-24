@@ -33,24 +33,23 @@ class Ventana(Frame):
         # ---------------------------------------------------------------------------------
         # PANTALLA -*-
         # ---------------------------------------------------------------------------------
+        self.master.resizable(0, 0)
 
-        # Esto esta agregado para centrar las ventanas en la pantalla
-        master.resizable(0, 0)
+        """ Actualizamos el contenido de la ventana (la ventana pude crecer si se le agrega
+            mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer.
+            Obtenemos el alto y  ancho de la pantalla """
 
-        """ Actualizamos el contenido de la ventana (la ventana pude crecer si se le agrega mas widgets).Esto 
-        actualiza el ancho y alto de la ventana en caso de crecer. """
+        ancho = self.master.winfo_screenwidth()
+        alto = self.master.winfo_screenheight()
 
-        # Obtenemos el largo y  ancho de la pantalla
-        wtotal = master.winfo_screenwidth()
-        htotal = master.winfo_screenheight()
-        # Guardamos el largo y alto de la ventana
-        wventana = 980
-        hventana = 620
-        # Aplicamos la siguiente formula para calcular donde debería posicionarse
-        pwidth = round(wtotal / 2 - wventana / 2) + 0
-        pheight = round(htotal / 2 - hventana / 2) + 0
-        # Se lo aplicamos a la geometría de la ventana
-        master.geometry(str(wventana) + "x" + str(hventana) + "+" + str(pwidth) + "+" + str(pheight))
+        # Asigno fijo un ancho y un alto
+        ancho_ventana = 980
+        alto_ventana = 620
+
+        # X e Y son las coordenadas para el posicionamiento del vertice superior izquierdo
+        x = int((ancho - ancho_ventana) / 2)
+        y = int((alto - alto_ventana) / 2)
+        self.master.geometry(f"{ancho_ventana}x{alto_ventana}+{x}+{y}")
         # ------------------------------------------------------------------------------
 
         self.create_widgets()
@@ -60,7 +59,6 @@ class Ventana(Frame):
         # ---------------------------------------------------------------------------
         # SETEO INICIAL DEL GRID
         # ---------------------------------------------------------------------------------
-
         # item = self.grid_clientes.identify_row(0)
         # self.grid_clientes.selection_set(item)
         # self.grid_clientes.focus(item)
@@ -77,21 +75,7 @@ class Ventana(Frame):
         # -----------------------------------------------------------------------------
         # Encabezado logo y titulo con PACK
         self.frame_titulo_top = Frame(self.master)
-
-        # LOGO
-        self.photo3 = Image.open('clientes4.png')
-        self.photo3 = self.photo3.resize((105, 75), Image.LANCZOS)  # Redimension (Alto, Ancho)
-        self.png_clientes = ImageTk.PhotoImage(self.photo3)
-        self.lbl_png_clientes = Label(self.frame_titulo_top, image=self.png_clientes, bg="red", relief="ridge", bd=5, padx=5)
-        # TITULO
-        self.lbl_titulo = Label(self.frame_titulo_top, width=25, text="Clientes", bg="black", fg="gold",
-                                font=("Arial bold", 38, "bold"), bd=5, relief="ridge")
-
-        # COLOCO EL LOGO A LA IZQUIERDA Y EL TITULO AL LADO
-        self.lbl_png_clientes.grid(row=0, column=0, sticky=W, padx=5, ipadx=20)
-        self.lbl_titulo.grid(row=0, column=1, sticky="nsew", padx=12)
-
-        # CIERRO EL FRAME PEINCIPAL
+        self.cuadro_titulos()
         self.frame_titulo_top.pack(side="top", fill="x", padx=8, pady=5)
         # --------------------------------------------------------------------------
 
@@ -119,29 +103,9 @@ class Ventana(Frame):
         # --------------------------------------------------------------------------
 
         # cuadro principal contenedor
-        barra_botones = LabelFrame(self.master)
-
-        # BOTONES GRID - BOTONES 1
-        self.botones1 = LabelFrame(barra_botones, bd=5, relief="ridge")
-        self.cuadro_botones_grid()
-        self.botones1.pack(side="top", padx=3, pady=3, fill="y")
-
-        # BOTONES ORDEN - TOPE Y FIN DE ARCHIVO - BOTONES 2
-        self.botones2 = LabelFrame(barra_botones, bd=5, relief="ridge")
-        self.cuadro_botones_movimiento()
-        self.botones2.pack(side="top", padx=3, pady=3, fill="y")
-
-        # BOTONES SALIDA - BOTONES 3
-        self.botones3 = LabelFrame(barra_botones)
-        self.cuadro_boton_salida()
-        self.botones3.pack(side="top", padx=3, pady=3, fill="y")
-
-        # BOTONES ROTULO CANT DE CLIENTES - BOTONES 4
-        self.botones4 = LabelFrame(barra_botones)
-        self.cuadro_cartel_clientes()
-        self.botones4.pack(side="top", padx=3, pady=3, fill="y")
-
-        barra_botones.pack(side="left", padx=10, pady=5, ipady=5, fill="y")
+        self.barra_botones = LabelFrame(self.master)
+        self.barra_lateral_botones()
+        self.barra_botones.pack(side="left", padx=10, pady=5, ipady=5, fill="y")
         # --------------------------------------------------------------------------
 
         # --------------------------------------------------------------------------
@@ -157,7 +121,7 @@ class Ventana(Frame):
         # ----------------------------------------------------------------------------
 
         # -----------------------------------------------------------------------------
-        # TREEVIEW -*-
+        # TREEVIEW - GRID
         # -----------------------------------------------------------------------------
         self.cuadro_grid_clientes()
 
@@ -181,7 +145,7 @@ class Ventana(Frame):
         for item in self.grid_clientes.get_children():
             self.grid_clientes.delete(item)
 
-    def llena_grilla(self, ult_tabla_id):
+    def llena_grilla(self, set_foco):
 
         if len(self.filtro_activo) > 0:
             datos = self.varClientes.consultar_clientes(self.filtro_activo)
@@ -197,55 +161,30 @@ class Ventana(Frame):
             color = ('evenrow',) if cont % 2 else ('oddrow',)
 
             # convierto fecha de 2024-12-19 a 19/12/2024
-            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[13], '%Y-%m-%d'), "hora_no")
+            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[13], '%Y-%m-%d'), False)
 
             self.grid_clientes.insert("", "end", tags=color, text=row[0], values=(row[1], row[2], row[3],
                                                                                   row[4], row[5], row[6], row[7],
                                                                                   row[8], row[9], row[10], row[11],
                                                                                   row[12], forma_normal, row[14]))
 
-        if len(self.grid_clientes.get_children()) > 0:
-            self.grid_clientes.selection_set(self.grid_clientes.get_children()[0])
+        # # Muestra elprimero de la grilla
+        # if len(self.grid_clientes.get_children()) > 0:
+        #     self.grid_clientes.selection_set(self.grid_clientes.get_children()[0])
 
-        # ----------------------------------------------------------------------------------
-        # Procedimiento para acomodar los punteros en caso de altas, modif. ....)
+        # Ubico el foco en el grid
+        for item in self.grid_clientes.get_children():
 
-        """ ult_tabla_id = Trae el Id de la tabla (21, 60, 61, ..) correspondiente identificando al registro 
-        en el cual yo quiero que se ponga el puntero del GRID.
-        Traera blanco ('') si la funcion llena_grilla es llamada desde cualquier lugar que no 
-        necesite acomodar puntero en un item en particular (caso altas, modificaciones ...)."""
+            #valores = self.grid_clientes.item(item, "values")
+            texto = self.grid_clientes.item(item, "text")
 
-        if ult_tabla_id:
-            """ regis = Guardo todos los Id del Grid (I001, IB003, ...)"""
-            regis = self.grid_clientes.get_children()
-            rg = ""
-
-            for rg in regis:
-
-                """ buscado = guardo el 'text' correspondiente al Id del grid que esta en regis y muevo toda 
-                la linea de datos del treeview a la variable buscado), o sea, para el Id I0001 paso el Id de la 
-                tabla 57... y asi ira cambiando para cada rg
-                text = te da el valor de la primera columna del grid, que es donde veo el Id del registro 
-                asignado en la tabla"""
-
-                buscado = self.grid_clientes.item(rg)['text']
-                if int(buscado) == int(ult_tabla_id):
-                    """ Si coinciden los Id quiere decir que encontre al registro que estoy buscando por Id de tabla."""
-                    break
-
-            """ Ahora ejecuto este procedimiento que se encarga de poner el puntero en el registro que acabamos 
-                de encontrar correspondiente al Id de tabla asignado en el parametro de la funcion llena_grilla. 
-            "rg" = es el Text o Index del registro en el Treeview I001, IB002.... y ahi posiciono el foco 
-                con las siguientes instrucciones. """
-
-            self.grid_clientes.selection_set(rg)
-            # Para que no me diga que no hay nada seleccionado
-            self.grid_clientes.focus(rg)
-            # para que la linea seleccionada no me quede fuera del area visible del treeview
-            self.grid_clientes.yview(self.grid_clientes.index(rg))
-        else:
-            # caso de que el parametro ult_tabla_id sea " " muevo el puntero al final del GRID
-            self.mover_puntero_topend("END")
+            if str(texto) == str(set_foco):  # suponiendo que el ID está en la columna 0
+                self.grid_clientes.update_idletasks()
+                self.grid_clientes.focus_set()
+                self.grid_clientes.selection_set(item)
+                self.grid_clientes.focus(item)
+                self.grid_clientes.see(item)
+                break
 
     # --------------------------------------------------------------------------
     # INICIALIZACION SISTEMA -*-
@@ -275,7 +214,6 @@ class Ventana(Frame):
         self.entry_telefono_pers.delete(0, END)
         self.entry_telefono_trab.delete(0, END)
         self.entry_mail.delete(0, END)
-        #self.entry_fecha_ingreso.delete(0, END)
         self.combo_sit_fiscal.set("")
         self.combo_sit_fiscal.current(0)
         self.entry_cuit.delete(0, END)
@@ -356,6 +294,7 @@ class Ventana(Frame):
 
         self.habilitar_text("normal")
         self.limpiar_text()
+        self.entry_fecha_ingreso.delete(0, END)
         self.habilitar_btn_B("normal")
         self.habilitar_btn_A("disabled")
 
@@ -410,7 +349,7 @@ class Ventana(Frame):
             self.combo_sit_fiscal.insert(0, row[11])
             self.entry_cuit.insert(0, row[12])
             # convierto fecha de date a string y cambio a visualizacion español
-            fecha_convertida = fecha_str_reves_normal(self, datetime.strftime(row[13], "%Y-%m-%d"), "hora_no")
+            fecha_convertida = fecha_str_reves_normal(self, datetime.strftime(row[13], "%Y-%m-%d"), False)
             self.entry_fecha_ingreso.insert(0, fecha_convertida)
             self.strvar_fecha_ingreso.set(value=fecha_convertida)
             self.entry_observaciones.insert(0, row[14])
@@ -438,7 +377,7 @@ class Ventana(Frame):
 
         # guardo todos los valores en una lista desde el GRID
         valores = self.grid_clientes.item(self.selected, 'values')
-        data = "Id: "+str(self.clave)+" Nº: "+valores[0]+" Cliente: " + valores[1]+" "+valores[2]
+        data = " Nº: "+valores[0]+" Cliente: " + valores[1]+" "+valores[2]
 
         r = messagebox.askquestion("Confirmar", "Confirma eliminar registro?\n " + data, parent=self)
         if r == messagebox.NO:
@@ -492,28 +431,33 @@ class Ventana(Frame):
             # verlo en la base 1, 2, 3, 4......)
             self.clave = self.grid_clientes.item(self.selected, 'text')
 
+            clientes = {
+                "Id": self.var_Id,
+                "codigo": self.strvar_codigo.get(),
+                "apellido": self.strvar_apellido.get(),
+                "nombres": self.strvar_nombres.get(),
+                "direccion": self.strvar_direccion.get(),
+                "localidad": self.strvar_localidad.get(),
+                "provincia": self.strvar_provincia.get(),
+                "postal": self.strvar_postal.get(),
+                "telef_pers": self.strvar_telef_pers.get(),
+                "telef_trab": self.strvar_telef_trab.get(),
+                "mail": self.strvar_mail.get(),
+                "fecha_ingreso": self.strvar_fecha_ingreso.get(),
+                "sit_fis": self.strvar_sit_fis.get(),
+                "cuit": self.strvar_cuit.get(),
+                "observaciones": self.strvar_observaciones.get(),
+                "apenombre": self.strvar_apellido.get() + ' ' + self.strvar_nombres.get()
+            }
+
             if self.alta_modif == 1:
 
-                self.varClientes.insertar_clientes(self.strvar_codigo.get(), self.strvar_apellido.get(),
-                self.strvar_nombres.get(), self.strvar_direccion.get(),
-                self.strvar_localidad.get(), self.strvar_provincia.get(), self.strvar_postal.get(),
-                self.strvar_telef_pers.get(), self.strvar_telef_trab.get(),
-                self.strvar_mail.get(), self.strvar_fecha_ingreso.get(), self.strvar_sit_fis.get(),
-                self.strvar_cuit.get(), self.strvar_observaciones.get(),
-                self.strvar_apellido.get()+' '+self.strvar_nombres.get())
-
+                self.id_nuevo = self.varClientes.insertar_clientes(clientes)
                 messagebox.showinfo("Correcto", "Nuevo registro creado correctamente", parent=self)
 
             elif self.alta_modif == 2:
 
-                self.varClientes.modificar_clientes(self.var_Id, self.strvar_codigo.get(),
-                self.strvar_apellido.get(), self.strvar_nombres.get(), self.strvar_direccion.get(),
-                self.strvar_localidad.get(), self.strvar_provincia.get(), self.strvar_postal.get(),
-                self.strvar_telef_pers.get(), self.strvar_telef_trab.get(),
-                self.strvar_mail.get(), self.strvar_fecha_ingreso.get(), self.strvar_sit_fis.get(),
-                self.strvar_cuit.get(), self.strvar_observaciones.get(),
-                self.strvar_apellido.get()+' '+self.strvar_nombres.get())
-
+                self.varClientes.modificar_clientes(clientes)
                 self.var_Id == -1
                 messagebox.showinfo("Correcto", "La modificacion del registro fue exitosa", parent=self)
 
@@ -525,8 +469,7 @@ class Ventana(Frame):
             self.filtro_activo = "clientes ORDER BY apellido, nombres ASC"
 
             if self.alta_modif == 1:
-                ultimo_tabla_id = self.varClientes.traer_ultimo(0)
-                self.llena_grilla(ultimo_tabla_id)
+                self.llena_grilla(self.id_nuevo)
             elif self.alta_modif == 2:
                 self.llena_grilla(self.clave)
 
@@ -633,8 +576,8 @@ class Ventana(Frame):
 
         """ Obtengo el Id del grid para que me tome la seleccion y el foco se coloque efectivamente en el 
         item buscado y asi cuando le doy -show all- el puntero se sigue quedando en el registro buscado"""
-        item = self.grid_clientes.selection()
-        self.grid_clientes.focus(item)
+        # item = self.grid_clientes.selection()
+        # self.grid_clientes.focus(item)
 
     def fShowall(self):
 
@@ -683,18 +626,8 @@ class Ventana(Frame):
 
     def cuadro_botones_grid(self):
 
-        # for c in range(5):
-        #     self.botones1.grid_rowconfigure(c, weight=1, minsize=30)
-
         for c in range(1):
             self.botones1.grid_columnconfigure(c, weight=1, minsize=140)
-
-        # Columnas mas cortas
-        # self.botones1.grid_rowconfigure(0, weight=3, minsize=60)
-        # self.frame_buscar.grid_columnconfigure(3, weight=1, minsize=50)
-        # self.frame_buscar.grid_columnconfigure(2, weight=3, minsize=50)
-
-        #self.botones1.grid_columnconfigure(0, weight=1, minsize=90)
 
         # Nuevo cliente
         img = Image.open("archivo-nuevo.png").resize((18, 18))
@@ -1023,3 +956,40 @@ class Ventana(Frame):
         # PACK - GENERALES
         self.grid_clientes.pack(side= "top", fill="both", expand=1, padx=1, pady=5)
 
+
+    def cuadro_titulos(self):
+
+        # LOGO<
+        self.photo3 = Image.open('clientes4.png')
+        self.photo3 = self.photo3.resize((105, 75), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.png_clientes = ImageTk.PhotoImage(self.photo3)
+        self.lbl_png_clientes = Label(self.frame_titulo_top, image=self.png_clientes, bg="red", relief="ridge", bd=5, padx=5)
+        # TITULO
+        self.lbl_titulo = Label(self.frame_titulo_top, width=25, text="Clientes", bg="black", fg="gold",
+                                font=("Arial bold", 38, "bold"), bd=5, relief="ridge")
+
+        # COLOCO EL LOGO A LA IZQUIERDA Y EL TITULO AL LADO
+        self.lbl_png_clientes.grid(row=0, column=0, sticky=W, padx=5, ipadx=20)
+        self.lbl_titulo.grid(row=0, column=1, sticky="nsew", padx=12)
+
+    def barra_lateral_botones(self):
+
+        # BOTONES GRID - BOTONES 1
+        self.botones1 = LabelFrame(self.barra_botones, bd=5, relief="ridge")
+        self.cuadro_botones_grid()
+        self.botones1.pack(side="top", padx=3, pady=3, fill="y")
+
+        # BOTONES ORDEN - TOPE Y FIN DE ARCHIVO - BOTONES 2
+        self.botones2 = LabelFrame(self.barra_botones, bd=5, relief="ridge")
+        self.cuadro_botones_movimiento()
+        self.botones2.pack(side="top", padx=3, pady=3, fill="y")
+
+        # BOTONES SALIDA - BOTONES 3
+        self.botones3 = LabelFrame(self.barra_botones)
+        self.cuadro_boton_salida()
+        self.botones3.pack(side="top", padx=3, pady=3, fill="y")
+
+        # BOTONES ROTULO CANT DE CLIENTES - BOTONES 4
+        self.botones4 = LabelFrame(self.barra_botones)
+        self.cuadro_cartel_clientes()
+        self.botones4.pack(side="top", padx=3, pady=3, fill="y")

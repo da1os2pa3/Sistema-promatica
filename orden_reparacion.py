@@ -39,9 +39,8 @@ class OrdenesRepara(Frame):
         # ------------------------------------------------------------------------
 
         # ------------------------------------------------------------------------
-        # Esto esta agregado para centrar las ventanas en la pantalla
+        # PANTALLA
         # ------------------------------------------------------------------------
-        #master.geometry("880x510")
         self.master.resizable(0, 0)
         # Actualizamos toddo el contenido de la ventana (la ventana pude crecer si se le agrega
         # mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer.
@@ -365,13 +364,13 @@ class OrdenesRepara(Frame):
 
             # convierto fecha de 2024-12-19 a 19/12/2024
             forma_normal_ingreso = fecha_str_reves_normal(self, datetime.strftime(row[2], '%Y-%m-%d %H:%M'),
-                                                          "hora_si")
+                                                          True)
             forma_normal_egreso = None
 
             if row[3] != None:
 
                 forma_normal_egreso  = fecha_str_reves_normal(self, datetime.strftime(row[3], '%Y-%m-%d %H:%M'),
-                                                              "hora_si")
+                                                              True)
 
             """ Leo en la lista datos todos los registros y los inserto en la grilla
             1- El "" nos da quien es el padre de este nodo (ninguno en este caso (nace en la raiz))
@@ -478,7 +477,7 @@ class OrdenesRepara(Frame):
         # Aqui analizo que no me llegue desde la TABLA ninguna fecha en "none" dado que ese es un error
         # en el caso que venga, la convierto datetime con la fecha actual tanto para ingreso como para egreso.
         una_fecha = (datos_registro_selec[2])
-        self.fecha_final = una_fecha.strftime("%d-%m-%Y %H:%M:%S")
+        self.fecha_final = una_fecha.strftime("%d/%m/%Y %H:%M:%S")
         self.strvar_fecha_ingreso.set(self.fecha_final)
 
         # Tratamiento de fecha de egreso porque aca puede venir None
@@ -486,7 +485,7 @@ class OrdenesRepara(Frame):
             self.strvar_fecha_egreso.set(value="")
         else:
             una_fecha = (datos_registro_selec[3])
-            self.fecha_final = una_fecha.strftime("%d-%m-%Y %H:%M:%S")
+            self.fecha_final = una_fecha.strftime("%d/%m/%Y %H:%M:%S")
             self.strvar_fecha_egreso.set(self.fecha_final)
 
         #self.filtro_activo = "orden_repara WHERE Id = " + str(self.clave)
@@ -495,7 +494,7 @@ class OrdenesRepara(Frame):
         # Aqui analizo que no me llegue desde la TABLA ninguna fecha en "none" dado que ese es un error
         # en el caso que venga, la convierto datetime con la fecha actual tanto para ingreso como para egreso.
         una_fecha = (datos_registro_selec[2])
-        self.fecha_final = una_fecha.strftime("%d-%m-%Y %H:%M:%S")
+        self.fecha_final = una_fecha.strftime("%d/%m/%Y %H:%M:%S")
         self.strvar_fecha_ingreso.set(self.fecha_final)
 
         # Tratamiento de fecha de egreso porque aca puede venir None
@@ -503,7 +502,7 @@ class OrdenesRepara(Frame):
             self.strvar_fecha_egreso.set(value="")
         else:
             una_fecha = (datos_registro_selec[3])
-            self.fecha_final = una_fecha.strftime("%d-%m-%Y %H:%M:%S")
+            self.fecha_final = una_fecha.strftime("%d/%m/%Y %H:%M:%S")
             self.strvar_fecha_egreso.set(self.fecha_final)
 
         self.strvar_codigo_cliente.set(datos_registro_selec[4])
@@ -561,7 +560,7 @@ class OrdenesRepara(Frame):
 
         # Fecha y hora de ingreso
         una_fecha = datetime.now()
-        self.fecha_final = una_fecha.strftime("%d-%m-%Y %H:%M:%S")
+        self.fecha_final = una_fecha.strftime("%d/%m/%Y %H:%M:%S")
         self.strvar_fecha_ingreso.set(self.fecha_final)
         self.entry_retirado.insert(0, "N")
 
@@ -597,7 +596,7 @@ class OrdenesRepara(Frame):
         # Aqui analizo que no me llegue desde la TABLA ninguna fecha en "none" dado que ese es un error
         # en el caso que venga, la convierto datetime con la fecha actual tanto para ingreso como para egreso.
         una_fecha = (datos_registro_selec[2])
-        self.fecha_final = una_fecha.strftime("%d-%m-%Y %H:%M:%S")
+        self.fecha_final = una_fecha.strftime("%d/%m/%Y %H:%M:%S")
         self.strvar_fecha_ingreso.set(self.fecha_final)
 
         # Tratamiento de fecha de egreso porque aca puede venir None
@@ -605,7 +604,7 @@ class OrdenesRepara(Frame):
             self.strvar_fecha_egreso.set(value="")
         else:
             una_fecha = (datos_registro_selec[3])
-            self.fecha_final = una_fecha.strftime("%d-%m-%Y %H:%M:%S")
+            self.fecha_final = una_fecha.strftime("%d/%m/%Y %H:%M:%S")
             self.strvar_fecha_egreso.set(self.fecha_final)
 
         self.strvar_codigo_cliente.set(datos_registro_selec[4])
@@ -721,7 +720,7 @@ class OrdenesRepara(Frame):
 
             transformo_fecha_ingreso = datetime
             transformo_fecha_ingreso = transformo_fecha_ingreso.strptime(self.strvar_fecha_ingreso.get(),
-                                                                         "%d-%m-%Y %H:%M:%S")
+                                                                         "%d/%m/%Y %H:%M:%S")
 
             if self.strvar_retirado.get() == "S":
                 transformo_fecha_egreso = datetime.now()
@@ -1583,6 +1582,8 @@ class OrdenesRepara(Frame):
     # INFORMES -*-
     # ----------------------------------------------------------------------------
 
+    # ORDEN DE REPARACION
+
     def creopdf(self):
 
         # traigo el registro que quiero imprimir de la base datos de ordenes reparacion
@@ -1712,56 +1713,56 @@ class OrdenesRepara(Frame):
         pdf.set_font('Courier', 'B', 10)
         pdf.cell(w=0, h=4, txt='* Equipo: ', align='L', fill=0, ln=1)
         pdf.set_font('Arial', '', 11)
-        pdf.multi_cell(w=0, h=4, txt=self.pdf_desc, border=1, align='L', fill=0)
+        pdf.multi_cell(w=0, h=6, txt=self.pdf_desc, border=1, align='L', fill=0)
         pdf.cell(w=0, h=3, txt='', align='L', fill=0, ln=1)
 
         # ACCESORIOS Y ESTADO DEL EQUIPO
         pdf.set_font('Courier', 'B', 10)
         pdf.cell(w=0, h=4, txt='* Accesorios y Estado del equipo: ', align='L', fill=0, ln=1)
         pdf.set_font('Arial', '', 11)
-        pdf.multi_cell(w=0, h=4, txt=self.pdf_acces+'  -  '+self.pdf_estado, border=1, align='L', fill=0)
+        pdf.multi_cell(w=0, h=6, txt=self.pdf_acces+'  -  '+self.pdf_estado, border=1, align='L', fill=0)
         pdf.cell(w=0, h=3, txt='', align='L', fill=0, ln=1)
 
         # CUENTAS Y CONTRASEÑAS
         pdf.set_font('Courier', 'B', 10)
         pdf.cell(w=0, h=4, txt='* Cuentas y contraseñas: ', align='L', fill=0, ln=1)
         pdf.set_font('Arial', '', 11)
-        pdf.multi_cell(w=0, h=4, txt=self.pdf_cuenta, border=1, align='L', fill=0)
+        pdf.multi_cell(w=0, h=6, txt=self.pdf_cuenta, border=1, align='L', fill=0)
         pdf.cell(w=0, h=3, txt='', align='L', fill=0, ln=1)
 
         # REQUERIMIENTO
         pdf.set_font('Courier', 'B', 10)
         pdf.cell(w=0, h=4, txt='* Requerimiento: ', align='L', fill=0, ln=1)
         pdf.set_font('Arial', '', 11)
-        pdf.multi_cell(w=0, h=4, txt=self.pdf_requerido, align='L', border=1, fill=0)
+        pdf.multi_cell(w=0, h=6, txt=self.pdf_requerido, align='L', border=1, fill=0)
         pdf.cell(w=0, h=3, txt='', align='L', fill=0, ln=1)
 
         # DIAGNOSTICO
         pdf.set_font('Courier', 'B', 10)
         pdf.cell(w=0, h=4, txt='* Diagnostico: ', align='L', fill=0, ln=1)
         pdf.set_font('Arial', '', 11)
-        pdf.multi_cell(w=0, h=4, txt=self.pdf_diagnostico, border=1, align='L', fill=0)
+        pdf.multi_cell(w=0, h=6, txt=self.pdf_diagnostico, border=1, align='L', fill=0)
         pdf.cell(w=0, h=3, txt='', align='L', fill=0, ln=1)
 
         # PRESUPUESTO
         pdf.set_font('Courier', 'B', 10)
         pdf.cell(w=0, h=4, txt='* Presupuesto: ', align='L', fill=0, ln=1)
         pdf.set_font('Arial', '', 11)
-        pdf.multi_cell(w=0, h=4, txt=self.pdf_presupuesto, border=1, align='L', fill=0)
+        pdf.multi_cell(w=0, h=6, txt=self.pdf_presupuesto, border=1, align='L', fill=0)
         pdf.cell(w=0, h=3, txt='', align='L', fill=0, ln=1)
 
         # TRABAJO REALIZADO
         pdf.set_font('Courier', 'B', 10)
         pdf.cell(w=0, h=4, txt='* Trabajo realizado: ', align='L', fill=0, ln=1)
         pdf.set_font('Arial', '', 11)
-        pdf.multi_cell(w=0, h=4, txt=self.pdf_realizado, border=1, align='L', fill=0)
+        pdf.multi_cell(w=0, h=6, txt=self.pdf_realizado, border=1, align='L', fill=0)
         pdf.cell(w=0, h=3, txt='', align='L', fill=0, ln=1)
 
         # PARTES REEMPLAZADAS
         pdf.set_font('Courier', 'B', 10)
         pdf.cell(w=0, h=4, txt='* Partes reemplazadas: ', align='L', fill=0, ln=1)
         pdf.set_font('Arial', '', 11)
-        pdf.multi_cell(w=0, h=4, txt=self.pdf_partes, border=1, align='L', fill=0)
+        pdf.multi_cell(w=0, h=6, txt=self.pdf_partes, border=1, align='L', fill=0)
         pdf.cell(w=0, h=3, txt='', align='L', fill=0, ln=1)
 
         # pdf.set_font('Courier', 'B', 10)
@@ -1780,9 +1781,9 @@ class OrdenesRepara(Frame):
 
         # TOTALES
         pdf.set_font('Courier', 'B', 10)
-        pdf.cell(w=0, h=4, txt='* Totales: ', align='L', fill=0, ln=1)
+        pdf.cell(w=0, h=5, txt='* Totales: ', align='L', fill=0, ln=1)
         pdf.set_font('Arial', '', 11)
-        pdf.multi_cell(w=0, h=4, txt=cuerpo_10, border=1, align='L', fill=0)
+        pdf.multi_cell(w=0, h=5, txt=cuerpo_10, border=1, align='L', fill=0)
         #pdf.line(10, 210, 190, 210)
         pdf.cell(w=0, h=3, txt='', align='L', fill=0, ln=1)
 
@@ -1791,7 +1792,7 @@ class OrdenesRepara(Frame):
 
         pdf.set_font('Courier', 'B', 10)
         pdf.cell(w=0, h=5, txt='Retirada................................ ', align='R', fill=0, ln=1)
-        # --------------------------------------------------------------------------------
+        # ----------------------------------------------------------------------------
 
         """ para crear una linea recta
         #pdf.rect(x=50, y=80, w=70, h=95)
@@ -1805,7 +1806,7 @@ class OrdenesRepara(Frame):
         #pd.image('impresora.png', x=10, y=10, w=30, h=30) #, link=url) """
         # ----------------------------------------------------------------------------
 
-        # -----------------------------------------------------------------------------
+        # ----------------------------------------------------------------------------
         """ Para insertar lineas de escritura una debajo de otra
         por ejemplo :
         linea 1
@@ -1819,7 +1820,7 @@ class OrdenesRepara(Frame):
         # margenes izq derecha arriba y abajo
         """ Margen antes de terminar la hoja o sea en tre la ultima linea de la hoja y el fin de la hoja
         pdf.set_auto_page_break(auto=True, margin=15) """
-        # -------------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------
 
         """ # # para listar una base de datos forma simple basica
         # # lista_de_datos = retorno de la base de datos
@@ -1873,7 +1874,7 @@ class OrdenesRepara(Frame):
         A4 : 210x297mm
         """
 
-        # -----------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------
         # CONFIGURACION INFORME
         # esto siempre debe estar
         pdf = PDF(orientation='P', unit='mm', format='A4')
@@ -1896,7 +1897,7 @@ class OrdenesRepara(Frame):
         self.pdf_codigo_cliente = str(datos_registro_selec[4])
         self.pdf_nombre_cliente = datos_registro_selec[5]
         self.pdf_datos_encabezado_orden = (self.pdf_numero_orden)
-        # -----------------------------------------------------------------------------------
+        # ----------------------------------------------------------------------------------
 
         # # Imprimo el encabezado de pagina con el numero de orden
         # pdf.set_font('Arial', '', 10)
@@ -2035,50 +2036,5 @@ class OrdenesRepara(Frame):
         path = 'hoja.pdf'
         os.system(path)
 
-
-
-#         # -------------------------------------------------------------
-#
-#         self.pantalla_estad = Toplevel()
-#         self.pantalla_estad.geometry('1120x480+400+500')
-#         self.pantalla_estad.transient(master=self.master)
-#         self.pantalla_estad.config(bg='light green', padx=5, pady=5)
-#         self.pantalla_estad.resizable(False, False)
-#         self.pantalla_estad.title("Orden numero")
-#
-#
-#         self.juan = LabelFrame(self.pantalla_estad)
-#
-#         # text = tk.Text(self.juan, width=60, height=15)
-#         # text.pack(padx=10, pady=10)
-#
-#         datos = self.varOrdenes.consultar_ordenes(self.filtro_activo)
-#
-#         for row in datos:
-#
-#             # -------------------------------------------------------------
-#             self.text_diagnostic = ScrolledText(self.juan)
-#             #self.text_diagnostic = tk.Text(self.juan, width=100, height=15)
-#             self.text_diagnostic.config(width=100, height=6, wrap="word", padx=4, pady=2)
-#             self.text_diagnostic.grid(row=0, column=0, padx=4, pady=1, sticky="nsew")
-#             self.text_diagnostic.insert(END, datos[17])
-#             # -----------------------------------------------------------------
-#
-#             break
-#
-#
-# #        print(self.text_diagnostic.get(1.0, 'end-1c'),)
-#
-#         # if len(self.grid_orden.get_children()) > 0:
-#         #     self.grid_orden.selection_set(self.grid_orden.get_children()[0])
-#         #
-#         # for widg in self.pantalla_estad.winfo_children():
-#         #     widg.grid_configure(padx=5, pady=3, sticky='nsew')
-#
-#         self.juan.pack(side="top", fill="both", expand=0, padx=3, pady=2)
-#         self.pantalla_estad.grab_set()
-#         self.pantalla_estad.focus_set()
-#
-#         mainloop()
 
 

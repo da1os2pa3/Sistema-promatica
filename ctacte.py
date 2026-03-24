@@ -187,7 +187,7 @@ class CuentaCorriente(Frame):
         for row in datos:
 
             # convierto fecha de 2024-12-19 a 19/12/2024
-            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[1], '%Y-%m-%d'), "hora_no")
+            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[1], '%Y-%m-%d'), False)
 
             self.suma_saldos += row[3] - row[4]
             self.grid_ctacte.insert("", "end", text=row[0], values=(forma_normal, row[2], row[3], row[4],
@@ -422,7 +422,9 @@ class CuentaCorriente(Frame):
 
     def fGuardar(self):
 
-        # Validaciones
+        # ----------------------------------------------------------------
+        # VALIDACIONES
+        # ----------------------------------------------------------------
 
         # FECHA
         if self.strvar_fecha_movim.get() == "":
@@ -439,6 +441,7 @@ class CuentaCorriente(Frame):
             messagebox.showerror("Error", "No i mgreso importes", parent=self)
             self.entry_debito_movim.focus()
             return
+        # ----------------------------------------------------------------
 
         aaa = 0
         if aaa == 0:
@@ -1144,12 +1147,12 @@ class CuentaCorriente(Frame):
         # ---------------------------------------------------------------------------
         # CONVERSION DE LAS FECHAS A FORMATO NUESTRO - fecha de 2024-12-19 a 19/12/2024
 
-        forma_normal_inicial = fecha_str_reves_normal(self, datetime.strftime(primera_fecha, '%Y-%m-%d'), "hora_no")
+        forma_normal_inicial = fecha_str_reves_normal(self, datetime.strftime(primera_fecha, '%Y-%m-%d'), False)
         # sumo 30 dias a la primera fecha
         fecha_inicial_mas30 = primera_fecha + timedelta(days=30)
 
-        forma_normal_final = fecha_str_reves_normal(self, datetime.strftime(fecha_inicial_mas30, '%Y-%m-%d'), "hora_no")
-        forma_normal_ultima = fecha_str_reves_normal(self, datetime.strftime(ultima_fecha, '%Y-%m-%d'), "hora_no")
+        forma_normal_final = fecha_str_reves_normal(self, datetime.strftime(fecha_inicial_mas30, '%Y-%m-%d'), False)
+        forma_normal_ultima = fecha_str_reves_normal(self, datetime.strftime(ultima_fecha, '%Y-%m-%d'), False)
 
         self.strvar_fecha_inicial = StringVar(value=forma_normal_inicial)
         self.strvar_fecha_ultima = StringVar(value=forma_normal_ultima)
@@ -1504,9 +1507,9 @@ class CuentaCorriente(Frame):
         #........................................................................
 
         # Mensajes mientras procesamos
-        self.mostrar_toast("🧹 Iniciando borrado de registros...", "green", 2500, "")
+        self.varFuncion_new.mostrar_toast(self.pantalla_estad, "🧹 Iniciando borrado de registros...", "green", 2500, "")
         # --- proceso real ---
-        self.pantalla_estad.after(3000, lambda: self.mostrar_toast("✅ Proceso finalizado", "green", 2500, ""))
+        self.pantalla_estad.after(3000, lambda: self.varFuncion_new.mostrar_toast(self.pantalla_estad, "✅ Proceso finalizado", "green", 2500, ""))
         # -----------------------------------------------------------------------
 
         # -----------------------------------------------------------------------
@@ -1534,66 +1537,68 @@ class CuentaCorriente(Frame):
                                        self.strvar_codigo_cliente.get(), self.strvar_nombre_cliente.get(),
                                        self.strvar_clavemov.get())
 
-    def mostrar_toast(self, mensaje, pa_color, duracion=3000, tipo="info"):
 
-        tipo = str(tipo).strip().lower()
-
-        colores = {
-            "success": "#1e7e34",  # verde
-            "error": "#c82333",  # rojo
-            "info": "#222222"  # gris
-        }
-
-        bg_color = colores.get(tipo, "#222222")
-
-        """ toast.overrideredirect(True)        # sin bordes
-            toast.attributes("-topmost", True)  # siempre arriba
-            toast = tk.Toplevel(self.pantalla_estad) # asignamos la clase a variable toast"""
-
-        toast = tk.Toplevel(self.pantalla_estad)
-        toast.overrideredirect(True)  # sin bordes
-        toast.attributes("-topmost", True)
-        toast.configure(bg=bg_color)
-
-        # Estilo
-        frame = tk.Frame(toast, bg=pa_color, padx=20, pady=10)
-        frame.pack()
-
-        tk.Label(
-            frame,
-            text=mensaje,
-            fg="white",
-            bg=pa_color,
-            font=("Segoe UI", 10)
-        ).pack()
-
-        # 🔔 sonido solo para error (Windows)
-        if tipo == "error":
-            try:
-                import winsound
-                winsound.MessageBeep(winsound.MB_ICONHAND)
-            except Exception:
-                pass
-
-        # Posición (abajo a la derecha)
-        self.pantalla_estad.update_idletasks()
-        toast.update_idletasks()
-
-        ventana_x = self.pantalla_estad.winfo_rootx()
-        ventana_y = self.pantalla_estad.winfo_rooty()
-        ventana_ancho = self.pantalla_estad.winfo_width()
-        ventana_alto = self.pantalla_estad.winfo_height()
-
-        toast_ancho = toast.winfo_width()
-        toast_alto = toast.winfo_height()
-
-        x = ventana_x + ventana_ancho - toast_ancho - 20
-        y = ventana_y + ventana_alto - toast_alto - 50
-
-        toast.geometry(f"+{x}+{y}")
-
-        # Auto cerrar
-        toast.after(duracion, toast.destroy)
+    # La defini en funcion_new
+    # def mostrar_toast(self, mensaje, pa_color, duracion=3000, tipo="info"):
+    #
+    #     tipo = str(tipo).strip().lower()
+    #
+    #     colores = {
+    #         "success": "#1e7e34",  # verde
+    #         "error": "#c82333",  # rojo
+    #         "info": "#222222"  # gris
+    #     }
+    #
+    #     bg_color = colores.get(tipo, "#222222")
+    #
+    #     """ toast.overrideredirect(True)        # sin bordes
+    #         toast.attributes("-topmost", True)  # siempre arriba
+    #         toast = tk.Toplevel(self.pantalla_estad) # asignamos la clase a variable toast"""
+    #
+    #     toast = tk.Toplevel(self.pantalla_estad)
+    #     toast.overrideredirect(True)  # sin bordes
+    #     toast.attributes("-topmost", True)
+    #     toast.configure(bg=bg_color)
+    #
+    #     # Estilo
+    #     frame = tk.Frame(toast, bg=pa_color, padx=20, pady=10)
+    #     frame.pack()
+    #
+    #     tk.Label(
+    #         frame,
+    #         text=mensaje,
+    #         fg="white",
+    #         bg=pa_color,
+    #         font=("Segoe UI", 10)
+    #     ).pack()
+    #
+    #     # 🔔 sonido solo para error (Windows)
+    #     if tipo == "error":
+    #         try:
+    #             import winsound
+    #             winsound.MessageBeep(winsound.MB_ICONHAND)
+    #         except Exception:
+    #             pass
+    #
+    #     # Posición (abajo a la derecha)
+    #     self.pantalla_estad.update_idletasks()
+    #     toast.update_idletasks()
+    #
+    #     ventana_x = self.pantalla_estad.winfo_rootx()
+    #     ventana_y = self.pantalla_estad.winfo_rooty()
+    #     ventana_ancho = self.pantalla_estad.winfo_width()
+    #     ventana_alto = self.pantalla_estad.winfo_height()
+    #
+    #     toast_ancho = toast.winfo_width()
+    #     toast_alto = toast.winfo_height()
+    #
+    #     x = ventana_x + ventana_ancho - toast_ancho - 20
+    #     y = ventana_y + ventana_alto - toast_alto - 50
+    #
+    #     toast.geometry(f"+{x}+{y}")
+    #
+    #     # Auto cerrar
+    #     toast.after(duracion, toast.destroy)
 
     def fSalir_compactar(self):
         self.pantalla_estad.destroy()

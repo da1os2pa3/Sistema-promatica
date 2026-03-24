@@ -1,10 +1,6 @@
 """ Este es el modulo menu principal desde donde accedemos a cada ABM y proceso del sistema"""
 import locale
-# ------------------------------------------------------
-#import tkinter as tk
-
-# ------------------------------------------------------
-#from PIL import Image, ImageTk
+import tkinter as tk
 from PIL.Image import Resampling
 
 from articulos import VentArt
@@ -41,8 +37,10 @@ class Principal(Frame):
     que agregamos son ancho y alto """
 
     def __init__(self, master=None):
+
         # herencia
-        super().__init__(master, width=880, height=510)
+        super().__init__(master)
+
         # propiedades instanciamientos (serian las variables de la clase)
         self.master = master
 
@@ -50,25 +48,37 @@ class Principal(Frame):
         # locale.setlocale(locale.LC_ALL, 'ar_AR')
         # print(locale.localeconv())
 
-        # ------------------------------------------------------------------------------
-        # Agregado para centrar la pantalla principal
-        # ------------------------------------------------------------------------------
-        self.master.geometry("880x510")
-        self.master.resizable(0, 0)
-        # Actualizamos el contenido de la ventana (la ventana pude crecer si se le agrega
-        # mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer.
-        # Obtenemos el largo y ancho de la pantalla
-        wtotal = self.master.winfo_screenwidth()
-        htotal = self.master.winfo_screenheight()
-        # Guardamos el largo y alto de la ventana
-        wventana = 880
-        hventana = 510
-        # Aplicamos la siguiente formula para calcular donde debería posicionarse
-        pwidth = round(wtotal / 2 - wventana / 2)
-        pheight = round(htotal / 2 - hventana / 2)
-        # Se lo aplicamos a la geometría de la ventana
-        self. master.geometry(str(wventana) + "x" + str(hventana) + "+" + str(pwidth) + "+" + str(pheight))
         # ---------------------------------------------------------------------
+        # PARAMETRIZO LA PANTALLA
+        # ---------------------------------------------------------------------
+
+        # Determino ancho y alto de pantalla ----------------------------------
+        ancho = self.master.winfo_screenwidth()
+        alto = self.master.winfo_screenheight()
+        # asigno el 70% para que no me ocupe toda el area
+        self.ancho_ventana = int(ancho * 0.6)
+        self.alto_ventana = int(alto * 0.6)
+        # Calcular posición para centrar
+        x = int((ancho - self.ancho_ventana) / 2)
+        y = int((alto - self.alto_ventana) / 2)
+        self.master.geometry(f"{self.ancho_ventana}x{self.alto_ventana}+{x}+{y}")
+        # ----------------------------------------------------------------------
+
+        # Imagen de fondo -------------------------------------------------------
+        self.imagen = Image.open("promatica.jpg")
+        self.imagen = self.imagen.resize((self.ancho_ventana, self.alto_ventana), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
+        self.fondo = ImageTk.PhotoImage(self.imagen)
+        self.label_fondo = tk.Label(self.master, image=self.fondo)
+        self.label_fondo.place(x=0, y=0, relwidth=1, relheight=1)
+        # self.master.bind("<Configure>", self.ajustar_fondo)
+        #tk.Label(self.master, image=fondo).place(x=0, y=0, relwidth=1, relheight=1)
+        # -----------------------------------------------------------------------
+
+        # Barra de titulo superior ----------------------------------------------
+        label1 = tk.Label(self.master, text='Gestion Comercial - Promatica Computacion', bg="black", fg="gold",
+                       font=("times new roman", 30, "bold"), bd=12, relief="ridge")
+        label1.pack(side="top", fill="x", pady=10, padx=5)
+        # -----------------------------------------------------------------------
 
         # ---------------------------------------------------------------------
         # BARRA DE MENU
@@ -95,157 +105,185 @@ class Principal(Frame):
         menu_principal.add_command(label='Salir', command=self.fsale_menu)
 
         self.master.config(menu=menu_principal)
-        # --------------------------------------------------------------------
+        # ---------------------------------------------------------------------
 
         self.create_widgets()
 
     def create_widgets(self):
 
-        # TITULO principal de pantalla - traer_nombre de Empresa
-        # datos_retornados = self.consultar_parametros()
-        # label1 = Label(self.master, text='Sistema Tecnico - ' + datos_retornados[1],
-        #                bg="black", fg="gold", font=("times new roman", 30, "bold"),
-        #                bd=12, relief=RIDGE)
-
         # ---------------------------------------------------------------
-        # Foto fondo pantalla
-        photo33 = Image.open("promatica.jpg")
-        photo33 = photo33.resize((880, 510), Resampling.LANCZOS)  # Redimension (Alto, Ancho)
-        photo33 = ImageTk.PhotoImage(photo33)
-        fondopan = Label(self.master, image=photo33).place(x=0, y=85)
-
-        label1 = Label(self.master, text='Gestion Comercial - Promatica Computacion', bg="black", fg="gold",
-                       font=("times new roman", 30, "bold"), bd=12, relief="ridge")
-        label1.pack(side="top", fill="x", pady=10, padx=5)
+        # CINTA MENU INFERIOR
         # ---------------------------------------------------------------
-
-        # ---------------------------------------------------------------
-        # Creo el LabelFrame principal
         self.frame1 = LabelFrame(self.master, bg="#bfdaff")
-        self.frame2 = LabelFrame(self.master, bg="#bfdaff")
-
-        # ---------------------------------------------------------------
-        #BARRA MENU INFERIOR
-        # ---------------------------------------------------------------
-
-        # ARTICULOS CRUD - ABM
-        photo1 = Image.open('productos.png')
-        photo1 = photo1.resize((80, 70), Image.LANCZOS)  # Redimension (Alto, Ancho)
-        photo1 = ImageTk.PhotoImage(photo1)
-        self.btnArticulos = Button(self.frame1, text="Articulos", image=photo1, compound="top", pady=3,
-                                   border=3, command=self.fArticulos, bg="blue", fg="white")
-        self.btnArticulos.pack(side="left", expand=1, fill="x", pady=5, padx=3)
-
-        # ORDENES DE REPARACION
-        photo2 = Image.open('reparar.png')
-        photo2 = photo2.resize((80, 70), Image.LANCZOS)  # Redimension (Alto, Ancho)
-        photo2 = ImageTk.PhotoImage(photo2)
-        self.btnorden_rep = Button(self.frame1, text="Orden Reparacion", image=photo2, compound="top", pady=3,
-                                   border=3, command=self.m_orden_repara, bg="blue", fg="white")
-        self.btnorden_rep.pack(side="left", expand=1, fill="x", pady=5, padx=3)
-
-        # PRESUPUESTOS COTIZACIONES - INGRESO VENTAS
-        photo3 = Image.open('presupuesto.png')
-        photo3 = photo3.resize((80, 70), Image.LANCZOS)  # Redimension (Alto, Ancho)
-        photo3 = ImageTk.PhotoImage(photo3)
-        self.btnCotvta = Button(self.frame1, text="Cotizar/Venta", image=photo3, compound="top", pady=3, command=self.fCotVta,
-                                border=3, bg="blue", fg="white")
-        self.btnCotvta.pack(side="left", expand=1, fill="x", pady=5, padx=3)
-
-        # PLANILLA DE CAJA
-        photo4 = Image.open('planilla.png')
-        photo4 = photo4.resize((80, 70), Image.LANCZOS)  # Redimension (Alto, Ancho)
-        photo4 = ImageTk.PhotoImage(photo4)
-        self.btnPlaniCaja = Button(self.frame1, text="Planilla Caja", image=photo4, compound="top", pady=3,
-                                   command=self.fPlaniCaja, border=3, bg="blue", fg="white")
-        self.btnPlaniCaja.pack(side="left", expand=1, fill="x", pady=5, padx=3)
-
-        # CUENTA CORRIENTE
-        photo5 = Image.open('ctacte.png')
-        photo5 = photo5.resize((80, 70), Image.LANCZOS)  # Redimension (Alto, Ancho)
-        photo5 = ImageTk.PhotoImage(photo5)
-        self.btnCtacte = Button(self.frame1, text="Cuenta Corriente", image=photo5, compound="top", pady=3,
-                                   command=self.fCtacte, border=3, bg="blue", fg="white")
-        self.btnCtacte.pack(side="left", expand=1, fill="x", pady=5, padx=3)
-
-        # SALIDA DEL SISTEMA
-        photo6 = Image.open('salida.png')
-        photo6 = photo6.resize((80, 70), Image.LANCZOS)  # Redimension (Alto, Ancho)
-        photo6 = ImageTk.PhotoImage(photo6)
-        self.btnSalida = Button(self.frame1, text="Salir", image=photo6, compound="top", pady=3, command=self.fSalir,
-                                border=3, bg="yellow", fg="Black")
-        self.btnSalida.pack(side="left", expand=1, fill="x", pady=5, padx=3)
-
-        # ------------------------------------------------------
-        # BARRA MENU SUPERIOR
-        # ------------------------------------------------------
-
-        # CLIENTES
-        photo7 = Image.open('clientes4.png')
-        photo7 = photo7.resize((20, 20), Image.LANCZOS)  # Redimension (Alto, Ancho)
-        photo7 = ImageTk.PhotoImage(photo7)
-        self.btnClientes = Button(self.frame2, text="Clientes", image=photo7, compound="top", pady=3,
-                                   command=self.fClientes, height=53, border=3, bg="blue", fg="white")
-        self.btnClientes.pack(side="left", expand=1, fill="x", pady=5, padx=3)
-
-        # GARANTIAS
-        photo8 = Image.open('garantia.png')
-        photo8 = photo8.resize((20, 20), Image.LANCZOS)  # Redimension (Alto, Ancho)
-        photo8 = ImageTk.PhotoImage(photo8)
-        self.btnCtacte = Button(self.frame2, text="Garantias", image=photo8, compound="top", pady=3,
-                                   command=self.fGarantia, height=53, border=3, bg="blue", fg="white")
-        self.btnCtacte.pack(side="left", expand=1, fill=X, pady=5, padx=3)
-
-        # RECIBOS
-        photo9 = Image.open('recibo.png')
-        photo9 = photo9.resize((20, 20), Resampling.LANCZOS)  # Redimension (Alto, Ancho)
-        photo9 = ImageTk.PhotoImage(photo9)
-        self.btnRecibos = Button(self.frame2, text="Recibos", image=photo9, compound="top", pady=3,
-                                   command=self.fRecibos, height=53, border=3, bg="blue", fg="white")
-        self.btnRecibos.pack(side="left", expand=1, fill=X, pady=5, padx=3)
-
-        # PRESUPUESTOS
-        photo10 = Image.open('presuequipo.png')
-        photo10 = photo10.resize((20, 20), Resampling.LANCZOS)  # Redimension (Alto, Ancho)
-        photo10 = ImageTk.PhotoImage(photo10)
-        self.btnPresupuestos = Button(self.frame2, text="Presupuestos", image=photo10, compound="top", pady=3,
-                                   command=self.fPresupuestos, height=53, border=3, bg="blue", fg="white")
-        self.btnPresupuestos.pack(side="left", expand=1, fill="x", pady=5, padx=3)
-
-        # ARTICULOS FALTANTES
-        photo11 = Image.open('comprasmay.png')
-        photo11 = photo11.resize((20, 20), Resampling.LANCZOS)  # Redimension (Alto, Ancho)
-        photo11 = ImageTk.PhotoImage(photo11)
-        self.btnartfaltantes = Button(self.frame2, text="Articulos faltantes", image=photo11, compound="top", pady=3,
-                                   command=self.fCompras, height=53, border=3, bg="blue", fg="white")
-        self.btnartfaltantes.pack(side="left", expand=1, fill="x", pady=5, padx=3)
-
-        # RMA
-        photo12 = Image.open('rma.png')
-        photo12 = photo12.resize((20, 20), Resampling.LANCZOS)  # Redimension (Alto, Ancho)
-        photo12 = ImageTk.PhotoImage(photo12)
-        self.btnrma = Button(self.frame2, text="Agenda Pendientes\n(RMA)", image=photo12, compound="top", pady=3,
-                                   command=self.fRma, border=3, bg="blue", fg="white")
-        self.btnrma.pack(side="left", expand=1, fill="x", pady=5, padx=3)
-
-        # Respaldos
-        photo13 = Image.open('backup.png')
-        photo13 = photo13.resize((20, 20), Resampling.LANCZOS)  # Redimension (Alto, Ancho)
-        photo13 = ImageTk.PhotoImage(photo13)
-        self.btnbackup = Button(self.frame2, text="Backup", image=photo13, compound="top", pady=3,
-                                   command=self.fBackup, height=53, border=3, bg="blue", fg="white")
-        self.btnbackup.pack(side="left", expand=1, fill="x", pady=5, padx=3)
-
-        # PACKS cierre de pantalla
+        self.cuadro_cinta_inferior()
         self.frame1.pack(side="bottom", fill="x", pady=10, padx=5)
+
+        # ------------------------------------------------------
+        # CINTA MENU SUPERIOR
+        # ------------------------------------------------------
+        self.frame2 = LabelFrame(self.master, bg="#bfdaff")
+        self.cuadro_cinta_superior()
         self.frame2.pack(side="top", fill="x", pady=10, padx=5)
 
-        self.frame1.mainloop()
+        self.master.mainloop()
+
+
+    # def ajustar_fondo(self, event):
+    #
+    #     if event.width < 10 or event.height < 10:
+    #         return
+    #
+    #     imagen_redimensionada = self.imagen.resize(
+    #         (event.width, event.height),
+    #         Image.Resampling.LANCZOS
+    #     )
+    #
+    #     self.fondo = ImageTk.PhotoImage(imagen_redimensionada)
+    #     self.label_fondo.config(image=self.fondo)
+
+
+    def cuadro_cinta_superior(self):
+
+        for c in range(7):
+            self.frame2.grid_columnconfigure(c, weight=1, minsize=100)
+
+        # CLIENTES
+        img = Image.open("clientes4.png").resize((35, 35))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_clientes = Button(self.frame2, text="Clientes",compound="top", pady=3,
+                                   command=self.fClientes, height=53, border=3, bg="blue", fg="white")
+        self.btn_clientes.image = icono
+        self.btn_clientes.config(image=icono)
+        self.btn_clientes.grid(row=0, column=0, padx=3, pady=3, sticky="nsew")
+
+        # GARANTIAS
+        img = Image.open("garantia.png").resize((35, 35))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_ctacte = Button(self.frame2, text="Garantias", compound="top", pady=3, command=self.fGarantia,
+                                 height=53, border=3, bg="blue", fg="white")
+        self.btn_ctacte.image = icono
+        self.btn_ctacte.config(image=icono)
+        self.btn_ctacte.grid(row=0, column=1, padx=3, pady=3, sticky="nsew")
+
+        # RECIBOS
+        img = Image.open("recibo.png").resize((35, 35))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_recibos = Button(self.frame2, text="Recibos", compound="top", pady=3, command=self.fRecibos, height=53,
+                                 border=3, bg="blue", fg="white")
+        self.btn_recibos.image = icono
+        self.btn_recibos.config(image=icono)
+        self.btn_recibos.grid(row=0, column=2, padx=3, pady=3, sticky="nsew")
+
+        # PRESUPUESTOS
+        img = Image.open("presuequipo.png").resize((35, 35))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_presupuestos = Button(self.frame2, text="Presupuestos", compound="top", pady=3,
+                                      command=self.fPresupuestos, height=53, border=3, bg="blue", fg="white")
+        self.btn_presupuestos.image = icono
+        self.btn_presupuestos.config(image=icono)
+        self.btn_presupuestos.grid(row=0, column=3, padx=3, pady=3, sticky="nsew")
+
+        # ARTICULOS FALTANTES
+        img = Image.open("comprasmay.png").resize((35, 35))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_art_faltantes = Button(self.frame2, text="Articulos\na comprar", compound="top", pady=3,
+                                   command=self.fCompras, height=53, border=3, bg="blue", fg="white")
+        self.btn_art_faltantes.image = icono
+        self.btn_art_faltantes.config(image=icono)
+        self.btn_art_faltantes.grid(row=0, column=4, padx=3, pady=3, sticky="nsew")
+
+        # Pendientes
+        img = Image.open("rma.png").resize((35, 35))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_rma = Button(self.frame2, text="Agenda\nPendientes", compound="top", pady=3, command=self.fRma,
+                             border=3, bg="blue", fg="white")
+        self.btn_rma.image = icono
+        self.btn_rma.config(image=icono)
+        self.btn_rma.grid(row=0, column=5, padx=3, pady=3, sticky="nsew")
+
+        # Respaldos
+        img = Image.open("backup.png").resize((35, 35))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_backup = Button(self.frame2, text="Backup", compound="top", pady=3, command=self.fBackup, height=53,
+                                border=3, bg="blue", fg="white")
+        self.btn_backup.image = icono
+        self.btn_backup.config(image=icono)
+        self.btn_backup.grid(row=0, column=6, padx=3, pady=3, sticky="nsew")
+
+        # reordenamiento de self.frame_botones_grid
+        for widg in self.frame2.winfo_children():
+            widg.grid_configure(padx=3, pady=3, sticky='nsew')
+
+    def cuadro_cinta_inferior(self):
+
+        for c in range(6):
+            self.frame1.grid_columnconfigure(c, weight=1, minsize=100)
+
+        # ARTICULOS CRUD - ABM
+        img = Image.open("productos.png").resize((35, 35))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_articulos = Button(self.frame1, text="Articulos", compound="top", pady=3, border=3,
+                                   command=self.fArticulos, bg="blue", fg="white")
+        self.btn_articulos.image = icono
+        self.btn_articulos.config(image=icono)
+        self.btn_articulos.grid(row=0, column=0, padx=3, pady=3, sticky="nsew")
+
+        # ORDENES DE REPARACION
+        img = Image.open("reparar.png").resize((35, 35))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_orden_rep = Button(self.frame1, text="Orden Reparacion", compound="top", pady=3, border=3,
+                                   command=self.m_orden_repara, bg="blue", fg="white")
+        self.btn_orden_rep.image = icono
+        self.btn_orden_rep.config(image=icono)
+        self.btn_orden_rep.grid(row=0, column=1, padx=3, pady=3, sticky="nsew")
+
+        # PRESUPUESTOS COTIZACIONES - INGRESO VENTAS
+        img = Image.open("presupuesto.png").resize((35, 35))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_presupuestos = Button(self.frame1, text="Cotizar/Venta", compound="top", pady=3, command=self.fCotVta,
+                                border=3, bg="blue", fg="white")
+        self.btn_presupuestos.image = icono
+        self.btn_presupuestos.config(image=icono)
+        self.btn_presupuestos.grid(row=0, column=2, padx=3, pady=3, sticky="nsew")
+
+        # PLANILLA DE CAJA
+        img = Image.open("planilla.png").resize((35, 35))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_planicaja = Button(self.frame1, text="Planilla Caja", compound="top", pady=3, command=self.fPlaniCaja,
+                                   border=3, bg="blue", fg="white")
+        self.btn_planicaja.image = icono
+        self.btn_planicaja.config(image=icono)
+        self.btn_planicaja.grid(row=0, column=3, padx=3, pady=3, sticky="nsew")
+
+        # CUENTA CORRIENTE
+        img = Image.open("ctacte.png").resize((35, 35))
+        icono = ImageTk.PhotoImage(img)
+        self.btnCtacte = Button(self.frame1, text="Cuenta Corriente", compound="top", pady=3, command=self.fCtacte,
+                                border=3, bg="blue", fg="white")
+        self.btnCtacte.image = icono
+        self.btnCtacte.config(image=icono)
+        self.btnCtacte.grid(row=0, column=4, padx=3, pady=3, sticky="nsew")
+
+        # SALIDA DEL SISTEMA
+        img = Image.open("salida.png").resize((35, 35))
+        icono = ImageTk.PhotoImage(img)
+        self.btnSalida = Button(self.frame1, text="Salir", compound="top", pady=3, command=self.fSalir, border=3,
+                                bg="yellow", fg="Black")
+        self.btnSalida.image = icono
+        self.btnSalida.config(image=icono)
+        self.btnSalida.grid(row=0, column=5, padx=3, pady=3, sticky="nsew")
+
+        # reordenamiento de self.frame_botones_grid
+        for widg in self.frame1.winfo_children():
+            widg.grid_configure(padx=3, pady=3, sticky='nsew')
 
     def fsale_menu(self):
 
         self.master.quit()
         self.master.destroy()
+
+    """ En los proximos metods, Defino una variable vent que toma valores de una pantalla "TOPLEVEL" dependiendo
+        de master de principal entiendo ???ver eso de depender de principal """
 
     def fPlaniCaja(self):
 
@@ -272,9 +310,6 @@ class Principal(Frame):
     def m_orden_repara(self):
 
         # ORDENES DE REPARACION
-
-        """ Defino una variable vent que toma valores de una pantalla "TOPLEVEL" dependiendo
-        de master de principal entiendo ???ver eso de depender de principal """
 
         vent = Toplevel()
         vent.title("Ordenes de Reparacion")
@@ -329,9 +364,6 @@ class Principal(Frame):
     def fArticulos(self):
 
         # ARTICULOS
-
-        """ Defino una variable vent que toma valores de una pantalla "TOPLEVEL" dependiendo
-        de master de principal entiendo ???ver eso de depender de principal """
 
         vent = Toplevel()
         vent.title("ABM Articulos")

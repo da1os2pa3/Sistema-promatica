@@ -425,7 +425,7 @@ class clase_inf_tecnicos(Frame):
         campos = self.var_inf_tecnicos.consultar_edicion(self.filtro_activo)
 
         # convierto fecha de date a string y cambio a visualizacion español
-        fecha_convertida = fecha_str_reves_normal(self, datetime.strftime(campos[1], "%Y-%m-%d"), "hora_no")
+        fecha_convertida = fecha_str_reves_normal(self, datetime.strftime(campos[1], "%Y-%m-%d"), False)
         self.entry_fecha.delete(0, END)
         self.entry_fecha.insert(0, fecha_convertida)
         self.strvar_usuario.set(value=campos[2])

@@ -256,7 +256,7 @@ class VentArt(Frame):
             color = ('evenrow',) if cont % 2 else ('oddrow',)
 
             # convierto fecha de 2024-12-19 a 19/12/2024
-            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[11], '%Y-%m-%d'), "hora_no")
+            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[11], '%Y-%m-%d'), False)
 
             precio_final_pesos = round(float((row[6]*(1+(row[7]/100))) * (1+(row[9]/100))) * float(self.strvar_dolar_actual.get()))
 
@@ -501,7 +501,7 @@ class VentArt(Frame):
             self.strvar_tasa_ganancia.set(value=row[9])
             self.strvar_observa.set(value=row[10])
 
-            fecha_convertida = fecha_str_reves_normal(self, datetime.strftime(row[11], "%Y-%m-%d"), "hora_no")
+            fecha_convertida = fecha_str_reves_normal(self, datetime.strftime(row[11], "%Y-%m-%d"), False)
             self.strvar_fechaultact.set(value=fecha_convertida)
 
             self.strvar_costo_historico.set(row[12])
