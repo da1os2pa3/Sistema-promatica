@@ -2034,7 +2034,7 @@ class OrdenesRepara(Frame):
 
         # # Abre el archivo PDF para luego, si quiero, poder imprimirlo
         path = 'hoja.pdf'
-        os.system(path)
+        os.startfile(path)
 
 
 

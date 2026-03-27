@@ -194,7 +194,7 @@ class Ventana(Frame):
 
         # Variables
         self.filtro_activo = "clientes ORDER BY apellido, nombres ASC"
-        self.var_Id = -1
+        #self.var_Id = -1
         self.alta_modif = 0
 
         self.limpiar_text()
@@ -324,7 +324,7 @@ class Ventana(Frame):
             return
 
         self.alta_modif = 2
-        self.var_Id = self.clave  #puede traer -1 , en ese caso seria un alta
+        #self.var_Id = self.clave  #puede traer -1 , en ese caso seria un alta
 
         self.habilitar_text('normal')
         self.limpiar_text()
@@ -432,7 +432,8 @@ class Ventana(Frame):
             self.clave = self.grid_clientes.item(self.selected, 'text')
 
             clientes = {
-                "Id": self.var_Id,
+                #"Id": self.var_Id,
+                "Id": self.clave,
                 "codigo": self.strvar_codigo.get(),
                 "apellido": self.strvar_apellido.get(),
                 "nombres": self.strvar_nombres.get(),
@@ -458,7 +459,7 @@ class Ventana(Frame):
             elif self.alta_modif == 2:
 
                 self.varClientes.modificar_clientes(clientes)
-                self.var_Id == -1
+                #self.var_Id == -1
                 messagebox.showinfo("Correcto", "La modificacion del registro fue exitosa", parent=self)
 
             self.limpiar_Grid()
