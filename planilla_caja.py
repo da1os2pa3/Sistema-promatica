@@ -1,10 +1,7 @@
 from funciones import *
-# from funcion_new import *
 from funcion_new import ClaseFuncion_new
 from planilla_caja_ABM import datosPlanilla
 #--------------------------------------------------
-#from tkinter import *
-#from tkinter import messagebox
 from tkinter import ttk
 import tkinter as tk
 #--------------------------------------------------

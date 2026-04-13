@@ -1,10 +1,12 @@
 import os
 import sys
 # ---------------------------------------------------
-from articulos_ABM import *
+from articulos_ABM import datosArtic
 from funciones import *
-from funcion_new import *
+from funcion_new import ClaseFuncion_new
 # ---------------------------------------------------
+from tkinter import ttk
+import tkinter as tk
 import tkinter.font as tkFont
 from tkinter import messagebox, filedialog
 from tktooltip import ToolTip
@@ -12,7 +14,7 @@ from tktooltip import ToolTip
 from datetime import date, datetime
 from PIL import Image, ImageTk
 
-class Clase_Articulos(Frame):
+class Clase_Articulos(tk.Frame):
 
     def __init__(self, master=None):
 
@@ -87,7 +89,7 @@ class Clase_Articulos(Frame):
 
         self.status_var = tk.StringVar()
 
-        self.status_bar = Label(
+        self.status_bar = tk.Label(
             self.master,
             textvariable=self.status_var,
             bd=1,
@@ -118,19 +120,19 @@ class Clase_Articulos(Frame):
 
         # TITULOS -----------------------------------------------------------------------
         # Encabezado logo y titulo con PACK
-        self.frame_titulo_top = Frame(self.master)
+        self.frame_titulo_top = tk.Frame(self.master)
 
         # Armo el logo y el titulo
         self.photo3 = Image.open('productos.png')
         self.photo3 = self.photo3.resize((100, 75), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.png_articulos = ImageTk.PhotoImage(self.photo3)
-        self.lbl_png_articulos = Label(self.frame_titulo_top, image=self.png_articulos, bg="red", relief="ridge", bd=5)
+        self.lbl_png_articulos = tk.Label(self.frame_titulo_top, image=self.png_articulos, bg="red", relief="ridge", bd=5)
 
-        self.lbl_titulo = Label(self.frame_titulo_top, width=29, text="Articulos", bg="black", fg="gold",
+        self.lbl_titulo = tk.Label(self.frame_titulo_top, width=29, text="Articulos", bg="black", fg="gold",
                                 font=("Arial bold", 38, "bold"), bd=5, relief="ridge", padx=10)
 
         # Coloco logo y titulo en posicion de pantalla
-        self.lbl_png_articulos.grid(row=0, column=0, sticky=W, padx=4, ipadx=22)
+        self.lbl_png_articulos.grid(row=0, column=0, sticky="w", padx=4, ipadx=22)
         self.lbl_titulo.grid(row=0, column=1, padx=11, sticky="nsew")
         self.frame_titulo_top.pack(side="top", fill="x", padx=5, pady=5)
         # ---------------------------------------------------------------------------------------
@@ -171,25 +173,25 @@ class Clase_Articulos(Frame):
 
         # LabelFrame para colocar los botones laterales - Debo definirla antes que el frame del Tv
         # porque va colocada a la izquierda y el tv a la derecha
-        barra_botones = LabelFrame(self.master)
+        barra_botones = tk.LabelFrame(self.master)
 
         # BOTONES 1 - Nuevo, Editar,.....
-        self.botones1 = LabelFrame(barra_botones, bd=5, relief="ridge")
+        self.botones1 = tk.LabelFrame(barra_botones, bd=5, relief="ridge")
         self.cuadro_botones1()
         self.botones1.pack(side="top", padx=3, pady=3, fill="y")
 
         # BOTONES 2 - Orden - Tope y fin de archivo .....
-        self.botones2 = LabelFrame(barra_botones, bd=5, relief="ridge")
+        self.botones2 = tk.LabelFrame(barra_botones, bd=5, relief="ridge")
         self.cuadro_botones2()
         self.botones2.pack(side="top", padx=3, pady=3, fill="y")
 
         # BOTONES 3 - Salida sistema .....
-        self.botones3 = LabelFrame(barra_botones, bd=2)
+        self.botones3 = tk.LabelFrame(barra_botones, bd=2)
         self.cuadro_botones3()
         self.botones3.pack(side="top", padx=3, pady=3, fill="y")
 
         # BOTONES 4 - Informacion dolar .....
-        self.botones4 = LabelFrame(barra_botones, bd=2)
+        self.botones4 = tk.LabelFrame(barra_botones, bd=2)
         self.cuadro_botones4()
         self.botones4.pack(side="top", padx=3, pady=3, fill="y")
 
@@ -197,10 +199,10 @@ class Clase_Articulos(Frame):
         # ---------------------------------------------------------------------------------------
 
         # Frame principal -----------------------------------------------------------------------
-        self.frame_tv = Frame(self.master)
+        self.frame_tv = tk.Frame(self.master)
 
         # BUSQUEDAS -----------------------------------------------------------------------------
-        self.frame_buscar = LabelFrame(self.frame_tv)
+        self.frame_buscar = tk.LabelFrame(self.frame_tv)
         self.cuadro_buscar_articulo()
         self.frame_buscar.pack(side="top", fill="both", expand=1, padx=5, pady=3)
         # ----------------------------------------------------------------------------------------
@@ -215,17 +217,17 @@ class Clase_Articulos(Frame):
         # ENTRYS ---------------------------------------------------------------------------------
 
         # ENTRYS GENERAlES
-        self.sector_entry = LabelFrame(self.master)
+        self.sector_entry = tk.LabelFrame(self.master)
         self.cuadro_entrys_generales()
         self.sector_entry.pack(expand=1, side="left", fill="both", pady=5, padx=2)
 
         # TOTALES PRECIO ARTICULO
-        self.sector_totales = LabelFrame(self.master)
+        self.sector_totales = tk.LabelFrame(self.master)
         self.cuadro_sector_totales()
         self.sector_totales.pack(expand=1, side="left", fill="both", pady=5, padx=2)
 
         # IMAGEN DEL ARTICULO
-        self.sector_imagen = LabelFrame(self.master)
+        self.sector_imagen = tk.LabelFrame(self.master)
         self.cuadro_imagenes_articulos()
         self.entry_imagen_art.pack(expand=0, side="top", pady=3, padx=2)
         self.btn_ruta_imagen.pack(expand=0, side="top", pady=3, padx=2)
@@ -363,7 +365,7 @@ class Clase_Articulos(Frame):
             self.entry_fechaultact,
             self.entry_costo_historico,
         ]:
-            entry.delete(0, END)
+            entry.delete(0, "end")
 
         for strvar1 in [
             self.strvar_codigo,
@@ -670,7 +672,7 @@ class Clase_Articulos(Frame):
 
         self.dev_ruta = self.varArtic.consultar_informa()
 
-        self.strvar_ruta_fotos = StringVar(value="")
+        self.strvar_ruta_fotos = tk.StringVar(value="")
 
         for row in self.dev_informa:
             self.strvar_ruta_fotos.set(value=row[27])
@@ -749,7 +751,9 @@ class Clase_Articulos(Frame):
 
         """ Este lo usa el metodo de modificacion para cargar la imgen al editarlo, Tambien la usa "limpiartext" """
 
-        try:
+        aaa = 1
+        #try:
+        if aaa == 1:
 
             # Borro u olvido el label anterior
             self.lbl_imagen_art.forget()
@@ -762,9 +766,10 @@ class Clase_Articulos(Frame):
             self.photoa = Image.open(os.path.join(self.carpeta_fotos, self.imagen_defa))
             self.photoa = self.photoa.resize((100, 100), Image.LANCZOS)  # Redimension (Alto, Ancho)
             self.imagen_art = ImageTk.PhotoImage(self.photoa)
-            self.lbl_imagen_art = Label(self.sector_imagen, image=self.imagen_art, bg="white", relief=RIDGE, bd=5)
+            self.lbl_imagen_art = tk.Label(self.sector_imagen, image=self.imagen_art, bg="white", relief="ridge", bd=5)
             self.lbl_imagen_art.bind("<Double-Button-1>", self.amplia_img)
-        except:
+        #except:
+        else:
             self.set_status("❌ Revise nombre de imagen JPG por favor", "error")
 
         self.lbl_imagen_art.pack(expand=1, side="top", fill="both", pady=2, padx=2)
@@ -799,7 +804,7 @@ class Clase_Articulos(Frame):
             self.entry_imagen_art.focus()
 
         # muestro la imagen en el frame
-        self.lbl_imagen_art = Label(self.sector_imagen, image=self.imagen_art, bg="white", relief="ridge", bd=5)
+        self.lbl_imagen_art = tk.Label(self.sector_imagen, image=self.imagen_art, bg="white", relief="ridge", bd=5)
         self.lbl_imagen_art.pack(expand=1, side="top", fill="both", pady=2, padx=2)
 
     def amplia_img(self,koko):
@@ -807,7 +812,7 @@ class Clase_Articulos(Frame):
         if len(self.strvar_imagen_Art.get()) != 0:
 
             # crear toplevel con imagen grande
-            self.vent_img = Toplevel()
+            self.vent_img = tk.Toplevel()
             self.vent_img.geometry('420x500+1200+200')
             self.vent_img.config(bg='white', padx=5, pady=5)
             # ayuda_top.resizable(0,0)
@@ -819,13 +824,13 @@ class Clase_Articulos(Frame):
             self.imagen_art_b = ImageTk.PhotoImage(self.photo_b)
 
             # muestro la imagen en el frame
-            self.lbl_im_art_b = Label(self.vent_img, image=self.imagen_art_b, bg="white", relief=RIDGE, bd=5)
+            self.lbl_im_art_b = tk.Label(self.vent_img, image=self.imagen_art_b, bg="white", relief="ridge", bd=5)
 
             self.lbl_im_art_b.pack(expand=1, side="top", fill="both", pady=2, padx=2)
             self.vent_img.grab_set()
             self.vent_img.focus_set()
 
-            mainloop()
+            tk.mainloop()
 
     # -----------------------------------------------------------------
     # BUSQUEDAS -*-
@@ -1159,7 +1164,7 @@ class Clase_Articulos(Frame):
 
         # Nuevo articulo
         icono = self.cargar_icono("archivo-nuevo.png")
-        self.btn_nuevo=Button(self.botones1, text=" Nuevo", command=self.fNuevo, bg="blue", fg="white", compound="left")
+        self.btn_nuevo=tk.Button(self.botones1, text=" Nuevo", command=self.fNuevo, bg="blue", fg="white", compound="left")
         self.btn_nuevo.image = icono
         self.btn_nuevo.config(image=icono)
         self.btn_nuevo.grid(row=0, column=0, padx=5, pady=3, ipadx=10)
@@ -1167,7 +1172,7 @@ class Clase_Articulos(Frame):
 
         # Editar articulo
         icono = self.cargar_icono("editar.png")
-        self.btn_editar=Button(self.botones1, text=" Editar", command=self.fEditar, bg="blue", fg="white", compound="left")
+        self.btn_editar=tk.Button(self.botones1, text=" Editar", command=self.fEditar, bg="blue", fg="white", compound="left")
         self.btn_editar.image = icono
         self.btn_editar.config(image=icono)
         self.btn_editar.grid(row=1, column=0, padx=5, pady=3, ipadx=10)
@@ -1175,7 +1180,7 @@ class Clase_Articulos(Frame):
 
         # Eliminar articulo
         icono = self.cargar_icono("eliminar.png")
-        self.btn_eliminar=Button(self.botones1, text=" Eliminar", command=self.fEliminar, bg="red", fg="white", compound="left")
+        self.btn_eliminar=tk.Button(self.botones1, text=" Eliminar", command=self.fEliminar, bg="red", fg="white", compound="left")
         self.btn_eliminar.image = icono
         self.btn_eliminar.config(image=icono)
         self.btn_eliminar.grid(row=2, column=0, padx=5, pady=3, ipadx=10)
@@ -1183,7 +1188,7 @@ class Clase_Articulos(Frame):
 
         # Guardar articulo
         icono = self.cargar_icono("guardar.png")
-        self.btn_guardar=Button(self.botones1, text=" Guardar", command=self.fGuardar, bg="green", fg="white", compound="left")
+        self.btn_guardar=tk.Button(self.botones1, text=" Guardar", command=self.fGuardar, bg="green", fg="white", compound="left")
         self.btn_guardar.image = icono
         self.btn_guardar.config(image=icono)
         self.btn_guardar.grid(row=3, column=0, padx=5, pady=3, ipadx=10)
@@ -1191,7 +1196,7 @@ class Clase_Articulos(Frame):
 
         # Cancelar
         icono = self.cargar_icono("cancelar.png")
-        self.btn_cancelar=Button(self.botones1, text=" Cancelar", command=self.fCancelar, bg="black", fg="white", compound="left")
+        self.btn_cancelar=tk.Button(self.botones1, text=" Cancelar", command=self.fCancelar, bg="black", fg="white", compound="left")
         self.btn_cancelar.image = icono
         self.btn_cancelar.config(image=icono)
         self.btn_cancelar.grid(row=4, column=0, padx=5, pady=3, ipadx=10)
@@ -1208,7 +1213,7 @@ class Clase_Articulos(Frame):
 
         # Cambiar orden
         icono = self.cargar_icono("ordenar.png")
-        self.btn_orden_codigo = Button(self.botones2, text="Orden Rubro\nMarca-Descripcion", width=14,
+        self.btn_orden_codigo = tk.Button(self.botones2, text="Orden Rubro\nMarca-Descripcion", width=14,
                                        command=self.forden_codigo, bg="grey", fg="white", compound="left")
         self.btn_orden_codigo.image = icono
         self.btn_orden_codigo.config(image=icono)
@@ -1216,7 +1221,7 @@ class Clase_Articulos(Frame):
 
         # Cambiar orden
         icono = self.cargar_icono("ordenar.png")
-        self.btn_orden_apellido = Button(self.botones2, text="Orden\n Marca-Descripcion", width=14,
+        self.btn_orden_apellido = tk.Button(self.botones2, text="Orden\n Marca-Descripcion", width=14,
                                          command=self.forden_descripcion, bg="grey", fg="white", compound="left")
         self.btn_orden_apellido.image = icono
         self.btn_orden_apellido.config(image=icono)
@@ -1224,7 +1229,7 @@ class Clase_Articulos(Frame):
 
         # Cambiar orden
         icono = self.cargar_icono("reset.png")
-        self.btn_reset = Button(self.botones2, text=" Reset", width=14, command=self.fReset, bg="black", fg="white", compound="left")
+        self.btn_reset = tk.Button(self.botones2, text=" Reset", width=14, command=self.fReset, bg="black", fg="white", compound="left")
         self.btn_reset.image = icono
         self.btn_reset.config(image=icono)
         self.btn_reset.grid(row=7, column=0, padx=5, pady=3, ipadx=10)
@@ -1232,14 +1237,14 @@ class Clase_Articulos(Frame):
         self.photo4 = Image.open('toparch.png')
         self.photo4 = self.photo4.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo4 = ImageTk.PhotoImage(self.photo4)
-        self.btn_Toparch = Button(self.botones2, text="", image=self.photo4, command=self.fToparch, width=15, bg="grey",
+        self.btn_Toparch = tk.Button(self.botones2, text="", image=self.photo4, command=self.fToparch, width=15, bg="grey",
                                  fg="white")
         self.btn_Toparch.grid(row=8, column=0, padx=5, pady=3, sticky="nsew")
 
         self.photo5 = Image.open('finarch.png')
         self.photo5 = self.photo5.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo5 = ImageTk.PhotoImage(self.photo5)
-        self.btn_Finarch = Button(self.botones2, text="", image=self.photo5, command=self.fFinarch, bg="grey", fg="white")
+        self.btn_Finarch = tk.Button(self.botones2, text="", image=self.photo5, command=self.fFinarch, bg="grey", fg="white")
         self.btn_Finarch.grid(row=9, column=0, padx=5, pady=3, sticky="nsew")
 
         # reordenamiento de self.frame_botones_grid
@@ -1251,7 +1256,7 @@ class Clase_Articulos(Frame):
         self.photo3 = Image.open('salida.png')
         self.photo3 = self.photo3.resize((50, 40), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo3 = ImageTk.PhotoImage(self.photo3)
-        self.btnSalir=Button(self.botones3, text="Salir", image=self.photo3, command=self.fSalir, bg="yellow",
+        self.btnSalir=tk.Button(self.botones3, text="Salir", image=self.photo3, command=self.fSalir, bg="yellow",
                              fg="white")
         self.btnSalir.grid(row=10, column=0, padx=5, pady=3, sticky="nsew")
 
@@ -1270,9 +1275,9 @@ class Clase_Articulos(Frame):
             self.strvar_recargo_tarjeta.set(value=row[23])
 
         fff = tkFont.Font(family="Arial", size=11, weight="bold")
-        self.lbl_cotiza_dolarhoy = Label(self.botones4, text="dolar Hoy:\n " + str(self.strvar_dolar_actual.get()),
+        self.lbl_cotiza_dolarhoy = tk.Label(self.botones4, text="dolar Hoy:\n " + str(self.strvar_dolar_actual.get()),
                                          font=fff, foreground="BLUE")
-        self.lbl_cotiza_dolarhoy.grid(row=12, column=0, padx=5, pady=3, sticky=S)
+        self.lbl_cotiza_dolarhoy.grid(row=12, column=0, padx=5, pady=3, sticky="s")
 
     def cuadro_buscar_articulo(self):
 
@@ -1281,94 +1286,94 @@ class Clase_Articulos(Frame):
         self.combo_bus_rubro = ttk.Combobox(self.frame_buscar, textvariable=self.strvar_bus_rubro, state='readonly',
                                             width=20)
         self.combo_bus_rubro['value'] = self.varArtic.combo_input("ru_nombre", "rubros","ru_nombre")
-        self.combo_bus_rubro.grid(row=0, column=0, padx=3, pady=1, sticky=W)
-        self.btn_reset_rubro=Button(self.frame_buscar, text="Reset", command=self.fResetrubro, width=5, bg='black',
+        self.combo_bus_rubro.grid(row=0, column=0, padx=3, pady=1, sticky="w")
+        self.btn_reset_rubro=tk.Button(self.frame_buscar, text="Reset", command=self.fResetrubro, width=5, bg='black',
                                     fg='white')
-        self.btn_reset_rubro.grid(row=0, column=1, padx=3, pady=1, sticky=W)
+        self.btn_reset_rubro.grid(row=0, column=1, padx=3, pady=1, sticky="w")
 
         # combo marcas
         self.strvar_bus_marca = tk.StringVar(self.frame_buscar)
         self.combo_bus_marca = ttk.Combobox(self.frame_buscar, textvariable=self.strvar_bus_marca, state='readonly',
                                             width=20)
         self.combo_bus_marca['value'] = self.varArtic.combo_input("ma_nombre", "marcas","ma_nombre")
-        self.combo_bus_marca.grid(row=0, column=2, padx=3, pady=1, sticky=W)
-        self.btn_reset_marca=Button(self.frame_buscar, text="Reset", command=self.fResetmarca, width=5, bg='black',
+        self.combo_bus_marca.grid(row=0, column=2, padx=3, pady=1, sticky="w")
+        self.btn_reset_marca=tk.Button(self.frame_buscar, text="Reset", command=self.fResetmarca, width=5, bg='black',
                                     fg='white')
-        self.btn_reset_marca.grid(row=0, column=3, padx=3, pady=1, sticky=W)
+        self.btn_reset_marca.grid(row=0, column=3, padx=3, pady=1, sticky="w")
 
         # buscar un articulo
-        self.lbl_buscar_articulo = Label(self.frame_buscar, text="Buscar: ")
+        self.lbl_buscar_articulo = tk.Label(self.frame_buscar, text="Buscar: ")
         self.lbl_buscar_articulo.grid(row=0, column=4, padx=3, pady=2)
-        self.entry_buscar_articulo=Entry(self.frame_buscar, textvariable=self.strvar_buscar_articulo, justify="left",
+        self.entry_buscar_articulo=tk.Entry(self.frame_buscar, textvariable=self.strvar_buscar_articulo, justify="left",
                                          width=31)
-        self.entry_buscar_articulo.grid(row=0, column=5, padx=3, pady=2, sticky=W)
-        self.btn_buscar_articulo = Button(self.frame_buscar, text="Filtrar", command=self.fBuscar_en_tabla,
+        self.entry_buscar_articulo.grid(row=0, column=5, padx=3, pady=2, sticky="w")
+        self.btn_buscar_articulo = tk.Button(self.frame_buscar, text="Filtrar", command=self.fBuscar_en_tabla,
                                           bg="CadetBlue", fg="white", width=18)
         self.btn_buscar_articulo.grid(row=0, column=6, padx=3, pady=2, sticky="nsew")
-        self.btn_mostrar_todo=Button(self.frame_buscar, text="Mostrar Todo", command=self.fQuitarfiltros, width=18,
+        self.btn_mostrar_todo=tk.Button(self.frame_buscar, text="Mostrar Todo", command=self.fQuitarfiltros, width=18,
                                      bg='CadetBlue', fg='white')
         self.btn_mostrar_todo.grid(row=0, column=7, padx=3, pady=1, sticky="nsew")
 
     def cuadro_entrys_generales(self):
 
         # CODIGO
-        self.lbl_codigo = Label(self.sector_entry, text="Codigo: ")
-        self.lbl_codigo.grid(row=0, column=0, padx=2, pady=1, sticky=W)
-        self.entry_codigo = Entry(self.sector_entry, textvariable=self.strvar_codigo, justify="left", width=30)
+        self.lbl_codigo = tk.Label(self.sector_entry, text="Codigo: ")
+        self.lbl_codigo.grid(row=0, column=0, padx=2, pady=1, sticky="w")
+        self.entry_codigo = tk.Entry(self.sector_entry, textvariable=self.strvar_codigo, justify="left", width=30)
         self.entry_codigo.grid(row=0, column=1, padx=2, pady=1, sticky='nsew')
         self.strvar_codigo.trace_add("write", lambda *args: self.limitador(self.strvar_codigo, 30))
 
         # DESCRIPCION
-        self.lbl_descripcion = Label(self.sector_entry, text="Descripcion: ")
-        self.lbl_descripcion.grid(row=1, column=0, padx=2, pady=1, sticky=W)
-        self.entry_descripcion = Entry(self.sector_entry, textvariable=self.strvar_descripcion, justify="left",
+        self.lbl_descripcion = tk.Label(self.sector_entry, text="Descripcion: ")
+        self.lbl_descripcion.grid(row=1, column=0, padx=2, pady=1, sticky="w")
+        self.entry_descripcion = tk.Entry(self.sector_entry, textvariable=self.strvar_descripcion, justify="left",
                                        width=40)
-        self.entry_descripcion.grid(row=1, column=1, padx=2, pady=1, sticky=W)
+        self.entry_descripcion.grid(row=1, column=1, padx=2, pady=1, sticky="w")
         self.strvar_descripcion.trace_add("write", lambda *args: self.limitador(self.strvar_descripcion, 150))
 
         # MARCA - COMBOBOX
-        self.lbl_marca = Label(self.sector_entry, text="Marca: ")
-        self.lbl_marca.grid(row=2, column=0, padx=2, pady=1, sticky=W)
+        self.lbl_marca = tk.Label(self.sector_entry, text="Marca: ")
+        self.lbl_marca.grid(row=2, column=0, padx=2, pady=1, sticky="w")
         self.combo_marca = ttk.Combobox(self.sector_entry, textvariable=self.strvar_marca, state='readonly', width=40)
-        self.combo_marca.grid(row=2, column=1, padx=2, pady=1, sticky=W)
+        self.combo_marca.grid(row=2, column=1, padx=2, pady=1, sticky="w")
         self.combo_marca['value'] = self.varArtic.combo_input("ma_nombre", "marcas", "ma_nombre")
 
         # RUBRO - COMBOBOX
-        self.lbl_rubro = Label(self.sector_entry, text="Rubro: ")
-        self.lbl_rubro.grid(row=3, column=0, padx=2, pady=1, sticky=W)
+        self.lbl_rubro = tk.Label(self.sector_entry, text="Rubro: ")
+        self.lbl_rubro.grid(row=3, column=0, padx=2, pady=1, sticky="w")
         self.combo_rubro = ttk.Combobox(self.sector_entry, textvariable=self.strvar_rubro, state='readonly', width=40)
-        self.combo_rubro.grid(row=3, column=1, padx=2, pady=1, sticky=W)
+        self.combo_rubro.grid(row=3, column=1, padx=2, pady=1, sticky="w")
         self.combo_rubro['value'] = self.varArtic.combo_input("ru_nombre", "rubros", "ru_nombre")
 
         # CODIGO DE BARRAS
-        self.lbl_codbar = Label(self.sector_entry, text="Codigo Barras: ")
-        self.lbl_codbar.grid(row=4, column=0, padx=2, pady=1, sticky=W)
-        self.entry_codbar = Entry(self.sector_entry, textvariable=self.strvar_codbar, justify="left", width=30)
+        self.lbl_codbar = tk.Label(self.sector_entry, text="Codigo Barras: ")
+        self.lbl_codbar.grid(row=4, column=0, padx=2, pady=1, sticky="w")
+        self.entry_codbar = tk.Entry(self.sector_entry, textvariable=self.strvar_codbar, justify="left", width=30)
         self.entry_codbar.bind('<Tab>', lambda e: self.verif_existe())
-        self.entry_codbar.grid(row=4, column=1, padx=2, pady=1, sticky=W)
+        self.entry_codbar.grid(row=4, column=1, padx=2, pady=1, sticky="w")
         self.strvar_codbar.trace_add("write", lambda *args: self.limitador(self.strvar_codbar, 150))
 
         # OBSERVACIONES
-        self.lbl_observa = Label(self.sector_entry, text="Observaciones: ")
-        self.lbl_observa.grid(row=5, column=0, padx=2, pady=1, sticky=W)
-        self.entry_observa = Entry(self.sector_entry, textvariable=self.strvar_observa, justify="left", width=40)
-        self.entry_observa.grid(row=5, column=1, padx=2, pady=1, sticky=W)
+        self.lbl_observa = tk.Label(self.sector_entry, text="Observaciones: ")
+        self.lbl_observa.grid(row=5, column=0, padx=2, pady=1, sticky="w")
+        self.entry_observa = tk.Entry(self.sector_entry, textvariable=self.strvar_observa, justify="left", width=40)
+        self.entry_observa.grid(row=5, column=1, padx=2, pady=1, sticky="w")
         self.strvar_observa.trace_add("write", lambda *args: self.limitador(self.strvar_observa, 40))
 
         # FECHA DE ULTIMA ACTUALIZACION
-        self.lbl_fechaultact = Label(self.sector_entry, text="Fecha ultima Act.: ")
-        self.lbl_fechaultact.grid(row=6, column=0, padx=2, pady=1, sticky=W)
-        self.entry_fechaultact = Entry(self.sector_entry, textvariable=self.strvar_fechaultact, justify="left",
+        self.lbl_fechaultact = tk.Label(self.sector_entry, text="Fecha ultima Act.: ")
+        self.lbl_fechaultact.grid(row=6, column=0, padx=2, pady=1, sticky="w")
+        self.entry_fechaultact = tk.Entry(self.sector_entry, textvariable=self.strvar_fechaultact, justify="left",
                                        width=12)
-        self.entry_fechaultact.grid(row=6, column=1, padx=2, pady=1, sticky=W)
+        self.entry_fechaultact.grid(row=6, column=1, padx=2, pady=1, sticky="w")
         self.entry_fechaultact.bind("<FocusOut>", self.formato_fecha)
 
         # COSTO HISTORICO
-        self.lbl_costo_historico = Label(self.sector_entry, text="Costo Historico: ")
-        self.lbl_costo_historico.grid(row=7, column=0, padx=2, pady=1, sticky=W)
-        self.entry_costo_historico = Entry(self.sector_entry, textvariable=self.strvar_costo_historico, justify="right",
+        self.lbl_costo_historico = tk.Label(self.sector_entry, text="Costo Historico: ")
+        self.lbl_costo_historico.grid(row=7, column=0, padx=2, pady=1, sticky="w")
+        self.entry_costo_historico = tk.Entry(self.sector_entry, textvariable=self.strvar_costo_historico, justify="right",
                                            width=15)
-        self.entry_costo_historico.grid(row=7, column=1, padx=2, pady=1, sticky=W)
+        self.entry_costo_historico.grid(row=7, column=1, padx=2, pady=1, sticky="w")
         self.entry_costo_historico.config(validate="key", validatecommand=self.vcmd)
         self.strvar_costo_historico.trace_add("write", lambda *args: self.limitador(self.strvar_costo_historico, 10))
         self.entry_costo_historico.bind('<Tab>', lambda e: self.calcular("nada"))
@@ -1378,121 +1383,121 @@ class Clase_Articulos(Frame):
         # TOTALES PRECIO ARRTICULO
 
         # COSTO NETO EN DOLAR
-        self.lbl_costo_neto_dolar = Label(self.sector_totales, text="Costo neto U$S:")
-        self.lbl_costo_neto_dolar.grid(row=0, column=0, padx=2, pady=1, sticky=W)
-        self.entry_costo_neto_dolar = Entry(self.sector_totales, textvariable=self.strvar_costo_neto_dolar,
+        self.lbl_costo_neto_dolar = tk.Label(self.sector_totales, text="Costo neto U$S:")
+        self.lbl_costo_neto_dolar.grid(row=0, column=0, padx=2, pady=1, sticky="w")
+        self.entry_costo_neto_dolar = tk.Entry(self.sector_totales, textvariable=self.strvar_costo_neto_dolar,
                                             justify="right", width=15)
-        self.entry_costo_neto_dolar.grid(row=0, column=1, padx=2, pady=1, sticky=W)
+        self.entry_costo_neto_dolar.grid(row=0, column=1, padx=2, pady=1, sticky="w")
         self.entry_costo_neto_dolar.config(validate="key", validatecommand=self.vcmd)
         self.strvar_costo_neto_dolar.trace_add("write", lambda *args: self.limitador(self.strvar_costo_neto_dolar, 15))
         self.entry_costo_neto_dolar.bind('<Tab>', lambda e: self.calcular("dolar"))
 
         # COSTO NETO EN PESOS
-        self.lbl_costo_neto_pesos = Label(self.sector_totales, text="Costo neto Pesos:")
-        self.lbl_costo_neto_pesos.grid(row=1, column=0, padx=2, pady=1, sticky=W)
-        self.entry_costo_neto_pesos = Entry(self.sector_totales, textvariable=self.strvar_costo_neto_pesos,
+        self.lbl_costo_neto_pesos = tk.Label(self.sector_totales, text="Costo neto Pesos:")
+        self.lbl_costo_neto_pesos.grid(row=1, column=0, padx=2, pady=1, sticky="w")
+        self.entry_costo_neto_pesos = tk.Entry(self.sector_totales, textvariable=self.strvar_costo_neto_pesos,
                                             justify="right", width=15)
-        self.entry_costo_neto_pesos.grid(row=1, column=1, padx=2, pady=1, sticky=W)
+        self.entry_costo_neto_pesos.grid(row=1, column=1, padx=2, pady=1, sticky="w")
         self.entry_costo_neto_pesos.config(validate="key", validatecommand=self.vcmd)
         self.strvar_costo_neto_pesos.trace_add("write", lambda *args: self.limitador(self.strvar_costo_neto_pesos, 15))
         self.entry_costo_neto_pesos.bind('<Tab>', lambda e: self.calcular("pesos"))
 
         # ALICUOTA TASA IVA y  TOTAL IVA
-        self.lbl_tasa_iva = Label(self.sector_totales, text="% IVA:")
-        self.lbl_tasa_iva.grid(row=2, column=0, padx=2, pady=1, sticky=W)
+        self.lbl_tasa_iva = tk.Label(self.sector_totales, text="% IVA:")
+        self.lbl_tasa_iva.grid(row=2, column=0, padx=2, pady=1, sticky="w")
         self.combo_iva = ttk.Combobox(self.sector_totales, state="readonly", width=5)
         self.combo_iva['value'] = self.varArtic.combo_input("iva_alic", "alic_iva", "iva_alic")
-        self.combo_iva.grid(row=2, column=1, padx=2, pady=1, sticky=W)
+        self.combo_iva.grid(row=2, column=1, padx=2, pady=1, sticky="w")
         self.strvar_total_iva.set(value="0.00")
-        self.lbl_total_iva = Label(self.sector_totales, textvariable=self.strvar_total_iva, width=10, anchor='e')
+        self.lbl_total_iva = tk.Label(self.sector_totales, textvariable=self.strvar_total_iva, width=10, anchor='e')
         self.lbl_total_iva.grid(row=2, column=2, padx=2, pady=1, sticky='nsew')
         self.combo_iva.bind('<Tab>', lambda e: self.calcular("iva"))
 
         # TASA IMPUESTOS INTERNOS
-        self.lbl_impint = Label(self.sector_totales, text="% Imp.Interno:")
-        self.lbl_impint.grid(row=3, column=0, padx=2, pady=1, sticky=W)
+        self.lbl_impint = tk.Label(self.sector_totales, text="% Imp.Interno:")
+        self.lbl_impint.grid(row=3, column=0, padx=2, pady=1, sticky="w")
         self.strvar_tasa_impint.set(value="0.00")
         self.strvar_total_impint.set(value="0.00")
-        self.entry_tasa_impint = Entry(self.sector_totales, textvariable=self.strvar_tasa_impint, width=5,
+        self.entry_tasa_impint = tk.Entry(self.sector_totales, textvariable=self.strvar_tasa_impint, width=5,
                                        justify="right")
-        self.entry_tasa_impint.grid(row=3, column=1, padx=2, pady=1, sticky=W)
+        self.entry_tasa_impint.grid(row=3, column=1, padx=2, pady=1, sticky="w")
         self.entry_tasa_impint.config(validate="key", validatecommand=self.vcmd)
         self.strvar_tasa_impint.trace_add("write", lambda *args: self.limitador(self.strvar_tasa_impint, 5))
 
-        self.lbl_total_impint = Label(self.sector_totales, textvariable=self.strvar_total_impint, width=10, anchor='e')
+        self.lbl_total_impint = tk.Label(self.sector_totales, textvariable=self.strvar_total_impint, width=10, anchor='e')
         self.lbl_total_impint.grid(row=3, column=2, padx=2, pady=1, sticky='nsew')
         self.entry_tasa_impint.bind('<Tab>', lambda e: self.calcular("impint"))
 
         # SUBTOTAL COSTO CON IMPUESTOS ( BRUTO )
         fff = tkFont.Font(family="Arial", size=10, weight="bold")
-        self.lbl_subtotal = Label(self.sector_totales, text="SubTotal:", font=fff, fg='green')
-        self.lbl_subtotal.grid(row=5, column=1, padx=2, pady=1, sticky=W)
+        self.lbl_subtotal = tk.Label(self.sector_totales, text="SubTotal:", font=fff, fg='green')
+        self.lbl_subtotal.grid(row=5, column=1, padx=2, pady=1, sticky="w")
         self.strvar_subtotal.set(value="0.00")
-        self.lbl_importe_subtotal = Label(self.sector_totales, textvariable=self.strvar_subtotal, fg='green', width=10,
+        self.lbl_importe_subtotal = tk.Label(self.sector_totales, textvariable=self.strvar_subtotal, fg='green', width=10,
                                           anchor='e')
         self.lbl_importe_subtotal.grid(row=5, column=2, padx=2, pady=1, sticky='nsew')
         # PORCIENTO GANANCIA
-        self.lbl_tasa_ganancia = Label(self.sector_totales, text="% Ganancia:")
-        self.lbl_tasa_ganancia.grid(row=6, column=0, padx=2, pady=1, sticky=W)
+        self.lbl_tasa_ganancia = tk.Label(self.sector_totales, text="% Ganancia:")
+        self.lbl_tasa_ganancia.grid(row=6, column=0, padx=2, pady=1, sticky="w")
         self.strvar_tasa_ganancia.set(value="0.00")
         self.strvar_total_ganancia.set(value="0.00")
-        self.entry_tasa_ganancia = Entry(self.sector_totales, textvariable=self.strvar_tasa_ganancia, width=8,
+        self.entry_tasa_ganancia = tk.Entry(self.sector_totales, textvariable=self.strvar_tasa_ganancia, width=8,
                                          justify="right")
-        self.entry_tasa_ganancia.grid(row=6, column=1, padx=2, pady=1, sticky=W)
+        self.entry_tasa_ganancia.grid(row=6, column=1, padx=2, pady=1, sticky="w")
         self.entry_tasa_ganancia.config(validate="key", validatecommand=self.vcmd)
         self.strvar_tasa_ganancia.trace_add("write", lambda *args: self.limitador(self.strvar_tasa_ganancia, 6))
-        self.lbl_total_ganancia = Label(self.sector_totales, textvariable=self.strvar_total_ganancia, width=10,
+        self.lbl_total_ganancia = tk.Label(self.sector_totales, textvariable=self.strvar_total_ganancia, width=10,
                                         anchor='e')
         self.lbl_total_ganancia.grid(row=6, column=2, padx=2, pady=1, sticky='nsew')
         self.entry_tasa_ganancia.bind('<Tab>', lambda e: self.calcular("porgan"))
         # TOTAL PRECIO DE VENTA PESOS ARTICULO
         fff = tkFont.Font(family="Arial", size=9, weight="bold")
-        lbl_total_venta = Label(self.sector_totales, font=fff, text="Precio Venta: ", fg="blue")
-        lbl_total_venta.grid(row=7, column=0, padx=2, pady=1, sticky=W)
-        self.entry_total_precio_venta = Entry(self.sector_totales, textvariable=self.strvar_total_precio_venta,
+        lbl_total_venta = tk.Label(self.sector_totales, font=fff, text="Precio Venta: ", fg="blue")
+        lbl_total_venta.grid(row=7, column=0, padx=2, pady=1, sticky="w")
+        self.entry_total_precio_venta = tk.Entry(self.sector_totales, textvariable=self.strvar_total_precio_venta,
                                               width=20, justify="right")
         self.entry_total_precio_venta.grid(row=7, column=2, padx=2, pady=1, sticky='nsew')
         self.entry_total_precio_venta.config(validate="key", validatecommand=self.vcmd)
         self.strvar_total_precio_venta.trace_add("write", lambda *args: self.limitador(self.strvar_total_precio_venta, 10))
         self.entry_total_precio_venta.bind('<Tab>', lambda e: self.calcular("totales"))
         fff = tkFont.Font(family="Arial", size=11, weight="bold")
-        lbl_total_venta_grande = Label(self.sector_totales, font=fff, textvariable=self.strvar_total_precio_venta,
+        lbl_total_venta_grande = tk.Label(self.sector_totales, font=fff, textvariable=self.strvar_total_precio_venta,
                                        fg="red")
         lbl_total_venta_grande.grid(row=8, column=0, padx=2, pady=1, sticky='nsew')
         # Total de venta mas el % de recargo por la venta con tarjeta
-        lbl_total_venta_mas10 = Label(self.sector_totales, text="Tarjeta +10%: ", fg="blue")
-        lbl_total_venta_mas10.grid(row=8, column=1, padx=2, pady=1, sticky=W)
-        lbl_total_venta_grande_mas10 = Label(self.sector_totales, font=fff,
+        lbl_total_venta_mas10 = tk.Label(self.sector_totales, text="Tarjeta +10%: ", fg="blue")
+        lbl_total_venta_mas10.grid(row=8, column=1, padx=2, pady=1, sticky="w")
+        lbl_total_venta_grande_mas10 = tk.Label(self.sector_totales, font=fff,
                                              textvariable=self.strvar_total_precio_venta_mas10, fg="red")
-        lbl_total_venta_grande_mas10.grid(row=8, column=2, padx=2, pady=1, sticky=W)
+        lbl_total_venta_grande_mas10.grid(row=8, column=2, padx=2, pady=1, sticky="w")
 
         # COSTO DOLAR CON IMPUESTOS BRUTO
         fff = tkFont.Font(family="Arial", size=10, weight="bold")
         self.strvar_costo_dolar_bruto.set(value="0.00")
-        self.lbltot_costo_dolar_bruto = Label(self.sector_totales, textvariable=self.strvar_costo_dolar_bruto, width=10,
+        self.lbltot_costo_dolar_bruto = tk.Label(self.sector_totales, textvariable=self.strvar_costo_dolar_bruto, width=10,
                                               font=fff, fg='blue', anchor='e')
         self.lbltot_costo_dolar_bruto.grid(row=0, column=2, padx=2, pady=1, sticky='nsew')
 
-        self.lbl_aclaracion1 = Label(self.sector_totales, text="c/Iva", fg='blue')
+        self.lbl_aclaracion1 = tk.Label(self.sector_totales, text="c/Iva", fg='blue')
         self.lbl_aclaracion1.grid(row=0, column=3, padx=2, pady=1, sticky='nsew')
 
         # COSTO PESOS CON IMPUESTOS BRUTO
         self.strvar_costo_pesos_bruto.set(value="0.00")
-        self.lbltot_costo_pesos_bruto = Label(self.sector_totales, textvariable=self.strvar_costo_pesos_bruto, width=10,
+        self.lbltot_costo_pesos_bruto = tk.Label(self.sector_totales, textvariable=self.strvar_costo_pesos_bruto, width=10,
                                               font=fff, fg='blue', anchor='e')
         self.lbltot_costo_pesos_bruto.grid(row=1, column=2, padx=2, pady=1, sticky='nsew')
 
-        self.lbl_aclaracion2 = Label(self.sector_totales, text="c/Iva", fg='blue')
+        self.lbl_aclaracion2 = tk.Label(self.sector_totales, text="c/Iva", fg='blue')
         self.lbl_aclaracion2.grid(row=1, column=3, padx=2, pady=1, sticky='nsew')
 
     def cuadro_imagenes_articulos(self):
 
         # NOMBRE DEL ARCHIVO, NO GUARDA LA RUTA
-        self.entry_imagen_art = Entry(self.sector_imagen, textvariable=self.strvar_imagen_Art, width=25)
+        self.entry_imagen_art = tk.Entry(self.sector_imagen, textvariable=self.strvar_imagen_Art, width=25)
         self.entry_imagen_art.bind('<Tab>', lambda e: self.validar_imagen())
 
         # BOTON FILE DIALOGO (BUSQUEDA DE ARCHIVO) VA A CARPETA FOTOS OR DEFAULT
-        self.btn_ruta_imagen=Button(self.sector_imagen, text="Seleccione archivo", command=self.fBusco_archivo,
+        self.btn_ruta_imagen=tk.Button(self.sector_imagen, text="Seleccione archivo", command=self.fBusco_archivo,
                                     width=20, bg='blue', fg='white')
 
         # MUESTRA DE LA IMAGEN
@@ -1502,7 +1507,7 @@ class Clase_Articulos(Frame):
         self.imagen_art = ImageTk.PhotoImage(self.photoa)
 
         # MUESTRO LA IMAGEN EN EL FRAME
-        self.lbl_imagen_art = Label(self.sector_imagen, image=self.imagen_art, bg="white", relief="ridge", bd=5)
+        self.lbl_imagen_art = tk.Label(self.sector_imagen, image=self.imagen_art, bg="white", relief="ridge", bd=5)
         self.lbl_imagen_art.bind("<Double-Button-1>", self.amplia_img)
 
     def cuadro_grid_articulos(self):
@@ -1551,8 +1556,8 @@ class Clase_Articulos(Frame):
         self.grid_articulos.tag_configure('evenrow', background='white')
 
         # SCROLLBAR del Treeview
-        scroll_x = Scrollbar(self.frame_tv, orient="horizontal")
-        scroll_y = Scrollbar(self.frame_tv, orient="vertical")
+        scroll_x = tk.Scrollbar(self.frame_tv, orient="horizontal")
+        scroll_y = tk.Scrollbar(self.frame_tv, orient="vertical")
         self.grid_articulos.config(xscrollcommand=scroll_x.set)
         self.grid_articulos.config(yscrollcommand=scroll_y.set)
         scroll_x.config(command=self.grid_articulos.xview)
