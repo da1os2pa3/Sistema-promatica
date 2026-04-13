@@ -7,7 +7,7 @@ from datetime import datetime, date
 from tkinter import *
 from PIL import Image, ImageTk
 from PDF_clase import *
-class VentCotiz(Frame):
+class Clase_CotizVenta(Frame):
 
     def __init__(self, master=None):
 

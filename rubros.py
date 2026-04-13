@@ -6,7 +6,7 @@ from tkinter import messagebox
 # -------------------------------------
 from PIL import Image, ImageTk
 
-class Vent_rubros(Frame):
+class Clase_Rubros(Frame):
 
     def __init__(self, master=None):
         super().__init__(master)

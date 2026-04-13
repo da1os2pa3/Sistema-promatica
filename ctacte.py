@@ -18,7 +18,7 @@ from tkinter import ttk
 import tkinter.font as tkFont
 from tkinter import messagebox
 
-class CuentaCorriente(Frame):
+class Clase_CuentaCorriente(Frame):
 
     def __init__(self, master=None):
 
@@ -719,11 +719,11 @@ class CuentaCorriente(Frame):
 
         try:
             # Control de que no ingresen mas de una vez el '-' o el '.' - Funcion en funciones.py
-            if not control_forma(list(self.strvar_debito_movim.get())):
+            if not control_forma(self.strvar_debito_movim.get()):
                 self.strvar_debito_movim.set(value="0")
                 self.entry_debito_movim.focus()
                 return
-            if not control_forma(list(self.strvar_credito_movim.get())):
+            if not control_forma(self.strvar_credito_movim.get()):
                 self.strvar_credito_movim.set(value="0")
                 self.entry_credito_movim.focus()
                 return

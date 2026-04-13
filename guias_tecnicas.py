@@ -8,7 +8,7 @@ from tkinter.scrolledtext import *     # para campos text
 from PIL import Image, ImageTk
 from tkVideoPlayer import TkinterVideo
 
-class clase_GuiasTecnicas(Frame):
+class Clase_GuiasTecnicas(Frame):
 
     # Creo una instancia de la clase - clase definida en guias_tecnicas_ABM.py
     varGuiaTecnica = datosGuiasTecnicas()

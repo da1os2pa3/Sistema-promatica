@@ -1,19 +1,20 @@
 from funciones import *
-from funcion_new import *
+# from funcion_new import *
+from funcion_new import ClaseFuncion_new
 from planilla_caja_ABM import datosPlanilla
 #--------------------------------------------------
 #from tkinter import *
-#from tkinter import ttk
 #from tkinter import messagebox
-#import tkinter as tk
+from tkinter import ttk
+import tkinter as tk
 #--------------------------------------------------
 from datetime import date, datetime, timedelta
 import random
 from PIL import Image, ImageTk
-#from PDF_clase import *
 from tktooltip import ToolTip
+#from PDF_clase import *
 
-class PlaniCaja(Frame):
+class V_PlaniCaja(tk.Frame):
 
     def __init__(self, master=None):
 
@@ -99,17 +100,17 @@ class PlaniCaja(Frame):
         # ---------------------------------------------------------------------------------
 
         # Encabezado logo y titulo con PACK
-        self.frame_titulo_top = Frame(self.master)
+        self.frame_titulo_top = tk.Frame(self.master)
 
         # Armo el logo y el titulo
         self.photo3 = Image.open('planilla.png')
-        self.photo3 = self.photo3.resize((50, 50), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo3 = self.photo3.resize((50, 50), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         self.png_ventas = ImageTk.PhotoImage(self.photo3)
-        self.lbl_png_ventas = Label(self.frame_titulo_top, image=self.png_ventas, bg="red", relief="ridge", bd=5)
-        self.lbl_titulo = Label(self.frame_titulo_top, width=52, text="Planilla de Caja", bg="black", fg="gold",
+        self.lbl_png_ventas = tk.Label(self.frame_titulo_top, image=self.png_ventas, bg="red", relief="ridge", bd=5)
+        self.lbl_titulo = tk.Label(self.frame_titulo_top, width=52, text="Planilla de Caja", bg="black", fg="gold",
                                 font=("Arial bold", 20, "bold"), bd=5, relief="ridge", padx=5)
         # Coloco logo y titulo en posicion de pantalla
-        self.lbl_png_ventas.grid(row=0, column=0, sticky=W, padx=5, ipadx=22)
+        self.lbl_png_ventas.grid(row=0, column=0, sticky=tk.W, padx=5, ipadx=22)
         self.lbl_titulo.grid(row=0, column=1, sticky="nsew")
 
         self.frame_titulo_top.pack(side="top", fill="x", padx=5, pady=2)
@@ -188,7 +189,7 @@ class PlaniCaja(Frame):
         # TREEVIEW - GRID
         # ---------------------------------------------------------------------------------
 
-        self.frame_tvw_planilla=LabelFrame(self.master, text="Planilla de caja: ", foreground="#CF09BD")
+        self.frame_tvw_planilla=tk.LabelFrame(self.master, text="Planilla de caja: ", foreground="#CF09BD")
 
         # STYLE TREEVIEW
         style = ttk.Style(self.frame_tvw_planilla)
@@ -247,8 +248,8 @@ class PlaniCaja(Frame):
         self.grid_planilla.tag_configure('evenrow', background='white')
 
         # SCROLLBAR del Treeview
-        scroll_x = Scrollbar(self.frame_tvw_planilla, orient="horizontal")
-        scroll_y = Scrollbar(self.frame_tvw_planilla, orient="vertical")
+        scroll_x = tk.Scrollbar(self.frame_tvw_planilla, orient="horizontal")
+        scroll_y = tk.Scrollbar(self.frame_tvw_planilla, orient="vertical")
         self.grid_planilla.config(xscrollcommand=scroll_x.set)
         self.grid_planilla.config(yscrollcommand=scroll_y.set)
         scroll_x.config(command=self.grid_planilla.xview)
@@ -265,7 +266,7 @@ class PlaniCaja(Frame):
         # BUSCAR UN MOVIMIENTO
         # ---------------------------------------------------------------------------------
 
-        self.frame_buscar_movimiento=LabelFrame(self.master, text="", foreground="red")
+        self.frame_buscar_movimiento=tk.LabelFrame(self.master, text="", foreground="red")
         self.buscar_movimientos()
         self.frame_buscar_movimiento.pack(side="top", fill="both", expand=0, padx=5, pady=2)
         # ---------------------------------------------------------------------------------
@@ -274,7 +275,7 @@ class PlaniCaja(Frame):
         # BOTONES
         # ---------------------------------------------------------------------------------
 
-        self.frame_botones_grid=LabelFrame(self.master, text="", foreground="red")
+        self.frame_botones_grid=tk.LabelFrame(self.master, text="", foreground="red")
         self.botones_grid()
         self.frame_botones_grid.pack(side="top", fill="both", expand=0, padx=5, pady=2)
 
@@ -283,34 +284,34 @@ class PlaniCaja(Frame):
         # ---------------------------------------------------------------------------------
 
         # DATOS GENERALES DEL MOVIMIENTO
-        self.frame_entrys_planilla=LabelFrame(self.master, text="", foreground="red")
+        self.frame_entrys_planilla=tk.LabelFrame(self.master, text="", foreground="red")
         self.entrys_generales()
         self.frame_entrys_planilla.pack(side="top", fill="both", expand=0, padx=5, pady=2)
 
         # DETALLE DE MOVIMIENTOS
-        self.frame_entrys_planilla2=LabelFrame(self.master, text="", foreground="red")
+        self.frame_entrys_planilla2=tk.LabelFrame(self.master, text="", foreground="red")
         self.entrys_detalle_movimientos()
         self.frame_entrys_planilla2.pack(side="top", fill="both", expand=0, padx=5, pady=2)
 
         # IMPORTES DEL MOVIMIENTO
-        self.frame_entrys_planilla3=LabelFrame(self.master, text="", foreground="red")
+        self.frame_entrys_planilla3=tk.LabelFrame(self.master, text="", foreground="red")
         self.entrys_importes_del_movimiento()
         self.frame_entrys_planilla3.pack(side="top", fill="both", expand=0, padx=5, pady=2)
 
         # COMBOS FORMA DE PAGO
-        self.frame_entrys_planilla4=LabelFrame(self.master, text="", foreground="red")
+        self.frame_entrys_planilla4=tk.LabelFrame(self.master, text="", foreground="red")
         self.entrys_combo_forma_pago()
         self.frame_entrys_planilla4.pack(side="top", fill="both", expand=0, padx=5, pady=2)
 
         # ENTRY GARANTIAS
-        self.frame_entrys_planilla5=LabelFrame(self.master, text="", foreground="red")
+        self.frame_entrys_planilla5=tk.LabelFrame(self.master, text="", foreground="red")
         self.entrys_garantias()
         self.frame_entrys_planilla5.pack(side="top", fill="both", expand=0, padx=5, pady=2)
 
         # ---------------------------------------------------------------------------------
         # TOTALES MOVIMIENTOS DE PLANILLA
 
-        self.frame_totales=LabelFrame(self.master, text="", foreground="red")
+        self.frame_totales=tk.LabelFrame(self.master, text="", foreground="red")
         self.calculo_totales()
         self.frame_totales.pack(side="top", fill="both", expand=0, padx=5, pady=2)
 
@@ -1272,86 +1273,169 @@ class PlaniCaja(Frame):
     def calcular(self, que_campo):
 
         try:
-            # Control de que no ingresen mas de una vez el '-' o el '.' - Funcion en funciones.py
-            if not control_forma(list(self.strvar_ingreso.get())):
-                self.strvar_ingreso.set(value="0")
-                self.entry_ingresos.focus()
-                return
-            if not control_forma(list(self.strvar_costo.get())):
-                self.strvar_costo.set(value="0")
-                self.entry_costo.focus()
-                return
-            if not control_forma(list(self.strvar_cantidad.get())):
-                self.strvar_cantidad.set(value="0")
-                self.entry_cantidad.focus()
-                return
-            if not control_forma(list(self.strvar_egreso.get())):
-                self.strvar_egreso.set(value="0")
-                self.entry_egreso.focus()
-                return
-            if not control_forma(list(self.strvar_pagos_ctacte.get())):
-                self.strvar_pagos_ctacte.set(value="0")
-                self.entry_pagoscta.focus()
-                return
-            if not control_forma(list(self.strvar_compras.get())):
-                self.strvar_compras.set(value=0)
-                self.entry_compras.focus()
+
+            # Funcion controlo los ceros y los blancos
+            if not self.control_blanco():
+                #self.entry_costo_historico.focus()
                 return
 
-            # Valido que los campos no me ingresen en blanco ---------------------------------------------
-            if self.strvar_ingreso.get() == "" or self.strvar_ingreso.get() == "-" or self.strvar_ingreso.get() == ".":
-                self.strvar_ingreso.set(value="0")
-                self.entry_ingresos.focus()
-                return
-            else:
-                self.strvar_ingreso.set(value=round(float(self.strvar_ingreso.get()), 2))
+            # Controla allsobre los "-" y "."
+            self.control_valores()
 
-            if self.strvar_costo.get() == "" or self.strvar_costo.get() == "-" or self.strvar_costo.get() == ".":
-                self.strvar_costo.set(value="0")
-                self.entry_costo.focus()
-                return
-            else:
-                self.strvar_costo.set(value=str(round(float(self.strvar_costo.get()), 2)))
+            # # Control de que no ingresen mas de una vez el '-' o el '.' - Funcion en funciones.py
+            # if not control_forma(self.strvar_ingreso.get()):
+            #     self.strvar_ingreso.set(value="0")
+            #     self.entry_ingresos.focus()
+            #     return
+            # if not control_forma(self.strvar_costo.get()):
+            #     self.strvar_costo.set(value="0")
+            #     self.entry_costo.focus()
+            #     return
+            # if not control_forma(self.strvar_cantidad.get()):
+            #     self.strvar_cantidad.set(value="0")
+            #     self.entry_cantidad.focus()
+            #     return
+            # if not control_forma(self.strvar_egreso.get()):
+            #     self.strvar_egreso.set(value="0")
+            #     self.entry_egreso.focus()
+            #     return
+            # if not control_forma(self.strvar_pagos_ctacte.get()):
+            #     self.strvar_pagos_ctacte.set(value="0")
+            #     self.entry_pagoscta.focus()
+            #     return
+            # if not control_forma(self.strvar_compras.get()):
+            #     self.strvar_compras.set(value="0")
+            #     self.entry_compras.focus()
+            #     return
 
-            if self.strvar_cantidad.get() == "" or self.strvar_cantidad.get() == "-" or self.strvar_cantidad.get() == ".":
-                self.strvar_cantidad.set(value="0")
-                self.entry_cantidad.focus()
-                return
-            else:
-                self.strvar_cantidad.set(value=str(round(float(self.strvar_cantidad.get()), 2)))
 
-            if self.strvar_egreso.get() == "" or self.strvar_egreso.get() == "-" or self.strvar_egreso.get() == ".":
-                self.strvar_egreso.set(value="0")
-                self.entry_egreso.focus()
-                return
-            else:
-                self.strvar_egreso.set(value=str(round(float(self.strvar_egreso.get()), 2)))
 
-            if self.strvar_pagos_ctacte.get() == "" or self.strvar_pagos_ctacte.get() == "-" or self.strvar_pagos_ctacte.get() == ".":
-                self.strvar_pagos_ctacte.set(value="0")
-                self.entry_pagoscta.focus()
-                return
-            else:
-                self.strvar_pagos_ctacte.set(value=str(round(float(self.strvar_pagos_ctacte.get()), 2)))
 
-            if self.strvar_compras.get() == "" or self.strvar_compras.get() == "-" or self.strvar_compras.get() == ".":
-                self.strvar_compras.set(value="0")
-                self.entry_compras.focus()
-                return
-            else:
-                self.strvar_compras.set(value=str(round(float(self.strvar_compras.get()), 2)))
+
+
+
+            # # Valido que los campos no me ingresen en blanco ---------------------------------------------
+            # if self.strvar_ingreso.get() == "" or self.strvar_ingreso.get() == "-" or self.strvar_ingreso.get() == ".":
+            #     self.strvar_ingreso.set(value="0")
+            #     self.entry_ingresos.focus()
+            #     return
+            # else:
+            #     self.strvar_ingreso.set(value=str(round(float(self.strvar_ingreso.get()), 2)))
+            #
+            # if self.strvar_costo.get() == "" or self.strvar_costo.get() == "-" or self.strvar_costo.get() == ".":
+            #     self.strvar_costo.set(value="0")
+            #     self.entry_costo.focus()
+            #     return
+            # else:
+            #     self.strvar_costo.set(value=str(round(float(self.strvar_costo.get()), 2)))
+            #
+            # if self.strvar_cantidad.get() == "" or self.strvar_cantidad.get() == "-" or self.strvar_cantidad.get() == ".":
+            #     self.strvar_cantidad.set(value="0")
+            #     self.entry_cantidad.focus()
+            #     return
+            # else:
+            #     self.strvar_cantidad.set(value=str(round(float(self.strvar_cantidad.get()), 2)))
+            #
+            # if self.strvar_egreso.get() == "" or self.strvar_egreso.get() == "-" or self.strvar_egreso.get() == ".":
+            #     self.strvar_egreso.set(value="0")
+            #     self.entry_egreso.focus()
+            #     return
+            # else:
+            #     self.strvar_egreso.set(value=str(round(float(self.strvar_egreso.get()), 2)))
+            #
+            # if self.strvar_pagos_ctacte.get() == "" or self.strvar_pagos_ctacte.get() == "-" or self.strvar_pagos_ctacte.get() == ".":
+            #     self.strvar_pagos_ctacte.set(value="0")
+            #     self.entry_pagoscta.focus()
+            #     return
+            # else:
+            #     self.strvar_pagos_ctacte.set(value=str(round(float(self.strvar_pagos_ctacte.get()), 2)))
+            #
+            # if self.strvar_compras.get() == "" or self.strvar_compras.get() == "-" or self.strvar_compras.get() == ".":
+            #     self.strvar_compras.set(value="0")
+            #     self.entry_compras.focus()
+            #     return
+            # else:
+            #     self.strvar_compras.set(value=str(round(float(self.strvar_compras.get()), 2)))
 
             # Evaluo segun el parametro de calculo que asigno en el Entry --------------------------------
             if que_campo == "general":
+                x_ingreso = float(self.strvar_ingreso.get())
+                x_costo = float(self.strvar_costo.get())
+                x_cantidad = float(self.strvar_cantidad.get())
 
-                self.strvar_totingresos.set(value=round(float(self.strvar_ingreso.get()) * float(self.strvar_cantidad.get()), 2))
-                self.strvar_totcosto.set(value=round(float(self.strvar_costo.get()) * float(self.strvar_cantidad.get()), 2))
+                self.strvar_totingresos.set(value=str(round(x_ingreso * x_cantidad, 2)))
+                self.strvar_totcosto.set(value=str(round(x_costo * x_cantidad, 2)))
 
         except:
 
-            messagebox.showerror("Except-Error", "Revise entradas numericas", parent=self)
+            messagebox.showerror("Except-Error", "Revise entradas numericas 5", parent=self)
             self.entry_detalle_movim.focus()
             return
+
+    # Validaciones entradas numericas -----------------------------------------------------------
+    def control_blanco(self):
+
+        """ Controla valores de las variables numericas en cuanto a los '.' y los '-' y los ceros """
+
+        variables = [
+            self.strvar_ingreso,
+            self.strvar_costo,
+            self.strvar_cantidad,
+            self.strvar_egreso,
+            self.strvar_pagos_ctacte,
+            self.strvar_compras
+        ]
+
+        for var in variables:
+            valor = var.get()
+
+            # 1. llamo a funcion 'control forma' en (funciones) - Validación de forma
+            if not control_forma(valor):
+                var.set("0.00")
+                return False
+
+            # 2. Casos incompletos
+            if valor in ("", "-", ".", "-."):
+                var.set("0.00")
+                continue
+
+            # 3. Formateo final
+            try:
+                var.set(f"{float(valor):.2f}")
+            except ValueError:
+                var.set("0.00")
+                return False
+        return True
+
+    def control_valores(self):
+
+        """ Controla los valores en blanco o cero y los pone con dos decimales automaticamente"""
+
+        variables = [
+            self.strvar_ingreso,
+            self.strvar_costo,
+            self.strvar_cantidad,
+            self.strvar_egreso,
+            self.strvar_pagos_ctacte,
+            self.strvar_compras
+        ]
+
+        for var in variables:
+            self.formatear_strvar(var)
+
+    def formatear_strvar(self, var):
+        try:
+            var.set(f"{float(var.get()):.2f}")
+        except ValueError:
+            var.set("0.00")
+    # -----------------------------------------------------------------------------------------
+
+
+
+
+
+
+
 
     # ---------------------------------------------------------------------------------
     # SEL
@@ -1562,7 +1646,7 @@ class PlaniCaja(Frame):
         # Nuevo item
         img = Image.open("archivo-nuevo.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_nuevoitem = Button(self.frame_botones_grid, text=" Nuevo Item", command=self.fNuevoItem, width=16,
+        self.btn_nuevoitem = tk.Button(self.frame_botones_grid, text=" Nuevo Item", command=self.fNuevoItem, width=16,
                                     bg="blue", fg="white", compound="left")
         self.btn_nuevoitem.image = icono
         self.btn_nuevoitem.config(image=icono)
@@ -1572,7 +1656,7 @@ class PlaniCaja(Frame):
         # Editar item
         img = Image.open("editar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_editaitem = Button(self.frame_botones_grid, text=" Edita Item", command=self.fEditaItem, width=16,
+        self.btn_editaitem = tk.Button(self.frame_botones_grid, text=" Edita Item", command=self.fEditaItem, width=16,
                                     bg="blue", fg="white", compound="left")
         self.btn_editaitem.image = icono
         self.btn_editaitem.config(image=icono)
@@ -1582,7 +1666,7 @@ class PlaniCaja(Frame):
         # Eliminar un item
         img = Image.open("eliminar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_borraitem = Button(self.frame_botones_grid, text=" Elimina Item", command=self.fBorraItem, width=16,
+        self.btn_borraitem = tk.Button(self.frame_botones_grid, text=" Elimina Item", command=self.fBorraItem, width=16,
                                     bg="blue", fg="white", compound="left")
         self.btn_borraitem.image = icono
         self.btn_borraitem.config(image=icono)
@@ -1592,7 +1676,7 @@ class PlaniCaja(Frame):
         # Guardar un item
         img = Image.open("guardar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_guardaritem = Button(self.frame_botones_grid, text=" Guardar item", command=self.fGuardar, width=16,
+        self.btn_guardaritem = tk.Button(self.frame_botones_grid, text=" Guardar item", command=self.fGuardar, width=16,
                                       bg="green", fg="white", compound="left")
         self.btn_guardaritem.image = icono
         self.btn_guardaritem.config(image=icono)
@@ -1602,7 +1686,7 @@ class PlaniCaja(Frame):
         # Cancelar
         img = Image.open("cancelar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_Cancelar = Button(self.frame_botones_grid, text=" Cancelar", command=self.fCancelar, width=16,
+        self.btn_Cancelar = tk.Button(self.frame_botones_grid, text=" Cancelar", command=self.fCancelar, width=16,
                                    bg="black", fg="white", compound="left")
         self.btn_Cancelar.image = icono
         self.btn_Cancelar.config(image=icono)
@@ -1612,7 +1696,7 @@ class PlaniCaja(Frame):
         # Reset
         img = Image.open("reset.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_Reset = Button(self.frame_botones_grid, text=" Reset", command=self.fReset, width=16, bg="black",
+        self.btn_Reset = tk.Button(self.frame_botones_grid, text=" Reset", command=self.fReset, width=16, bg="black",
                                 fg="white", compound="left")
         self.btn_Reset.image = icono
         self.btn_Reset.config(image=icono)
@@ -1622,7 +1706,7 @@ class PlaniCaja(Frame):
         # Resumen del mes
         img = Image.open("resumen.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_Resumen = Button(self.frame_botones_grid, text=" Resumen mes", command=self.fResumen, width=18,
+        self.btn_Resumen = tk.Button(self.frame_botones_grid, text=" Resumen mes", command=self.fResumen, width=18,
                                   bg="light blue", fg="black", compound="left")
         self.btn_Resumen.image = icono
         self.btn_Resumen.config(image=icono)
@@ -1630,15 +1714,15 @@ class PlaniCaja(Frame):
         ToolTip(self.btn_Resumen, msg="Informe con totales del mes acumulados")
 
         self.photo4 = Image.open('toparch.png')
-        self.photo4 = self.photo4.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo4 = self.photo4.resize((25, 25), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo4 = ImageTk.PhotoImage(self.photo4)
-        self.btnToparch = Button(self.frame_botones_grid, text="", image=self.photo4, command=self.fToparch,
+        self.btnToparch = tk.Button(self.frame_botones_grid, text="", image=self.photo4, command=self.fToparch,
                                  bg="grey", fg="white")
         self.btnToparch.grid(row=0, column=7, padx=5, sticky="nsew", pady=2)
         self.photo5 = Image.open('finarch.png')
-        self.photo5 = self.photo5.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo5 = self.photo5.resize((25, 25), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo5 = ImageTk.PhotoImage(self.photo5)
-        self.btnFinarch = Button(self.frame_botones_grid, text="", image=self.photo5, command=self.fFinarch,
+        self.btnFinarch = tk.Button(self.frame_botones_grid, text="", image=self.photo5, command=self.fFinarch,
                                  bg="grey", fg="white")
         self.btnFinarch.grid(row=0, column=8, padx=5, sticky="nsew", pady=2)
 
@@ -1649,33 +1733,33 @@ class PlaniCaja(Frame):
     def entrys_generales(self):
 
         # FECHA ---------------------------------------------------------------------------
-        self.lbl_fecha_planilla = Label(self.frame_entrys_planilla, text="Fecha: ", justify="left")
-        self.lbl_fecha_planilla.grid(row=0, column=0, padx=3, pady=2, sticky=W)
-        self.entry_fecha_planilla = Entry(self.frame_entrys_planilla, textvariable=self.strvar_fecha_planilla,
+        self.lbl_fecha_planilla = tk.Label(self.frame_entrys_planilla, text="Fecha: ", justify="left")
+        self.lbl_fecha_planilla.grid(row=0, column=0, padx=3, pady=2, sticky=tk.W)
+        self.entry_fecha_planilla = tk.Entry(self.frame_entrys_planilla, textvariable=self.strvar_fecha_planilla,
                                           width=10, justify="right")
         self.entry_fecha_planilla.bind("<FocusIn>", self.fVer_blanco)
         self.entry_fecha_planilla.bind("<FocusOut>", self.formato_fecha)
-        self.entry_fecha_planilla.grid(row=0, column=1, padx=3, pady=2, sticky=E)
+        self.entry_fecha_planilla.grid(row=0, column=1, padx=3, pady=2, sticky=tk.E)
 
         # ATRAS EN LA FECHA ---------------------------------------------------------------
         self.photo6 = Image.open('atras.png')
-        self.photo6 = self.photo6.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo6 = self.photo6.resize((25, 25), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo6 = ImageTk.PhotoImage(self.photo6)
-        self.btnIzquierda = Button(self.frame_entrys_planilla, text="", image=self.photo6, command=self.fAntes,
+        self.btnIzquierda = tk.Button(self.frame_entrys_planilla, text="", image=self.photo6, command=self.fAntes,
                                    bg="grey", fg="white")
         self.btnIzquierda.grid(row=0, column=2, padx=5, sticky="nsew", pady=2)
 
         # ADELANTE EN LA FECHA -------------------------------------------------------------
         self.photo7 = Image.open('avance.png')
-        self.photo7 = self.photo7.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo7 = self.photo7.resize((25, 25), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo7 = ImageTk.PhotoImage(self.photo7)
-        self.btnDerecha = Button(self.frame_entrys_planilla, text="", image=self.photo7, command=self.fDespues,
+        self.btnDerecha = tk.Button(self.frame_entrys_planilla, text="", image=self.photo7, command=self.fDespues,
                                  bg="grey", fg="white")
         self.btnDerecha.grid(row=0, column=3, padx=5, sticky="nsew", pady=2)
 
         # COMBO TIPO DE MOVIMIENTO ----------------------------------------------------------
-        self.lbl_tipomov = Label(self.frame_entrys_planilla, text="Tipo de movimiento: ", justify="left")
-        self.lbl_tipomov.grid(row=0, column=4, padx=3, pady=2, sticky=W)
+        self.lbl_tipomov = tk.Label(self.frame_entrys_planilla, text="Tipo de movimiento: ", justify="left")
+        self.lbl_tipomov.grid(row=0, column=4, padx=3, pady=2, sticky=tk.W)
         self.combo_tipomov = ttk.Combobox(self.frame_entrys_planilla, textvariable=self.strvar_tipomov,
                                           state='readonly', width=23)
         self.combo_tipomov['value'] = self.varPlanilla.combo_input("tm_descripcion","tipo_movim",
@@ -1684,248 +1768,248 @@ class PlaniCaja(Frame):
         # "Ingresos varios(I)", "Compras(E)", "Egresos varios(E)"]
         self.combo_tipomov.current(0)
         self.combo_tipomov.bind('<Tab>', lambda e: self.divido_tipomov())
-        self.combo_tipomov.grid(row=0, column=5, padx=5, pady=2, sticky=W)
+        self.combo_tipomov.grid(row=0, column=5, padx=5, pady=2, sticky=tk.W)
 
         # BOTON BUSQUEDA CLIENTE -------------------------------------------------------------
         self.photo_bus_cli = Image.open('buscar.png')
-        self.photo_bus_cli = self.photo_bus_cli.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo_bus_cli = self.photo_bus_cli.resize((25, 25), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo_bus_cli = ImageTk.PhotoImage(self.photo_bus_cli)
-        self.btn_bus_cli = Button(self.frame_entrys_planilla, text="", image=self.photo_bus_cli, command=self.fBuscli,
+        self.btn_bus_cli = tk.Button(self.frame_entrys_planilla, text="", image=self.photo_bus_cli, command=self.fBuscli,
                                   bg="grey", fg="white")
-        self.btn_bus_cli.grid(row=0, column=6, padx=5, pady=2, sticky=E)
+        self.btn_bus_cli.grid(row=0, column=6, padx=5, pady=2, sticky=tk.E)
 
         # ENTRY CLIENTE -----------------------------------------------------------------------
-        self.lbl_cliente = Label(self.frame_entrys_planilla, text="Cliente: ", justify="left")
-        self.lbl_cliente.grid(row=0, column=7, padx=3, pady=2, sticky=W)
-        self.entry_cliente = Entry(self.frame_entrys_planilla, textvariable=self.strvar_cliente, width=60, justify="left")
-        self.entry_cliente.grid(row=0, column=8, padx=3, pady=2, sticky=E)
-        self.lbl_codigo_cliente = Label(self.frame_entrys_planilla, textvariable=self.strvar_codcli, justify="left")
-        self.lbl_codigo_cliente.grid(row=0, column=9, padx=3, pady=2, sticky=E)
+        self.lbl_cliente = tk.Label(self.frame_entrys_planilla, text="Cliente: ", justify="left")
+        self.lbl_cliente.grid(row=0, column=7, padx=3, pady=2, sticky=tk.W)
+        self.entry_cliente = tk.Entry(self.frame_entrys_planilla, textvariable=self.strvar_cliente, width=60, justify="left")
+        self.entry_cliente.grid(row=0, column=8, padx=3, pady=2, sticky=tk.E)
+        self.lbl_codigo_cliente = tk.Label(self.frame_entrys_planilla, textvariable=self.strvar_codcli, justify="left")
+        self.lbl_codigo_cliente.grid(row=0, column=9, padx=3, pady=2, sticky=tk.E)
 
     def entrys_detalle_movimientos(self):
 
         # BOTON DE  BUSQUEDA DE ARTICULO SI CORRESPONDE AL DETALLE -----------------------------
         self.photo_bus_art = Image.open('ver.png')
-        self.photo_bus_art = self.photo_bus_art.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo_bus_art = self.photo_bus_art.resize((25, 25), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo_bus_art = ImageTk.PhotoImage(self.photo_bus_art)
-        self.btn_bus_art = Button(self.frame_entrys_planilla2, text="", image=self.photo_bus_art, command=self.fBusart,
+        self.btn_bus_art = tk.Button(self.frame_entrys_planilla2, text="", image=self.photo_bus_art, command=self.fBusart,
                                   bg="grey", fg="white")
-        self.btn_bus_art.grid(row=0, column=0, padx=5, pady=2, sticky=E)
+        self.btn_bus_art.grid(row=0, column=0, padx=5, pady=2, sticky=tk.E)
 
         # ENTRY DETALLE DEL MOVIMIENTO ----------------------------------------------------------
-        self.lbl_detalle_movim = Label(self.frame_entrys_planilla2, text="Detalle/Articulo: ", justify="left")
-        self.lbl_detalle_movim.grid(row=0, column=1, padx=2, pady=2, sticky=W)
-        self.entry_detalle_movim = Entry(self.frame_entrys_planilla2, textvariable=self.strvar_detalle_movim, width=144,
+        self.lbl_detalle_movim = tk.Label(self.frame_entrys_planilla2, text="Detalle/Articulo: ", justify="left")
+        self.lbl_detalle_movim.grid(row=0, column=1, padx=2, pady=2, sticky=tk.W)
+        self.entry_detalle_movim = tk.Entry(self.frame_entrys_planilla2, textvariable=self.strvar_detalle_movim, width=144,
                                          justify="left")
-        self.entry_detalle_movim.grid(row=0, column=2, padx=3, pady=2, sticky=E)
+        self.entry_detalle_movim.grid(row=0, column=2, padx=3, pady=2, sticky=tk.E)
 
     def entrys_importes_del_movimiento(self):
 
         # IMPORTE DEL INGRESO -------------------------------------------------------------------
-        self.lbl_ingresos1 = Label(self.frame_entrys_planilla3, text="Ingresos: ", justify="left")
-        self.lbl_ingresos1.grid(row=0, column=0, padx=2, pady=2, sticky=W)
-        self.entry_ingresos = Entry(self.frame_entrys_planilla3, textvariable=self.strvar_ingreso, width=10,
+        self.lbl_ingresos1 = tk.Label(self.frame_entrys_planilla3, text="Ingresos: ", justify="left")
+        self.lbl_ingresos1.grid(row=0, column=0, padx=2, pady=2, sticky=tk.W)
+        self.entry_ingresos = tk.Entry(self.frame_entrys_planilla3, textvariable=self.strvar_ingreso, width=10,
                                     justify="right")
         self.entry_ingresos.config(validate="key", validatecommand=self.vcmd)
         self.entry_ingresos.bind('<Tab>', lambda e: self.calcular("general"))
-        self.entry_ingresos.grid(row=0, column=1, padx=2, pady=2, sticky=E)
+        self.entry_ingresos.grid(row=0, column=1, padx=2, pady=2, sticky=tk.E)
 
         # IMPORTE COSTO -------------------------------------------------------------------------
-        self.lbl_costo = Label(self.frame_entrys_planilla3, text="Costos: ", justify="left")
-        self.lbl_costo.grid(row=0, column=2, padx=2, pady=2, sticky=W)
-        self.entry_costo = Entry(self.frame_entrys_planilla3, textvariable=self.strvar_costo, width=10, justify="right")
+        self.lbl_costo = tk.Label(self.frame_entrys_planilla3, text="Costos: ", justify="left")
+        self.lbl_costo.grid(row=0, column=2, padx=2, pady=2, sticky=tk.W)
+        self.entry_costo = tk.Entry(self.frame_entrys_planilla3, textvariable=self.strvar_costo, width=10, justify="right")
         self.entry_costo.config(validate="key", validatecommand=self.vcmd)
         self.entry_costo.bind('<Tab>', lambda e: self.calcular("general"))
-        self.entry_costo.grid(row=0, column=3, padx=2, pady=2, sticky=E)
+        self.entry_costo.grid(row=0, column=3, padx=2, pady=2, sticky=tk.E)
 
         # CANTIDAD -------------------------------------------------------------------------------
-        self.lbl_cantidad = Label(self.frame_entrys_planilla3, text="Cantidad: ", justify="left")
-        self.lbl_cantidad.grid(row=0, column=4, padx=2, pady=2, sticky=W)
-        self.entry_cantidad = Entry(self.frame_entrys_planilla3, textvariable=self.strvar_cantidad, width=6,
+        self.lbl_cantidad = tk.Label(self.frame_entrys_planilla3, text="Cantidad: ", justify="left")
+        self.lbl_cantidad.grid(row=0, column=4, padx=2, pady=2, sticky=tk.W)
+        self.entry_cantidad = tk.Entry(self.frame_entrys_planilla3, textvariable=self.strvar_cantidad, width=6,
                                     justify="right")
         self.entry_cantidad.config(validate="key", validatecommand=self.vcmd)
         self.entry_cantidad.bind('<Tab>', lambda e: self.calcular("general"))
-        self.entry_cantidad.grid(row=0, column=5, padx=2, pady=2, sticky=E)
+        self.entry_cantidad.grid(row=0, column=5, padx=2, pady=2, sticky=tk.E)
 
         # TOTAL CALCULADO INGRESO POR CANTIDAD ---------------------------------------------------
-        self.lbl_totventart1 = Label(self.frame_entrys_planilla3, text="Total Ing.: ", justify="left")
-        self.lbl_totventart1.grid(row=0, column=6, padx=2, pady=2, sticky=W)
-        self.lbl_totventart2 = Label(self.frame_entrys_planilla3, textvariable=self.strvar_totingresos, width=10,
+        self.lbl_totventart1 = tk.Label(self.frame_entrys_planilla3, text="Total Ing.: ", justify="left")
+        self.lbl_totventart1.grid(row=0, column=6, padx=2, pady=2, sticky=tk.W)
+        self.lbl_totventart2 = tk.Label(self.frame_entrys_planilla3, textvariable=self.strvar_totingresos, width=10,
                                      justify="right")
-        self.lbl_totventart2.grid(row=0, column=7, padx=2, pady=2, sticky=E)
+        self.lbl_totventart2.grid(row=0, column=7, padx=2, pady=2, sticky=tk.E)
 
         # TOTAL CALCULADO COSTO POR CANTIDAD ------------------------------------------------------
-        self.lbl_totcosto1 = Label(self.frame_entrys_planilla3, text="Total Costo: ", justify="left")
-        self.lbl_totcosto1.grid(row=0, column=8, padx=2, pady=2, sticky=W)
-        self.lbl_totcosto2 = Label(self.frame_entrys_planilla3, textvariable=self.strvar_totcosto, width=10,
+        self.lbl_totcosto1 = tk.Label(self.frame_entrys_planilla3, text="Total Costo: ", justify="left")
+        self.lbl_totcosto1.grid(row=0, column=8, padx=2, pady=2, sticky=tk.W)
+        self.lbl_totcosto2 = tk.Label(self.frame_entrys_planilla3, textvariable=self.strvar_totcosto, width=10,
                                    justify="right")
-        self.lbl_totcosto2.grid(row=0, column=9, padx=2, pady=2, sticky=E)
+        self.lbl_totcosto2.grid(row=0, column=9, padx=2, pady=2, sticky=tk.E)
 
         # IMPORTE DE EGRESO -----------------------------------------------------------------------
-        self.lbl_egreso = Label(self.frame_entrys_planilla3, text="Egreso: ", justify="left")
-        self.lbl_egreso.grid(row=0, column=10, padx=2, pady=2, sticky=W)
-        self.entry_egreso = Entry(self.frame_entrys_planilla3, textvariable=self.strvar_egreso, width=10,
+        self.lbl_egreso = tk.Label(self.frame_entrys_planilla3, text="Egreso: ", justify="left")
+        self.lbl_egreso.grid(row=0, column=10, padx=2, pady=2, sticky=tk.W)
+        self.entry_egreso = tk.Entry(self.frame_entrys_planilla3, textvariable=self.strvar_egreso, width=10,
                                   justify="right")
         self.entry_egreso.config(validate="key", validatecommand=self.vcmd)
         self.entry_egreso.bind('<Tab>', lambda e: self.calcular("general"))
-        self.entry_egreso.grid(row=0, column=11, padx=2, pady=2, sticky=E)
+        self.entry_egreso.grid(row=0, column=11, padx=2, pady=2, sticky=tk.E)
 
         # IMPORTE PAGOS A CUENTA CORRIENTE ---------------------------------------------------------
-        self.lbl_pagoscta = Label(self.frame_entrys_planilla3, text="Pagos cta.cte.: ", justify="left")
-        self.lbl_pagoscta.grid(row=1, column=0, padx=2, pady=2, sticky=W)
-        self.entry_pagoscta = Entry(self.frame_entrys_planilla3, textvariable=self.strvar_pagos_ctacte, width=10,
+        self.lbl_pagoscta = tk.Label(self.frame_entrys_planilla3, text="Pagos cta.cte.: ", justify="left")
+        self.lbl_pagoscta.grid(row=1, column=0, padx=2, pady=2, sticky=tk.W)
+        self.entry_pagoscta = tk.Entry(self.frame_entrys_planilla3, textvariable=self.strvar_pagos_ctacte, width=10,
                                     justify="right")
         self.entry_pagoscta.config(validate="key", validatecommand=self.vcmd)
         self.entry_pagoscta.bind('<Tab>', lambda e: self.calcular("general"))
         self.entry_pagoscta.bind("<FocusOut>", self.tildo_cuenta)
-        self.entry_pagoscta.grid(row=1, column=1, padx=2, pady=2, sticky=E)
+        self.entry_pagoscta.grid(row=1, column=1, padx=2, pady=2, sticky=tk.E)
 
         # IMPORTE DE COMPRAS A PROVEEDORES U OTRAS --------------------------------------------------
-        self.lbl_compras = Label(self.frame_entrys_planilla3, text="Compras: ", justify="left")
-        self.lbl_compras.grid(row=1, column=2, padx=2, pady=2, sticky=W)
-        self.entry_compras = Entry(self.frame_entrys_planilla3, textvariable=self.strvar_compras, width=10,
+        self.lbl_compras = tk.Label(self.frame_entrys_planilla3, text="Compras: ", justify="left")
+        self.lbl_compras.grid(row=1, column=2, padx=2, pady=2, sticky=tk.W)
+        self.entry_compras = tk.Entry(self.frame_entrys_planilla3, textvariable=self.strvar_compras, width=10,
                                    justify="right")
         self.entry_compras.bind('<Tab>', lambda e: self.calcular("general"))
         self.entry_compras.config(validate="key", validatecommand=self.vcmd)
-        self.entry_compras.grid(row=1, column=3, padx=2, pady=2, sticky=E)
+        self.entry_compras.grid(row=1, column=3, padx=2, pady=2, sticky=tk.E)
 
         # BOTON BUSQUEDA PROVEEDOR SI CORRESPPONDE --------------------------------------------------
         self.photo_bus_prov = Image.open('buscar.png')
-        self.photo_bus_prov = self.photo_bus_prov.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo_bus_prov = self.photo_bus_prov.resize((25, 25), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo_bus_prov = ImageTk.PhotoImage(self.photo_bus_prov)
-        self.btn_bus_prov = Button(self.frame_entrys_planilla3, text="", image=self.photo_bus_prov,
+        self.btn_bus_prov = tk.Button(self.frame_entrys_planilla3, text="", image=self.photo_bus_prov,
                                    command=self.fBusprov, bg="grey", fg="white")
-        self.btn_bus_prov.grid(row=1, column=4, padx=5, pady=2, sticky=E)
+        self.btn_bus_prov.grid(row=1, column=4, padx=5, pady=2, sticky=tk.E)
 
         # ENTRY PROVEEDOR ----------------------------------------------------------------------------
-        self.lbl_proved = Label(self.frame_entrys_planilla3, text="Proveedor: ", justify="left")
-        self.lbl_proved.grid(row=1, column=5, padx=3, pady=2, sticky=W)
-        self.entry_proved = Entry(self.frame_entrys_planilla3, textvariable=self.strvar_proved, width=93, justify="left")
-        self.entry_proved.grid(row=1, column=6, columnspan=8, padx=8, pady=2, sticky=E)
+        self.lbl_proved = tk.Label(self.frame_entrys_planilla3, text="Proveedor: ", justify="left")
+        self.lbl_proved.grid(row=1, column=5, padx=3, pady=2, sticky=tk.W)
+        self.entry_proved = tk.Entry(self.frame_entrys_planilla3, textvariable=self.strvar_proved, width=93, justify="left")
+        self.entry_proved.grid(row=1, column=6, columnspan=8, padx=8, pady=2, sticky=tk.E)
 
         # CHECKBOX SI ES MOVIMIENTO A CUENTA CORRIENTE -----------------------------------------------
         self.check_ctacte = tk.Checkbutton(self.frame_entrys_planilla3, text='CC', variable=self.strvar_check1,
                                            onvalue = 1, offvalue= 0)
-        self.check_ctacte.grid(row=1, column=13, padx=3, pady=2, sticky=E)
+        self.check_ctacte.grid(row=1, column=13, padx=3, pady=2, sticky=tk.E)
 
     def entrys_combo_forma_pago(self):
 
         # Forma de pago ------------------------------------------------------------------------------
-        self.lbl_forma_pago = Label(self.frame_entrys_planilla4, text="Pago: ", justify="left")
-        self.lbl_forma_pago.grid(row=0, column=0, padx=3, pady=2, sticky=W)
+        self.lbl_forma_pago = tk.Label(self.frame_entrys_planilla4, text="Pago: ", justify="left")
+        self.lbl_forma_pago.grid(row=0, column=0, padx=3, pady=2, sticky=tk.W)
         self.combo_forma_pago = ttk.Combobox(self.frame_entrys_planilla4, textvariable=self.strvar_forma_pago,
                                              state='readonly', width=20)
         self.combo_forma_pago['value'] = ["Efectivo", "Transferencia", "Cuenta Corriente", "Tarjeta Debito",
                                           "Cheques", "Otros"]
         self.combo_forma_pago.current(0)
-        self.combo_forma_pago.grid(row=0, column=1, padx=5, pady=2, sticky=W)
+        self.combo_forma_pago.grid(row=0, column=1, padx=5, pady=2, sticky=tk.W)
 
         # DETALLE DEL PAGO ---------------------------------------------------------------------------
-        self.entry_detalle_pago = Entry(self.frame_entrys_planilla4, textvariable=self.strvar_detalle_pago, width=135,
+        self.entry_detalle_pago = tk.Entry(self.frame_entrys_planilla4, textvariable=self.strvar_detalle_pago, width=135,
                                         justify="left")
-        self.entry_detalle_pago.grid(row=0, column=2, padx=3, pady=2, sticky=E)
+        self.entry_detalle_pago.grid(row=0, column=2, padx=3, pady=2, sticky=tk.E)
 
     def entrys_garantias(self):
 
         # Garantia -----------------------------------------------------------------------------------
-        self.lbl_garantia = Label(self.frame_entrys_planilla5, text="Garantias: ", justify="left")
-        self.lbl_garantia.grid(row=0, column=0, padx=3, pady=2, sticky=W)
-        self.entry_garantia = Entry(self.frame_entrys_planilla5, textvariable=self.strvar_garantia, width=152,
+        self.lbl_garantia = tk.Label(self.frame_entrys_planilla5, text="Garantias: ", justify="left")
+        self.lbl_garantia.grid(row=0, column=0, padx=3, pady=2, sticky=tk.W)
+        self.entry_garantia = tk.Entry(self.frame_entrys_planilla5, textvariable=self.strvar_garantia, width=152,
                                     justify="left")
-        self.entry_garantia.grid(row=0, column=1, padx=3, pady=2, sticky=E)
+        self.entry_garantia.grid(row=0, column=1, padx=3, pady=2, sticky=tk.E)
 
         # Observaciones ------------------------------------------------------------------------------
-        self.lbl_observaciones = Label(self.frame_entrys_planilla5, text="Observaciones: ", justify="left")
-        self.lbl_observaciones.grid(row=1, column=0, padx=3, pady=2, sticky=W)
-        self.entry_observaciones = Entry(self.frame_entrys_planilla5, textvariable=self.strvar_observaciones, width=152,
+        self.lbl_observaciones = tk.Label(self.frame_entrys_planilla5, text="Observaciones: ", justify="left")
+        self.lbl_observaciones.grid(row=1, column=0, padx=3, pady=2, sticky=tk.W)
+        self.entry_observaciones = tk.Entry(self.frame_entrys_planilla5, textvariable=self.strvar_observaciones, width=152,
                                          justify="left")
-        self.entry_observaciones.grid(row=1, column=1, padx=3, pady=2, sticky=E)
+        self.entry_observaciones.grid(row=1, column=1, padx=3, pady=2, sticky=tk.E)
 
     def buscar_movimientos(self):
 
-        self.lbl_buscar_movim = Label(self.frame_buscar_movimiento, text="Buscar: ")
+        self.lbl_buscar_movim = tk.Label(self.frame_buscar_movimiento, text="Buscar: ")
         self.lbl_buscar_movim.grid(row=0, column=0, padx=5, pady=2)
-        self.entry_buscar_movim=Entry(self.frame_buscar_movimiento, textvariable=self.strvar_buscostring, width=70)
-        self.entry_buscar_movim.grid(row=0, column=1, padx=5, pady=2, sticky=W)
-        self.btn_buscar_movim = Button(self.frame_buscar_movimiento, text="Buscar", command=self.fBuscar_en_tabla,
+        self.entry_buscar_movim=tk.Entry(self.frame_buscar_movimiento, textvariable=self.strvar_buscostring, width=70)
+        self.entry_buscar_movim.grid(row=0, column=1, padx=5, pady=2, sticky=tk.W)
+        self.btn_buscar_movim = tk.Button(self.frame_buscar_movimiento, text="Buscar", command=self.fBuscar_en_tabla,
                                        bg="CadetBlue", fg="white", width=35)
-        self.btn_buscar_movim.grid(row=0, column=2, padx=5, pady=2, sticky=W)
-        self.btn_mostrar_todo = Button(self.frame_buscar_movimiento, text="Mostrar todo", command=self.fShowall,
+        self.btn_buscar_movim.grid(row=0, column=2, padx=5, pady=2, sticky=tk.W)
+        self.btn_mostrar_todo = tk.Button(self.frame_buscar_movimiento, text="Mostrar todo", command=self.fShowall,
                                        bg="CadetBlue", fg="white", width=35)
-        self.btn_mostrar_todo.grid(row=0, column=3, padx=5, pady=2, sticky=W)
+        self.btn_mostrar_todo.grid(row=0, column=3, padx=5, pady=2, sticky=tk.W)
 
     def calculo_totales(self):
 
         #        fff = tkFont.Font(family="Arial", size=8, weight="bold")
 
         # TOTAL INGRESOS DE LA FECHA ------------------------------------------------------
-        self.lbl_total_ventart1 = Label(self.frame_totales, text="Total ingresos: ", fg="green", justify="left")
-        self.lbl_total_ventart1.grid(row=0, column=0, padx=2, pady=2, sticky=W)
-        self.lbl_total_ventart2 = Label(self.frame_totales, textvariable=self.strvar_total_ingresos, width=12,
+        self.lbl_total_ventart1 = tk.Label(self.frame_totales, text="Total ingresos: ", fg="green", justify="left")
+        self.lbl_total_ventart1.grid(row=0, column=0, padx=2, pady=2, sticky=tk.W)
+        self.lbl_total_ventart2 = tk.Label(self.frame_totales, textvariable=self.strvar_total_ingresos, width=12,
                                         justify="left")
-        self.lbl_total_ventart2.grid(row=0, column=1, padx=2, pady=2, sticky=E)
+        self.lbl_total_ventart2.grid(row=0, column=1, padx=2, pady=2, sticky=tk.E)
 
         # TOTAL COSTOS DE LA FECHA --------------------------------------------------------
-        self.lbl_total_costos1 = Label(self.frame_totales, text="Total costos: ", fg="red", justify="left")
-        self.lbl_total_costos1.grid(row=1, column=0, padx=2, pady=2, sticky=W)
-        self.lbl_total_costos2 = Label(self.frame_totales, textvariable=self.strvar_total_costos, width=12,
+        self.lbl_total_costos1 = tk.Label(self.frame_totales, text="Total costos: ", fg="red", justify="left")
+        self.lbl_total_costos1.grid(row=1, column=0, padx=2, pady=2, sticky=tk.W)
+        self.lbl_total_costos2 = tk.Label(self.frame_totales, textvariable=self.strvar_total_costos, width=12,
                                        justify="left")
-        self.lbl_total_costos2.grid(row=1, column=1, padx=2, pady=2, sticky=E)
+        self.lbl_total_costos2.grid(row=1, column=1, padx=2, pady=2, sticky=tk.E)
 
         # TOTAL UTILIDAD DE LA FECHA ( VENTAS MENOS COSTOS) --------------------------------
-        self.lbl_total_utilidad1 = Label(self.frame_totales, text="Utilidad: ", fg="blue", justify="left")
-        self.lbl_total_utilidad1.grid(row=0, column=2, padx=2, pady=2, sticky=W)
-        self.lbl_total_utilidad2 = Label(self.frame_totales, textvariable=self.strvar_total_utilidad, width=12,
+        self.lbl_total_utilidad1 = tk.Label(self.frame_totales, text="Utilidad: ", fg="blue", justify="left")
+        self.lbl_total_utilidad1.grid(row=0, column=2, padx=2, pady=2, sticky=tk.W)
+        self.lbl_total_utilidad2 = tk.Label(self.frame_totales, textvariable=self.strvar_total_utilidad, width=12,
                                          justify="left")
-        self.lbl_total_utilidad2.grid(row=0, column=3, padx=2, pady=2, sticky=E)
+        self.lbl_total_utilidad2.grid(row=0, column=3, padx=2, pady=2, sticky=tk.E)
 
         # TOTAL EGRESOS DE LA FECHA --------------------------------------------------------
-        self.lbl_total_egresos1 = Label(self.frame_totales, text="Total Egresos: ", fg="red", justify="left")
-        self.lbl_total_egresos1.grid(row=1, column=2, padx=2, pady=2, sticky=W)
-        self.lbl_total_egresos2 = Label(self.frame_totales, textvariable=self.strvar_total_egresos, width=12,
+        self.lbl_total_egresos1 = tk.Label(self.frame_totales, text="Total Egresos: ", fg="red", justify="left")
+        self.lbl_total_egresos1.grid(row=1, column=2, padx=2, pady=2, sticky=tk.W)
+        self.lbl_total_egresos2 = tk.Label(self.frame_totales, textvariable=self.strvar_total_egresos, width=12,
                                         justify="left")
-        self.lbl_total_egresos2.grid(row=1, column=3, padx=2, pady=2, sticky=E)
+        self.lbl_total_egresos2.grid(row=1, column=3, padx=2, pady=2, sticky=tk.E)
 
         # TOTAL UTILIDAD PERO AHORA MENOS LOS EGRESOS ---------------------------------------
-        self.lbl_total_util_menos_egre1 = Label(self.frame_totales, text="Total Util.-Egr.: ", fg="blue",
+        self.lbl_total_util_menos_egre1 = tk.Label(self.frame_totales, text="Total Util.-Egr.: ", fg="blue",
                                                 justify="left")
-        self.lbl_total_util_menos_egre1.grid(row=0, column=4, padx=2, pady=2, sticky=W)
-        self.lbl_total_util_menos_egre2 = Label(self.frame_totales, textvariable=self.strvar_total_util_menos_egr,
+        self.lbl_total_util_menos_egre1.grid(row=0, column=4, padx=2, pady=2, sticky=tk.W)
+        self.lbl_total_util_menos_egre2 = tk.Label(self.frame_totales, textvariable=self.strvar_total_util_menos_egr,
                                                 width=12, justify="left")
-        self.lbl_total_util_menos_egre2.grid(row=0, column=5, padx=2, pady=2, sticky=E)
+        self.lbl_total_util_menos_egre2.grid(row=0, column=5, padx=2, pady=2, sticky=tk.E)
 
         # TOTAL PAGOS DE LA FECHA -----------------------------------------------------------
-        self.lbl_total_pagos1 = Label(self.frame_totales, text="Total Pagos: ", fg="green", justify="left")
-        self.lbl_total_pagos1.grid(row=1, column=4, padx=2, pady=2, sticky=W)
-        self.lbl_total_pagos2 = Label(self.frame_totales, textvariable=self.strvar_total_pagos, width=12,
+        self.lbl_total_pagos1 = tk.Label(self.frame_totales, text="Total Pagos: ", fg="green", justify="left")
+        self.lbl_total_pagos1.grid(row=1, column=4, padx=2, pady=2, sticky=tk.W)
+        self.lbl_total_pagos2 = tk.Label(self.frame_totales, textvariable=self.strvar_total_pagos, width=12,
                                       justify="left")
-        self.lbl_total_pagos2.grid(row=1, column=5, padx=2, pady=2, sticky=E)
+        self.lbl_total_pagos2.grid(row=1, column=5, padx=2, pady=2, sticky=tk.E)
 
         # TOTAL COMPRAS DE LA FECHA ---------------------------------------------------------
-        self.lbl_total_compras1 = Label(self.frame_totales, text="Total Compras: ", fg="red", justify="left")
-        self.lbl_total_compras1.grid(row=0, column=8, padx=2, pady=2, sticky=W)
-        self.lbl_total_compras2 = Label(self.frame_totales, textvariable=self.strvar_total_compras, width=12,
+        self.lbl_total_compras1 = tk.Label(self.frame_totales, text="Total Compras: ", fg="red", justify="left")
+        self.lbl_total_compras1.grid(row=0, column=8, padx=2, pady=2, sticky=tk.W)
+        self.lbl_total_compras2 = tk.Label(self.frame_totales, textvariable=self.strvar_total_compras, width=12,
                                         justify="left")
-        self.lbl_total_compras2.grid(row=0, column=9, padx=2, pady=2, sticky=E)
+        self.lbl_total_compras2.grid(row=0, column=9, padx=2, pady=2, sticky=tk.E)
 
         # TOTAL GANANCIA LIMPIA POR VENTA DE ARTICULOS ---------------------------------------
-        self.lbl_total_limpio_artic1 = Label(self.frame_totales, text="Ganancia Artic.: ", fg="green", justify="left")
-        self.lbl_total_limpio_artic1.grid(row=0, column=6, padx=2, pady=2, sticky=W)
-        self.lbl_total_limpio_artic2 = Label(self.frame_totales, textvariable=self.strvar_total_limpio_artic, width=12,
+        self.lbl_total_limpio_artic1 = tk.Label(self.frame_totales, text="Ganancia Artic.: ", fg="green", justify="left")
+        self.lbl_total_limpio_artic1.grid(row=0, column=6, padx=2, pady=2, sticky=tk.W)
+        self.lbl_total_limpio_artic2 = tk.Label(self.frame_totales, textvariable=self.strvar_total_limpio_artic, width=12,
                                              justify="left")
-        self.lbl_total_limpio_artic2.grid(row=0, column=7, padx=2, pady=2, sticky=E)
+        self.lbl_total_limpio_artic2.grid(row=0, column=7, padx=2, pady=2, sticky=tk.E)
 
         # TOTAL GANANCIA LIMPIA POR SERVICIOS -------------------------------------------------
-        self.lbl_total_limpio_serv1 = Label(self.frame_totales, text="Ganancia Serv.: ", fg="green", justify="left")
-        self.lbl_total_limpio_serv1.grid(row=1, column=6, padx=2, pady=2, sticky=W)
-        self.lbl_total_limpio_serv2 = Label(self.frame_totales, textvariable=self.strvar_total_limpio_serv, width=12,
+        self.lbl_total_limpio_serv1 = tk.Label(self.frame_totales, text="Ganancia Serv.: ", fg="green", justify="left")
+        self.lbl_total_limpio_serv1.grid(row=1, column=6, padx=2, pady=2, sticky=tk.W)
+        self.lbl_total_limpio_serv2 = tk.Label(self.frame_totales, textvariable=self.strvar_total_limpio_serv, width=12,
                                             justify="left")
-        self.lbl_total_limpio_serv2.grid(row=1, column=7, padx=2, pady=2, sticky=E)
+        self.lbl_total_limpio_serv2.grid(row=1, column=7, padx=2, pady=2, sticky=tk.E)
 
         self.photo3 = Image.open('salida.png')
-        self.photo3 = self.photo3.resize((30, 30), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo3 = self.photo3.resize((30, 30), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo3 = ImageTk.PhotoImage(self.photo3)
-        self.btnSalir = Button(self.frame_totales, text="Salir", image=self.photo3, width=45, command=self.fSalir,
+        self.btnSalir = tk.Button(self.frame_totales, text="Salir", image=self.photo3, width=45, command=self.fSalir,
                                bg="yellow", fg="white")
         self.btnSalir.grid(row=0, column=10, rowspan=2, padx=3, pady=3, sticky="nsew")
 
@@ -1935,12 +2019,12 @@ class PlaniCaja(Frame):
 
 
 
-class format_numero:
-    def __init__(self, numero):
-        self.numero = numero
-
-    def __str__(self):
-        # return f"{self.nombre} ({self.edad} años)"
-        return formatear_cifra(self.numero)
-
-p = format_numero("235623.25")
+# class format_numero:
+#     def __init__(self, numero):
+#         self.numero = numero
+#
+#     def __str__(self):
+#         # return f"{self.nombre} ({self.edad} años)"
+#         return formatear_cifra(self.numero)
+#
+# p = format_numero("235623.25")

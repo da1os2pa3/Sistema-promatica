@@ -1,4 +1,5 @@
 import os
+import sys
 # ---------------------------------------------------
 from articulos_ABM import *
 from funciones import *
@@ -11,34 +12,29 @@ from tktooltip import ToolTip
 from datetime import date, datetime
 from PIL import Image, ImageTk
 
-class VentArt(Frame):
+class Clase_Articulos(Frame):
 
     def __init__(self, master=None):
 
         super().__init__(master)
         self.master = master
 
-        # ---------------------------------------------------------------------------------
-        # Seteo pantalla master principal
+        # Seteo pantalla master principal  ------------------------------------------------
         self.master.grab_set()
         self.master.focus_set()
         # ---------------------------------------------------------------------------------
 
-        # ---------------------------------------------------------------------------------
-        # Instanciaciones
+        # Instanciaciones -----------------------------------------------------------------
         # Creo el objeto - clase definida en articulos_ABM.py
         self.varArtic = datosArtic(self.master)
         self.varFuncion_new = ClaseFuncion_new(self.master)
         # ---------------------------------------------------------------------------------
 
-        # ---------------------------------------------------------------------------------
-        # Esto esta agregado para centrar las ventanas en la pantalla
-        # ---------------------------------------------------------------------------------
-        #master.geometry("880x510")
+        # Usuario no puede modificar tamaña pantalla --------------------------------------
         self.master.resizable(0, 0)
-
         # ---------------------------------------------------------------------------------
-        # POSICIONAMIENTO VENTANA -*-
+
+        # POSICIONAMIENTO VENTANA ---------------------------------------------------------
 
         """ Actualizamos todo el contenido de la ventana (la ventana pude crecer si se le agrega
         mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer. """
@@ -48,7 +44,7 @@ class VentArt(Frame):
         htotal = self.master.winfo_screenheight()
         # Guardamos el largo y alto de la ventana
         wventana = 1120
-        hventana = 625
+        hventana = 650
         # Aplicamos la siguiente formula para calcular donde debería posicionarse
         pwidth = round(wtotal / 2 - wventana / 2) + 0
         pheight = round(htotal / 2 - hventana / 2) + 0
@@ -60,9 +56,7 @@ class VentArt(Frame):
         self.estado_inicial()
         self.llena_grilla("")
 
-        # ------------------------------------------------------------------------------
-        # SETEO INICIAL DEL GRID
-        # ------------------------------------------------------------------------------
+        # SETEO INICIAL DEL GRID --------------------------------------------------------
 
         """ La función Treeview.selection() retorna una tupla con los ID de los elementos seleccionados o una
         tupla vacía en caso de no haber ninguno
@@ -86,15 +80,31 @@ class VentArt(Frame):
 
     def create_widgets(self):
 
+        # -------------------------------------------------------------------------------
+        # GPT ||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+        """ Es para los mensajes sobre eventos del sistema, reemplazaria a algunos messagebox
+        Ubicada ultima linea de la pantalla - barra de estado"""
+
+        self.status_var = tk.StringVar()
+
+        self.status_bar = Label(
+            self.master,
+            textvariable=self.status_var,
+            bd=1,
+            relief="sunken",
+            anchor="w",
+            bg="#f0f0f0"
+        )
+        self.status_bar.pack(side="bottom", fill="x")
+        # ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
         # ------------------------------------------------------------------------------
-        # VARIABLES -*-
-        # ------------------------------------------------------------------------------
+
+        # VARIABLES  -------------------------------------------------------------------
         # para la funcion validate y controlar campos solo numericos
         self.vcmd = (self.register(self.varFuncion_new.validar), "%P")
+        # ------------------------------------------------------------------------------
 
-        # -------------------------------------------------------------------------------------
-        # IMAGENES Y CARPETAS DE FOTOS DE ARTICULOS -*-
-        # -------------------------------------------------------------------------------------
+        # IMAGENES Y CARPETAS DE FOTOS DE ARTICULOS ------------------------------------
         self.imagen_defa = "tapiz.jpg"
         # Carpetas de trabajo
         self.carpeta_principal = os.path.dirname(__file__)
@@ -104,11 +114,9 @@ class VentArt(Frame):
         if os.path.isfile(self.carpeta_fotos):
             messagebox.showerror("Error", "No existe carpeta de fotos")
             return
-        # --------------------------------------------------------------------------------------
+        # -------------------------------------------------------------------------------
 
-        # --------------------------------------------------------------------------------------
-        # TITULOS -*-
-        # --------------------------------------------------------------------------------------
+        # TITULOS -----------------------------------------------------------------------
         # Encabezado logo y titulo con PACK
         self.frame_titulo_top = Frame(self.master)
 
@@ -127,9 +135,7 @@ class VentArt(Frame):
         self.frame_titulo_top.pack(side="top", fill="x", padx=5, pady=5)
         # ---------------------------------------------------------------------------------------
 
-        # ---------------------------------------------------------------------------------------
-        # STRINGVARS -*-
-        # ---------------------------------------------------------------------------------------
+        # STRINGVARS ----------------------------------------------------------------------------
         self.strvar_codigo = tk.StringVar(value="")
         self.strvar_descripcion = tk.StringVar(value="")
         self.strvar_marca = tk.StringVar(value="")
@@ -143,7 +149,7 @@ class VentArt(Frame):
         self.strvar_buscar_articulo = tk.StringVar(value="")
 
         self.strvar_costo_neto_dolar = tk.StringVar(value="0.00")
-        self.costo_neto_dolar_comparado = tk.StringVar(value="0")
+        self.costo_neto_dolar_comparado = tk.StringVar(value="0.00")
         self.strvar_costo_neto_pesos = tk.StringVar(value="0.00")
         self.strvar_tasa_iva = tk.StringVar(value="0.00")
         self.strvar_total_iva = tk.StringVar(value="0.00")
@@ -161,12 +167,10 @@ class VentArt(Frame):
         self.strvar_dolar_actual = tk.StringVar()
         # -------------------------------------------------------------------------------
 
-        # -------------------------------------------------------------------------------
-        #  BOTONES -*-
-        # -------------------------------------------------------------------------------
+        # BOTONES -----------------------------------------------------------------------
 
-        # LabelFrame para colocar los botones laterales - Debo definirla antes que el frame del Tv porque va
-        # colocada a la izquierda y el tv a la derecha
+        # LabelFrame para colocar los botones laterales - Debo definirla antes que el frame del Tv
+        # porque va colocada a la izquierda y el tv a la derecha
         barra_botones = LabelFrame(self.master)
 
         # BOTONES 1 - Nuevo, Editar,.....
@@ -192,28 +196,23 @@ class VentArt(Frame):
         barra_botones.pack(side="left", padx=5, pady=5, ipady=5, fill="y")
         # ---------------------------------------------------------------------------------------
 
-        # ---------------------------------------------------------------------------------------
+        # Frame principal -----------------------------------------------------------------------
         self.frame_tv = Frame(self.master)
 
-        # ---------------------------------------------------------------------------------------
-        # BUSQUEDAS -*-
-        # ---------------------------------------------------------------------------------------
+        # BUSQUEDAS -----------------------------------------------------------------------------
         self.frame_buscar = LabelFrame(self.frame_tv)
         self.cuadro_buscar_articulo()
         self.frame_buscar.pack(side="top", fill="both", expand=1, padx=5, pady=3)
         # ----------------------------------------------------------------------------------------
 
-        # ----------------------------------------------------------------------------------------
-        # TREEVIEWS -*-
+        # TREEVIEWS ------------------------------------------------------------------------------
         self.cuadro_grid_articulos()
         # ----------------------------------------------------------------------------------------
 
         self.frame_tv.pack(side="top", fill="both", padx=5, pady=5)
         # ----------------------------------------------------------------------------------------
 
-        # ----------------------------------------------------------------------------------------
-        # ENTRYS -*-
-        # ----------------------------------------------------------------------------------------
+        # ENTRYS ---------------------------------------------------------------------------------
 
         # ENTRYS GENERAlES
         self.sector_entry = LabelFrame(self.master)
@@ -232,22 +231,30 @@ class VentArt(Frame):
         self.btn_ruta_imagen.pack(expand=0, side="top", pady=3, padx=2)
         self.lbl_imagen_art.pack(expand=1, side="top", fill="both", pady=2, padx=2)
         self.sector_imagen.pack(expand=1, side="left", fill="both", pady=5, padx=2)
+        # ----------------------------------------------------------------------------------------
 
     # ----------------------------------------------------------------------------
     # GRID -*-
     # ----------------------------------------------------------------------------
 
-    def limpiar_Grid(self):
+    def llena_grilla(self, set_foco):
 
+        """ En set_foco viene el Id de la tabla que identidica el registro donde quiero oner el foco - 2312, 23, 456..
+        Puede llegar a venir en vacio """
+        # Si hay un error en insertar devuelve None la funcion insertar de ABM
+        if set_foco is None:
+            print("⚠️ set_foco = None (posible error al insertar)")
+            return
+
+        # Limpio el Grid
         for item in self.grid_articulos.get_children():
             self.grid_articulos.delete(item)
 
-    def llena_grilla(self, ult_tabla_id):
-
+        # Traigo los datos a insertar en el GRid
         if len(self.filtro_activo) > 0:
             datos = self.varArtic.consultar_articulo(self.filtro_activo)
         else:
-            datos = self.varArtic.consultar_articulo("articulos ORDER BY rubro, marca, descripcion ASC")
+            datos = self.varArtic.consultar_articulo("ORDER BY rubro, marca, descripcion ASC")
 
         cont = 0
         for row in datos:
@@ -258,57 +265,42 @@ class VentArt(Frame):
             # convierto fecha de 2024-12-19 a 19/12/2024
             forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[11], '%Y-%m-%d'), False)
 
-            precio_final_pesos = round(float((row[6]*(1+(row[7]/100))) * (1+(row[9]/100))) * float(self.strvar_dolar_actual.get()))
+            precio_final_pesos = round(float((row[6]*(1+(row[7]/100))) *
+                                             (1+(row[9]/100))) * float(self.strvar_dolar_actual.get()))
 
             self.grid_articulos.insert("", "end", tags=color, text=row[0], values=(row[1], row[2], row[3],
                                                     row[4], formatear_cifra(precio_final_pesos), row[6], row[5], row[7],
                                                     row[9], row[10], forma_normal, row[12], row[13]))
 
-        if len(self.grid_articulos.get_children()) > 0:
+        # Controles-----------------------------------------------------------------------
+        # Grid negativo
+        if not len(self.grid_articulos.get_children()) >= 0:
+            self.set_status("❌ Error inesperado, Grid negativo", "error")
+            return
+        # Foco vacio, voy al primero de la grilla
+        if not set_foco:
             self.grid_articulos.selection_set(self.grid_articulos.get_children()[0])
+        # --------------------------------------------------------------------------------
 
-        # ----------------------------------------------------------------------------------
-        # Procedimiento para acomodar los punteros en caso de altas, modif. ....
-        # ----------------------------------------------------------------------------------
+        # Posicionamiento del foco en el Grid, voy al Id valor del set_foco --------------
+        for item in self.grid_articulos.get_children():
 
-        """ ult_tabla_id = Trae el Id de la tabla (21, 60, 61, ..) correspondiente identificando al registro 
-        en el cual yo quiero que se ponga el puntero del GRID.
-        Traera blanco ('') si la funcion llena_grilla es llamada desde cualquier lugar que no 
-        necesite acomodar puntero en un item en particular (caso altas, modificaciones ...)."""
+            texto = self.grid_articulos.item(item, "text")
 
-        if ult_tabla_id:
+            if str(texto) == str(set_foco):  # suponiendo que el ID está en la columna 0
 
-            """ regis = Guardo todos los Id del Grid (I001, IB003, ...)"""
-            regis = self.grid_articulos.get_children()
-            rg = ""
-
-            for rg in regis:
-
-                """ buscado = guardo el 'text' correspondiente al Id del grid que esta en regis y muevo toda 
-                la linea de datos del treeview a la variable buscado), o sea, para el Id I0001 paso el Id de la 
-                tabla 57... y asi ira cambiando para cada rg
-                text = te da el valor de la primera columna del grid, que es donde veo el Id del registro 
-                asignado en la tabla"""
-
-                buscado = self.grid_articulos.item(rg)['text']
-                if int(buscado) == int(ult_tabla_id):
-                    """ Si coinciden los Id quiere decir que encontre al registro que estoy buscando por Id de tabla."""
-                    break
-
-            """ Ahora ejecuto este procedimiento que se encarga de poner el puntero en el registro que acabamos 
-            de encontrar correspondiente al Id de tabla asignado en el parametro de la funcion llena_grilla. """
-
-            if ult_tabla_id:
-                """ "rg" = es el Text o Index del registro en el Treeview I001, IB002.... y ahi posiciono el foco 
-                con las siguientes instrucciones. """
-                self.grid_articulos.selection_set(rg)
-                # Para que no me diga que no hay nada seleccionado
-                self.grid_articulos.focus(rg)
-                # para que la linea seleccionada no me quede fuera del area visible del treeview
-                self.grid_articulos.yview(self.grid_articulos.index(rg))
-            else:
-                # caso de que el parametro ult_tabla_id sea " " muevo el puntero al final del GRID
-                self.mover_puntero_topend("END")
+                # 👉 Fuerza a Tkinter a procesar actualizaciones pendientes de la UI. Sirve para asegurarse
+                # que el widget esté actualizado antes de hacer foco / scroll.
+                self.grid_articulos.update_idletasks()
+                # 👉 Le da el foco al Treeview(como si hicieras click sobre él).
+                self.grid_articulos.focus_set()
+                # 👉 Selecciona la fila encontrada.
+                self.grid_articulos.selection_set(item)
+                # 👉 Mueve el cursor interno del Treeview a esa fila(la deja como “activa”).
+                self.grid_articulos.focus(item)
+                self.grid_articulos.see(item)
+                break
+        # --------------------------------------------------------------------------------
 
     # ------------------------------------------------------------------------
     # ESTADOS -*-
@@ -316,11 +308,8 @@ class VentArt(Frame):
 
     def estado_inicial(self):
 
-        # Variables
-        self.filtro_activo = "articulos ORDER BY rubro, marca, descripcion ASC"
-        self.var_Id = -1
+        self.filtro_activo = "ORDER BY rubro, marca, descripcion ASC"
         self.alta_modif = 0
-
         self.limpiar_text()
         self.habilitar_text("disabled")
         self.habilitar_Btn_Oper("normal")
@@ -328,22 +317,25 @@ class VentArt(Frame):
 
     def habilitar_text(self, estado):
 
-        self.entry_codigo.configure(state=estado)
-        self.entry_descripcion.configure(state=estado)
-        self.combo_marca.configure(state=estado)
-        self.combo_rubro.configure(state=estado)
-        self.entry_codbar.configure(state=estado)
-        self.entry_imagen_art.configure(state=estado)
-        self.entry_costo_neto_dolar.configure(state=estado)
-        self.entry_costo_neto_pesos.configure(state=estado)
-        self.combo_iva.configure(state=estado)
-        self.entry_tasa_impint.configure(state=estado)
-        self.entry_tasa_ganancia.configure(state=estado)
-        self.entry_total_precio_venta.configure(state=estado)
-        self.entry_observa.configure(state=estado)
-        self.entry_fechaultact.configure(state=estado)
-        self.entry_costo_historico.configure(state=estado)
-        self.btn_ruta_imagen.configure(state=estado)
+        for entry in [
+            self.entry_codigo,
+            self.entry_descripcion,
+            self.combo_marca,
+            self.combo_rubro,
+            self.entry_codbar,
+            self.entry_imagen_art,
+            self.entry_costo_neto_dolar,
+            self.entry_costo_neto_pesos,
+            self.combo_iva,
+            self.entry_tasa_impint,
+            self.entry_tasa_ganancia,
+            self.entry_total_precio_venta,
+            self.entry_observa,
+            self.entry_fechaultact,
+            self.entry_costo_historico,
+            self.btn_ruta_imagen,
+        ]:
+            entry.configure(state=estado)
 
         if self.alta_modif == 1:
             self.grid_articulos['selectmode'] = 'none'
@@ -354,29 +346,56 @@ class VentArt(Frame):
 
     def limpiar_text(self):
 
-        self.strvar_codigo.set(value="")
-        self.strvar_descripcion.set(value="")
-        self.strvar_codbar.set(value="")
-        self.strvar_costo_neto_dolar.set(value="0.00")
-        self.strvar_costo_neto_pesos.set(value="0.00")
-        self.strvar_tasa_impint.set(value="0.00")
-        self.strvar_tasa_ganancia.set(value="0.00")
-        self.strvar_tasa_iva.set(value="0.00")
-        self.strvar_observa.set(value="")
-        self.strvar_fechaultact.set(value="")
-        self.strvar_costo_historico.set(value="0.00")
-        self.strvar_codbar.set(value="")
-        self.strvar_observa.set(value="")
-        self.strvar_imagen_Art.set(value="")
-        self.strvar_total_iva.set(value="0.00")
-        self.strvar_total_impint.set(value="0.00")
-        self.strvar_subtotal.set(value="0.00")
-        self.strvar_total_ganancia.set(value="0.00")
-        self.strvar_total_precio_venta.set(value="0.00")
-        self.strvar_total_precio_venta_mas10.set(value="0.00")
-        self.strvar_costo_dolar_bruto.set(value="0.00")
-        self.strvar_costo_pesos_bruto.set(value="0.00")
-        self.strvar_buscar_articulo.set(value="")
+        for entry in [
+            self.entry_codigo,
+            self.entry_descripcion,
+            self.combo_marca,
+            self.combo_rubro,
+            self.entry_codbar,
+            self.entry_imagen_art,
+            self.entry_costo_neto_dolar,
+            self.entry_costo_neto_pesos,
+            self.combo_iva,
+            self.entry_tasa_impint,
+            self.entry_tasa_ganancia,
+            self.entry_total_precio_venta,
+            self.entry_observa,
+            self.entry_fechaultact,
+            self.entry_costo_historico,
+        ]:
+            entry.delete(0, END)
+
+        for strvar1 in [
+            self.strvar_codigo,
+            self.strvar_descripcion,
+            self.strvar_codbar,
+            self.strvar_observa,
+            self.strvar_fechaultact,
+            self.strvar_codbar,
+            self.strvar_observa,
+            self.strvar_imagen_Art,
+            self.strvar_buscar_articulo
+        ]:
+            strvar1.set(value="")
+
+        for strvar2 in [
+            self.strvar_costo_neto_dolar,
+            self.strvar_costo_neto_pesos,
+            self.strvar_tasa_impint,
+            self.strvar_tasa_ganancia,
+            self.strvar_tasa_iva,
+            self.strvar_costo_historico,
+            self.strvar_total_iva,
+            self.strvar_total_impint,
+            self.strvar_subtotal,
+            self.strvar_total_ganancia,
+            self.strvar_total_precio_venta,
+            self.strvar_total_precio_venta_mas10,
+            self.strvar_costo_dolar_bruto,
+            self.strvar_costo_pesos_bruto,
+        ]:
+            strvar2.set(value="0.00")
+
         self.combo_marca.set("")
         self.combo_rubro.set("")
         self.combo_iva.set("")
@@ -385,39 +404,39 @@ class VentArt(Frame):
 
     def habilitar_Btn_Oper(self, estado):
 
-        self.btn_nuevo.configure(state=estado)
-        self.btn_eliminar.configure(state=estado)
-        self.btn_editar.configure(state=estado)
-        self.btn_Toparch.configure(state=estado)
-        self.btn_Finarch.configure(state=estado)
-        self.btn_orden_apellido.configure(state=estado)
-        self.btn_orden_codigo.configure(state=estado)
-        self.entry_buscar_articulo.configure(state=estado)
-        self.btn_mostrar_todo.configure(state=estado)
-        self.btn_buscar_articulo.configure(state=estado)
-        self.combo_bus_marca.configure(state=estado)
-        self.combo_bus_rubro.configure(state=estado)
-        self.btn_reset_rubro.configure(state=estado)
-        self.btn_reset_marca.configure(state=estado)
+        for config in [
+            self.btn_nuevo,
+            self.btn_eliminar,
+            self.btn_editar,
+            self.btn_Toparch,
+            self.btn_Finarch,
+            self.btn_orden_apellido,
+            self.btn_orden_codigo,
+            self.entry_buscar_articulo,
+            self.btn_mostrar_todo,
+            self.btn_buscar_articulo,
+            self.combo_bus_marca,
+            self.combo_bus_rubro,
+            self.btn_reset_rubro,
+            self.btn_reset_marca
+        ]:
+            config.configure(state=estado)
 
     def habilitar_Btn_Final(self, estado):
-
         self.btn_guardar.configure(state=estado)
 
     def fCancelar(self):
-
         r = messagebox.askquestion("Cancelar", "Confirma cancelar operacion actual?", parent=self)
         if r == messagebox.YES:
             self.estado_inicial()
 
     def fReset(self):
-
         self.estado_inicial()
         self.fResetmarca()
         self.fResetrubro()
-        self.limpiar_Grid()
         self.llena_grilla("")
-        self.mover_puntero_topend("TOP")
+        self.varFuncion_new.mover_puntero_topend(self.grid_articulos, 'TOP')
+        # self.mover_puntero_topend("TOP")
         self.btn_nuevo.focus()
 
     def DobleClickGrid(self, event):
@@ -442,14 +461,12 @@ class VentArt(Frame):
         self.habilitar_Btn_Final("normal")
         self.habilitar_Btn_Oper("disabled")
 
-        self.combo_rubro.SelectedIndex = -1
-        self.combo_rubro.set("")
-        self.combo_marca.SelectedIndex = -1
-        self.combo_marca.set("")
-        self.combo_rubro.configure(state="readonly")
-        self.combo_marca.configure(state="readonly")
-        self.combo_iva.configure(state="readonly")
         self.combo_iva.current(0)
+
+        for combo in (self.combo_rubro, self.combo_marca):
+            combo.set("")
+        for combo in (self.combo_rubro, self.combo_marca, self.combo_iva):
+            combo.configure(state="readonly")
 
         # Cambio el formato de la fecha
         self.entry_fechaultact.insert(0, date.today().strftime('%d/%m/%Y'))
@@ -465,10 +482,9 @@ class VentArt(Frame):
         self.clave = self.grid_articulos.item(self.selected, 'text')
 
         if self.clave == "":
-            messagebox.showwarning("Editar", "No hay nada seleccionado", parent=self)
+            self.set_status("✔ No hay nada seleccionado", "ok")
             return
 
-        self.var_Id = self.clave  # puede traer -1 , en ese caso seria un alta
         self.alta_modif = 2
 
         self.habilitar_text('normal')
@@ -527,7 +543,8 @@ class VentArt(Frame):
         self.clave_ant = self.grid_articulos.item(self.selected_ant, 'text')
 
         if self.clave == "":
-            messagebox.showwarning("Alerta", "No hay nada seleccionado", parent=self)
+            # messagebox.showwarning("Alerta", "No hay nada seleccionado", parent=self)
+            self.set_status("✔ No hay nada seleccionado", "ok")
             return
 
         # guardo todos los valores en una lista desde el Tv
@@ -536,87 +553,111 @@ class VentArt(Frame):
 
         r = messagebox.askquestion("Cuidado", "Confirma eliminar esta Orden?\n " + data, parent=self)
         if r == messagebox.NO:
-            messagebox.showinfo("Aviso", "Eliminacion cancelada", parent=self)
+            self.set_status("ℹ Eliminaion cancelada", "info")
             return
 
-        self.varArtic.eliminar_articulo(self.clave)
+        try:
+            self.varArtic.eliminar_articulo(self.clave)
+        except Exception as e:
+            messagebox.showerror("Error del sistema - al eliminar articulo", str(e))
+            self.set_status("❌ Error al eliminar", "error")
+            return
+        else:
+            self.set_status("🗑 Registro eliminado correctamente", "ok")
 
-        messagebox.showinfo("Aviso", "Registro eliminado correctamente", parent=self)
-
-        self.limpiar_Grid()
         self.llena_grilla(self.clave_ant)
 
     def fGuardar(self):
 
-        # -----------------------------------------------------------------------------------
-        # VALIDACIONES
-
-        # 1 - Debe existir una descripcion-codigo de articulo-codigo de barras
-        if self.strvar_descripcion.get() == "" or self.strvar_codigo.get() == "" or self.strvar_codbar.get() == "":
-            messagebox.showwarning("Cuidado", "Deben existir Codigo, Descripcion y Codigo de Barras", parent=self)
+        # VALIDACIONES -----------------------------------------------------------------------
+        # 1 - Debe existir una descripcion-codigo de articulo
+        if self.strvar_descripcion.get() == "":
+            self.set_status("⚠ Campos obligatorio Descripcion", "warn")
             self.entry_descripcion.focus()
+            return
+        if self.strvar_codigo.get() == "":
+            self.set_status("⚠ Campos obligatorio Codigo", "warn")
+            self.entry_descripcion.focus()
+            return
+        estado = self.estado_numero(self.strvar_costo_neto_dolar)
+        if estado == "vacio" or estado == "cero":
+            self.set_status("⚠ Coloque costo del articulo", "warn")
+            self.entry_costo_neto_dolar.focus()
+            return
+        elif estado == "invalido":
+            messagebox.showerror("Error", "El valor ingresado no es válido")
             return
         # ------------------------------------------------------------------------------------
 
+        # ------------------------------------------------------------------------------------
+        # guardo el Id del Treeview en selected para ubicacion del foco a posteriori (I001, I002....
+        self.selected = self.grid_articulos.focus()
+        # Guardo Id del registro de la base datos _Tabla (no es el mismo del otro, este puedo verlo en la tabla) 1,2,3..
+        self.clave = self.grid_articulos.item(self.selected, 'text')
+        # ------------------------------------------------------------------------------------
+
+        # Calculo campos necesarios ----------------------------------------------------------
+        if self.alta_modif == 1:
+            self.fecha_aux = datetime.strptime(self.strvar_fechaultact.get(), '%d/%m/%Y')
+        if self.alta_modif == 2:
+            # Verifico que no haya cambiado el costo neto del dolar articulo, si es asi, cambio fecha de ultima modificacion
+            if float(self.costo_neto_dolar_comparado.get()) != float(self.strvar_costo_neto_dolar.get()):
+                self.fecha_aux = datetime.today()
+            else:
+                self.fecha_aux = datetime.strptime(self.strvar_fechaultact.get(), '%d/%m/%Y')
+        # ------------------------------------------------------------------------------------
+
+        # Preparo Diccionario ----------------------------------------------------------------
+        articulos = {
+            #"Id": self.var_Id,
+            "Id": self.clave,
+            "codigo": self.strvar_codigo.get(),
+            "descripcion": self.strvar_descripcion.get(),
+            "marca": self.combo_marca.get(),
+            "rubro": self.combo_rubro.get(),
+            "codbar": self.strvar_codbar.get(),
+            "costodolar": self.strvar_costo_neto_dolar.get(),
+            "iva": self.combo_iva.get(),
+            "impint": self.strvar_tasa_impint.get(),
+            "porcgan": self.strvar_tasa_ganancia.get(),
+            "observa": self.strvar_observa.get(),
+            "ultact": self.fecha_aux,
+            "costohist": self.strvar_costo_historico.get(),
+            "imagen": self.strvar_imagen_Art.get(),
+        }
+        # ------------------------------------------------------------------------------------
+
+        # Ingreso datos a las tablas ---------------------------------------------------------
         try:
-            # guardo el Id del Treeview en selected para ubicacion del foco a posteriori (I001, I002....
-            self.selected = self.grid_articulos.focus()
-            # Guardo Id del registro de la base datos _Tabla (no es el mismo del otro, este puedo verlo en la tabla) 1,2,3..
-            self.clave = self.grid_articulos.item(self.selected, 'text')
-
-            if self.alta_modif == 1:    #    #self.var_Id == -1:
-
-                fecha_aux = datetime.strptime(self.strvar_fechaultact.get(), '%d/%m/%Y')
-                self.varArtic.insertar_articulo(self.strvar_codigo.get(), self.strvar_descripcion.get(),
-                                            self.combo_marca.get(), self.combo_rubro.get(), self.strvar_codbar.get(),
-                                            self.strvar_costo_neto_dolar.get(), self.combo_iva.get(),
-                                            self.strvar_tasa_impint.get(), self.strvar_tasa_ganancia.get(),
-                                            self.strvar_observa.get(), fecha_aux, self.strvar_costo_historico.get(),
-                                            self.strvar_imagen_Art.get())
-
-                messagebox.showinfo("Guardar", "Nuevo registro creado correctamente", parent=self)
-
+            if self.alta_modif == 1:
+                self.id_nuevo = self.varArtic.insertar_articulo(articulos)
+                id_ref = self.id_nuevo
             elif self.alta_modif == 2:
+                self.varArtic.modificar_articulo(articulos)
+                id_ref = self.clave
 
-                # Verifico que no haya cambiado el costo neto del dolar articulo, si es asi, cambio fecha de ultima modificacion
-                if float(self.costo_neto_dolar_comparado.get()) != float(self.strvar_costo_neto_dolar.get()):
-                    fecha_aux = datetime.today()
-                else:
-                    fecha_aux = datetime.strptime(self.strvar_fechaultact.get(), '%d/%m/%Y')
-
-                self.varArtic.modificar_articulo(self.var_Id, self.strvar_codigo.get(), self.strvar_descripcion.get(),
-                                                 self.combo_marca.get(), self.combo_rubro.get(),
-                                                 self.strvar_codbar.get(), self.strvar_costo_neto_dolar.get(),
-                                                 self.combo_iva.get(), self.strvar_tasa_impint.get(),
-                                                 self.strvar_tasa_ganancia.get(),
-                                                 self.strvar_observa.get(), fecha_aux,
-                                                 self.strvar_costo_historico.get(), self.strvar_imagen_Art.get())
-
-                self.var_Id == -1
-                messagebox.showinfo("Modificacion", "La modificacion del registro fue exitosa", parent=self)
-
-        except:
-
-            messagebox.showerror("Error", "Revise datos ingresados por favor", parent=self)
-            self.entry_descripcion.focus()
+        # Evaluacion de errores ---------------------------------------------------------------
+        except ValueError as e:
+            messagebox.showwarning("Datos inválidos - error al insertar/modificar articulo", str(e))
+            self.set_status("⚠ Error en los datos", "warn")
             return
+        except Exception as e:
+            messagebox.showerror("Error del sistema - al insertar/modificar articulo", str(e))
+            self.set_status("❌ Error al guardar", "error")
+            return
+        else:
+            self.set_status("✔ Registro guardado correctamente", "ok")
 
-        self.limpiar_Grid()
+        # Terminacion y habilitaciones y seteo variables ----------------------------------------
         self.limpiar_text()
         self.habilitar_Btn_Final("disabled")
         self.habilitar_Btn_Oper("normal")
 
-        #self.filtro_activo = "articulos ORDER BY rubro, marca, descripcion ASC"
+        self.filtro_activo = "ORDER BY rubro, marca, descripcion ASC"
 
-        if self.alta_modif == 1:
-            ultimo_tabla_id = self.varArtic.traer_ultimo(0)
-            self.llena_grilla(ultimo_tabla_id)
-        elif self.alta_modif == 2:
-            self.llena_grilla(self.clave)
+        self.llena_grilla(id_ref)
 
         self.alta_modif = 0
-
-        # ojo este debe ir aca abajo sino da problema el browse del grid
         self.habilitar_text("disabled")
 
     # -----------------------------------------------------------------
@@ -682,23 +723,27 @@ class VentArt(Frame):
         """ Verifica que exista codigo de barras en el alta o modificacion del articulo """
 
         if self.alta_modif == 1 and len(self.entry_codbar.get()) > 0:
+            # La condicion deja entrar si es alta y el codigo de barras "NO" esta vacio
 
             se_busca = self.entry_codbar.get()
             que_busco = "articulos WHERE codbar = '" + se_busca + "'"
-            retorno = self.varArtic.buscar_entabla(que_busco)
+
+            try:
+                retorno = self.varArtic.buscar_entabla(que_busco)
+            except Exception as e:
+                messagebox.showerror("Error del sistema - al buscar articulo", str(e))
+                self.set_status("❌ Error al buscar", "error")
+                return
 
             if retorno != []:
-                # si encuentra el codigo de barras retorna y anula el alta
-                messagebox.showerror("Error", "Existe este codigo de barras en la Tabla", parent=self)
+                # Si retorno "NO" esta vacio es que ya existe ese codigo de barras (repetido) retorna y anula el alta.
+                self.set_status("❌ Codigo de barras repetido - revise datos ingresados", "error")
                 self.strvar_codbar.set(value="")
                 self.entry_codbar.focus()
                 return
 
     def limitador(self, entry_text, caract):
-
-        if len(entry_text.get()) > 0:
-            # donde esta CARACT va la cantidad de caracteres
-            entry_text.set(entry_text.get()[:caract])
+        entry_text.set(entry_text.get()[:caract])
 
     def recarga_imagen(self):
 
@@ -719,10 +764,8 @@ class VentArt(Frame):
             self.imagen_art = ImageTk.PhotoImage(self.photoa)
             self.lbl_imagen_art = Label(self.sector_imagen, image=self.imagen_art, bg="white", relief=RIDGE, bd=5)
             self.lbl_imagen_art.bind("<Double-Button-1>", self.amplia_img)
-
         except:
-
-            messagebox.showerror("Error", "Revise nombre de imagen 'jpg'", parent=self)
+            self.set_status("❌ Revise nombre de imagen JPG por favor", "error")
 
         self.lbl_imagen_art.pack(expand=1, side="top", fill="both", pady=2, padx=2)
 
@@ -740,13 +783,10 @@ class VentArt(Frame):
             self.imagen_defa = "tapiz.jpg"
 
         try:
-
             self.photoa = Image.open(os.path.join(self.carpeta_fotos, self.imagen_defa))
             self.photoa = self.photoa.resize((100, 100), Image.LANCZOS)  # Redimension (Alto, Ancho)
             self.imagen_art = ImageTk.PhotoImage(self.photoa)
-
         except:
-
             messagebox.showerror("Error", "No existe la imagen", parent=self)
 
             self.imagen_defa = "tapiz.jpg"
@@ -793,85 +833,55 @@ class VentArt(Frame):
 
     def fBuscar_en_tabla(self):
 
-        # verifico que venga algun string de busqueda para modificar el filtro_activo, si no lo dejo como estaba
-        if self.combo_bus_rubro.get() == "" and self.combo_bus_marca.get() == "" and len(self.entry_buscar_articulo.get()) <= 0:
-            messagebox.showinfo("Aviso", "Nada que buscar o  filtrar", parent=self)
+        """ strip : 👉 elimina espacios en blanco al inicio y al final"""
+        rubro = self.combo_bus_rubro.get().strip()
+        marca = self.combo_bus_marca.get().strip()
+        se_busca = self.entry_buscar_articulo.get().strip()
+
+        # 🚫 Nada cargado
+        if rubro == "" and marca == "" and se_busca == "":
+            self.set_status("⚠ No ingreso busqueda o filtro", "warn")
             return
 
         try:
+            condiciones = []
 
-            c1 = 'rubro = ' + "'" + self.combo_bus_rubro.get() + "'"
-            c2 = 'marca = ' + "'" + self.combo_bus_marca.get() + "'"
+            # 🔹 Filtros por rubro y marca
+            if rubro:
+                condiciones.append(f"rubro = '{rubro}'")
 
-            self.filtro_activo = "articulos WHERE "
+            if marca:
+                condiciones.append(f"marca = '{marca}'")
 
-            # verificar combo rubros
-            if self.combo_bus_rubro.get() == "" and self.combo_bus_marca.get() == "":
+            # 🔹 Búsqueda por texto
+            if se_busca:
+                texto_cond = (
+                    f"INSTR(descripcion, '{se_busca}') > 0 OR "
+                    f"INSTR(codigo, '{se_busca}') > 0 OR "
+                    f"INSTR(codbar, '{se_busca}') > 0"
+                )
+                condiciones.append(f"({texto_cond})")  # 👈 CLAVE: paréntesis
 
-                if len(self.entry_buscar_articulo.get()) > 0:
+            # 🔹 Armar WHERE
+            condicion_unida = " AND ".join(condiciones)
 
-                    se_busca = self.entry_buscar_articulo.get()
+            self.filtro_activo = (
+                    "WHERE "
+                    + condicion_unida +
+                    " ORDER BY rubro, marca, descripcion ASC"
+            )
 
-                    self.filtro_activo = self.filtro_activo + "INSTR(descripcion, '" + se_busca + "') > 0 OR "\
-                                                              "INSTR(codigo, '" + se_busca + "') > 0 OR "\
-                                                              "INSTR(codbar, '" + se_busca + "') > 0 ORDER BY rubro, marca, descripcion ASC"
+            retorno = self.varArtic.buscar_entabla(self.filtro_activo)
+            if retorno == []:
+                self.set_status("ℹ No encontre ninguna coincidencia para su busqueda", "info")
+                self.entry_buscar_articulo.focus()
+                return
 
-            elif self.combo_bus_rubro.get() != "" and self.combo_bus_marca.get() == "":
-
-                if len(self.entry_buscar_articulo.get()) > 0:
-
-                    se_busca = self.entry_buscar_articulo.get()
-
-                    self.filtro_activo = self.filtro_activo + c1 +" AND INSTR(descripcion, '" + se_busca + "') > 0 OR " + c1 + \
-                                                              " AND INSTR(codigo, '" + se_busca + "') > 0 OR " + c1 + \
-                                                              " AND INSTR(codbar, '" + se_busca + ("') > 0 "
-                                                              "ORDER BY rubro, marca, descripcion ASC")
-                else:
-
-                    self.filtro_activo = self.filtro_activo + c1 + " ORDER BY rubro, marca, descripcion ASC"
-
-            elif self.combo_bus_rubro.get() == "" and self.combo_bus_marca.get() != "":
-
-                if len(self.entry_buscar_articulo.get()) > 0:
-
-                    se_busca = self.entry_buscar_articulo.get()
-
-                    self.filtro_activo = self.filtro_activo + c2 +" AND INSTR(descripcion, '" + se_busca + "') > 0 OR " + c2 + \
-                                                              " AND INSTR(codigo, '" + se_busca + "') > 0 OR " + c2 + \
-                                                              " AND INSTR(codbar, '" + se_busca + ("') > 0 "
-                                                              "ORDER BY rubro, marca, descripcion ASC")
-
-                else:
-
-                    self.filtro_activo = self.filtro_activo + c2 + " ORDER BY rubro, marca, descripcion ASC"
-
-            elif self.combo_bus_rubro.get() != "" and self.combo_bus_marca.get() != "":
-
-                if len(self.entry_buscar_articulo.get()) > 0:
-
-                    se_busca = self.entry_buscar_articulo.get()
-
-                    self.filtro_activo = self.filtro_activo + c1 +' AND '+ c2 + " AND INSTR(descripcion, '" + se_busca + "') > 0 OR " + c1 +' AND '+ c2 +\
-                                                              " AND INSTR(codigo, '" + se_busca + "') > 0 OR " + c1 +' AND '+ c2 +\
-                                                              " AND INSTR(codbar, '" + se_busca + "') > 0 ORDER BY rubro, marca, descripcion ASC"
-                else:
-
-                    self.filtro_activo = self.filtro_activo + c1 + " AND " + c2 + " ORDER BY rubro, marca, descripcion ASC"
-
-            self.varArtic.buscar_entabla(self.filtro_activo)
-            self.limpiar_Grid()
+            # " " = ir al primero
             self.llena_grilla("")
-
-            """ Obtengo el Id del grid para que me tome la seleccion y el foco se coloque efectivamente en el 
-            item buscado y asi cuando le doy -show all- el puntero se sigue quedando en el registro buscado"""
-            item = self.grid_articulos.selection()
-            self.grid_articulos.focus(item)
-
-        except:
-
-            messagebox.showerror("Except_error", "Error de busqueda - Revise caracteres del texto a buscar", parent=self)
+        except Exception as e:
+            self.set_status("❌ Error de busqueda - Revise caracteres no admitidos", "error")
             self.entry_buscar_articulo.focus()
-            return
 
     # -----------------------------------------------------------------
     # CALCULOS -*-
@@ -880,13 +890,13 @@ class VentArt(Frame):
     def calcular(self, que_campo):
 
         try:
-
-            # Funcion que no permite pasar el valor ""
+            # Funcion que no permite pasar el valor "" y  controla '-' y '.'
             if not self.control_blanco():
                 self.entry_costo_historico.focus()
                 return
 
-            # reconstruye valores de variables a cero si es que borran el valor anterior y lo dejan en blanco en vez de cero
+            # reconstruye valores de variables a cero si es que borran el valor anterior y
+            # lo dejan en blanco en vez de cero
             self.control_valores()
 
             # Verifica que costos no esten en cero, porque sino da error el calculo de precio de venta final (divide zero)
@@ -897,10 +907,13 @@ class VentArt(Frame):
                     return
 
             if que_campo == "dolar":
-
                 # Calulo el costo neto en dolar
-                calc_pesos_neto = round((float(self.strvar_costo_neto_dolar.get()) * float(self.strvar_dolar_actual.get())), 2)
-                self.strvar_costo_neto_pesos.set(value=str(round(float(calc_pesos_neto), 2)))
+                x_costo_neto_dolar = float(self.strvar_costo_neto_dolar.get())
+                x_valor_dolar_hoy = float(self.strvar_dolar_actual.get())
+                #calc_pesos_neto = round((float(self.strvar_costo_neto_dolar.get()) * float(self.strvar_dolar_actual.get())), 2)
+                calc_pesos_neto = round((x_costo_neto_dolar * x_valor_dolar_hoy), 2)
+                #self.strvar_costo_neto_pesos.set(value=str(round(float(calc_pesos_neto), 2)))
+                self.strvar_costo_neto_pesos.set(value=str(round(calc_pesos_neto, 2)))
 
             elif que_campo == "nada":
                 pass
@@ -908,48 +921,53 @@ class VentArt(Frame):
             elif que_campo == "pesos":
 
                 # Calculo el costo en pesos a partir del ingreso de pesos
-                calc_dolar_neto = round((float(self.strvar_costo_neto_pesos.get()) / float(self.strvar_dolar_actual.get())), 2)
-                self.strvar_costo_neto_dolar.set(value=str(round(float(calc_dolar_neto), 2)))
+                x_costo_neto_pesos = float(self.strvar_costo_neto_pesos.get())
+                x_valor_dolar_hoy = float(self.strvar_dolar_actual.get())
+                x_calc_dolar_neto = round(( x_costo_neto_pesos / x_valor_dolar_hoy ), 2)
+                self.strvar_costo_neto_dolar.set(value=str(round(x_calc_dolar_neto, 2)))
 
             elif que_campo == "iva":
 
                 # Calculo el iva correspondiente segun la tasa seleccionada
-                self.val1 = self.combo_iva.get()
-                self.val2 = self.strvar_costo_neto_pesos.get()
-                self.strvar_total_iva.set(value=str(round(((float(self.val1) * float(self.val2)) / 100), 2)))
+                val1 = float(self.combo_iva.get())
+                val2 = float(self.strvar_costo_neto_pesos.get())
+                self.strvar_total_iva.set(value=str(round(((val1 * val2) / 100), 2)))
 
             elif que_campo == "impint":
 
                 # Calculo el Impuesto Interno
-                self.val1 = self.strvar_tasa_impint.get()
-                self.val2 = self.strvar_costo_neto_pesos.get()
-                self.strvar_total_impint.set(value=str(round(((float(self.val1) * float(self.val2)) / 100), 2)))
+                val1 = float(self.strvar_tasa_impint.get())
+                val2 = float(self.strvar_costo_neto_pesos.get())
+                self.strvar_total_impint.set(value=str(round(((val1 * val2) / 100), 2)))
 
             elif que_campo == "porgan":
 
                 # Calculo el porcentaje de ganancia importe
-                self.val1 = self.strvar_tasa_ganancia.get()
-                self.val2 = self.strvar_subtotal.get()
-                self.strvar_total_ganancia.set(value=str(round(((float(self.val1) * float(self.val2)) / 100), 2)))
+                val1 = float(self.strvar_tasa_ganancia.get())
+                val2 = float(self.strvar_subtotal.get())
+                self.strvar_total_ganancia.set(value=str(round(((val1 * val2) / 100), 2)))
 
             elif que_campo == "totales":
 
                 # Aca es si cambio el total de venta en pesos
                 # Debo recalcular el nuevo porc. % de ganancia y el importe de ganancia
+
                 # Nuevo porcentaje ganancias
-                self.val8 = round((((float(self.strvar_total_precio_venta.get()) -
-                                     float(self.strvar_subtotal.get())) * 100) / float(self.strvar_subtotal.get())), 2)
-                self.strvar_tasa_ganancia.set(value=str(self.val8))
+                x_total_precio_venta = float(self.strvar_total_precio_venta.get())
+                x_subtotal = float(self.strvar_subtotal.get())
+                val8 = round((((x_total_precio_venta - x_subtotal) * 100) / x_subtotal), 2)
+                self.strvar_tasa_ganancia.set(value=str(val8))
+
                 # Ahora recalculo el nuevo importe de la ganancia
-                self.val1 = self.strvar_tasa_ganancia.get()
-                self.val2 = self.strvar_subtotal.get()
-                self.strvar_total_ganancia.set(value=str(round(((float(self.val1) * float(self.val2)) / 100), 2)))
+                val1 = float(self.strvar_tasa_ganancia.get())
+                val2 = float(self.strvar_subtotal.get())
+                self.strvar_total_ganancia.set(value=str(round(((val1 * val2) / 100), 2)))
 
                 # calculo el precio de venta con el recargo por venta con tarjeta
-                self.calc_total_ventas = float(self.strvar_total_precio_venta.get())
-                self.calc_total_ventas_mas10 = self.calc_total_ventas * (
-                            (float(self.strvar_recargo_tarjeta.get()) / 100) + 1)
-                self.strvar_total_precio_venta_mas10.set(value=str(round(float(self.calc_total_ventas_mas10), 2)))
+                x_calc_total_ventas = float(self.strvar_total_precio_venta.get())
+                x_recargo_tarjeta = float(self.strvar_recargo_tarjeta.get())
+                x_calc_total_ventas_mas10 = x_calc_total_ventas * ((x_recargo_tarjeta / 100) + 1)
+                self.strvar_total_precio_venta_mas10.set(value=str(round(x_calc_total_ventas_mas10, 2)))
                 return
 
             elif que_campo == "limp":
@@ -965,68 +983,79 @@ class VentArt(Frame):
             elif que_campo == "completo":
 
                 # Calculo el costo neto en dolares
-                calc_pesos_neto = round((float(self.strvar_costo_neto_dolar.get()) * float(self.strvar_dolar_actual.get())), 2)
+                x_costo_neto_dolar = float(self.strvar_costo_neto_dolar.get())
+                x_dolar_actual = float(self.strvar_dolar_actual.get())
+                x_calc_pesos_neto = round((x_costo_neto_dolar * x_dolar_actual), 2)
 
                 # self.strvar_costo_neto_pesos.set(value=0)
-                self.strvar_costo_neto_pesos.set(value=str(round(float(calc_pesos_neto), 2)))
+                self.strvar_costo_neto_pesos.set(value=str(x_calc_pesos_neto))
 
                 # Calculo el costo en pesos neto a partir del ingreso de pesos
-                calc_dolar_neto = str(round((float(self.strvar_costo_neto_pesos.get()) / float(self.strvar_dolar_actual.get())), 2))
+                x_costo_neto_pesos = float(self.strvar_costo_neto_pesos.get())
+                x_dolar_actual = float(self.strvar_dolar_actual.get())
+                x_calc_dolar_neto = str(round((x_costo_neto_pesos / x_dolar_actual), 2))
+
                 # self.strvar_costo_neto_dolar.set(value=0)
-                self.strvar_costo_neto_dolar.set(value=str(round(float(calc_dolar_neto), 2)))
+                self.strvar_costo_neto_dolar.set(value=x_calc_dolar_neto)
 
                 # Calculo el iva correspondiente segun la tasa seleccionada
-                self.val1 = self.combo_iva.get()
-                self.val2 = self.strvar_costo_neto_pesos.get()
-                self.strvar_total_iva.set(value=str(round(((float(self.val1) * float(self.val2)) / 100), 2)))
+                val1 = float(self.combo_iva.get())
+                val2 = float(self.strvar_costo_neto_pesos.get())
+                self.strvar_total_iva.set(value=str(round(((val1 * val2) / 100), 2)))
 
                 # Calculo el Impuesto Interno
-                self.val1 = self.strvar_tasa_impint.get()
-                self.val2 = self.strvar_costo_neto_pesos.get()
-                self.strvar_total_impint.set(value=str(round(((float(self.val1) * float(self.val2)) / 100), 2)))
+                val1 = float(self.strvar_tasa_impint.get())
+                val2 = float(self.strvar_costo_neto_pesos.get())
+                self.strvar_total_impint.set(value=str(round(((val1 * val2) / 100), 2)))
 
                 # Calculo la ganancia
-                self.strvar_subtotal.set(value=str(round((float(self.strvar_costo_neto_pesos.get()) +
-                                                      float(self.strvar_total_iva.get()) +
-                                                      float(self.strvar_total_impint.get())), 2)))
+                x_costo_neto_pesos = float(self.strvar_costo_neto_pesos.get())
+                x_total_iva = float(self.strvar_total_iva.get())
+                x_total_impint = float(self.strvar_total_impint.get())
+                self.strvar_subtotal.set(value=str(round((x_costo_neto_pesos + x_total_iva + x_total_impint), 2)))
 
-                self.val1 = self.strvar_tasa_ganancia.get()
-                self.val2 = self.strvar_subtotal.get()
-                self.strvar_total_ganancia.set(value=str(round(((float(self.val1) * float(self.val2)) / 100), 2)))
+                val1 = float(self.strvar_tasa_ganancia.get())
+                val2 = float(self.strvar_subtotal.get())
+                self.strvar_total_ganancia.set(value=str(round(((val1 * val2) / 100), 2)))
 
             # Aca se recalculan todos los totales por si se modifica algo
             # Total IVA
-            self.val1 = self.combo_iva.get()
-            self.val2 = self.strvar_costo_neto_pesos.get()
-            self.strvar_total_iva.set(value=str(round(((float(self.val1) * float(self.val2)) / 100), 2)))
+            val1 = float(self.combo_iva.get())
+            val2 = float(self.strvar_costo_neto_pesos.get())
+            self.strvar_total_iva.set(value=str(round(((val1 * val2) / 100), 2)))
 
             # Subtotal
-            self.strvar_subtotal.set(value=str(round((float(self.strvar_costo_neto_pesos.get()) +
-                                                  float(self.strvar_total_iva.get()) +
-                                                  float(self.strvar_total_impint.get())), 2)))
+            x_costo_neto_pesos = float(self.strvar_costo_neto_pesos.get())
+            x_total_iva = float(self.strvar_total_iva.get())
+            x_total_impint = float(self.strvar_total_impint.get())
+            self.strvar_subtotal.set(value=str(round((x_costo_neto_pesos + x_total_iva + x_total_impint), 2)))
 
             # pesos y dolar bruto con impuestos
-            self.strvar_costo_pesos_bruto.set(value=str(round(float(self.strvar_subtotal.get()), 2)))
-            self.strvar_costo_dolar_bruto.set(value=str(round((float(self.strvar_subtotal.get()) / float(self.strvar_dolar_actual.get())), 4)))
+            x_subtotal = float(self.strvar_subtotal.get())
+            x_dolar_actual = float(self.strvar_dolar_actual.get())
+            self.strvar_costo_pesos_bruto.set(value=str(round(x_subtotal, 2)))
+            self.strvar_costo_dolar_bruto.set(value=str(round((x_subtotal / x_dolar_actual), 4)))
 
             # importe pesos de la ganancia
-            self.val1 = self.strvar_tasa_ganancia.get()
-            self.val2 = self.strvar_subtotal.get()
-            self.strvar_total_ganancia.set(value=str(round(((float(self.val1) * float(self.val2)) / 100), 2)))
+            val1 = float(self.strvar_tasa_ganancia.get())
+            val2 = float(self.strvar_subtotal.get())
+            self.strvar_total_ganancia.set(value=str(round(((val1 * val2) / 100), 2)))
 
             # Total venta en pesos con la ganancia incluida
-            self.calc_total_ventas = round((float(self.strvar_costo_neto_pesos.get()) + float(self.strvar_total_iva.get()) +
-                                     float(self.strvar_total_impint.get()) + float(self.strvar_total_ganancia.get())), 2)
+            x_costo_neto_pesos = float(self.strvar_costo_neto_pesos.get())
+            x_total_iva = float(self.strvar_total_iva.get())
+            x_total_impint = float(self.strvar_total_impint.get())
+            x_total_ganancia = float(self.strvar_total_ganancia.get())
+            x_calc_total_ventas = round((x_costo_neto_pesos + x_total_iva + x_total_impint + x_total_ganancia), 2)
 
-            self.strvar_total_precio_venta.set(value=str(round(float(self.calc_total_ventas), 2)))
+            self.strvar_total_precio_venta.set(value=str(round(float(x_calc_total_ventas), 2)))
 
             # calculo el precio de venta con el recargo por venta con tarjeta
-            self.calc_total_ventas_mas10 = self.calc_total_ventas * ((float(self.strvar_recargo_tarjeta.get()) / 100) + 1)
-            self.strvar_total_precio_venta_mas10.set(value=str(round(float(self.calc_total_ventas_mas10), 2)))
-
+            x_recargo_tarjeta = float(self.strvar_recargo_tarjeta.get())
+            x_calc_total_ventas_mas10 = x_calc_total_ventas * ((x_recargo_tarjeta / 100) + 1)
+            self.strvar_total_precio_venta_mas10.set(value=str(round(float(x_calc_total_ventas_mas10), 2)))
         except:
-
-            messagebox.showerror("Except_error", "Revise datos numericos", parent=self)
+            self.set_status("❌ Except_error - Revise datos numericos", "error")
             self.entry_costo_historico.focus()
             return
 
@@ -1036,147 +1065,91 @@ class VentArt(Frame):
 
     def control_blanco(self):
 
-        # Control de que no ingresen mas de una vez el '-' o el '.' - Funcion en funciones.py ---------
-        if not control_forma(list(self.strvar_costo_historico.get())):
-            self.strvar_costo_historico.set(value="0")
-            return False
-        if not control_forma(list(self.strvar_costo_neto_dolar.get())):
-            self.strvar_costo_neto_dolar.set(value="0")
-            return False
-        if not control_forma(list(self.strvar_costo_neto_pesos.get())):
-            self.strvar_costo_neto_pesos.set(value="0")
-            return False
-        if not control_forma(list(self.strvar_tasa_impint.get())):
-            self.strvar_tasa_impint.set(value="0")
-            return False
-        if not control_forma(list(self.strvar_tasa_ganancia.get())):
-            self.strvar_tasa_ganancia.set(value="0")
-            return False
-        if not control_forma(list(self.strvar_total_precio_venta.get())):
-            self.strvar_total_precio_venta.set(value="0")
-            return False
+        """ Controla valores de las variables numericas en cuanto a los '.' y los '-' y los ceros """
 
-        if (self.strvar_costo_historico.get() == "" or self.strvar_costo_historico.get() == "." or
-                self.strvar_costo_historico.get() == "-"):
-            self.strvar_costo_historico.set(value="0.00")
-        if (self.strvar_costo_neto_dolar.get() == "" or self.strvar_costo_neto_dolar.get() == "." or
-                self.strvar_costo_neto_dolar.get() == "-"):
-            self.strvar_costo_neto_dolar.set(value="0.00")
-        if (self.strvar_costo_neto_pesos.get() == "" or self.strvar_costo_neto_pesos.get() == "." or
-                self.strvar_costo_neto_pesos.get() == "-"):
-            self.strvar_costo_neto_pesos.set(value="0.00")
-        if (self.strvar_tasa_impint.get() == "" or self.strvar_tasa_impint.get() == "." or
-                self.strvar_tasa_impint.get() == "-"):
-            self.strvar_tasa_impint.set(value="0.00")
-        if (self.strvar_tasa_ganancia.get() == "" or self.strvar_tasa_ganancia.get() == "." or
-                self.strvar_tasa_ganancia.get() == "-"):
-            self.strvar_tasa_ganancia.set(value="0.00")
-        if (self.strvar_total_precio_venta.get() == "" or self.strvar_total_precio_venta.get() == "." or
-                self.strvar_total_precio_venta.get() == "-"):
-            self.strvar_total_precio_venta.set(value="0.00")
+        variables = [
+            self.strvar_costo_historico,
+            self.strvar_costo_neto_dolar,
+            self.strvar_costo_neto_pesos,
+            self.strvar_tasa_impint,
+            self.strvar_tasa_ganancia,
+            self.strvar_total_precio_venta,
+        ]
+
+        for var in variables:
+            valor = var.get()
+
+            # 1. llamo a funcion 'control forma' en (funciones) - Validación de forma
+            if not control_forma(valor):
+                var.set("0.00")
+                return False
+
+            # 2. Casos incompletos
+            if valor in ("", "-", ".", "-."):
+                var.set("0.00")
+                continue
+
+            # 3. Formateo final
+            try:
+                var.set(f"{float(valor):.2f}")
+            except ValueError:
+                var.set("0.00")
+                return False
 
         return True
 
     def control_valores(self):
 
-        if float(self.strvar_costo_historico.get()) == 0:
-            self.strvar_costo_historico.set(value="0.00")
-        else:
-            self.strvar_costo_historico.set(value=str(round(float(self.strvar_costo_historico.get()), 2)))
-        if float(self.strvar_costo_neto_dolar.get()) == 0:
-            self.strvar_costo_neto_dolar.set(value="0.00")
-        else:
-            self.strvar_costo_neto_dolar.set(value=str(round(float(self.strvar_costo_neto_dolar.get()), 2)))
-        if float(self.strvar_costo_neto_pesos.get()) == 0:
-            self.strvar_costo_neto_pesos.set(value="0.00")
-        else:
-            self.strvar_costo_neto_pesos.set(value=str(round(float(self.strvar_costo_neto_pesos.get()), 2)))
-        if float(self.strvar_tasa_impint.get()) == 0:
-            self.strvar_tasa_impint.set(value="0.00")
-        else:
-            self.strvar_tasa_impint.set(value=str(round(float(self.strvar_tasa_impint.get()), 2)))
-        if float(self.strvar_tasa_ganancia.get()) == 0:
-            self.strvar_tasa_ganancia.set(value="0.00")
-        else:
-            self.strvar_tasa_ganancia.set(value=str(round(float(self.strvar_tasa_ganancia.get()), 2)))
-        if float(self.strvar_total_precio_venta.get()) == 0:
-            self.strvar_total_precio_venta.set(value="0.00")
-        else:
-            self.strvar_total_precio_venta.set(value=str(round(float(self.strvar_total_precio_venta.get()), 2)))
+        """ Controla los valores en blanco o cero y los pone con dos decimales automaticamente"""
+
+        variables = [
+            self.strvar_costo_historico,
+            self.strvar_costo_neto_dolar,
+            self.strvar_costo_neto_pesos,
+            self.strvar_tasa_impint,
+            self.strvar_tasa_ganancia,
+            self.strvar_total_precio_venta,
+        ]
+
+        for var in variables:
+            self.formatear_strvar(var)
+
+    def formatear_strvar(self, var):
+        try:
+            var.set(f"{float(var.get()):.2f}")
+        except ValueError:
+            var.set("0.00")
 
     # --------------------------------------------------------------------------
     # PUNTEROS -*-
     # --------------------------------------------------------------------------
 
     def fToparch(self):
-        self.mover_puntero_topend('TOP')
-
+        #self.mover_puntero_topend('TOP')
+        self.varFuncion_new.mover_puntero_topend(self.grid_articulos, 'TOP')
     def fFinarch(self):
-        self.mover_puntero_topend('END')
-
-    def mover_puntero_topend(self, param_topend):
-
-        if param_topend == 'TOP':
-            # obtengo una lista con todos los Id del treeview
-            regis = self.grid_articulos.get_children()
-            # barro y salgo al primero, pero me quedo en el primero
-            rg = ""
-            for rg in regis:
-                break
-            if rg == "":
-                return
-
-            # selecciono el Id primero de la lista en este caso
-            self.grid_articulos.selection_set(rg)
-            # pone el primero Id
-            self.grid_articulos.focus(rg)
-            # lle principio del treeview con esta instruccion que encontre
-            self.grid_articulos.yview(self.grid_articulos.index(self.grid_articulos.get_children()[0]))
-
-        elif param_topend == 'END':
-
-            # Obtengo una lista con todos los Id del treeview
-            regis = self.grid_articulos.get_children()
-            # Barro la lista y ,me quedo conel ultimo Id
-            rg = ""
-            for rg in regis:
-                pass
-            if rg == "":
-                return
-            # Selecciono el ultimo Id en este caso
-            self.grid_articulos.selection_set(rg)
-            # Pongo el foco alultimo elemento de la lista (al final)
-            self.grid_articulos.focus(rg)
-            # lleva el foco al final del treeview
-            self.grid_articulos.yview(self.grid_articulos.index(self.grid_articulos.get_children()[-1]))
+        # self.mover_puntero_topend('END')
+        self.varFuncion_new.mover_puntero_topend(self.grid_articulos, 'END')
 
     def forden_codigo(self):
-
-        #Por rubro, marca y descripcion
-        # guardo los focos e items donde estamos posicionados en el TV
         self.selected = self.grid_articulos.focus()
         self.clave = self.grid_articulos.item(self.selected, 'text')
-        self.filtro_activo = "articulos ORDER BY rubro, marca, descripcion ASC"
-        self.limpiar_Grid()
-        self.llena_grilla("")
+        self.filtro_activo = "ORDER BY rubro, marca, descripcion ASC"
+        self.llena_grilla(self.clave)
 
     def forden_descripcion(self):
-
-        # Por marca y descripcion
-        # guardo los focos e items donde estamos posicionados en el TV
         self.selected = self.grid_articulos.focus()
         self.clave = self.grid_articulos.item(self.selected, 'text')
-        self.filtro_activo = "articulos ORDER BY marca, descripcion ASC"
-        self.limpiar_Grid()
-        self.llena_grilla("")
+        self.filtro_activo = "ORDER BY marca, descripcion ASC"
+        self.llena_grilla(self.clave)
 
     def fQuitarfiltros(self):
-
-        self.filtro_activo = "articulos ORDER BY rubro, marca, descripcion ASC"
-        self.limpiar_Grid()
-        self.llena_grilla("")
+        self.selected = self.grid_articulos.focus()
+        self.clave = self.grid_articulos.item(self.selected, 'text')
+        self.filtro_activo = "ORDER BY rubro, marca, descripcion ASC"
         self.fResetmarca()
         self.fResetrubro()
+        self.llena_grilla(self.clave)
         self.btn_nuevo.focus()
 
     def cuadro_botones1(self):
@@ -1185,8 +1158,7 @@ class VentArt(Frame):
             self.botones1.grid_columnconfigure(c, weight=1, minsize=140)
 
         # Nuevo articulo
-        img = Image.open("archivo-nuevo.png").resize((18, 18))
-        icono = ImageTk.PhotoImage(img)
+        icono = self.cargar_icono("archivo-nuevo.png")
         self.btn_nuevo=Button(self.botones1, text=" Nuevo", command=self.fNuevo, bg="blue", fg="white", compound="left")
         self.btn_nuevo.image = icono
         self.btn_nuevo.config(image=icono)
@@ -1194,8 +1166,7 @@ class VentArt(Frame):
         ToolTip(self.btn_nuevo, msg="Ingresar un nuevo articulo")
 
         # Editar articulo
-        img = Image.open("editar.png").resize((18, 18))
-        icono = ImageTk.PhotoImage(img)
+        icono = self.cargar_icono("editar.png")
         self.btn_editar=Button(self.botones1, text=" Editar", command=self.fEditar, bg="blue", fg="white", compound="left")
         self.btn_editar.image = icono
         self.btn_editar.config(image=icono)
@@ -1203,8 +1174,7 @@ class VentArt(Frame):
         ToolTip(self.btn_editar, msg="Modificar el articulo seleccionado")
 
         # Eliminar articulo
-        img = Image.open("eliminar.png").resize((18, 18))
-        icono = ImageTk.PhotoImage(img)
+        icono = self.cargar_icono("eliminar.png")
         self.btn_eliminar=Button(self.botones1, text=" Eliminar", command=self.fEliminar, bg="red", fg="white", compound="left")
         self.btn_eliminar.image = icono
         self.btn_eliminar.config(image=icono)
@@ -1212,8 +1182,7 @@ class VentArt(Frame):
         ToolTip(self.btn_eliminar, msg="Eliminar el articulo seleccionado")
 
         # Guardar articulo
-        img = Image.open("guardar.png").resize((18, 18))
-        icono = ImageTk.PhotoImage(img)
+        icono = self.cargar_icono("guardar.png")
         self.btn_guardar=Button(self.botones1, text=" Guardar", command=self.fGuardar, bg="green", fg="white", compound="left")
         self.btn_guardar.image = icono
         self.btn_guardar.config(image=icono)
@@ -1221,8 +1190,7 @@ class VentArt(Frame):
         ToolTip(self.btn_guardar, msg="Guarda el articulo")
 
         # Cancelar
-        img = Image.open("cancelar.png").resize((18, 18))
-        icono = ImageTk.PhotoImage(img)
+        icono = self.cargar_icono("cancelar.png")
         self.btn_cancelar=Button(self.botones1, text=" Cancelar", command=self.fCancelar, bg="black", fg="white", compound="left")
         self.btn_cancelar.image = icono
         self.btn_cancelar.config(image=icono)
@@ -1239,8 +1207,7 @@ class VentArt(Frame):
             self.botones2.grid_columnconfigure(c, weight=1, minsize=140)
 
         # Cambiar orden
-        img = Image.open("ordenar.png").resize((18, 18))
-        icono = ImageTk.PhotoImage(img)
+        icono = self.cargar_icono("ordenar.png")
         self.btn_orden_codigo = Button(self.botones2, text="Orden Rubro\nMarca-Descripcion", width=14,
                                        command=self.forden_codigo, bg="grey", fg="white", compound="left")
         self.btn_orden_codigo.image = icono
@@ -1248,8 +1215,7 @@ class VentArt(Frame):
         self.btn_orden_codigo.grid(row=5, column=0, padx=5, pady=3, ipadx=10)
 
         # Cambiar orden
-        img = Image.open("ordenar.png").resize((18, 18))
-        icono = ImageTk.PhotoImage(img)
+        icono = self.cargar_icono("ordenar.png")
         self.btn_orden_apellido = Button(self.botones2, text="Orden\n Marca-Descripcion", width=14,
                                          command=self.forden_descripcion, bg="grey", fg="white", compound="left")
         self.btn_orden_apellido.image = icono
@@ -1257,8 +1223,7 @@ class VentArt(Frame):
         self.btn_orden_apellido.grid(row=6, column=0, padx=5, pady=3, ipadx=10)
 
         # Cambiar orden
-        img = Image.open("reset.png").resize((18, 18))
-        icono = ImageTk.PhotoImage(img)
+        icono = self.cargar_icono("reset.png")
         self.btn_reset = Button(self.botones2, text=" Reset", width=14, command=self.fReset, bg="black", fg="white", compound="left")
         self.btn_reset.image = icono
         self.btn_reset.config(image=icono)
@@ -1293,7 +1258,12 @@ class VentArt(Frame):
     def cuadro_botones4(self):
 
         # VALOR DOLAR HOY - Aqui traigo de la tabla informa la cotizacion actual del dolar
-        self.dev_informa = self.varArtic.consultar_informa()
+        try:
+            self.dev_informa = self.varArtic.consultar_informa()
+        except Exception as e:
+            messagebox.showerror("Error del sistema - al consultar informa", str(e))
+            self.set_status("❌ Error de consulta", "error")
+            return
 
         for row in self.dev_informa:
             self.strvar_dolar_actual.set(value=row[21])
@@ -1346,39 +1316,45 @@ class VentArt(Frame):
         self.lbl_codigo.grid(row=0, column=0, padx=2, pady=1, sticky=W)
         self.entry_codigo = Entry(self.sector_entry, textvariable=self.strvar_codigo, justify="left", width=30)
         self.entry_codigo.grid(row=0, column=1, padx=2, pady=1, sticky='nsew')
-        self.strvar_codigo.trace("w", lambda *args: self.limitador(self.strvar_codigo, 30))
+        self.strvar_codigo.trace_add("write", lambda *args: self.limitador(self.strvar_codigo, 30))
+
         # DESCRIPCION
         self.lbl_descripcion = Label(self.sector_entry, text="Descripcion: ")
         self.lbl_descripcion.grid(row=1, column=0, padx=2, pady=1, sticky=W)
         self.entry_descripcion = Entry(self.sector_entry, textvariable=self.strvar_descripcion, justify="left",
                                        width=40)
         self.entry_descripcion.grid(row=1, column=1, padx=2, pady=1, sticky=W)
-        self.strvar_descripcion.trace("w", lambda *args: self.limitador(self.strvar_descripcion, 150))
+        self.strvar_descripcion.trace_add("write", lambda *args: self.limitador(self.strvar_descripcion, 150))
+
         # MARCA - COMBOBOX
         self.lbl_marca = Label(self.sector_entry, text="Marca: ")
         self.lbl_marca.grid(row=2, column=0, padx=2, pady=1, sticky=W)
         self.combo_marca = ttk.Combobox(self.sector_entry, textvariable=self.strvar_marca, state='readonly', width=40)
         self.combo_marca.grid(row=2, column=1, padx=2, pady=1, sticky=W)
         self.combo_marca['value'] = self.varArtic.combo_input("ma_nombre", "marcas", "ma_nombre")
+
         # RUBRO - COMBOBOX
         self.lbl_rubro = Label(self.sector_entry, text="Rubro: ")
         self.lbl_rubro.grid(row=3, column=0, padx=2, pady=1, sticky=W)
         self.combo_rubro = ttk.Combobox(self.sector_entry, textvariable=self.strvar_rubro, state='readonly', width=40)
         self.combo_rubro.grid(row=3, column=1, padx=2, pady=1, sticky=W)
         self.combo_rubro['value'] = self.varArtic.combo_input("ru_nombre", "rubros", "ru_nombre")
+
         # CODIGO DE BARRAS
         self.lbl_codbar = Label(self.sector_entry, text="Codigo Barras: ")
         self.lbl_codbar.grid(row=4, column=0, padx=2, pady=1, sticky=W)
         self.entry_codbar = Entry(self.sector_entry, textvariable=self.strvar_codbar, justify="left", width=30)
         self.entry_codbar.bind('<Tab>', lambda e: self.verif_existe())
         self.entry_codbar.grid(row=4, column=1, padx=2, pady=1, sticky=W)
-        self.strvar_codbar.trace("w", lambda *args: self.limitador(self.strvar_codbar, 30))
+        self.strvar_codbar.trace_add("write", lambda *args: self.limitador(self.strvar_codbar, 150))
+
         # OBSERVACIONES
         self.lbl_observa = Label(self.sector_entry, text="Observaciones: ")
         self.lbl_observa.grid(row=5, column=0, padx=2, pady=1, sticky=W)
         self.entry_observa = Entry(self.sector_entry, textvariable=self.strvar_observa, justify="left", width=40)
         self.entry_observa.grid(row=5, column=1, padx=2, pady=1, sticky=W)
-        self.strvar_observa.trace("w", lambda *args: self.limitador(self.strvar_observa, 100))
+        self.strvar_observa.trace_add("write", lambda *args: self.limitador(self.strvar_observa, 40))
+
         # FECHA DE ULTIMA ACTUALIZACION
         self.lbl_fechaultact = Label(self.sector_entry, text="Fecha ultima Act.: ")
         self.lbl_fechaultact.grid(row=6, column=0, padx=2, pady=1, sticky=W)
@@ -1386,7 +1362,7 @@ class VentArt(Frame):
                                        width=12)
         self.entry_fechaultact.grid(row=6, column=1, padx=2, pady=1, sticky=W)
         self.entry_fechaultact.bind("<FocusOut>", self.formato_fecha)
-        #self.strvar_fechaultact.trace("w", lambda *args: self.limitador(self.strvar_fechaultact, 10))
+
         # COSTO HISTORICO
         self.lbl_costo_historico = Label(self.sector_entry, text="Costo Historico: ")
         self.lbl_costo_historico.grid(row=7, column=0, padx=2, pady=1, sticky=W)
@@ -1394,7 +1370,7 @@ class VentArt(Frame):
                                            width=15)
         self.entry_costo_historico.grid(row=7, column=1, padx=2, pady=1, sticky=W)
         self.entry_costo_historico.config(validate="key", validatecommand=self.vcmd)
-        self.strvar_costo_historico.trace("w", lambda *args: self.limitador(self.strvar_costo_historico, 15))
+        self.strvar_costo_historico.trace_add("write", lambda *args: self.limitador(self.strvar_costo_historico, 10))
         self.entry_costo_historico.bind('<Tab>', lambda e: self.calcular("nada"))
 
     def cuadro_sector_totales(self):
@@ -1408,8 +1384,9 @@ class VentArt(Frame):
                                             justify="right", width=15)
         self.entry_costo_neto_dolar.grid(row=0, column=1, padx=2, pady=1, sticky=W)
         self.entry_costo_neto_dolar.config(validate="key", validatecommand=self.vcmd)
-        self.strvar_costo_neto_dolar.trace("w", lambda *args: self.limitador(self.strvar_costo_neto_dolar, 15))
+        self.strvar_costo_neto_dolar.trace_add("write", lambda *args: self.limitador(self.strvar_costo_neto_dolar, 15))
         self.entry_costo_neto_dolar.bind('<Tab>', lambda e: self.calcular("dolar"))
+
         # COSTO NETO EN PESOS
         self.lbl_costo_neto_pesos = Label(self.sector_totales, text="Costo neto Pesos:")
         self.lbl_costo_neto_pesos.grid(row=1, column=0, padx=2, pady=1, sticky=W)
@@ -1417,8 +1394,9 @@ class VentArt(Frame):
                                             justify="right", width=15)
         self.entry_costo_neto_pesos.grid(row=1, column=1, padx=2, pady=1, sticky=W)
         self.entry_costo_neto_pesos.config(validate="key", validatecommand=self.vcmd)
-        self.strvar_costo_neto_pesos.trace("w", lambda *args: self.limitador(self.strvar_costo_neto_pesos, 15))
+        self.strvar_costo_neto_pesos.trace_add("write", lambda *args: self.limitador(self.strvar_costo_neto_pesos, 15))
         self.entry_costo_neto_pesos.bind('<Tab>', lambda e: self.calcular("pesos"))
+
         # ALICUOTA TASA IVA y  TOTAL IVA
         self.lbl_tasa_iva = Label(self.sector_totales, text="% IVA:")
         self.lbl_tasa_iva.grid(row=2, column=0, padx=2, pady=1, sticky=W)
@@ -1429,6 +1407,7 @@ class VentArt(Frame):
         self.lbl_total_iva = Label(self.sector_totales, textvariable=self.strvar_total_iva, width=10, anchor='e')
         self.lbl_total_iva.grid(row=2, column=2, padx=2, pady=1, sticky='nsew')
         self.combo_iva.bind('<Tab>', lambda e: self.calcular("iva"))
+
         # TASA IMPUESTOS INTERNOS
         self.lbl_impint = Label(self.sector_totales, text="% Imp.Interno:")
         self.lbl_impint.grid(row=3, column=0, padx=2, pady=1, sticky=W)
@@ -1438,10 +1417,12 @@ class VentArt(Frame):
                                        justify="right")
         self.entry_tasa_impint.grid(row=3, column=1, padx=2, pady=1, sticky=W)
         self.entry_tasa_impint.config(validate="key", validatecommand=self.vcmd)
-        self.strvar_tasa_impint.trace("w", lambda *args: self.limitador(self.strvar_tasa_impint, 5))
+        self.strvar_tasa_impint.trace_add("write", lambda *args: self.limitador(self.strvar_tasa_impint, 5))
+
         self.lbl_total_impint = Label(self.sector_totales, textvariable=self.strvar_total_impint, width=10, anchor='e')
         self.lbl_total_impint.grid(row=3, column=2, padx=2, pady=1, sticky='nsew')
         self.entry_tasa_impint.bind('<Tab>', lambda e: self.calcular("impint"))
+
         # SUBTOTAL COSTO CON IMPUESTOS ( BRUTO )
         fff = tkFont.Font(family="Arial", size=10, weight="bold")
         self.lbl_subtotal = Label(self.sector_totales, text="SubTotal:", font=fff, fg='green')
@@ -1459,7 +1440,7 @@ class VentArt(Frame):
                                          justify="right")
         self.entry_tasa_ganancia.grid(row=6, column=1, padx=2, pady=1, sticky=W)
         self.entry_tasa_ganancia.config(validate="key", validatecommand=self.vcmd)
-        self.strvar_tasa_ganancia.trace("w", lambda *args: self.limitador(self.strvar_tasa_ganancia, 6))
+        self.strvar_tasa_ganancia.trace_add("write", lambda *args: self.limitador(self.strvar_tasa_ganancia, 6))
         self.lbl_total_ganancia = Label(self.sector_totales, textvariable=self.strvar_total_ganancia, width=10,
                                         anchor='e')
         self.lbl_total_ganancia.grid(row=6, column=2, padx=2, pady=1, sticky='nsew')
@@ -1472,7 +1453,7 @@ class VentArt(Frame):
                                               width=20, justify="right")
         self.entry_total_precio_venta.grid(row=7, column=2, padx=2, pady=1, sticky='nsew')
         self.entry_total_precio_venta.config(validate="key", validatecommand=self.vcmd)
-        self.strvar_total_precio_venta.trace("w", lambda *args: self.limitador(self.strvar_total_precio_venta, 10))
+        self.strvar_total_precio_venta.trace_add("write", lambda *args: self.limitador(self.strvar_total_precio_venta, 10))
         self.entry_total_precio_venta.bind('<Tab>', lambda e: self.calcular("totales"))
         fff = tkFont.Font(family="Arial", size=11, weight="bold")
         lbl_total_venta_grande = Label(self.sector_totales, font=fff, textvariable=self.strvar_total_precio_venta,
@@ -1582,3 +1563,177 @@ class VentArt(Frame):
 
         # PACK - de el treeview y el FRAME tv
         self. grid_articulos.pack(side= "top", fill="both", expand=1, padx=5, pady=5)
+
+    # GPT |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+    """ Esta funcion muestra en una barra de estado al pie de la pantalla un mensaje indicando el 
+    resultado de una operacion"""
+    def set_status(self, mensaje, tipo="info", tiempo=4000):
+
+        # 🎨 colores según tipo
+        colores = {
+            "ok": ("#d4edda", "#155724"),    # verde claro / texto oscuro
+            "error": ("#f8d7da", "#721c24"), # rojo
+            "warn": ("#fff3cd", "#856404"),  # amarillo
+            "info": ("#d1ecf1", "#0c5460")   # celeste
+        }
+
+        bg, fg = colores.get(tipo, ("#f0f0f0", "black"))
+
+        # seteo visual
+        self.status_var.set("  " + mensaje)
+        self.status_bar.config(bg=bg, fg=fg)
+
+        # 🔊 SONIDOS
+        if sys.platform.startswith("win"):
+            import winsound
+
+            if tipo == "ok":
+                winsound.MessageBeep(winsound.MB_OK)
+            elif tipo == "error":
+                winsound.MessageBeep(winsound.MB_ICONHAND)
+            elif tipo == "warn":
+                winsound.MessageBeep(winsound.MB_ICONEXCLAMATION)
+            elif tipo == "info":
+                winsound.MessageBeep(winsound.MB_ICONASTERISK)
+        else:
+            # fallback (Linux / otros)
+            if tipo == "error":
+                self.bell()
+                self.after(120, self.bell)
+            elif tipo == "warn":
+                self.bell()
+            elif tipo == "ok":
+                self.bell()
+
+        self.after(tiempo, self.clear_status)
+
+        # # 🔊 sonido
+        # if tipo == "ok":
+        #     self.bell()
+        # elif tipo == "error":
+        #     self.bell()
+        #     self.after(120, self.bell)
+        # elif tipo == "warn":
+        #     self.bell()
+        #
+        # # ⏳ limpiar después de X tiempo
+        # self.after(tiempo, self.clear_status)
+
+    def clear_status(self):
+        self.status_var.set("")
+        self.status_bar.config(bg="#f0f0f0", fg="black")
+
+
+        # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+        # 🔥 CÓMO USARLO
+        # ✔ Guardar
+        # self.set_status("✔ Registro guardado correctamente", "ok")
+        # 🗑 Eliminar
+        # self.set_status("🗑 Cliente eliminado", "ok")
+        # ⚠ Validación
+        # self.set_status("⚠ CUIT incorrecto", "warn")
+        # ❌ Error
+        # self.set_status("❌ Error al guardar", "error")
+        # ℹInfo
+        # self.set_status("ℹ Buscando clientes...", "info")
+
+    def estado_numero(self, strvar):
+        valor = strvar.get().strip()
+        if valor == "":
+            return "vacio"
+        try:
+            if float(valor) == 0:
+                return "cero"
+            else:
+                return "valor"
+        except ValueError:
+            return "invalido"
+
+    # GPT |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+    def cargar_icono(self, path, size=(18,18)):
+        img = Image.open(path).resize(size)
+        return ImageTk.PhotoImage(img)
+    # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+
+    # def fBuscar_en_tabla(self):
+    #
+    #     # verifico que venga algun string de busqueda para modificar el filtro_activo, si no lo dejo como estaba
+    #     if self.combo_bus_rubro.get() == "" and self.combo_bus_marca.get() == "" and len(self.entry_buscar_articulo.get()) <= 0:
+    #         self.set_status("⚠ No ingreso busqueda o  filtro", "warn")
+    #         return
+    #
+    #     try:
+    #         c1 = 'rubro = ' + "'" + self.combo_bus_rubro.get() + "'"
+    #         c2 = 'marca = ' + "'" + self.combo_bus_marca.get() + "'"
+    #
+    #         self.filtro_activo = "articulos WHERE "
+    #
+    #         # verificar combo rubros
+    #         if self.combo_bus_rubro.get() == "" and self.combo_bus_marca.get() == "":
+    #
+    #             if len(self.entry_buscar_articulo.get()) > 0:
+    #
+    #                 se_busca = self.entry_buscar_articulo.get()
+    #
+    #                 self.filtro_activo += (
+    #                     f"INSTR(descripcion, '{se_busca}') > 0 OR "
+    #                     f"INSTR(codigo, '{se_busca}') > 0 OR "
+    #                     f"INSTR(codbar, '{se_busca}') > 0 "
+    #                     "ORDER BY rubro, marca, descripcion ASC"
+    #                 )
+    #
+    #         elif self.combo_bus_rubro.get() != "" and self.combo_bus_marca.get() == "":
+    #
+    #             if len(self.entry_buscar_articulo.get()) > 0:
+    #
+    #                 se_busca = self.entry_buscar_articulo.get()
+    #
+    #                 self.filtro_activo += c1 +" AND INSTR(descripcion, '" + se_busca + "') > 0 OR " + c1 + \
+    #                                           " AND INSTR(codigo, '" + se_busca + "') > 0 OR " + c1 + \
+    #                                           " AND INSTR(codbar, '" + se_busca + ("') > 0 "
+    #                                           "ORDER BY rubro, marca, descripcion ASC")
+    #
+    #             else:
+    #
+    #                 self.filtro_activo += c1 + " ORDER BY rubro, marca, descripcion ASC"
+    #
+    #         elif self.combo_bus_rubro.get() == "" and self.combo_bus_marca.get() != "":
+    #
+    #             if len(self.entry_buscar_articulo.get()) > 0:
+    #
+    #                 se_busca = self.entry_buscar_articulo.get()
+    #
+    #                 self.filtro_activo += c2 +" AND INSTR(descripcion, '" + se_busca + "') > 0 OR " + c2 + \
+    #                                           " AND INSTR(codigo, '" + se_busca + "') > 0 OR " + c2 + \
+    #                                           " AND INSTR(codbar, '" + se_busca + ("') > 0 "
+    #                                           "ORDER BY rubro, marca, descripcion ASC")
+    #
+    #             else:
+    #
+    #                 self.filtro_activo += c2 + " ORDER BY rubro, marca, descripcion ASC"
+    #
+    #         elif self.combo_bus_rubro.get() != "" and self.combo_bus_marca.get() != "":
+    #
+    #             if len(self.entry_buscar_articulo.get()) > 0:
+    #
+    #                 se_busca = self.entry_buscar_articulo.get()
+    #
+    #                 self.filtro_activo += c1 +' AND '+ c2 + " AND INSTR(descripcion, '" + se_busca + "') > 0 OR " + c1 +' AND '+ c2 +\
+    #                                           " AND INSTR(codigo, '" + se_busca + "') > 0 OR " + c1 +' AND '+ c2 +\
+    #                                           " AND INSTR(codbar, '" + se_busca + "') > 0 ORDER BY rubro, marca, descripcion ASC"
+    #             else:
+    #
+    #                 self.filtro_activo += c1 + " AND " + c2 + " ORDER BY rubro, marca, descripcion ASC"
+    #
+    #         self.varArtic.buscar_entabla(self.filtro_activo)
+    #
+    #         # voy al primero del grid con los articulos filtrados
+    #         self.llena_grilla("")
+    #
+    #     except:
+    #
+    #         # messagebox.showerror("Except_error", "Error de busqueda - Revise caracteres del texto a buscar", parent=self)
+    #         self.set_status("❌ Except_error - Error de busqueda - Revise caracteres no admitidos en el texto a buscar", "error")
+    #         self.entry_buscar_articulo.focus()
+    #         return

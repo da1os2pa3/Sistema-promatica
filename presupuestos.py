@@ -18,7 +18,7 @@ from PIL import Image, ImageTk
 from datetime import date, datetime
 # -------------------------------------
 
-class clase_presupuestos(Frame):
+class Clase_Presupuestos(Frame):
 
     def __init__(self, master=None):
 
@@ -179,17 +179,6 @@ class clase_presupuestos(Frame):
         # ----------------------------------------------------------------------
 
         self.vcmd = (self.register(self.varFuncion_new.validar), "%P")
-
-        # Identifica que se esta seleccionando (cliente, articulo,....)
-        # self.dato_seleccion = ""
-        # Activo filtro inicial en resu_presup
-        #self.filtro_activo_resu_presup = "resu_presup ORDER BY rp_fecha, rp_numero ASC"
-        #self.filtro_activo_auxiliar = "aux_presup"
-        # Para identificar si el movimiento es alta o modificacion (1 - ALTA 2 - Modificacion)
-        # self.var_Id = -1
-        # self.alta_modif_aux = 0         # tabla aux_presu
-        # self.alta_modif_presup = 0      # tabla resu_presu
-        # para validar ingresos de numeros en gets numericos
 
         # ----------------------------------------------------------------------
 
@@ -1453,309 +1442,6 @@ class clase_presupuestos(Frame):
             self.strvar_fecha_presup.set(value=retorno_VerFal)
         return ("bien")
 
-    # ------------------------------------------------------------------------
-    # INFORMES
-    # ------------------------------------------------------------------------
-
-    def creopdfext(self, precios):
-
-        # traigo el registro que quiero imprimir de la base datos de ordenes reparacion
-        self.selected = self.grid_tvw_presu_entregado.focus()
-        # Asi obtengo la clave de la base de datos campo Id que no es lo mismo que el otro (numero secuencial
-        # que pone la BD automaticamente al dar el alta
-        self.clave = self.grid_tvw_presu_entregado.item(self.selected, 'text')
-
-        if self.clave == "":
-            messagebox.showwarning("Alerta", "No hay nada seleccionado", parent=self)
-            return
-
-        # ----------------------------------------------------------------------------------
-        # Definir parametros listado
-        """
-        P : portrait (vertical)
-        L : landscape (horizontal)
-        A4 : 210x297mm
-        """
-        # esto siempre debe estar
-        pdf = PDF(orientation='P', unit='mm', format='A4')
-        # numero de paginas para luego usar en numeracion de pie de pagina
-        pdf.alias_nb_pages()
-        # Esto fuerza agregar una pagina al PDF
-        pdf.add_page()
-        # set de letra, tipo y tamaño
-        pdf.set_font('Times', '', 12)
-        # ----------------------------------------------------------------------------------
-
-        # Cargo la linea del treeview de resu_presu
-        valores = self.grid_tvw_presu_entregado.item(self.selected, 'values')
-
-        # sdf = datetime.strptime(valores[1], '%Y-%m-%d')
-        # feac = sdf.strftime('%d-%m-%Y')
-
-        # armado de encabezado
-        fecha_presup = valores[1]
-        self.pdf_numero_presupuesto   = valores[0]
-        self.pdf_nombre_cliente       = valores[2]
-        self.pdf_dolar_presupuesto    = valores[3]
-        self.pdf_tasa_ganancia        = valores[4]
-        self.pdf_total_presup_redondo = valores[6]
-
-        # Traigo, si es que hay, el detalle extenso del producto presupuestado de la tabla resu_presup
-        datos_presu_entregado = self.varPresupuestos.traer_resu_presup(self.pdf_numero_presupuesto)
-        self.pdf_detalle = datos_presu_entregado[13]
-
-        # Encabezado
-        self.pdf_datos_encabezado_orden = '('+self.pdf_numero_presupuesto+') - '+self.pdf_nombre_cliente
-        # Imprimo el encabezado de pagina con el numero de orden
-        pdf.set_font('Arial', '', 8)
-        pdf.cell(w=0, h=5, txt='Presupuesto ', border=1, align='C', fill=0, ln=1)
-        pdf.cell(w=0, h=2, txt='', align='L', fill=0, ln=1)
-        pdf.cell(w=0, h=5, txt='Fecha: ' + fecha_presup + '  -  Numero Presupuesto ' + self.pdf_datos_encabezado_orden,
-                 border=1, align='C', fill=0, ln=1)
-
-        # Espaciado entre cuerpos -----------------------------------------------
-        pdf.cell(w=0, h=2, txt='', align='L', fill=0, ln=1)
-
-        # encabezados - columnas ------------------------------------------------
-        pdf.cell(w=100, h=5, txt="Item", border=1, align='C', fill=0, ln=0)
-        #pdf.cell(w=20, h=5, txt="IVA", border=1, align='R', fill=0, ln=0)
-        pdf.cell(w=10, h=5, txt="Cant", border=1, align='R', fill=0, ln=0)
-        #pdf.cell(w=20, h=5, txt="Neto Dolar", border=1, align='R', fill=0, ln=0)
-        #pdf.cell(w=20, h=5, txt="Bruto pesos", border=1, align='R', fill=0, ln=0)
-        #pdf.cell(w=20, h=5, txt="Final", border=1, align='R', fill=0, ln=0)
-        pdf.multi_cell(w=0, h=5, txt="Total", border=1, align='R', fill=0)
-
-        pdf.cell(w=0, h=2, txt="", border=0, align='C', fill=0, ln=1)
-
-        # Traer todos los registros de la tabla deta_presup ---------------------
-        self.items_presupuesto = self.varPresupuestos.traer_deta_presup(self.pdf_numero_presupuesto)
-
-        # impresion del cuerpo del informe --------------------------------------
-        pdf.set_font('Arial', '', 8)
-        total_presupuesto = 0
-
-        for row in self.items_presupuesto:
-
-            # calculos ----------------------------------------------------------
-            bruto_dolar = round((row[6] * float(row[7])) * (1+(float(row[5])/100)), 2)
-            sumo_precio_final_conganancia = round((bruto_dolar * float(self.strvar_valor_dolar_hoy.get())) *
-                                                  (1+(float(self.pdf_tasa_ganancia)/100)), 2)
-            total_presupuesto += sumo_precio_final_conganancia
-
-            # Descripcion item
-            pdf.cell(w=100, h=5, txt=row[4], border=0, align='L', fill=0, ln=0)
-            #pdf.cell(w=20, h=5, txt=str(row[5]), border=0, align='R', fill=0, ln=0)
-            pdf.cell(w=10, h=5, txt=str(row[6]), border=0, align='R', fill=0, ln=0)
-            #pdf.cell(w=20, h=5, txt=str(row[7]), border=0, align='R', fill=0, ln=0)
-            #pdf.cell(w=20, h=5, txt=str(formatear_cifra(round(bruto_dolar, 2))), border=0, align='R', fill=0, ln=0)
-            #pdf.cell(w=20, h=5, txt=str(formatear_cifra(round(sumo_precio_final_conganancia, 2))), border=0, align='R', fill=0)
-            if precios == "S":
-                # con precios de componentes
-                pdf.multi_cell(w=0, h=5, txt=str(formatear_cifra(row[8])), border=0, align='R', fill=0)
-            else:
-                # sin precios de componentes
-                pdf.multi_cell(w=0, h=5, txt="")
-            #pdf.cell(w=0, h=5, txt="", border=0, align='R', fill=0, ln=1)
-
-        # Espaciado -----------------------------------------------------------------------
-        pdf.cell(w=0, h=3, txt='', align='L', fill=0, ln=1)
-
-        # Impresion del detalle extenso ---------------------------------------------------
-        pdf.set_font('Courier', 'B', 10)
-        pdf.cell(w=0, h=5, txt='* Detalle: ', align='L', fill=0, ln=1)
-        pdf.set_font('Arial', '', 11)
-        pdf.multi_cell(w=0, h=5, txt=self.pdf_detalle, align='L', fill=0)
-        pdf.cell(w=0, h=3, txt='', align='L', fill=0, ln=1)
-
-        # Espaciado -----------------------------------------------------------------------
-        pdf.cell(w=0, h=20, txt='', align='L', fill=0, ln=1)
-
-        # Total final --------------------------------------------------------------------
-        total_presupuesto = formatear_cifra(total_presupuesto)
-        total_redondo = formatear_cifra(round(float(self.pdf_total_presup_redondo), 2))
-        #pdf.cell(w=0, h=5, txt="Total: " + str(total_presupuesto), border=0, align='R', fill=0, ln=1)
-        pdf.cell(w=0, h=5, txt="Total: " + str(total_redondo), border=0, align='R', fill=0, ln=1)
-
-        # Espaciado -----------------------------------------------------------------------
-        pdf.cell(w=0, h=20, txt='', align='L', fill=0, ln=1)
-
-        try:
-            pdf.output('hoja.pdf')
-        except:
-            messagebox.showinfo("Error", "Verifique listados abiertos en otras terminales", parent=self)
-            return
-
-        # Abre el archivo PDF para luego, si quiero, poder imprimirlo
-        path = 'hoja.pdf'
-        os.system(path)
-
-    def creopdfint(self):
-
-        # traigo el registro que quiero imprimir de la base datos de ordenes reparacion
-        self.selected = self.grid_tvw_presu_entregado.focus()
-        # Asi obtengo la clave de la base de datos campo Id que no es lo mismo que el otro (numero secuencial
-        # que pone la BD automaticamente al dar el alta
-        self.clave = self.grid_tvw_presu_entregado.item(self.selected, 'text')
-
-        if self.clave == "":
-            messagebox.showwarning("Alerta", "No hay nada seleccionado", parent=self)
-            return
-
-        # ----------------------------------------------------------------------------------
-        # Definir parametros listado
-        """
-        P : portrait (vertical)
-        L : landscape (horizontal)
-        A4 : 210x297mm
-        """
-        # esto siempre debe estar ----------------------------------------------------------
-        pdf = PDF(orientation='P', unit='mm', format='A4')
-        # numero de paginas para luego usar en numeracion de pie de pagina
-        pdf.alias_nb_pages()
-        # Esto fuerza agregar una pagina al PDF
-        pdf.add_page()
-        # set de letra, tipo y tamaño
-        pdf.set_font('Times', '', 12)
-        # ----------------------------------------------------------------------------------
-
-        # Cargo la linea del treeview de resu_presu ---------------------------------------
-        valores = self.grid_tvw_presu_entregado.item(self.selected, 'values')
-
-        # # armado de encabezado ------------------------------------------------------------
-        # forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[2], '%Y-%m-%d'))
-
-        # sdf = datetime.strptime(valores[1], '%Y-%m-%d')
-        # fecha_presup = sdf.strftime('%d-%m-%Y')
-        fecha_presup = valores[1]
-        self.pdf_numero_presupuesto =   valores[0]
-        self.pdf_nombre_cliente =       valores[2]
-        self.pdf_dolar_presupuesto =    valores[3]
-        self.pdf_tasa_ganancia =        valores[4]
-        self.pdf_total_presup_redondo = valores[6]
-
-        # Traigo, si es que hay, el detalle extenso del producto presupuestado de la tabla resu_presup
-        datos_presu_entregado = self.varPresupuestos.traer_resu_presup(self.pdf_numero_presupuesto)
-        self.pdf_detalle = datos_presu_entregado[13]
-
-        # Encabezado
-        self.pdf_datos_encabezado_orden = '('+self.pdf_numero_presupuesto+') - '+self.pdf_nombre_cliente
-        # Imprimo el encabezado de pagina con el numero de orden
-        pdf.set_font('Arial', '', 8)
-        pdf.cell(w=0, h=5, txt='Presupuesto ', border=1, align='C', fill=0, ln=1)
-        pdf.cell(w=0, h=2, txt='', align='L', fill=0, ln=1)
-        pdf.cell(w=0, h=5, txt='Fecha: ' + fecha_presup + '  -  Numero Presupuesto ' + self.pdf_datos_encabezado_orden,
-                 border=1, align='C', fill=0, ln=1)
-
-        # Espaciado entre cuerpos -----------------------------------------------
-        pdf.cell(w=0, h=5, txt='', align='L', fill=0, ln=1)
-
-        # encabezados - columnas ------------------------------------------------
-        pdf.set_font('Arial', '', 7)
-        pdf.cell(w=95, h=5, txt="Item", border=1, align='C', fill=0, ln=0)
-        pdf.cell(w=10, h=5, txt="IVA", border=1, align='R', fill=0, ln=0)
-        pdf.cell(w=5, h=5, txt="Ct", border=1, align='C', fill=0, ln=0)
-        pdf.cell(w=10, h=5, txt="BDU", border=1, align='C', fill=0, ln=0)
-        pdf.cell(w=17, h=5, txt="BPT", border=1, align='C', fill=0, ln=0)
-        pdf.cell(w=17, h=5, txt="Final", border=1, align='C', fill=0, ln=0)
-        pdf.cell(w=17, h=5, txt="Ganancia", border=1, align='C', fill=0, ln=0)
-        pdf.multi_cell(w=0, h=5, txt="Redondo", border=1, align='R', fill=0)
-        #pdf.cell(w=20, h=5, txt="Redondeo", border=1, align='R', fill=0, ln=1)
-
-        # Traer todos los registros de la tabla deta_presup ---------------------
-        self.items_presupuesto = self.varPresupuestos.traer_deta_presup(self.pdf_numero_presupuesto)
-
-        # impresion del cuerpo del informe --------------------------------------
-        pdf.set_font('Arial', '', 7)
-
-        # Sumatoria totales finales
-        total_presupuesto = 0
-        total_ganancia = 0
-        total_costo_dolar = 0
-        total_costo_pesos = 0
-
-        for row in self.items_presupuesto:
-
-            # calculos ----------------------------------------------------------
-
-            # costo total bruto en dolar
-            # cantidad * precio neto dolar * 1.105 0 1.21
-            bruto_dolar = round((row[6] * float(row[7])) * (1+(float(row[5])/100)), 2)
-            # sumarizo el costo en dolares bruto c/iva
-            total_costo_dolar += bruto_dolar
-
-            # costo total Bruto en pesos c/iva
-            # (cantidad * neto_dolar) * dolar_presupuesto * (1+(tasa_iva/100))
-            # bruto_pesos = round(((row[6] * float(row[7])) * float(self.pdf_dolar_presupuesto)) * (1+(float(row[5])/100)), 2)
-            bruto_pesos = round((bruto_dolar * float(self.pdf_dolar_presupuesto)), 2)
-            # sumarizo el costo bruto pesos (c/iva)
-            total_costo_pesos += bruto_pesos
-
-            # calculo y sumarizo la ganancia
-            item_ganancia = round(bruto_pesos * (float(self.pdf_tasa_ganancia) / 100), 2)
-            total_ganancia += item_ganancia
-
-            # costo bruto * (1+(tasa_ganancia/100))
-            sumo_precio_final_conganancia = round(bruto_pesos * (1+(float(self.pdf_tasa_ganancia)/100)), 2)
-            total_presupuesto += sumo_precio_final_conganancia
-
-            # Descripcion item
-            pdf.cell(w=95, h=5, txt=row[4], border=0, align='L', fill=0, ln=0)
-            pdf.cell(w=10, h=5, txt=str(row[5]), border=0, align='R', fill=0, ln=0)
-            pdf.cell(w=5, h=5, txt=str(row[6]), border=0, align='R', fill=0, ln=0)
-            #pdf.cell(w=10, h=5, txt=str(formatear_cifra(row[7] * (1+(row[5]/100)))), border=0, align='R', fill=0, ln=0)
-            pdf.cell(w=10, h=5, txt=str(formatear_cifra(bruto_dolar)), border=0, align='R', fill=0, ln=0)
-            pdf.cell(w=17, h=5, txt=str(formatear_cifra(bruto_pesos)), border=0, align='R', fill=0, ln=0)
-            pdf.cell(w=17, h=5, txt=str(formatear_cifra(sumo_precio_final_conganancia)), border=0, align='R', fill=0)
-            pdf.cell(w=17, h=5, txt=str(formatear_cifra(item_ganancia)), border=0, align='R', fill=0)
-            pdf.multi_cell(w=0, h=5, txt=str(row[8]), border=0, align='R', fill=0)
-            #pdf.cell(w=0, h=5, txt="", border=0, align='R', fill=0, ln=1)
-
-        # Espaciado -----------------------------------------------------------------------
-        pdf.cell(w=0, h=2, txt='', align='L', fill=0, ln=1)
-
-        # Impresion linea final de totales ------------------------------------------------
-        total_ganancia = formatear_cifra(total_ganancia)
-        total_costo_dolar = formatear_cifra(total_costo_dolar)
-        total_costo_pesos = formatear_cifra(total_costo_pesos)
-
-        pdf.set_font('Courier', 'B', 8)
-
-        pdf.cell(w=0, h=5, txt='* Dolar: '+self.pdf_dolar_presupuesto+' - Total Ganancia: '+str(total_ganancia)+
-                               ' Costo Dolar: '+str(total_costo_dolar)+' Costo pesos: '+str(total_costo_pesos),
-                                align='L', border=1, fill=0, ln=1)
-
-        # Espaciado -----------------------------------------------------------------------
-        pdf.cell(w=0, h=2, txt='', align='L', fill=0, ln=1)
-
-        # Impresion del detalle extenso ---------------------------------------------------
-        pdf.set_font('Courier', 'B', 8)
-        pdf.cell(w=0, h=5, txt='* Detalle: ', align='L', fill=0, ln=1)
-        pdf.set_font('Arial', '', 8)
-        pdf.multi_cell(w=0, h=5, txt=self.pdf_detalle, align='L', fill=0)
-        pdf.cell(w=0, h=3, txt='', align='L', fill=0, ln=1)
-
-        # Espaciado -----------------------------------------------------------------------
-        pdf.cell(w=0, h=20, txt='', align='L', fill=0, ln=1)
-
-        # Total final --------------------------------------------------------------------
-        total_presupuesto = formatear_cifra(round(total_presupuesto, 2))
-        total_redondo = formatear_cifra(round(float(self.pdf_total_presup_redondo), 2))
-        pdf.cell(w=0, h=5, txt="Total: " + str(total_presupuesto), border=0, align='R', fill=0, ln=1)
-        pdf.cell(w=0, h=5, txt="Redondo: " + str(total_redondo), border=0, align='R', fill=0, ln=1)
-
-        # Espaciado -----------------------------------------------------------------------
-        pdf.cell(w=0, h=20, txt='', align='L', fill=0, ln=1)
-
-        try:
-            pdf.output('hoja.pdf')
-        except:
-            messagebox.showinfo("Error", "Verifique listados abiertos en otras terminales", parent=self)
-            return
-
-        # Abre el archivo PDF para luego, si quiero, poder imprimirlo
-        path = 'hoja.pdf'
-        os.system(path)
-
     # -------------------------------------------------------------
     # VARIAS
     # -------------------------------------------------------------
@@ -1837,7 +1523,7 @@ class clase_presupuestos(Frame):
         vent = Toplevel()
         vent.title("ABM Articulos")
         # Asigno la clase Ventart que esta en articulos.py a la variable app
-        app = VentArt(vent)
+        app = Clase_Articulos(vent)
         app.mainloop()
 
     def fDetalle_precio_articulo(self):
@@ -2155,7 +1841,7 @@ class clase_presupuestos(Frame):
         icono = ImageTk.PhotoImage(img)
         self.btn_showall.grid(row=0, column=3, padx=4, pady=2, sticky=W)
         self.btn_imprime_presupuesto=Button(self.frame_busqueda_presu_entregado, text=" Presupuesto",
-                                           command=self.creopdfinta, width=105, bg='#5F9EF5', fg='white', compound="left")
+                                           command=self.MenuListados, width=105, bg='#5F9EF5', fg='white', compound="left")
         self.btn_imprime_presupuesto.image = icono
         self.btn_imprime_presupuesto.config(image=icono)
         self.btn_imprime_presupuesto.grid(row=0, column=4, padx=4, pady=2, sticky="nsew")
@@ -2614,26 +2300,11 @@ class clase_presupuestos(Frame):
         self.limpiar_Grid_resu_presup()
         self.llena_grilla_resu_presup(self.clave)
 
-    # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    # SELECCION DE IMPRESION
-    # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    # ------------------------------------------------------------------------
+    # INFORMES
+    # ------------------------------------------------------------------------
 
-    def creopdfinta(self):
-
-        # ---------------------------------------------------------------------------
-        # VALIDACIONES
-
-        # # verifico que existan movimientos vargador en el grid
-        # self.mover_puntero_topend("TOP")
-        # self.selected = self.grid_ctacte.focus()
-        # if self.selected == "":
-        #     messagebox.showwarning("Cuidado", "No existen movimientos o no selecciono cuenta", parent=self)
-        #     return
-        # # Verifico que exista una cuenta cargada
-        # if self.strvar_codigo_cliente.get() == "" or self.strvar_codigo_cliente.get() == "0":
-        #     messagebox.showwarning("Cuidado", "Seleccione una cuenta", parent=self)
-        #     return
-        # # ---------------------------------------------------------------------------
+    def MenuListados(self):
 
         # ---------------------------------------------------------------------------
         # DEFINO PANTALLA FLOTANTE
@@ -2708,6 +2379,7 @@ class clase_presupuestos(Frame):
         # ----------------------------------------------------------------------
         # ===== Funciones =====
         def continuar():
+
             opcion = opcion_listado.get()
 
             if opcion == 1:
@@ -2720,41 +2392,329 @@ class clase_presupuestos(Frame):
                 # Presupuesto externo SIN precios por componente
                 self.creopdfext("N")
 
-            # self.pantalla_imprimir.destroy()  # cerrás la ventana si querés
-
         def cancelar():
-
             self.pantalla_imprimir.destroy()
-            # ----------------------------------------------------------------------
 
-            # ----------------------------------------------------------------------
-            # BOTONES INFORME
+        # ----------------------------------------------------------------------
+        # BOTONES INFORME
 
-            # ===== Frame de botones =====
-            frame_botones = tk.Frame(self.pantalla_imprimir, bg="light green")
-            frame_botones.pack(pady=10)
+        # ===== Frame de botones =====
+        frame_botones = tk.Frame(self.pantalla_imprimir, bg="light green")
+        frame_botones.pack(pady=10)
 
-            tk.Button(
-                frame_botones,
-                text="Continuar",
-                width=20,
-                command=continuar
-            ).grid(row=0, column=0, padx=10)
+        tk.Button(
+            frame_botones,
+            text="Continuar",
+            width=20,
+            command=continuar
+        ).grid(row=0, column=0, padx=10)
 
-            tk.Button(
-                frame_botones,
-                text="Salir",
-                width=20,
-                command=cancelar
-            ).grid(row=0, column=1, padx=10)
-            # ----------------------------------------------------------------------
+        tk.Button(
+            frame_botones,
+            text="Salir",
+            width=20,
+            command=cancelar
+        ).grid(row=0, column=1, padx=10)
+        # ----------------------------------------------------------------------
 
-            self.pantalla_imprimir.grab_set()
-            self.pantalla_imprimir.focus_set()
+        self.pantalla_imprimir.grab_set()
+        self.pantalla_imprimir.focus_set()
 
-            mainloop()
+    def creopdfext(self, precios):
 
+        # traigo el registro que quiero imprimir de la base datos de ordenes reparacion
+        self.selected = self.grid_tvw_presu_entregado.focus()
+        # Asi obtengo la clave de la base de datos campo Id que no es lo mismo que el otro (numero secuencial
+        # que pone la BD automaticamente al dar el alta
+        self.clave = self.grid_tvw_presu_entregado.item(self.selected, 'text')
 
+        if self.clave == "":
+            messagebox.showwarning("Alerta", "No hay nada seleccionado", parent=self)
+            return
 
+        # ----------------------------------------------------------------------------------
+        # Definir parametros listado
+        """
+        P : portrait (vertical)
+        L : landscape (horizontal)
+        A4 : 210x297mm
+        """
+        # esto siempre debe estar
+        pdf = PDF(orientation='P', unit='mm', format='A4')
+        # numero de paginas para luego usar en numeracion de pie de pagina
+        pdf.alias_nb_pages()
+        # Esto fuerza agregar una pagina al PDF
+        pdf.add_page()
+        # set de letra, tipo y tamaño
+        pdf.set_font('Times', '', 12)
+        # ----------------------------------------------------------------------------------
 
+        # Cargo la linea del treeview de resu_presu
+        valores = self.grid_tvw_presu_entregado.item(self.selected, 'values')
 
+        # sdf = datetime.strptime(valores[1], '%Y-%m-%d')
+        # feac = sdf.strftime('%d-%m-%Y')
+
+        # armado de encabezado
+        fecha_presup = valores[1]
+        self.pdf_numero_presupuesto   = valores[0]
+        self.pdf_nombre_cliente       = valores[2]
+        self.pdf_dolar_presupuesto    = valores[3]
+        self.pdf_tasa_ganancia        = valores[4]
+        self.pdf_total_presup_redondo = valores[6]
+
+        # Traigo, si es que hay, el detalle extenso del producto presupuestado de la tabla resu_presup
+        datos_presu_entregado = self.varPresupuestos.traer_resu_presup(self.pdf_numero_presupuesto)
+        self.pdf_detalle = datos_presu_entregado[13]
+
+        # Encabezado
+        self.pdf_datos_encabezado_orden = '('+self.pdf_numero_presupuesto+') - '+self.pdf_nombre_cliente
+        # Imprimo el encabezado de pagina con el numero de orden
+        pdf.set_font('Arial', '', 8)
+        pdf.cell(w=0, h=5, txt='Presupuesto ', border=1, align='C', fill=0, ln=1)
+        pdf.cell(w=0, h=2, txt='', align='L', fill=0, ln=1)
+        pdf.cell(w=0, h=5, txt='Fecha: ' + fecha_presup + '  -  Numero Presupuesto ' + self.pdf_datos_encabezado_orden,
+                 border=1, align='C', fill=0, ln=1)
+
+        # Espaciado entre cuerpos -----------------------------------------------
+        pdf.cell(w=0, h=2, txt='', align='L', fill=0, ln=1)
+
+        # encabezados - columnas ------------------------------------------------
+        pdf.cell(w=100, h=5, txt="Item", border=1, align='C', fill=0, ln=0)
+        #pdf.cell(w=20, h=5, txt="IVA", border=1, align='R', fill=0, ln=0)
+        pdf.cell(w=10, h=5, txt="Cant", border=1, align='R', fill=0, ln=0)
+        #pdf.cell(w=20, h=5, txt="Neto Dolar", border=1, align='R', fill=0, ln=0)
+        #pdf.cell(w=20, h=5, txt="Bruto pesos", border=1, align='R', fill=0, ln=0)
+        #pdf.cell(w=20, h=5, txt="Final", border=1, align='R', fill=0, ln=0)
+        pdf.multi_cell(w=0, h=5, txt="Total", border=1, align='R', fill=0)
+
+        pdf.cell(w=0, h=2, txt="", border=0, align='C', fill=0, ln=1)
+
+        # Traer todos los registros de la tabla deta_presup ---------------------
+        self.items_presupuesto = self.varPresupuestos.traer_deta_presup(self.pdf_numero_presupuesto)
+
+        # impresion del cuerpo del informe --------------------------------------
+        pdf.set_font('Arial', '', 8)
+        total_presupuesto = 0
+
+        for row in self.items_presupuesto:
+
+            # calculos ----------------------------------------------------------
+            bruto_dolar = round((row[7] * float(row[8])) * (1+(float(row[6])/100)), 2)
+            sumo_precio_final_conganancia = round((bruto_dolar * float(self.strvar_valor_dolar_hoy.get())) *
+                                                  (1+(float(self.pdf_tasa_ganancia)/100)), 2)
+            total_presupuesto += sumo_precio_final_conganancia
+
+            # Descripcion item
+            pdf.cell(w=100, h=5, txt=row[5], border=0, align='L', fill=0, ln=0)
+            #pdf.cell(w=20, h=5, txt=str(row[5]), border=0, align='R', fill=0, ln=0)
+            pdf.cell(w=10, h=5, txt=str(row[7]), border=0, align='R', fill=0, ln=0)
+            #pdf.cell(w=20, h=5, txt=str(row[7]), border=0, align='R', fill=0, ln=0)
+            #pdf.cell(w=20, h=5, txt=str(formatear_cifra(round(bruto_dolar, 2))), border=0, align='R', fill=0, ln=0)
+            #pdf.cell(w=20, h=5, txt=str(formatear_cifra(round(sumo_precio_final_conganancia, 2))), border=0, align='R', fill=0)
+            if precios == "S":
+                # con precios de componentes
+                pdf.multi_cell(w=0, h=5, txt=str(formatear_cifra(row[9])), border=0, align='R', fill=0)
+            else:
+                # sin precios de componentes
+                pdf.multi_cell(w=0, h=5, txt="")
+            #pdf.cell(w=0, h=5, txt="", border=0, align='R', fill=0, ln=1)
+
+        # Espaciado -----------------------------------------------------------------------
+        pdf.cell(w=0, h=3, txt='', align='L', fill=0, ln=1)
+
+        # Impresion del detalle extenso ---------------------------------------------------
+        pdf.set_font('Courier', 'B', 10)
+        pdf.cell(w=0, h=5, txt='* Detalle: ', align='L', fill=0, ln=1)
+        pdf.set_font('Arial', '', 11)
+        pdf.multi_cell(w=0, h=5, txt=self.pdf_detalle, align='L', fill=0)
+        pdf.cell(w=0, h=3, txt='', align='L', fill=0, ln=1)
+
+        # Espaciado -----------------------------------------------------------------------
+        pdf.cell(w=0, h=20, txt='', align='L', fill=0, ln=1)
+
+        # Total final --------------------------------------------------------------------
+        total_presupuesto = formatear_cifra(total_presupuesto)
+        total_redondo = formatear_cifra(round(float(self.pdf_total_presup_redondo), 2))
+        #pdf.cell(w=0, h=5, txt="Total: " + str(total_presupuesto), border=0, align='R', fill=0, ln=1)
+        pdf.cell(w=0, h=5, txt="Total: " + str(total_redondo), border=0, align='R', fill=0, ln=1)
+
+        # Espaciado -----------------------------------------------------------------------
+        pdf.cell(w=0, h=20, txt='', align='L', fill=0, ln=1)
+
+        try:
+            pdf.output('hoja.pdf')
+        except:
+            messagebox.showinfo("Error", "Verifique listados abiertos en otras terminales", parent=self)
+            return
+
+        # Abre el archivo PDF para luego, si quiero, poder imprimirlo
+        path = 'hoja.pdf'
+        os.system(path)
+
+    def creopdfint(self):
+
+        # traigo el registro que quiero imprimir de la base datos de ordenes reparacion
+        self.selected = self.grid_tvw_presu_entregado.focus()
+        # Asi obtengo la clave de la base de datos campo Id que no es lo mismo que el otro (numero secuencial
+        # que pone la BD automaticamente al dar el alta
+        self.clave = self.grid_tvw_presu_entregado.item(self.selected, 'text')
+
+        if self.clave == "":
+            messagebox.showwarning("Alerta", "No hay nada seleccionado", parent=self)
+            return
+
+        # ----------------------------------------------------------------------------------
+        # Definir parametros listado
+        """
+        P : portrait (vertical)
+        L : landscape (horizontal)
+        A4 : 210x297mm
+        """
+        # esto siempre debe estar ----------------------------------------------------------
+        pdf = PDF(orientation='P', unit='mm', format='A4')
+        # numero de paginas para luego usar en numeracion de pie de pagina
+        pdf.alias_nb_pages()
+        # Esto fuerza agregar una pagina al PDF
+        pdf.add_page()
+        # set de letra, tipo y tamaño
+        pdf.set_font('Times', '', 12)
+        # ----------------------------------------------------------------------------------
+
+        # Cargo la linea del treeview de resu_presu ---------------------------------------
+        valores = self.grid_tvw_presu_entregado.item(self.selected, 'values')
+
+        # # armado de encabezado ------------------------------------------------------------
+        # forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[2], '%Y-%m-%d'))
+
+        # sdf = datetime.strptime(valores[1], '%Y-%m-%d')
+        # fecha_presup = sdf.strftime('%d-%m-%Y')
+        fecha_presup = valores[1]
+        self.pdf_numero_presupuesto =   valores[0]
+        self.pdf_nombre_cliente =       valores[2]
+        self.pdf_dolar_presupuesto =    valores[3]
+        self.pdf_tasa_ganancia =        valores[4]
+        self.pdf_total_presup_redondo = valores[6]
+
+        # Traigo, si es que hay, el detalle extenso del producto presupuestado de la tabla resu_presup
+        datos_presu_entregado = self.varPresupuestos.traer_resu_presup(self.pdf_numero_presupuesto)
+        self.pdf_detalle = datos_presu_entregado[13]
+
+        # Encabezado
+        self.pdf_datos_encabezado_orden = '('+self.pdf_numero_presupuesto+') - '+self.pdf_nombre_cliente
+        # Imprimo el encabezado de pagina con el numero de orden
+        pdf.set_font('Arial', '', 8)
+        pdf.cell(w=0, h=5, txt='Presupuesto ', border=1, align='C', fill=0, ln=1)
+        pdf.cell(w=0, h=2, txt='', align='L', fill=0, ln=1)
+        pdf.cell(w=0, h=5, txt='Fecha: ' + fecha_presup + '  -  Numero Presupuesto ' + self.pdf_datos_encabezado_orden,
+                 border=1, align='C', fill=0, ln=1)
+
+        # Espaciado entre cuerpos -----------------------------------------------
+        pdf.cell(w=0, h=5, txt='', align='L', fill=0, ln=1)
+
+        # encabezados - columnas ------------------------------------------------
+        pdf.set_font('Arial', '', 7)
+        pdf.cell(w=95, h=5, txt="Item", border=1, align='C', fill=0, ln=0)
+        pdf.cell(w=10, h=5, txt="IVA", border=1, align='R', fill=0, ln=0)
+        pdf.cell(w=5, h=5, txt="Ct", border=1, align='C', fill=0, ln=0)
+        pdf.cell(w=10, h=5, txt="BDU", border=1, align='C', fill=0, ln=0)
+        pdf.cell(w=17, h=5, txt="BPT", border=1, align='C', fill=0, ln=0)
+        pdf.cell(w=17, h=5, txt="Final", border=1, align='C', fill=0, ln=0)
+        pdf.cell(w=17, h=5, txt="Ganancia", border=1, align='C', fill=0, ln=0)
+        pdf.multi_cell(w=0, h=5, txt="Redondo", border=1, align='R', fill=0)
+        #pdf.cell(w=20, h=5, txt="Redondeo", border=1, align='R', fill=0, ln=1)
+
+        # Traer todos los registros de la tabla deta_presup ---------------------
+        self.items_presupuesto = self.varPresupuestos.traer_deta_presup(self.pdf_numero_presupuesto)
+
+        # impresion del cuerpo del informe --------------------------------------
+        pdf.set_font('Arial', '', 7)
+
+        # Sumatoria totales finales
+        total_presupuesto = 0
+        total_ganancia = 0
+        total_costo_dolar = 0
+        total_costo_pesos = 0
+
+        for row in self.items_presupuesto:
+
+            # calculos ----------------------------------------------------------
+
+            # costo total bruto en dolar
+            # cantidad * precio neto dolar * 1.105 0 1.21
+            bruto_dolar = round((row[7] * float(row[8])) * (1+(float(row[6])/100)), 2)
+            # sumarizo el costo en dolares bruto c/iva
+            total_costo_dolar += bruto_dolar
+
+            # costo total Bruto en pesos c/iva
+            # (cantidad * neto_dolar) * dolar_presupuesto * (1+(tasa_iva/100))
+            # bruto_pesos = round(((row[6] * float(row[7])) * float(self.pdf_dolar_presupuesto)) * (1+(float(row[5])/100)), 2)
+            bruto_pesos = round((bruto_dolar * float(self.pdf_dolar_presupuesto)), 2)
+            # sumarizo el costo bruto pesos (c/iva)
+            total_costo_pesos += bruto_pesos
+
+            # calculo y sumarizo la ganancia
+            item_ganancia = round(bruto_pesos * (float(self.pdf_tasa_ganancia) / 100), 2)
+            total_ganancia += item_ganancia
+
+            # costo bruto * (1+(tasa_ganancia/100))
+            sumo_precio_final_conganancia = round(bruto_pesos * (1+(float(self.pdf_tasa_ganancia)/100)), 2)
+            total_presupuesto += sumo_precio_final_conganancia
+
+            # Descripcion item
+            pdf.cell(w=95, h=5, txt=row[5], border=0, align='L', fill=0, ln=0)
+            pdf.cell(w=10, h=5, txt=str(row[6]), border=0, align='R', fill=0, ln=0)
+            pdf.cell(w=5, h=5, txt=str(row[7]), border=0, align='R', fill=0, ln=0)
+            #pdf.cell(w=10, h=5, txt=str(formatear_cifra(row[7] * (1+(row[5]/100)))), border=0, align='R', fill=0, ln=0)
+            pdf.cell(w=10, h=5, txt=str(formatear_cifra(bruto_dolar)), border=0, align='R', fill=0, ln=0)
+            pdf.cell(w=17, h=5, txt=str(formatear_cifra(bruto_pesos)), border=0, align='R', fill=0, ln=0)
+            pdf.cell(w=17, h=5, txt=str(formatear_cifra(sumo_precio_final_conganancia)), border=0, align='R', fill=0)
+            pdf.cell(w=17, h=5, txt=str(formatear_cifra(item_ganancia)), border=0, align='R', fill=0)
+            pdf.multi_cell(w=0, h=5, txt=str(row[9]), border=0, align='R', fill=0)
+            #pdf.cell(w=0, h=5, txt="", border=0, align='R', fill=0, ln=1)
+
+        # Espaciado -----------------------------------------------------------------------
+        pdf.cell(w=0, h=2, txt='', align='L', fill=0, ln=1)
+
+        # Impresion linea final de totales ------------------------------------------------
+        total_ganancia = formatear_cifra(total_ganancia)
+        total_costo_dolar = formatear_cifra(total_costo_dolar)
+        total_costo_pesos = formatear_cifra(total_costo_pesos)
+
+        pdf.set_font('Courier', 'B', 8)
+
+        pdf.cell(w=0, h=5, txt='* Dolar: '+self.pdf_dolar_presupuesto+' - Total Ganancia: '+str(total_ganancia)+
+                               ' Costo Dolar: '+str(total_costo_dolar)+' Costo pesos: '+str(total_costo_pesos),
+                                align='L', border=1, fill=0, ln=1)
+
+        # Espaciado -----------------------------------------------------------------------
+        pdf.cell(w=0, h=2, txt='', align='L', fill=0, ln=1)
+
+        # Impresion del detalle extenso ---------------------------------------------------
+        pdf.set_font('Courier', 'B', 8)
+        pdf.cell(w=0, h=5, txt='* Detalle: ', align='L', fill=0, ln=1)
+        pdf.set_font('Arial', '', 8)
+        pdf.multi_cell(w=0, h=5, txt=self.pdf_detalle, align='L', fill=0)
+        pdf.cell(w=0, h=3, txt='', align='L', fill=0, ln=1)
+
+        # Espaciado -----------------------------------------------------------------------
+        pdf.cell(w=0, h=20, txt='', align='L', fill=0, ln=1)
+
+        # Total final --------------------------------------------------------------------
+        total_presupuesto = formatear_cifra(round(total_presupuesto, 2))
+        total_redondo = formatear_cifra(round(float(self.pdf_total_presup_redondo), 2))
+        pdf.cell(w=0, h=5, txt="Total: " + str(total_presupuesto), border=0, align='R', fill=0, ln=1)
+        pdf.cell(w=0, h=5, txt="Redondo: " + str(total_redondo), border=0, align='R', fill=0, ln=1)
+
+        # Espaciado -----------------------------------------------------------------------
+        pdf.cell(w=0, h=20, txt='', align='L', fill=0, ln=1)
+
+        try:
+            pdf.output('hoja.pdf')
+        except:
+            messagebox.showinfo("Error", "Verifique listados abiertos en otras terminales", parent=self)
+            return
+
+        # Abre el archivo PDF para luego, si quiero, poder imprimirlo
+        path = 'hoja.pdf'
+        os.system(path)

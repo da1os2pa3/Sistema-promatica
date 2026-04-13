@@ -11,7 +11,7 @@ from datetime import date, datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from PIL import Image, ImageTk
 
-class clase_garantias(Frame):
+class Clase_Garantias(Frame):
 
     def __init__(self, master=None):
 

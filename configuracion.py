@@ -8,7 +8,7 @@ from configuracion_ABM import *
 from datetime import date, datetime
 from PIL import Image, ImageTk
 
-class Ventconfig(Frame):
+class Clase_Configuracion(Frame):
 
     def __init__(self, master=None):
         super().__init__(master, width=880, height=510)

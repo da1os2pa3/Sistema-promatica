@@ -1,6 +1,4 @@
 import mysql.connector
-from mysql.connector import Error
-from tkinter import messagebox
 
 class datosArtic:
 
@@ -8,20 +6,16 @@ class datosArtic:
 
         self.master = pantalla
 
-        try:
-            self.cnn = mysql.connector.connect(host="localhost", user="root", passwd="", database="sist_prom")
-        except Error as ex:
-            print("Error de conexion: {0}".format(ex))
+    def get_connection(self):
+        print("OK= Escuchando.....")
+        return mysql.connector.connect(
+            host="localhost",
+            user="root",
+            passwd="",
+            database="sist_prom"
+        )
 
-    # def __str__(self):
-    #
-    #     datos = self.consultar_articulo()
-    #     aux = ""
-    #     for row in datos:
-    #         aux = aux + str(row) + "\n"
-    #     return aux
-
-    def consultar_articulo(self, tofil):
+    def consultar_articulo(self, orden=""):
 
         """
         # cursor.fetchall() recupera todas las filas del resultado de una consulta. Devuelve todas
@@ -32,137 +26,208 @@ class datosArtic:
         # cursor.fetchone()El método devuelve un solo registro o Ninguno si no hay más filas disponibles.
         """
 
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            cur = self.cnn.cursor()
-            cur.execute("SELECT * FROM " + tofil)
-            datos = cur.fetchall()
-            self.cnn.commit()
-            cur.close()
-            return datos
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=Consultar-articulo", parent=self.master)
-            exit()
-
-    def insertar_articulo(self, codigo, descripcion, marca, rubro, codbar, costodolar, tasaiva, tasaimpint,
-                          tasaporcgan, observaciones, fechaultact, costo_historico, imagenart):
-
-        try:
-            cur = self.cnn.cursor()
-            sql = '''INSERT INTO articulos (codigo, descripcion, marca, rubro, codbar, costodolar, iva, impint,
-            porcgan, observa, ultact, costohist, imagen)
-            VALUES('{}','{}','{}','{}', '{}', '{}','{}','{}','{}','{}','{}','{}','{}')'''.format(codigo,
-            descripcion, marca, rubro, codbar, costodolar, tasaiva, tasaimpint, tasaporcgan, observaciones,
-            fechaultact, costo_historico, imagenart)
+            sql = "SELECT * FROM articulos"
+            if orden:
+                # if not orden.upper().startswith("ORDER BY"):
+                #     raise ValueError("Solo se permite ORDER BY")
+                sql += " " + orden
+            # else:
+            #     sql += " ORDER BY apellido, nombres ASC"
 
             cur.execute(sql)
-            n = cur.rowcount
-            self.cnn.commit()
+            return cur.fetchall()
+        finally:
             cur.close()
-            return n
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=Insertar-articulo", parent=self.master)
-            exit()
+            cnn.close()
 
-    def modificar_articulo(self, Id, codigo, descripcion, marca, rubro, codbar, costodolar, tasaiva, tasaimpint,
-                           tasaporcgan, observaciones, fechaultact, costo_historico, imagenart):
+        # try:
+        #     cur.execute("SELECT * FROM " + tofil)
+        #     datos = cur.fetchall()
+        #     self.cnn.commit()
+        #     return datos
+        # except Exception:
+        #     raise
+        # finally:
+        #     cur.close()
+        #     self.cnn.close()
+        #
 
+    def insertar_articulo(self, articulo):
+
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            cur = self.cnn.cursor()
-            sql = '''UPDATE articulos SET codigo='{}', descripcion='{}', marca='{}', rubro='{}', codbar='{}', 
-            costodolar='{}', iva='{}', impint='{}', porcgan='{}', observa='{}', ultact='{}', costohist='{}', imagen='{}'
-            WHERE Id={}'''.format(codigo, descripcion, marca, rubro, codbar, costodolar, tasaiva, tasaimpint,
-            tasaporcgan, observaciones, fechaultact, costo_historico, imagenart, Id)
+            sql = """
+                  INSERT INTO articulos (codigo, descripcion, marca, rubro, codbar, costodolar, iva, \
+                                        impint, porcgan, observa, ultact, costohist, imagen) \
+                  VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) \
+                  """
 
-            cur.execute(sql)
-            n = cur.rowcount
-            self.cnn.commit()
+            valores = (
+                articulo["codigo"],
+                articulo["descripcion"],
+                articulo["marca"],
+                articulo["rubro"],
+                articulo["codbar"],
+                articulo["costodolar"],
+                articulo["iva"],
+                articulo["impint"],
+                articulo["porcgan"],
+                articulo["observa"],
+                articulo["ultact"],
+                articulo["costohist"],
+                articulo["imagen"]
+            )
+
+            cur.execute(sql, valores)
+            cnn.commit()
+            # devolvemos el Id generado del nuevo cliente
+            id_nuevo = cur.lastrowid
+            return id_nuevo
+        except Exception as e:
+            cnn.rollback()
+            raise
+        finally:
             cur.close()
-            return n
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=Modificar articulo", parent=self.master)
-            exit()
+            cnn.close()
+
+    def modificar_articulo(self, articulo):
+
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
+        try:
+            sql = ('''UPDATE articulos 
+                SET codigo=%s, 
+                    descripcion=%s,
+                    marca=%s, 
+                    rubro=%s, 
+                    codbar=%s, 
+                    costodolar=%s, 
+                    iva=%s, 
+                    impint=%s, 
+                    porcgan=%s, 
+                    observa=%s,
+                    ultact=%s, 
+                    costohist=%s,
+                    imagen=%s
+                WHERE Id=%s''')
+
+            valores = (
+                articulo["codigo"],
+                articulo["descripcion"],
+                articulo["marca"],
+                articulo["rubro"],
+                articulo["codbar"],
+                articulo["costodolar"],
+                articulo["iva"],
+                articulo["impint"],
+                articulo["porcgan"],
+                articulo["observa"],
+                articulo["ultact"],
+                articulo["costohist"],
+                articulo["imagen"],
+                articulo["Id"]
+            )
+
+            cur.execute(sql, valores)
+            #n = cur.rowcount
+            cnn.commit()
+            return
+        except Exception as e:
+            cnn.rollback()
+            raise
+        finally:
+            cur.close()
+            cnn.close()
 
     def eliminar_articulo(self, Id):
 
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            cur = self.cnn.cursor()
             sql = '''DELETE FROM articulos WHERE Id = {}'''.format(Id)
             cur.execute(sql)
             n = cur.rowcount
-            self.cnn.commit()
-            cur.close()
+            cnn.commit()
             return n
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Eliminar articulo", parent=self.master)
-            exit()
+        except Exception as e:
+            cnn.rollback()
+            raise
+        finally:
+            cur.close()
+            cnn.close()
 
     def consultar_informa(self):
 
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
             # Devuelve el registro de la tabla Informa
-            cur = self.cnn.cursor()
             cur.execute("SELECT * FROM informa WHERE 1")
             datos_inf = cur.fetchall()
-            cur.close()
             return datos_inf
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=Consultar_informa", parent=self.master)
-            exit()
+        except Exception as e:
+            raise
+        finally:
+            cur.close()
+            cnn.close()
 
     def buscar_entabla(self, argumento):
 
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            # Busca un string en los campos indicados en una tabla
-            cur = self.cnn.cursor()
-            if len(argumento) <= 0:
-                messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=argumento de "
-                                                         "busqueda vacio", parent=self.master)
-                return
-
-            cur.execute("SELECT * FROM " + argumento)
+            cur.execute("SELECT * FROM articulos " + argumento)
             datos = cur.fetchall()
-            cur.close()
             return datos
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=Buscar en tabla", parent=self.master)
-            exit()
+        except Exception as e:
+            raise
+        finally:
+            cur.close()
+            cnn.close()
 
     def combo_input(self, xcampo, xtabla, xorden):
 
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-
             """ Llenar un combobox con datos de una tabla. Paso el campo, la tabla y el orden de los datos """
-
-            cnn = mysql.connector.connect(host="localhost", user="root", passwd="", db="sist_prom")
-            cursor = cnn.cursor()
-            cursor.execute("SELECT " + xcampo + " FROM " + xtabla + " ORDER BY " + xorden)
-            result = cursor.fetchall()
+            cur.execute("SELECT " + xcampo + " FROM " + xtabla + " ORDER BY " + xorden)
+            result = cur.fetchall()
             return result
-
-        except:
-
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=combo_input", parent=self.master)
-            exit()
-
-    def traer_ultimo(self, xparametro):
-
-        """ Devuelve el Id. del ultimo registro de la tabla (primer valor autocompletado por la tabla) """
-
-        try:
-            cur = self.cnn.cursor()
-            cur.execute("SELECT * FROM articulos ORDER BY Id")
-            datos = cur.fetchall()
-            aux = ""
-            for row in datos:
-                if xparametro == 1:
-                    aux = str(row[1]) + "\n"
-                else:
-                    aux = str(row[0]) + "\n"
-            self.cnn.commit()
+        except Exception as e:
+            raise
+        finally:
             cur.close()
-            if aux == "":
-                aux = 0
-            return aux
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo-Traer ultimo Id-", parent=self.master)
-            exit()
+            cnn.close()
+
+    # except Exception as e:
+    # messagebox.showerror("Error", str(e))
+
+    # def traer_ultimo(self, xparametro):
+    #
+    #     """ Devuelve el Id. del ultimo registro de la tabla (primer valor autocompletado por la tabla) """
+    #
+    #     cnn = self.get_connection()
+    #     cur = cnn.cursor(buffered=True)
+    #     try:
+    #         cur.execute("SELECT * FROM articulos ORDER BY Id")
+    #         datos = cur.fetchall()
+    #         aux = ""
+    #         for row in datos:
+    #             if xparametro == 1:
+    #                 aux = str(row[1]) + "\n"
+    #             else:
+    #                 aux = str(row[0]) + "\n"
+    #         cnn.commit()
+    #         if aux == "":
+    #             aux = 0
+    #         return aux
+    #     except Exception:
+    #         raise
+    #     finally:
+    #         cur.close()
+    #         cnn.close()

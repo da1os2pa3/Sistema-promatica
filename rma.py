@@ -14,7 +14,7 @@ from PDF_clase import *
 from datetime import date, datetime
 from PIL import Image, ImageTk
 
-class clase_rma(Frame):
+class Clase_Rma(Frame):
 
     # Creo la clase - clase definida en ABM
 

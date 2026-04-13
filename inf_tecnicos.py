@@ -1,15 +1,21 @@
 import os
 from funciones import *
+# from funcion_new import ClaseFuncion_new
 from inf_tecnicos_ABM import *
-#import tkinter as tk
-from datetime import date, datetime
-#from tkinter import messagebox
+
+import tkinter as tk
+import tkinter as ttk
 from tkinter.scrolledtext import *
+
+from datetime import date, datetime
+
 from tktooltip import ToolTip
 from PIL import Image, ImageTk
 from PDF_clase import *
 
-class clase_inf_tecnicos(Frame):
+#from tkinter import messagebox
+
+class Clase_InformeTecnico(tk.Frame):
 
 
     def __init__(self, master=None):
@@ -71,25 +77,21 @@ class clase_inf_tecnicos(Frame):
 
     def create_widgets(self):
 
-        # En este modulo no se usa
-        # # validar: funcion en funciones.py que valida que lo ingresado sea un numeo o "-" o "."
-        # self.vcmd = (self.register(self.varFuncion_new.validar), "%P")
-
         # ---------------------------------------------------------------
         # TITULOS
 
         # Encabezado logo y titulo con PACK
-        self.frame_titulo_top = Frame(self.master)
+        self.frame_titulo_top = tk.Frame(self.master)
 
         # Armo el logo y el titulo
         self.photocc = Image.open('inf_tecnico.png')
         self.photocc = self.photocc.resize((50, 50), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.png_ctacte = ImageTk.PhotoImage(self.photocc)
-        self.lbl_png_ctacte = Label(self.frame_titulo_top, image=self.png_ctacte, bg="red", relief="ridge", bd=5)
-        self.lbl_titulo = Label(self.frame_titulo_top, width=52, text="Informes tècnicos",
+        self.lbl_png_ctacte = tk.Label(self.frame_titulo_top, image=self.png_ctacte, bg="red", relief="ridge", bd=5)
+        self.lbl_titulo = tk.Label(self.frame_titulo_top, width=52, text="Informes tècnicos",
                                 bg="black", fg="gold", font=("Arial bold", 20, "bold"), bd=5, relief="ridge", padx=5)
         # Coloco logo y titulo en posicion de pantalla
-        self.lbl_png_ctacte.grid(row=0, column=0, sticky=W, padx=5, ipadx=22)
+        self.lbl_png_ctacte.grid(row=0, column=0, sticky=tk.W, padx=5, ipadx=22)
         self.lbl_titulo.grid(row=0, column=1, sticky="nsew")
         self.frame_titulo_top.pack(side="top", fill="x", padx=5, pady=2)
         # --------------------------------------------------------------------------
@@ -113,22 +115,22 @@ class clase_inf_tecnicos(Frame):
         # --------------------------------------------------------------------------
 
         # LABELFRAME DEL TREEVIEW
-        self.frame_treeview=LabelFrame(self.master, text="", foreground="#CF09BD")
+        self.frame_treeview=tk.LabelFrame(self.master, text="", foreground="#CF09BD")
 
         # FRAME dentro del frame principal para poner la linea de busqueda
-        self.frame_buscar = LabelFrame(self.frame_treeview)
+        self.frame_buscar = tk.LabelFrame(self.frame_treeview)
 
         # BUSCAR Linea de label y entry de busqueda
-        self.lbl_buscar_informe = Label(self.frame_buscar, text="Buscar informe (cliente): ")
+        self.lbl_buscar_informe = tk.Label(self.frame_buscar, text="Buscar informe (cliente): ")
         self.lbl_buscar_informe.grid(row=0, column=0, padx=5, pady=2)
-        self.entry_buscar_informe=Entry(self.frame_buscar, width=50)
-        self.entry_buscar_informe.grid(row=0, column=1, padx=5, pady=2, sticky=W)
-        self.btn_buscar_informe = Button(self.frame_buscar, text="Buscar", command=self.fBuscar_en_tabla,
+        self.entry_buscar_informe=tk.Entry(self.frame_buscar, width=50)
+        self.entry_buscar_informe.grid(row=0, column=1, padx=5, pady=2, sticky=tk.W)
+        self.btn_buscar_informe = tk.Button(self.frame_buscar, text="Buscar", command=self.fBuscar_en_tabla,
                                          bg="CadetBlue", fg="white", width=27)
-        self.btn_buscar_informe.grid(row=0, column=2, padx=5, pady=2, sticky=W)
-        self.btn_mostrar_todo = Button(self.frame_buscar, text="Mostrar todo", command=self.fShowall, bg="CadetBlue",
+        self.btn_buscar_informe.grid(row=0, column=2, padx=5, pady=2, sticky=tk.W)
+        self.btn_mostrar_todo = tk.Button(self.frame_buscar, text="Mostrar todo", command=self.fShowall, bg="CadetBlue",
                                        fg="white", width=27)
-        self.btn_mostrar_todo.grid(row=0, column=3, padx=5, pady=2, sticky=W)
+        self.btn_mostrar_todo.grid(row=0, column=3, padx=5, pady=2, sticky=tk.W)
 
         # --------------------------------------------------------------------------
         # TREVIEEW
@@ -166,8 +168,8 @@ class clase_inf_tecnicos(Frame):
         self.grid_informes_tecnicos.tag_configure('evenrow', background='white')
 
         # SCROLLBAR del Treeview
-        scroll_x = Scrollbar(self.frame_treeview, orient="horizontal")
-        scroll_y = Scrollbar(self.frame_treeview, orient="vertical")
+        scroll_x = tk.Scrollbar(self.frame_treeview, orient="horizontal")
+        scroll_y = tk.Scrollbar(self.frame_treeview, orient="vertical")
         self.grid_informes_tecnicos.config(xscrollcommand=scroll_x.set)
         self.grid_informes_tecnicos.config(yscrollcommand=scroll_y.set)
         scroll_x.config(command=self.grid_informes_tecnicos.xview)
@@ -183,14 +185,14 @@ class clase_inf_tecnicos(Frame):
         # --------------------------------------------------------------------------
         # BOTONES DEL TREEVIEW
         # --------------------------------------------------------------------------
-        self.frame_botones_grid=LabelFrame(self.master, text="", foreground="red")
+        self.frame_botones_grid=tk.LabelFrame(self.master, text="", foreground="red")
         self.botones_tv()
         self.frame_botones_grid.pack(side="top", fill="both", expand=0, padx=2, pady=2)
 
         # --------------------------------------------------------------------------
         # ENTRYS
         # --------------------------------------------------------------------------
-        self.frame_dos=LabelFrame(self.master, text="", foreground="red")
+        self.frame_dos=tk.LabelFrame(self.master, text="", foreground="red")
         self.entrys()
         self.frame_tres.pack(side="top", fill="both", expand=0, padx=5, pady=5)
 
@@ -426,7 +428,7 @@ class clase_inf_tecnicos(Frame):
 
         # convierto fecha de date a string y cambio a visualizacion español
         fecha_convertida = fecha_str_reves_normal(self, datetime.strftime(campos[1], "%Y-%m-%d"), False)
-        self.entry_fecha.delete(0, END)
+        self.entry_fecha.delete(0, tk.END)
         self.entry_fecha.insert(0, fecha_convertida)
         self.strvar_usuario.set(value=campos[2])
         self.combo_tipo_dni.insert(0, campos[3])
@@ -436,7 +438,7 @@ class clase_inf_tecnicos(Frame):
         self.strvar_serie.set(value=campos[7])
         self.strvar_diagnostico.set(value=campos[8])
         self.strvar_provocado.set(value=campos[9])
-        self.text_descripcion.insert(END, campos[10])
+        self.text_descripcion.insert(tk.END, campos[10])
 
         self.entry_usuario.focus()
 
@@ -573,7 +575,7 @@ class clase_inf_tecnicos(Frame):
 
         self.text_descripcion.delete('1.0', 'end')
 
-        self.text_descripcion.insert(END,f"De acuerdo a lo solicitado por el señor/a {self.strvar_usuario.get()} "
+        self.text_descripcion.insert(tk.END,f"De acuerdo a lo solicitado por el señor/a {self.strvar_usuario.get()} "
                                      f"{self.strvar_dni.get()} - Nº: {self.strvar_numdoc.get()}, "
                                      f"se extiende el presente informe tècnico sobre la revisiòn del siguiente "
                                      f"equipo: {self.strvar_equipo.get()} Modelo {self.strvar_modelo.get()} Nº de "
@@ -706,7 +708,7 @@ class clase_inf_tecnicos(Frame):
         # Nuevo informe
         img = Image.open("archivo-nuevo.png").resize((20, 20))
         icono = ImageTk.PhotoImage(img)
-        self.btn_nuevo = Button(self.frame_botones_grid, text="Nuevo Informe", command=self.fNuevo, width=16, bg="blue",
+        self.btn_nuevo = tk.Button(self.frame_botones_grid, text="Nuevo Informe", command=self.fNuevo, width=16, bg="blue",
                                 fg="white", compound="left")
         self.btn_nuevo.grid(row=0, column=0, padx=4, pady=2, sticky="nsew")
         self.btn_nuevo.image = icono
@@ -716,7 +718,7 @@ class clase_inf_tecnicos(Frame):
         # Editar un informe
         img = Image.open("editar.png").resize((20, 20))
         icono = ImageTk.PhotoImage(img)
-        self.btn_editar = Button(self.frame_botones_grid, text="Edita Informe", command=self.fEditar, width=16,
+        self.btn_editar = tk.Button(self.frame_botones_grid, text="Edita Informe", command=self.fEditar, width=16,
                                  bg="blue", fg="white", compound="left")
         self.btn_editar.grid(row=0, column=1, padx=4, pady=2, sticky="nsew")
         self.btn_editar.image = icono
@@ -726,7 +728,7 @@ class clase_inf_tecnicos(Frame):
         # Eliminar un informe
         img = Image.open("eliminar.png").resize((20, 20))
         icono = ImageTk.PhotoImage(img)
-        self.btn_borrar = Button(self.frame_botones_grid, text="Eliminar Informe", command=self.fBorrar, width=16,
+        self.btn_borrar = tk.Button(self.frame_botones_grid, text="Eliminar Informe", command=self.fBorrar, width=16,
                                  bg="red", fg="white", compound="left")
         self.btn_borrar.grid(row=0, column=2, padx=4, pady=2, sticky="nsew")
         self.btn_borrar.image = icono
@@ -736,7 +738,7 @@ class clase_inf_tecnicos(Frame):
         # Guardar Informe
         img = Image.open("guardar.png").resize((20, 20))
         icono = ImageTk.PhotoImage(img)
-        self.btn_guardar = Button(self.frame_botones_grid, text="Guardar Informe", command=self.fGuardar, width=16,
+        self.btn_guardar = tk.Button(self.frame_botones_grid, text="Guardar Informe", command=self.fGuardar, width=16,
                                   bg="green", fg="white", compound="left")
         self.btn_guardar.grid(row=0, column=3, padx=4, pady=2, sticky="nsew")
         self.btn_guardar.image = icono
@@ -746,7 +748,7 @@ class clase_inf_tecnicos(Frame):
         # Cancelar
         img = Image.open("cancelar.png").resize((20, 20))
         icono = ImageTk.PhotoImage(img)
-        self.btn_Cancelar = Button(self.frame_botones_grid, text="Cancelar", command=self.fCancelar, width=16,
+        self.btn_Cancelar = tk.Button(self.frame_botones_grid, text="Cancelar", command=self.fCancelar, width=16,
                                    bg="black", fg="white", compound="left")
         self.btn_Cancelar.grid(row=0, column=4, padx=4, pady=2, sticky="nsew")
         self.btn_Cancelar.image = icono
@@ -757,7 +759,7 @@ class clase_inf_tecnicos(Frame):
         self.photo3 = Image.open('salida.png')
         self.photo3 = self.photo3.resize((20, 20), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo3 = ImageTk.PhotoImage(self.photo3)
-        self.btnSalir=Button(self.frame_botones_grid, text="Salir", image=self.photo3, width=25, command=self.fSalir,
+        self.btnSalir=tk.Button(self.frame_botones_grid, text="Salir", image=self.photo3, width=25, command=self.fSalir,
                              bg="yellow", fg="white")
         self.btnSalir.grid(row=0, column=8, padx=4, pady=2, sticky="nsew")
 
@@ -765,18 +767,18 @@ class clase_inf_tecnicos(Frame):
         self.photo_imp = Image.open('impresora.png')
         self.photo_imp = self.photo_imp.resize((20, 20), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo_imp = ImageTk.PhotoImage(self.photo_imp)
-        self.btn_imprime = Button(self.frame_botones_grid, image=self.photo_imp, pady=3, command=self.fImprime, border=3)
+        self.btn_imprime = tk.Button(self.frame_botones_grid, image=self.photo_imp, pady=3, command=self.fImprime, border=3)
         self.btn_imprime.grid(row=0, column=5, padx=4, pady=2, sticky="nsew")
 
         self.photo1 = Image.open('toparch.png')
         self.photo1 = self.photo1.resize((25, 20), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo1 = ImageTk.PhotoImage(self.photo1)
-        self.btnToparch = Button(self.frame_botones_grid, text="", image=self.photo1, command=self.fToparch, bg="grey", fg="white")
+        self.btnToparch = tk.Button(self.frame_botones_grid, text="", image=self.photo1, command=self.fToparch, bg="grey", fg="white")
         self.btnToparch.grid(row=0, column=6, padx=4, pady=2, sticky="nsew")
         self.photo2 = Image.open('finarch.png')
         self.photo2 = self.photo2.resize((25, 20), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo2 = ImageTk.PhotoImage(self.photo2)
-        self.btnFinarch = Button(self.frame_botones_grid, text="", image=self.photo2, command=self.fFinarch, bg="grey", fg="white")
+        self.btnFinarch = tk.Button(self.frame_botones_grid, text="", image=self.photo2, command=self.fFinarch, bg="grey", fg="white")
         self.btnFinarch.grid(row=0, column=7, padx=4, pady=2, sticky="nsew")
 
         # reordenamiento de self.frame_botones_grid
@@ -786,74 +788,74 @@ class clase_inf_tecnicos(Frame):
     def entrys(self):
 
         # FECHA
-        self.lbl_fecha = Label(self.frame_dos, text="Fecha emision: ")
-        self.lbl_fecha.grid(row=0, column=0, padx=4, pady=3, sticky=W)
-        self.entry_fecha = Entry(self.frame_dos, textvariable=self.strvar_fecha, justify="left", width=10)
+        self.lbl_fecha = tk.Label(self.frame_dos, text="Fecha emision: ")
+        self.lbl_fecha.grid(row=0, column=0, padx=4, pady=3, sticky=tk.W)
+        self.entry_fecha = tk.Entry(self.frame_dos, textvariable=self.strvar_fecha, justify="left", width=10)
         self.entry_fecha.bind("<FocusOut>", self.formato_fecha)
-        self.entry_fecha.grid(row=0, column=1, padx=4, pady=3, sticky=W)
+        self.entry_fecha.grid(row=0, column=1, padx=4, pady=3, sticky=tk.W)
 
         # NOMBRE
-        self.lbl_usuario = Label(self.frame_dos, text="Cliente: ")
-        self.lbl_usuario.grid(row=0, column=2, padx=4, pady=3, sticky=W)
-        self.entry_usuario = Entry(self.frame_dos, textvariable=self.strvar_usuario, justify="left", width=47)
+        self.lbl_usuario = tk.Label(self.frame_dos, text="Cliente: ")
+        self.lbl_usuario.grid(row=0, column=2, padx=4, pady=3, sticky=tk.W)
+        self.entry_usuario = tk.Entry(self.frame_dos, textvariable=self.strvar_usuario, justify="left", width=47)
         self.strvar_usuario.trace("w", lambda *args: self.limitador(self.strvar_usuario, 50))
-        self.entry_usuario.grid(row=0, column=3, padx=4, pady=3, sticky=W)
+        self.entry_usuario.grid(row=0, column=3, padx=4, pady=3, sticky=tk.W)
 
         # TIPO DOCUMENTO - COMBOBOX
-        self.lbl_tipo_dni = Label(self.frame_dos, text="Tipo Documento: ")
-        self.lbl_tipo_dni.grid(row=0, column=4, padx=4, pady=3, sticky=W)
+        self.lbl_tipo_dni = tk.Label(self.frame_dos, text="Tipo Documento: ")
+        self.lbl_tipo_dni.grid(row=0, column=4, padx=4, pady=3, sticky=tk.W)
         self.combo_tipo_dni = ttk.Combobox(self.frame_dos, textvariable=self.strvar_dni, state='readonly', width=46)
         # self.cargar_combo = self.varClientes.llenar_combo_rubro()
         self.combo_tipo_dni["values"] = ["DNI-Documento Nacional de Identidad", "CI-Cedula de Identidad",
                                          "CUIT-Clave unica de identificacion tributaria", "LC-Libreta Civica",
                                          "LE-Libreta de Enrolamiento", "LEM-Libreta de Embarque", "PAS-Pasaporte"]
-        self.combo_tipo_dni.grid(row=0, column=5, padx=4, pady=5, sticky=W)
+        self.combo_tipo_dni.grid(row=0, column=5, padx=4, pady=5, sticky=tk.W)
 
         # NUMERO DOCUMENTO
-        self.lbl_numdoc = Label(self.frame_dos, text="Nº Documento: ")
-        self.lbl_numdoc.grid(row=1, column=0, padx=4, pady=3, sticky=W)
-        self.entry_numdoc = Entry(self.frame_dos, textvariable=self.strvar_numdoc, justify="left", width=13)
+        self.lbl_numdoc = tk.Label(self.frame_dos, text="Nº Documento: ")
+        self.lbl_numdoc.grid(row=1, column=0, padx=4, pady=3, sticky=tk.W)
+        self.entry_numdoc = tk.Entry(self.frame_dos, textvariable=self.strvar_numdoc, justify="left", width=13)
         self.strvar_numdoc.trace("w", lambda *args: self.limitador(self.strvar_numdoc, 13))
-        self.entry_numdoc.grid(row=1, column=1, padx=4, pady=3, sticky=W)
+        self.entry_numdoc.grid(row=1, column=1, padx=4, pady=3, sticky=tk.W)
 
         # EQUIPO
-        self.lbl_equipo = Label(self.frame_dos, text="Equipo: ")
-        self.lbl_equipo.grid(row=1, column=2, padx=4, pady=3, sticky=W)
-        self.entry_equipo = Entry(self.frame_dos, textvariable=self.strvar_equipo, justify="left", width=118)
+        self.lbl_equipo = tk.Label(self.frame_dos, text="Equipo: ")
+        self.lbl_equipo.grid(row=1, column=2, padx=4, pady=3, sticky=tk.W)
+        self.entry_equipo = tk.Entry(self.frame_dos, textvariable=self.strvar_equipo, justify="left", width=118)
         self.strvar_equipo.trace("w", lambda *args: self.limitador(self.strvar_equipo, 100))
-        self.entry_equipo.grid(row=1, column=3, columnspan=3, padx=4, pady=3, sticky=W)
+        self.entry_equipo.grid(row=1, column=3, columnspan=3, padx=4, pady=3, sticky=tk.W)
 
         # MODELO
-        self.lbl_modelo = Label(self.frame_dos, text="Modelo: ")
-        self.lbl_modelo.grid(row=2, column=0, padx=4, pady=3, sticky=W)
-        self.entry_modelo = Entry(self.frame_dos, textvariable=self.strvar_modelo, justify="left", width=80)
+        self.lbl_modelo = tk.Label(self.frame_dos, text="Modelo: ")
+        self.lbl_modelo.grid(row=2, column=0, padx=4, pady=3, sticky=tk.W)
+        self.entry_modelo = tk.Entry(self.frame_dos, textvariable=self.strvar_modelo, justify="left", width=80)
         self.strvar_modelo.trace("w", lambda *args: self.limitador(self.strvar_modelo, 100))
-        self.entry_modelo.grid(row=2, column=1, columnspan=3, padx=4, pady=3, sticky=W)
+        self.entry_modelo.grid(row=2, column=1, columnspan=3, padx=4, pady=3, sticky=tk.W)
 
         # NUMERO DE SERIE
-        self.lbl_serie = Label(self.frame_dos, text="Numero de Serie: ")
-        self.lbl_serie.grid(row=2, column=4, padx=4, pady=3, sticky=W)
-        self.entry_serie = Entry(self.frame_dos, textvariable=self.strvar_serie, justify="left", width=40)
+        self.lbl_serie = tk.Label(self.frame_dos, text="Numero de Serie: ")
+        self.lbl_serie.grid(row=2, column=4, padx=4, pady=3, sticky=tk.W)
+        self.entry_serie = tk.Entry(self.frame_dos, textvariable=self.strvar_serie, justify="left", width=40)
         self.strvar_serie.trace("w", lambda *args: self.limitador(self.strvar_serie, 30))
-        self.entry_serie.grid(row=2, column=5, padx=4, pady=3, sticky=W)
+        self.entry_serie.grid(row=2, column=5, padx=4, pady=3, sticky=tk.W)
 
         # FALLOS
-        self.lbl_diagnostico = Label(self.frame_dos, text="Diagnostico: ")
-        self.lbl_diagnostico.grid(row=3, column=0, padx=4, pady=3, sticky=W)
-        self.entry_diagnostico = Entry(self.frame_dos, textvariable=self.strvar_diagnostico, justify="left", width=150)
+        self.lbl_diagnostico = tk.Label(self.frame_dos, text="Diagnostico: ")
+        self.lbl_diagnostico.grid(row=3, column=0, padx=4, pady=3, sticky=tk.W)
+        self.entry_diagnostico = tk.Entry(self.frame_dos, textvariable=self.strvar_diagnostico, justify="left", width=150)
         self.strvar_diagnostico.trace("w", lambda *args: self.limitador(self.strvar_diagnostico, 250))
-        self.entry_diagnostico.grid(row=3, column=1, columnspan=5, padx=4, pady=3, sticky=W)
+        self.entry_diagnostico.grid(row=3, column=1, columnspan=5, padx=4, pady=3, sticky=tk.W)
 
         # PROVOCADO
-        self.lbl_provocado = Label(self.frame_dos, text="Provocado: ")
-        self.lbl_provocado.grid(row=4, column=0, padx=4, pady=3, sticky=W)
-        self.entry_provocado = Entry(self.frame_dos, textvariable=self.strvar_provocado, justify="left", width=150)
+        self.lbl_provocado = tk.Label(self.frame_dos, text="Provocado: ")
+        self.lbl_provocado.grid(row=4, column=0, padx=4, pady=3, sticky=tk.W)
+        self.entry_provocado = tk.Entry(self.frame_dos, textvariable=self.strvar_provocado, justify="left", width=150)
         self.strvar_provocado.trace("w", lambda *args: self.limitador(self.strvar_provocado, 250))
-        self.entry_provocado.grid(row=4, column=1, columnspan=5, padx=4, pady=3, sticky=W)
+        self.entry_provocado.grid(row=4, column=1, columnspan=5, padx=4, pady=3, sticky=tk.W)
 
         self.frame_dos.pack(side="top", fill="both", expand=0, padx=5, pady=2)
 
-        self.frame_tres=LabelFrame(self.master, text="", foreground="red")
+        self.frame_tres=tk.LabelFrame(self.master, text="", foreground="red")
 
         # DESCRIPCION
         self.text_descripcion = ScrolledText(self.frame_tres)
@@ -861,6 +863,6 @@ class clase_inf_tecnicos(Frame):
         self.text_descripcion.grid(row=0, column=0, padx=10, pady=5, sticky="nsew")
 
         # BOTON GENERAR TEXTO INFORME
-        self.btn_genero_informe = Button(self.frame_tres, text="Generar\nInforme", command=self.fGenero_informe,
+        self.btn_genero_informe = tk.Button(self.frame_tres, text="Generar\nInforme", command=self.fGenero_informe,
                                          width=16, height=4, bg="blue", fg="white")
         self.btn_genero_informe.grid(row=0, column=1, padx=5, pady=2)

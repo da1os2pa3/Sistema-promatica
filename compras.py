@@ -12,7 +12,7 @@ from datetime import date
 from PIL import Image, ImageTk
 from PDF_clase import *
 
-class clase_compras(Frame):
+class Clase_Compras(Frame):
 
     def __init__(self, master=None):
 

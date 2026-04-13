@@ -1,6 +1,6 @@
-import tkinter as tk
-from tkinter import *
-from tkinter import ttk
+# import tkinter as tk
+# from tkinter import *
+# from tkinter import ttk
 from tkinter import messagebox
 # -------------------------------------------
 from datetime import datetime
@@ -364,18 +364,36 @@ def codigo_repetido(codcontrol, tabla, campo):
 # Esta se fija que no existan mas de una vez los caracteres "-", "." en el campo numerico
 # retorna un valor Boolean Falso o True
 '''
+# def control_forma(value):
+#     cuenta_i = 0
+#     cuenta_g = 0
+#     for i in value:
+#         if i == '.':
+#             cuenta_i += 1
+#         if i == '-':
+#             cuenta_g += 1
+#     if cuenta_i > 1 or cuenta_g > 1:
+#         return(False)
+#     else:
+#         return(True)
+
+
+
+
+
+
+
 def control_forma(value):
-    cuenta_i = 0
-    cuenta_g = 0
-    for i in value:
-        if i == '.':
-            cuenta_i += 1
-        if i == '-':
-            cuenta_g += 1
-    if cuenta_i > 1 or cuenta_g > 1:
-        return(False)
-    else:
-        return(True)
+    if value == "":
+        return True
+
+    if value.count("-") > 1 or value.count(".") > 1:
+        return False
+
+    if "-" in value and not value.startswith("-"):
+        return False
+
+    return value.replace("-", "").replace(".", "").isdigit()
 
 '''
 # Esta controla los valores numericos en cuanto a inconsistencias - trabaja usando "control_forma" que esta arriba
@@ -384,7 +402,7 @@ quepongo = al valor que quiere que devolvamos ante una inconsistencia
 '''
 def control_numerico(value, quepongo):
 
-    if not control_forma(list(value)):
+    if not control_forma(value):
         return quepongo
     if value == "" or value == '-' or value == '.':
         return quepongo
@@ -394,6 +412,14 @@ def control_numerico(value, quepongo):
         return (float(value) * -1)
     if float(value) > 0:
         return round(float(value), 2)
+
+
+
+
+
+
+
+
 
 '''
 # Limita la cantidad de caracteres ingresados en un Entry

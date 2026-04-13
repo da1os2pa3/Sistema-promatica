@@ -1,6 +1,5 @@
-from Tools.scripts.ptags import tags
-
 from funciones import *
+from funcion_new import *
 from clientes_ABM import *
 #-------------------------------------------------
 from tkinter import messagebox
@@ -12,7 +11,7 @@ from datetime import date
 from datetime import datetime
 from PIL import Image, ImageTk
 
-class Ventana(Frame):
+class Clase_Clientes(Frame):
 
     def __init__(self, master=None):
 
@@ -24,10 +23,10 @@ class Ventana(Frame):
         self.master.focus_set()
         # ---------------------------------------------------------------------------------
 
-        # ---------------------------------------------------------------------------------
-        # Instanciaciones -*-
+        # Instanciaciones -----------------------------------------------------------------
         # Creo una instancia de clientesABM de la clase datosClientes
         self.varClientes = datosClientes(self.master)
+        self.varFuncion_new = ClaseFuncion_new(self.master)
         # ---------------------------------------------------------------------------------
 
         # ---------------------------------------------------------------------------------
@@ -44,7 +43,7 @@ class Ventana(Frame):
 
         # Asigno fijo un ancho y un alto
         ancho_ventana = 980
-        alto_ventana = 620
+        alto_ventana = 630
 
         # X e Y son las coordenadas para el posicionamiento del vertice superior izquierdo
         x = int((ancho - ancho_ventana) / 2)
@@ -59,20 +58,35 @@ class Ventana(Frame):
         # ---------------------------------------------------------------------------
         # SETEO INICIAL DEL GRID
         # ---------------------------------------------------------------------------------
-        # item = self.grid_clientes.identify_row(0)
+        # item = self.grid_clientes.identify_row(0) # I==001, I004..., primera fia "visible", ojo no siempre es la primera real
         # self.grid_clientes.selection_set(item)
         # self.grid_clientes.focus(item)
         # ---------------------------------------------------------------------------
 
-    # ---------------------------------------------------------------------------------
-    # WIDGETS -*-
-    # ---------------------------------------------------------------------------------
-
     def create_widgets(self):
 
-        # -----------------------------------------------------------------------------
+        # ---------------------------------------------------------------------------
+        # GPT ||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+        """ Es para los mensajes sobre eventos del sistema, rteemplazaria a algunos messagebox
+        Ubicada ultima linea de la pantalla"""
+
+        self.status_var = tk.StringVar()
+
+        self.status_bar = Label(
+            self.master,
+            textvariable=self.status_var,
+            bd=1,
+            relief="sunken",
+            anchor="w",
+            bg="#f0f0f0"
+        )
+        self.status_bar.pack(side="bottom", fill="x")
+        # ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+        # --------------------------------------------------------------------------
+
+        # --------------------------------------------------------------------------
         # TITULOS -*-
-        # -----------------------------------------------------------------------------
+        # --------------------------------------------------------------------------
         # Encabezado logo y titulo con PACK
         self.frame_titulo_top = Frame(self.master)
         self.cuadro_titulos()
@@ -101,8 +115,7 @@ class Ventana(Frame):
         # --------------------------------------------------------------------------
         # BARRA LATERAL DE MENU
         # --------------------------------------------------------------------------
-
-        # cuadro principal contenedor
+        # cuadro principal contenedor - barra izquierda
         self.barra_botones = LabelFrame(self.master)
         self.barra_lateral_botones()
         self.barra_botones.pack(side="left", padx=10, pady=5, ipady=5, fill="y")
@@ -111,25 +124,23 @@ class Ventana(Frame):
         # --------------------------------------------------------------------------
         # CUADRO PRINCIPAL CONTENEDOR DEL GRID Y BARRA DE BUSQUEDAS
         self.frame_tv = Frame(self.master)
-
         # --------------------------------------------------------------------------
         # BUSQUEDA DE CLIENTES -*-
         # --------------------------------------------------------------------------
         self.frame_buscar = LabelFrame(self.frame_tv)
         self.cuadro_buscar()
         self.frame_buscar.pack(side="top", fill="both", expand=1, padx=1, pady=3)
-        # ----------------------------------------------------------------------------
+        # -------------------------------------------------------------------------
 
-        # -----------------------------------------------------------------------------
+        # -------------------------------------------------------------------------
         # TREEVIEW - GRID
-        # -----------------------------------------------------------------------------
+        # -------------------------------------------------------------------------
         self.cuadro_grid_clientes()
-
         self.frame_tv.pack(side="top", fill="both", padx=5, pady=5)
         # --------------------------------------------------------------------------
 
         # --------------------------------------------------------------------------
-        # ENTRYS -*-
+        # ENTRYS
         # --------------------------------------------------------------------------
         self.sector_entry = LabelFrame(self.master)
         self.cuadro_entrys()
@@ -137,21 +148,30 @@ class Ventana(Frame):
         # --------------------------------------------------------------------------
 
     # --------------------------------------------------------------------------
-    # GRID -*-
+    # GRID -*- METODOS
     # --------------------------------------------------------------------------
-
-    def limpiar_Grid(self):
-
-        for item in self.grid_clientes.get_children():
-            self.grid_clientes.delete(item)
 
     def llena_grilla(self, set_foco):
 
-        if len(self.filtro_activo) > 0:
+        """ En set_foco viene el Id de la tabla que identidica el registro donde quiero oner el foco - 2312, 23, 456..
+        Puede llegar a venir en vacio """
+
+        # Si hay un error en insertar devuelve None la funcion insertar de ABM
+        if set_foco is None:
+            print("⚠️ set_foco = None (posible error al insertar)")
+            return
+
+        # Limpio el grid
+        for item in self.grid_clientes.get_children():
+            self.grid_clientes.delete(item)
+
+        # Asigno orden
+        if self.filtro_activo:
             datos = self.varClientes.consultar_clientes(self.filtro_activo)
         else:
-            datos = self.varClientes.consultar_clientes("clientes ORDER BY apellido, nombres ASC")
+            datos = self.varClientes.consultar_clientes("ORDER BY apellido, nombres ASC")
 
+        # Tomo la cantidad de clientes
         self.strvar_cant_clientes.set(value=str(len(datos)))
 
         cont = 0
@@ -168,16 +188,18 @@ class Ventana(Frame):
                                                                                   row[8], row[9], row[10], row[11],
                                                                                   row[12], forma_normal, row[14]))
 
-        # # Muestra elprimero de la grilla
-        # if len(self.grid_clientes.get_children()) > 0:
-        #     self.grid_clientes.selection_set(self.grid_clientes.get_children()[0])
+        # Grid negativo
+        if not len(self.grid_clientes.get_children()) >= 0:
+            self.set_status("❌ Error inesperado, Grid negativo", "error")
+            return
 
-        # Ubico el foco en el grid
+        # Foco vacio, voy al primero de la grilla
+        if not set_foco:
+            self.grid_clientes.selection_set(self.grid_clientes.get_children()[0])
+
+        # Voy al Id valor del set_foco
         for item in self.grid_clientes.get_children():
-
-            #valores = self.grid_clientes.item(item, "values")
             texto = self.grid_clientes.item(item, "text")
-
             if str(texto) == str(set_foco):  # suponiendo que el ID está en la columna 0
                 self.grid_clientes.update_idletasks()
                 self.grid_clientes.focus_set()
@@ -193,51 +215,31 @@ class Ventana(Frame):
     def estado_inicial(self):
 
         # Variables
-        self.filtro_activo = "clientes ORDER BY apellido, nombres ASC"
-        #self.var_Id = -1
+        self.filtro_activo = "ORDER BY apellido, nombres ASC"
         self.alta_modif = 0
-
         self.limpiar_text()
         self.habilitar_btn_A("normal")
         self.habilitar_btn_B("disabled")
         self.habilitar_text("disabled")
 
-    def limpiar_text(self):
-
-        self.entry_codigo.delete(0, END)
-        self.entry_apellido.delete(0, END)
-        self.entry_nombres.delete(0, END)
-        self.entry_direccion.delete(0, END)
-        self.entry_localidad.delete(0, END)
-        self.entry_provincia.delete(0, END)
-        self.entry_postal.delete(0,END)
-        self.entry_telefono_pers.delete(0, END)
-        self.entry_telefono_trab.delete(0, END)
-        self.entry_mail.delete(0, END)
-        self.combo_sit_fiscal.set("")
-        self.combo_sit_fiscal.current(0)
-        self.entry_cuit.delete(0, END)
-        self.entry_observaciones.delete(0, END)
-
     def habilitar_text(self, estado):
 
-        # Agregado para manejar tema de readonly y que no quede el codigo escrito al limpiar
-        self.entry_codigo.configure(state="normal")
-        self.entry_codigo.delete(0, END)
-        self.entry_codigo.configure(state=estado)
-        self.entry_apellido.configure(state=estado)
-        self.entry_nombres.configure(state=estado)
-        self.entry_direccion.configure(state=estado)
-        self.entry_localidad.configure(state=estado)
-        self.entry_provincia.configure(state=estado)
-        self.entry_postal.configure(state=estado)
-        self.entry_telefono_pers.configure(state=estado)
-        self.entry_telefono_trab.configure(state=estado)
-        self.entry_mail.configure(state=estado)
-        self.entry_fecha_ingreso.configure(state=estado)
-        self.combo_sit_fiscal.configure(state=estado)
-        self.entry_cuit.configure(state=estado)
-        self.entry_observaciones.configure(state=estado)
+        for entry in [
+            self.entry_apellido,
+            self.entry_nombres,
+            self.entry_direccion,
+            self.entry_localidad,
+            self.entry_provincia,
+            self.entry_postal,
+            self.entry_telefono_pers,
+            self.entry_telefono_trab,
+            self.entry_mail,
+            self.entry_fecha_ingreso,
+            self.combo_sit_fiscal,
+            self.entry_cuit,
+            self.entry_observaciones
+        ]:
+            entry.configure(state=estado)
 
         if self.alta_modif == 1:
             self.grid_clientes['selectmode'] = 'none'
@@ -246,14 +248,43 @@ class Ventana(Frame):
             self.grid_clientes['selectmode'] = 'browse'
             self.grid_clientes.bind("<Double-Button-1>", self.DobleClickGrid)
 
+    def limpiar_text(self):
+
+        self.combo_sit_fiscal.set(""),
+        self.combo_sit_fiscal.current(0),
+
+        # Agregado para manejar tema de readonly y que no quede el codigo escrito al limpiar
+        self.entry_codigo.configure(state="normal")
+        self.entry_codigo.delete(0, END)
+        self.entry_codigo.configure(state="disabled")
+
+        for entry in [
+#            self.entry_codigo,
+            self.entry_apellido,
+            self.entry_nombres,
+            self.entry_direccion,
+            self.entry_localidad,
+            self.entry_provincia,
+            self.entry_postal,
+            self.entry_telefono_pers,
+            self.entry_telefono_trab,
+            self.entry_mail,
+            self.entry_cuit,
+            self.entry_observaciones
+        ]:
+            entry.delete(0, END)
+
     def habilitar_btn_A(self, estado):
 
-        self.btn_nuevo.configure(state=estado)
-        self.btn_eliminar.configure(state=estado)
-        self.btn_editar.configure(state=estado)
-        self.entry_buscar_cliente.configure(state=estado)
-        self.btn_buscar_cliente.configure(state=estado)
-        self.btn_mostrar_todo.configure(state=estado)
+        for entry in [
+            self.btn_nuevo,
+            self.btn_eliminar,
+            self.btn_editar,
+            self.entry_buscar_cliente,
+            self.btn_buscar_cliente,
+            self.btn_mostrar_todo
+        ]:
+            entry.configure(state=estado)
 
         if self.alta_modif == 1 or self.alta_modif == 0:
             self.btnFinarch.configure(state=estado)
@@ -262,21 +293,17 @@ class Ventana(Frame):
             self.btn_orden_apellido.configure(state=estado)
 
     def habilitar_btn_B(self, estado):
-
         self.btn_guardar.configure(state=estado)
 
     def fCancelar(self):
-
         r = messagebox.askquestion("Cancelar", "Confirma cancelar operacion actual?", parent=self)
         if r == messagebox.YES:
             self.estado_inicial()
 
     def fReset(self):
-
         self.estado_inicial()
-        self.limpiar_Grid()
         self.llena_grilla("")
-        self.mover_puntero_topend("TOP")
+        self.varFuncion_new.mover_puntero_topend(self.grid_clientes, 'TOP')
 
     def fSalir(self):
         self.master.destroy()
@@ -292,21 +319,26 @@ class Ventana(Frame):
 
         self.alta_modif = 1
 
+        # preparacion
         self.habilitar_text("normal")
         self.limpiar_text()
         self.entry_fecha_ingreso.delete(0, END)
         self.habilitar_btn_B("normal")
         self.habilitar_btn_A("disabled")
 
-        # Obtengo el codigo en secuencia y pongo el entry en disabled para no modificar
-        self.entry_codigo.insert(0, (int(self.varClientes.traer_ultimo(1))) + 1)
+        # Obtengo el ultimo codigo + 1 y pongo el entry en readonly para no modificar
+        self.entry_codigo.configure(state="normal")
+        self.entry_codigo.insert(0, (int(self.varClientes.traer_ultimo())) + 1)
         self.entry_codigo.configure(state="readonly")
+
+        # readonly combo de situacion fiscal
+        self.combo_sit_fiscal.current(0)
         self.combo_sit_fiscal.configure(state="readonly")
+
+        # Valores preestablecidos
         self.entry_localidad.insert(0, "Villa Carlos Paz")
         self.entry_provincia.insert(0, "Cordoba")
         self.entry_postal.insert(0, "5152")
-
-        self.combo_sit_fiscal.current(0)
 
         # Cambio el formato de la fecha
         una_fecha = date.today()
@@ -316,26 +348,31 @@ class Ventana(Frame):
 
     def fEditar(self):
 
+        # claves del Grid
         self.selected = self.grid_clientes.focus()
         self.clave = self.grid_clientes.item(self.selected, 'text')
 
         if self.clave == "":
-            messagebox.showwarning("Editar", "No hay nada seleccionado", parent=self)
+            self.set_status("✔ No hay nada seleccionado", "ok")
             return
 
         self.alta_modif = 2
-        #self.var_Id = self.clave  #puede traer -1 , en ese caso seria un alta
 
+        # preparacion
         self.habilitar_text('normal')
         self.limpiar_text()
 
-        self.filtro_activo = "clientes WHERE Id = " + str(self.clave)
+        # carga valores Entrys
+        self.filtro_activo = "WHERE Id = " + str(self.clave)
 
         valores = self.varClientes.consultar_clientes(self.filtro_activo)
 
         for row in valores:
 
+            self.entry_codigo.configure(state="normal")
             self.entry_codigo.insert(0, row[1])
+            self.entry_codigo.configure(state="readonly")
+
             self.entry_apellido.insert(0, row[2])
             self.entry_nombres.insert(0, row[3])
             self.entry_direccion.insert(0, row[4])
@@ -345,8 +382,7 @@ class Ventana(Frame):
             self.entry_telefono_pers.insert(0, row[8])
             self.entry_telefono_trab.insert(0, row[9])
             self.entry_mail.insert(0, row[10])
-            self.combo_sit_fiscal.set("")
-            self.combo_sit_fiscal.insert(0, row[11])
+            self.combo_sit_fiscal.set(row[11])
             self.entry_cuit.insert(0, row[12])
             # convierto fecha de date a string y cambio a visualizacion español
             fecha_convertida = fecha_str_reves_normal(self, datetime.strftime(row[13], "%Y-%m-%d"), False)
@@ -354,8 +390,7 @@ class Ventana(Frame):
             self.strvar_fecha_ingreso.set(value=fecha_convertida)
             self.entry_observaciones.insert(0, row[14])
 
-        self.entry_codigo.configure(state="readonly")
-
+        # termino preparacion
         self.habilitar_btn_B("normal")
         self.habilitar_btn_A("disabled")
         self.entry_apellido.focus()
@@ -363,16 +398,17 @@ class Ventana(Frame):
     def fEliminar(self):
 
         # ------------------------------------------------------------------------------
-        # selecciono el Id del GRID para su uso posterior
+        """ prev(self.selected) → intenta traer el item anterior Si no existe(por ejemplo, estás en el
+        primero) → devuelve "" Entonces entra el or → usa self.selected. """
         self.selected = self.grid_clientes.focus()
-        self.selected_ant = self.grid_clientes.prev(self.selected)
+        self.selected_ant = self.grid_clientes.prev(self.selected) or self.selected
         # guardo en clave el Id pero de la Tabla (no son el mismo que el grid)
         self.clave = self.grid_clientes.item(self.selected, 'text')
         self.clave_ant = self.grid_clientes.item(self.selected_ant, 'text')
         # ------------------------------------------------------------------------------
 
         if self.clave == "":
-            messagebox.showwarning("Eliminar", "No hay nada seleccionado", parent=self)
+            self.set_status("❌ No hay nada seleccionado", "error")
             return
 
         # guardo todos los valores en una lista desde el GRID
@@ -381,20 +417,26 @@ class Ventana(Frame):
 
         r = messagebox.askquestion("Confirmar", "Confirma eliminar registro?\n " + data, parent=self)
         if r == messagebox.NO:
-            messagebox.showinfo("Eliminar", "Eliminacion cancelada", parent=self)
+            self.set_status("ℹ Eliminaion cancelada", "info")
             return
 
-        self.varClientes.eliminar_clientes(self.clave)
+        try:
+            # Elimino el cliente -----------------------
+            self.varClientes.eliminar_clientes(self.clave)
+            # ------------------------------------------
+        except Exception as e:
+            messagebox.showerror("Error del sistema en Eliminar cliente", str(e))
+            self.set_status("❌ Error al eliminar", "error")
+            return
+        else:
+            self.set_status("🗑 Registro eliminado correctamente", "ok")
 
-        messagebox.showinfo("Aviso", "Registro eliminado correctamente", parent=self)
-
-        self.limpiar_Grid()
+        # recarga del Grid
         self.llena_grilla(self.clave_ant)
 
     def fGuardar(self):
 
-        #-----------------------------------------------------------------
-        # VALIDACIONES
+        # VALIDACIONES ---------------------------------------------------
 
         # CONTROLO CODIGO REPETIDO - control de codigo de cliente repetido (en funciones)
         codrep = codigo_repetido(self.strvar_codigo.get(), "clientes", "codigo")
@@ -402,102 +444,103 @@ class Ventana(Frame):
         if self.alta_modif == 1:
             # si viene algun dato, es que el codigo ya existe
             if len(codrep) > 0:
-                messagebox.showerror("Error", "El codigo ya existe en la tabla - verifique", parent=self)
+                # messagebox.showerror("Error", "El codigo ya existe en la tabla - verifique", parent=self)
+                self.set_status("❌ El Codigo ya existe, error al guardar", "error")
                 self.entry_apellido.focus()
                 return
-
         # VALIDACION QUE EXISTA APELLIDO y NOMBRE
-
         if self.strvar_apellido.get() == "":
-            messagebox.showwarning("Alerta", "Ingrese apellido/s", parent=self)
+            self.set_status("⚠ Ingrese apellido/s", "warn")
             self.entry_apellido.focus()
             return
         if self.strvar_nombres.get() == "":
-            messagebox.showwarning("Alerta", "Ingrese nombre/s", parent=self)
+            self.set_status("⚠ Ingrese nombre/s", "warn")
             self.entry_nombres.focus()
             return
         # VALIDAR CUIT - en modulo funciones.py
         if not validar_cuit(self, self.strvar_cuit.get()):
-            messagebox.showwarning("Alerta", "CUIT incorrecto", parent=self)
+            self.set_status("⚠ CUIT incorrecto", "warn")
             self.entry_cuit.focus()
             return
         # ----------------------------------------------------------------
 
+        #-----------------------------------------------------------------
+        # GUARDO ID Y CLAVE PARA GRID Y POOSICIONAR PUNTERO
+        # guardo el Id del Treeview en selected para ubicacion del foco a posteriori (I001, I002....
+        self.selected = self.grid_clientes.focus()
+        # Guardo el Id del registro de la base de datos (no es el mismo que el otro, este puedo
+        # verlo en la base 1, 2, 3, 4......)
+        self.clave = self.grid_clientes.item(self.selected, 'text')
+        #-----------------------------------------------------------------
+
+        #-----------------------------------------------------------------
+        # PASO DICCIONARIO PARA INSERTAR
+        clientes = {
+            #"Id": self.var_Id,
+            "Id": self.clave,
+            "codigo": self.strvar_codigo.get(),
+            "apellido": self.strvar_apellido.get(),
+            "nombres": self.strvar_nombres.get(),
+            "direccion": self.strvar_direccion.get(),
+            "localidad": self.strvar_localidad.get(),
+            "provincia": self.strvar_provincia.get(),
+            "postal": self.strvar_postal.get(),
+            "telef_pers": self.strvar_telef_pers.get(),
+            "telef_trab": self.strvar_telef_trab.get(),
+            "mail": self.strvar_mail.get(),
+            "fecha_ingreso": self.strvar_fecha_ingreso.get(),
+            "sit_fis": self.strvar_sit_fis.get(),
+            "cuit": self.strvar_cuit.get(),
+            "observaciones": self.strvar_observaciones.get(),
+            "apenombre": self.strvar_apellido.get() + ' ' + self.strvar_nombres.get()
+        }
+        #-----------------------------------------------------------------
+
+        #-----------------------------------------------------------------
+        # GUARDADO DATOS Y EVALUACION DEL PROCEDIMIENTO
+        #-----------------------------------------------------------------
         try:
 
-            # guardo el Id del Treeview en selected para ubicacion del foco a posteriori (I001, I002....
-            self.selected = self.grid_clientes.focus()
-            # Guardo el Id del registro de la base de datos (no es el mismo que el otro, este puedo
-            # verlo en la base 1, 2, 3, 4......)
-            self.clave = self.grid_clientes.item(self.selected, 'text')
-
-            clientes = {
-                #"Id": self.var_Id,
-                "Id": self.clave,
-                "codigo": self.strvar_codigo.get(),
-                "apellido": self.strvar_apellido.get(),
-                "nombres": self.strvar_nombres.get(),
-                "direccion": self.strvar_direccion.get(),
-                "localidad": self.strvar_localidad.get(),
-                "provincia": self.strvar_provincia.get(),
-                "postal": self.strvar_postal.get(),
-                "telef_pers": self.strvar_telef_pers.get(),
-                "telef_trab": self.strvar_telef_trab.get(),
-                "mail": self.strvar_mail.get(),
-                "fecha_ingreso": self.strvar_fecha_ingreso.get(),
-                "sit_fis": self.strvar_sit_fis.get(),
-                "cuit": self.strvar_cuit.get(),
-                "observaciones": self.strvar_observaciones.get(),
-                "apenombre": self.strvar_apellido.get() + ' ' + self.strvar_nombres.get()
-            }
-
             if self.alta_modif == 1:
-
                 self.id_nuevo = self.varClientes.insertar_clientes(clientes)
-                messagebox.showinfo("Correcto", "Nuevo registro creado correctamente", parent=self)
+                id_ref = self.id_nuevo
 
             elif self.alta_modif == 2:
-
                 self.varClientes.modificar_clientes(clientes)
-                #self.var_Id == -1
-                messagebox.showinfo("Correcto", "La modificacion del registro fue exitosa", parent=self)
+                id_ref = self.clave
 
-            self.limpiar_Grid()
+        except ValueError as e:
+            messagebox.showwarning("Datos inválidos en Insertar/Modificar clientes", str(e))
+            self.set_status("⚠ Error en los datos", "warn")
+            return
+        except Exception as e:
+            messagebox.showerror("Error del sistema en Insertar/Modificar clientes", str(e))
+            self.set_status("❌ Error al guardar", "error")
+            return
+
+        else:
+            self.set_status("✔ Registro guardado correctamente", "ok")
+
+            # Terminacion y habilitaciones
             self.limpiar_text()
             self.habilitar_btn_B("disabled")
             self.habilitar_btn_A("normal")
 
-            self.filtro_activo = "clientes ORDER BY apellido, nombres ASC"
-
-            if self.alta_modif == 1:
-                self.llena_grilla(self.id_nuevo)
-            elif self.alta_modif == 2:
-                self.llena_grilla(self.clave)
+            self.filtro_activo = "ORDER BY apellido, nombres ASC"
+            self.llena_grilla(id_ref)
 
             self.alta_modif = 0
-
-            # ojo este debe ir aca abajo sino da problema el browse del grid
             self.habilitar_text("disabled")
-
-        except:
-
-            messagebox.showerror("Error", "Revise datos ingresados por favor", parent=self)
-            self.entry_fecha_ingreso.focus()
-            return
 
     # --------------------------------------------------------------------------
     # VARIAS -*-
     # --------------------------------------------------------------------------
 
     def DobleClickGrid(self, event):
-
         self.fEditar()
 
     def limitador(self, entry_text, caract):
-
-        if len(entry_text.get()) > 0:
-            # donde esta el :5 limitas la cantidad d caracteres
-            entry_text.set(entry_text.get()[:caract])
+        entry_text.set(entry_text.get()[:caract])
 
     def formato_fecha(self, pollo):
 
@@ -534,96 +577,68 @@ class Ventana(Frame):
     # --------------------------------------------------------------------------
 
     def forden_codigo(self):
-
         # guardo los focos e items donde estamos posicionados en el TV
         self.selected = self.grid_clientes.focus()
         self.clave = self.grid_clientes.item(self.selected, 'text')
-        self.filtro_activo = "clientes ORDER BY codigo ASC"
-        self.limpiar_Grid()
+        self.filtro_activo = "ORDER BY codigo ASC"
         self.llena_grilla(self.clave)
 
     def forden_apellido(self):
-
         # guardo los focos e items donde estamos posicionados en el TV
         self.selected = self.grid_clientes.focus()
         self.clave = self.grid_clientes.item(self.selected, 'text')
-        self.filtro_activo = "clientes ORDER BY apellido, nombres ASC"
-        self.limpiar_Grid()
+        self.filtro_activo = "ORDER BY apellido, nombres ASC"
         self.llena_grilla(self.clave)
 
     def fToparch(self):
-        self.mover_puntero_topend('TOP')
+        self.varFuncion_new.mover_puntero_topend(self.grid_clientes, 'TOP')
 
     def fFinarch(self):
-        self.mover_puntero_topend('END')
+        self.varFuncion_new.mover_puntero_topend(self.grid_clientes, 'END')
 
     def fBuscar_en_tabla(self):
 
-        # Buscar en el TREVIEW
+        # Buscar en el Grid
         if len(self.entry_buscar_cliente.get()) <= 0:
-            messagebox.showwarning("Buscar", "No ingreso busqueda", parent=self)
+            self.set_status("⚠ No ingreso busqueda", "warn")
             return
 
+        # Obtengo string a buscar
         se_busca = self.entry_buscar_cliente.get()
 
-        self.filtro_activo = "clientes WHERE INSTR(apellido, '" + se_busca + "') > 0" \
-                             + " OR " + "INSTR(nombres, '" + se_busca + "') > 0" \
-                             + " OR " + "INSTR(apenombre, '" + se_busca + "') > 0" \
-                             + " ORDER BY apellido, nombres ASC"
+        # con GPT ||||||||||||||||||||||||||||||||||||||||||||||||||
+        # Retorno las coincidencias
+        try:
+            datos = self.varClientes.buscar_clientes(se_busca)
+        except Exception as e:
+            messagebox.showerror("Error del sistema en Buscar cllientes", str(e))
+            self.set_status("❌ Error al buscar un cliente", "error")
+            return
 
-        self.varClientes.buscar_entabla(self.filtro_activo)
-        self.limpiar_Grid()
-        self.llena_grilla("")
+        # Limpio el grid
+        for item in self.grid_clientes.get_children():
+            self.grid_clientes.delete(item)
 
-        """ Obtengo el Id del grid para que me tome la seleccion y el foco se coloque efectivamente en el 
-        item buscado y asi cuando le doy -show all- el puntero se sigue quedando en el registro buscado"""
-        # item = self.grid_clientes.selection()
-        # self.grid_clientes.focus(item)
+        # carga la grilla con los registros seleccionados
+        for row in datos:
+            self.grid_clientes.insert("", "end", text=row[0], values=row[1:])
+            # 👉 row[1:] significa:desde el segundo elemento en adelante o sea: row[1], row[2], row[3]...
+
+        items = self.grid_clientes.get_children()
+
+        # selecciono el primero de la tabla y pongo foco y visibilidad
+        if items:
+            primero = items[0]
+            self.grid_clientes.selection_set(primero)
+            self.grid_clientes.focus(primero)
+            self.grid_clientes.see(primero)
+        # ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 
     def fShowall(self):
-
         self.selected = self.grid_clientes.focus()
         self.clave = self.grid_clientes.item(self.selected, 'text')
-        self.filtro_activo = "clientes ORDER BY apellido, nombres ASC"
-        self.limpiar_Grid()
+        self.filtro_activo = "ORDER BY apellido, nombres ASC"
         self.llena_grilla(self.clave)
-
-    def mover_puntero_topend(self, param_topend):
-
-        if param_topend == 'TOP':
-
-            # obtengo una lista con todos los Id del treeview (I001, I002.....
-            regis = self.grid_clientes.get_children()
-            # barro y salgo al primero, pero me quedo en el primero
-            rg = ""
-            for rg in regis:
-                break
-            if rg == "":
-                return
-            # selecciono el Id primero de la lista en este caso
-            self.grid_clientes.selection_set(rg)
-            # pongo el foco sobre el primero Id
-            self.grid_clientes.focus(rg)
-            # lleva el foco al principio del treeview con esta instruccion que encontre
-            self.grid_clientes.yview(self.grid_clientes.index(self.grid_clientes.get_children()[0]))
-
-        elif param_topend == 'END':
-
-            # Obtengo una lista con todos los Id del treeview (I001, I002, ..........
-            regis = self.grid_clientes.get_children()
-            # Barro la lista y ,me quedo conel ultimo Id
-            rg = ""
-            # barro hasta el ultimo
-            for rg in regis:
-                continue
-            if rg == "":
-                return
-            # Selecciono el ultimo Id en este caso
-            self.grid_clientes.selection_set(rg)
-            # Pongo el foco alultimo elemento de la lista (al final)
-            self.grid_clientes.focus(rg)
-            # lleva el foco al final del treeview
-            self.grid_clientes.yview(self.grid_clientes.index(self.grid_clientes.get_children()[-1]))
 
     def cuadro_botones_grid(self):
 
@@ -631,8 +646,7 @@ class Ventana(Frame):
             self.botones1.grid_columnconfigure(c, weight=1, minsize=140)
 
         # Nuevo cliente
-        img = Image.open("archivo-nuevo.png").resize((18, 18))
-        icono = ImageTk.PhotoImage(img)
+        icono = self.cargar_icono("archivo-nuevo.png")
         self.btn_nuevo=Button(self.botones1, text=" Nuevo", command=self.fNuevo, bg="blue", fg="white", compound="left")
         self.btn_nuevo.image = icono
         self.btn_nuevo.config(image=icono)
@@ -640,8 +654,7 @@ class Ventana(Frame):
         ToolTip(self.btn_nuevo, msg="Ingresar un nuevo cliente")
 
         # Modificar un cliente
-        img = Image.open("editar.png").resize((18, 18))
-        icono = ImageTk.PhotoImage(img)
+        icono = self.cargar_icono("editar.png")
         self.btn_editar=Button(self.botones1, text=" Editar", command=self.fEditar, bg="blue", fg="white",
                                compound="left")
         self.btn_editar.image = icono
@@ -650,8 +663,7 @@ class Ventana(Frame):
         ToolTip(self.btn_editar, msg="Modificar datos de un cliente")
 
         # Eliminar un cliente
-        img = Image.open("eliminar.png").resize((18, 18))
-        icono = ImageTk.PhotoImage(img)
+        icono = self.cargar_icono("eliminar.png")
         self.btn_eliminar=Button(self.botones1, text=" Eliminar", command=self.fEliminar, bg="red", fg="white",
                                  compound="left")
         self.btn_eliminar.image = icono
@@ -660,8 +672,7 @@ class Ventana(Frame):
         ToolTip(self.btn_eliminar, msg="Elimina un cliente")
 
         # Guardar datos del cliente
-        img = Image.open("guardar.png").resize((18, 18))
-        icono = ImageTk.PhotoImage(img)
+        icono = self.cargar_icono("guardar.png")
         self.btn_guardar=Button(self.botones1, text=" Guardar", command=self.fGuardar, bg="green", fg="white",
                                 compound="left")
         self.btn_guardar.image = icono
@@ -670,8 +681,7 @@ class Ventana(Frame):
         ToolTip(self.btn_guardar, msg="Guarda los datos del cliente")
 
         # Guardar datos del cliente
-        img = Image.open("cancelar.png").resize((18, 18))
-        icono = ImageTk.PhotoImage(img)
+        icono = self.cargar_icono("cancelar.png")
         self.btn_cancelar=Button(self.botones1, text=" Cancelar", command=self.fCancelar, bg="black", fg="white",
                                  compound="left")
         self.btn_cancelar.image = icono
@@ -689,8 +699,7 @@ class Ventana(Frame):
             self.botones2.grid_rowconfigure(c, weight=1, minsize=30)
 
         # Ordena datos por codigo de cliente
-        img = Image.open("ordenar.png").resize((18, 18))
-        icono = ImageTk.PhotoImage(img)
+        icono = self.cargar_icono("ordenar.png")
         self.btn_orden_codigo = Button(self.botones2, text=" Orden Codigo", command=self.forden_codigo,
                                        bg="grey", fg="white", compound="left")
         self.btn_orden_codigo.image = icono
@@ -699,8 +708,7 @@ class Ventana(Frame):
         ToolTip(self.btn_orden_codigo, msg="Ordena la informacion por codigo de cliente")
 
         # Ordenar los datos ppor apellido y nombre
-        img = Image.open("ordenar.png").resize((18, 18))
-        icono = ImageTk.PhotoImage(img)
+        icono = self.cargar_icono("ordenar.png")
         self.btn_orden_apellido = Button(self.botones2, text=" Orden Apellido", command=self.forden_apellido,
                                          bg="grey", fg="white", compound="left")
         self.btn_orden_apellido.image = icono
@@ -709,8 +717,7 @@ class Ventana(Frame):
         ToolTip(self.btn_orden_apellido, msg="Ordena la informacion por Apellido y nombre de cliente")
 
         # Guardar datos del cliente
-        img = Image.open("reset.png").resize((18, 18))
-        icono = ImageTk.PhotoImage(img)
+        icono = self.cargar_icono("reset.png")
         self.btn_reset = Button(self.botones2, text=" Reset", command=self.fReset, bg="black", fg="white",
                                 compound="left")
         self.btn_reset.image = icono
@@ -738,7 +745,6 @@ class Ventana(Frame):
             widg.grid_configure(padx=6, pady=3, sticky='nsew')
 
     def cuadro_boton_salida(self):
-
         self.photo3 = Image.open('salida.png')
         self.photo3 = self.photo3.resize((50, 50), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo3 = ImageTk.PhotoImage(self.photo3)
@@ -746,7 +752,6 @@ class Ventana(Frame):
         self.btnSalir.grid(row=0, column=0, padx=5, pady=3, sticky="nsew")
 
     def cuadro_cartel_clientes(self):
-
         fff = tkFont.Font(family="Arial", size=9, weight="bold")
         self.lbl_cant_clientes = Label(self.botones4, text="Clientes", font=fff)
         self.lbl_cant_clientes1= Label(self.botones4, textvariable=self.strvar_cant_clientes, font=fff)
@@ -754,66 +759,65 @@ class Ventana(Frame):
         self.lbl_cant_clientes1.grid(row=1, column=0, padx=5, pady=3, columnspan=2, sticky='nsew')
 
     def cuadro_entrys(self):
-
         # CODIGO
         self.lbl_codigo = Label(self.sector_entry, text="Codigo: ")
         self.lbl_codigo.grid(row=0, column=0, padx=10, pady=3, sticky=W)
         self.entry_codigo = Entry(self.sector_entry, textvariable=self.strvar_codigo, justify="right", width=10)
-        self.strvar_codigo.trace("w", lambda *args: self.limitador(self.strvar_codigo, 10))
+        self.strvar_codigo.trace_add("write", lambda *args: self.limitador(self.strvar_codigo, 10))
         self.entry_codigo.grid(row=0, column=1, padx=10, pady=3, sticky=W)
         # APELLIDO
         self.lbl_apellido = Label(self.sector_entry, text="Apellido: ")
         self.lbl_apellido.grid(row=1, column=0, padx=10, pady=3, sticky=W)
         self.entry_apellido=Entry(self.sector_entry, textvariable=self.strvar_apellido, justify="left", width=40)
-        self.strvar_apellido.trace("w", lambda *args: self.limitador(self.strvar_apellido, 40))
+        self.strvar_apellido.trace_add("write", lambda *args: self.limitador(self.strvar_apellido, 40))
         self.entry_apellido.grid(row=1, column=1, padx=10, pady=3, sticky=W)
         # NOMBRES
         self.lbl_nombres = Label(self.sector_entry, text="Nombres: ")
         self.lbl_nombres.grid(row=2, column=0, padx=10, pady=3, sticky=W)
         self.entry_nombres = Entry(self.sector_entry, textvariable=self.strvar_nombres, justify="left", width=40)
-        self.strvar_nombres.trace("w", lambda *args: self.limitador(self.strvar_nombres, 40))
+        self.strvar_nombres.trace_add("write", lambda *args: self.limitador(self.strvar_nombres, 40))
         self.entry_nombres.grid(row=2, column=1, padx=10, pady=3, sticky=W)
         # DIRECCION
         self.lbl_direccion = Label(self.sector_entry, text="Direccion: ")
         self.lbl_direccion.grid(row=3, column=0, padx=10, pady=3, sticky=W)
         self.entry_direccion=Entry(self.sector_entry, textvariable=self.strvar_direccion, justify="left", width=40)
-        self.strvar_direccion.trace("w", lambda *args: self.limitador(self.strvar_direccion, 30))
+        self.strvar_direccion.trace_add("write", lambda *args: self.limitador(self.strvar_direccion, 30))
         self.entry_direccion.grid(row=3, column=1, padx=10, pady=3, sticky=W)
         # LOCALIDAD
         self.lbl_localidad = Label(self.sector_entry, text="Localidad: ")
         self.lbl_localidad.grid(row=4, column=0, padx=10, pady=3, sticky=W)
         self.entry_localidad=Entry(self.sector_entry, textvariable=self.strvar_localidad, justify="left", width=40)
-        self.strvar_localidad.trace("w", lambda *args: self.limitador(self.strvar_localidad, 30))
+        self.strvar_localidad.trace_add("write", lambda *args: self.limitador(self.strvar_localidad, 30))
         self.entry_localidad.grid(row=4, column=1, padx=10, pady=3, sticky=W)
         # PROVINCIA
         self.lbl_provincia = Label(self.sector_entry, text="Provincia: ")
         self.lbl_provincia.grid(row=5, column=0, padx=10, pady=3, sticky=W)
         self.entry_provincia=Entry(self.sector_entry, textvariable=self.strvar_provincia, justify="left", width=40)
-        self.strvar_provincia.trace("w", lambda *args: self.limitador(self.strvar_provincia, 30))
+        self.strvar_provincia.trace_add("write", lambda *args: self.limitador(self.strvar_provincia, 30))
         self.entry_provincia.grid(row=5, column=1, padx=10, pady=3, sticky=W)
         # POSTAL
         self.lbl_postal = Label(self.sector_entry, text="Cod. Postal: ")
         self.lbl_postal.grid(row=6, column=0, padx=10, pady=3, sticky=W)
         self.entry_postal=Entry(self.sector_entry, textvariable=self.strvar_postal, justify="left", width=40)
-        self.strvar_postal.trace("w", lambda *args: self.limitador(self.strvar_postal, 30))
+        self.strvar_postal.trace_add("write", lambda *args: self.limitador(self.strvar_postal, 30))
         self.entry_postal.grid(row=6, column=1, padx=10, pady=3, sticky=W)
         # TELEFONO PERSONAL
         self.lbl_telefono_pers = Label(self.sector_entry, text="Telefono Personal: ")
         self.lbl_telefono_pers.grid(row=0, column=2, padx=10, pady=3, sticky=W)
         self.entry_telefono_pers=Entry(self.sector_entry, textvariable=self.strvar_telef_pers, justify="left", width=40)
-        self.strvar_telef_pers.trace("w", lambda *args: self.limitador(self.strvar_telef_pers, 30))
+        self.strvar_telef_pers.trace_add("write", lambda *args: self.limitador(self.strvar_telef_pers, 30))
         self.entry_telefono_pers.grid(row=0, column=3, padx=10, pady=3, sticky=W)
         # TELEFONO TRABAJO
         self.lbl_telefono_trab = Label(self.sector_entry, text="Telefono Trabajo: ")
         self.lbl_telefono_trab.grid(row=1, column=2, padx=10, pady=3, sticky=W)
         self.entry_telefono_trab=Entry(self.sector_entry, textvariable=self.strvar_telef_trab, justify="left", width=40)
-        self.strvar_telef_trab.trace("w", lambda *args: self.limitador(self.strvar_telef_trab, 30))
+        self.strvar_telef_trab.trace_add("write", lambda *args: self.limitador(self.strvar_telef_trab, 30))
         self.entry_telefono_trab.grid(row=1, column=3, padx=10, pady=3, sticky=W)
         # CORREO ELECTRONICO
         self.lbl_mail = Label(self.sector_entry, text="Correo Electronico: ")
         self.lbl_mail.grid(row=2, column=2, padx=10, pady=3, sticky=W)
         self.entry_mail=Entry(self.sector_entry, textvariable=self.strvar_mail, justify="left", width=40)
-        self.strvar_mail.trace("w", lambda *args: self.limitador(self.strvar_mail, 30))
+        self.strvar_mail.trace_add("write", lambda *args: self.limitador(self.strvar_mail, 30))
         self.entry_mail.grid(row=2, column=3, padx=10, pady=5, sticky=W)
         # SITUACION FISCAL - COMBOBOX
         self.lbl_sit_fiscal = Label(self.sector_entry, text="Situacion Fiscal: ")
@@ -829,7 +833,7 @@ class Ventana(Frame):
         self.lbl_cuit = Label(self.sector_entry, text="CUIT - CUIL: ")
         self.lbl_cuit.grid(row=4, column=2, padx=10, pady=3, sticky=W)
         self.entry_cuit=Entry(self.sector_entry, textvariable= self.strvar_cuit, justify="left", width=40)
-        self.strvar_cuit.trace("w", lambda *args: self.limitador(self.strvar_cuit, 11))
+        self.strvar_cuit.trace_add("write", lambda *args: self.limitador(self.strvar_cuit, 11))
         self.entry_cuit.grid(row=4, column=3, padx=10, pady=3, sticky=W)
         # FECHA DE INGRESO
         self.lbl_fecha_ingreso = Label(self.sector_entry, text="Fecha Ingreso: ")
@@ -843,7 +847,7 @@ class Ventana(Frame):
         self.lbl_observaciones.grid(row=6, column=2, padx=10, pady=3, sticky=W)
         self.entry_observaciones = Entry(self.sector_entry, textvariable=self.strvar_observaciones, justify="left",
                                          width=40)
-        self.strvar_observaciones.trace("w", lambda *args: self.limitador(self.strvar_observaciones, 50))
+        self.strvar_observaciones.trace_add("write", lambda *args: self.limitador(self.strvar_observaciones, 50))
         self.entry_observaciones.grid(row=6, column=3, padx=10, pady=3, sticky=W)
 
     def cuadro_buscar(self):
@@ -901,9 +905,9 @@ class Ventana(Frame):
         style.theme_use("clam")
         style.configure("Treeview.Heading", background="black", foreground="white")
 
-        self.grid_clientes = ttk.Treeview(self.frame_tv, height=10, columns=("col1", "col2", "col3", "col4", "col5", "col6",
-                                                                  "col7", "col8", "col9", "col10", "col11", "col12",
-                                                                  "col13", "col14"))
+        self.grid_clientes = ttk.Treeview(self.frame_tv, height=10, columns=("col1", "col2", "col3", "col4", "col5",
+                                                                             "col6", "col7", "col8", "col9", "col10",
+                                                                             "col11", "col12", "col13", "col14"))
 
         self.grid_clientes.bind("<Double-Button-1>", self.DobleClickGrid)
 
@@ -951,12 +955,10 @@ class Ventana(Frame):
         scroll_y.config(command=self.grid_clientes.yview)
         scroll_y.pack(side="right", fill="y")
         scroll_x.pack(side="bottom", fill="x")
-        # -------------------------------------------------------------------------
 
         # -------------------------------------------------------------------------
         # PACK - GENERALES
         self.grid_clientes.pack(side= "top", fill="both", expand=1, padx=1, pady=5)
-
 
     def cuadro_titulos(self):
 
@@ -994,3 +996,66 @@ class Ventana(Frame):
         self.botones4 = LabelFrame(self.barra_botones)
         self.cuadro_cartel_clientes()
         self.botones4.pack(side="top", padx=3, pady=3, fill="y")
+
+    # GPT |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+    def cargar_icono(self, path, size=(18,18)):
+        img = Image.open(path).resize(size)
+        return ImageTk.PhotoImage(img)
+    # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+    # GPT |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+    def set_status(self, mensaje, tipo="info", tiempo=3000):
+
+        # 🎨 colores según tipo
+        colores = {
+            "ok": ("#d4edda", "#155724"),  # verde claro / texto oscuro
+            "error": ("#f8d7da", "#721c24"),  # rojo
+            "warn": ("#fff3cd", "#856404"),  # amarillo
+            "info": ("#d1ecf1", "#0c5460")  # celeste
+        }
+
+        bg, fg = colores.get(tipo, ("#f0f0f0", "black"))
+
+        # seteo visual
+        self.status_var.set("  " + mensaje)
+        self.status_bar.config(bg=bg, fg=fg)
+
+        # 🔊 sonido
+        if tipo == "ok":
+            self.bell()
+        elif tipo == "error":
+            self.bell()
+            self.after(120, self.bell)
+        elif tipo == "warn":
+            self.bell()
+
+        # ⏳ limpiar después de X tiempo
+        self.after(tiempo, self.clear_status)
+
+    def clear_status(self):
+        self.status_var.set("")
+        self.status_bar.config(bg="#f0f0f0", fg="black")
+
+
+        # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+        # 🔥 CÓMO USARLO
+        # ✔ Guardar
+        # self.set_status("✔ Registro guardado correctamente", "ok")
+        # 🗑 Eliminar
+        # self.set_status("🗑 Cliente eliminado", "ok")
+        # ⚠ Validación
+        # self.set_status("⚠ CUIT incorrecto", "warn")
+        # ❌ Error
+        # self.set_status("❌ Error al guardar", "error")
+        # ℹInfo
+        # self.set_status("ℹ Buscando clientes...", "info")
+
+
+        # self.filtro_activo = "clientes WHERE INSTR(apellido, '" + se_busca + "') > 0" \
+        #                      + " OR " + "INSTR(nombres, '" + se_busca + "') > 0" \
+        #                      + " OR " + "INSTR(apenombre, '" + se_busca + "') > 0" \
+        #                      + " ORDER BY apellido, nombres ASC"
+        #
+        # self.varClientes.buscar_entabla(self.filtro_activo)
+        # #self.limpiar_Grid()
+        # self.llena_grilla("")

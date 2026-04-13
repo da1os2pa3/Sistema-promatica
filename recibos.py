@@ -15,7 +15,7 @@ from PDF_clase import *
 
 # ----------------------------------------
 
-class clase_recibos(Frame):
+class Clase_Recibos(Frame):
 
     def __init__(self, master=None):
         super().__init__(master, width=880, height=510)

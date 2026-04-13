@@ -8,7 +8,7 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 import threading
 
-class clase_backup(Frame):
+class Clase_Backup(Frame):
 
     def __init__(self, master=None):
         super().__init__(master, width=880, height=150)

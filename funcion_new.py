@@ -5,7 +5,7 @@ import tkinter as tk
 
 # --------------------------------------
 import mysql.connector
-from mysql.connector import Error
+#from mysql.connector import Error
 # --------------------------------------
 from datetime import datetime
 
@@ -22,11 +22,14 @@ class ClaseFuncion_new:
 
         self.master = root
 
+
+    # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    # IMPORTANT - formatear_cifra
+    # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     '''
-    # Toma una cifra y le pone los puntos de los miles y las comas decimales
+    Toma una cifra y le pone los puntos de los miles y las comas decimales
     cifra debe venir tipo numerico
     '''
-
     def formatear_cifra(self, cifra):
         numero = cifra
         salida1 = "{:,.2f}".format(numero)
@@ -37,7 +40,7 @@ class ClaseFuncion_new:
 
 
     # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    # IMPORTANT - FUNCION SEL
+    # IMPORTANT - FUNCION SEL - ventana_selec
     # Ventana SEL utilizado en todos los modulos
     # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -46,7 +49,7 @@ class ClaseFuncion_new:
         # ----------------------------------------------------------------------
         # VALIDO LA CANTIDAD DE CAMPOS PASADDOS
         if not campo1 or not campo2 or not campo3:
-            messagebox("Error Sistema", "Debe pasar tres campos a ventana de seleccion", parent=self.master)
+            messagebox.showerror("Error Sistema", "Debe pasar tres campos a ventana de seleccion", parent=self.master)
             return None
 
         # ----------------------------------------------------------------------
@@ -66,7 +69,6 @@ class ClaseFuncion_new:
         # STRINGVARS LOCALES
 
         # TRAIGO EL DOLAR ACTUAL
-
         self.strvar_dolar_hoy = StringVar(value=self.traer_dolarhoy())
         # -----------------------------------------------------------------
 
@@ -229,11 +231,9 @@ class ClaseFuncion_new:
         # --------------------------------------------------------------------------
 
     def DobleClickGrid(self, event, la_tabla):
-
         self.fSelec_sel_item(la_tabla)
 
     def fVuelvo_nada(self):
-
         # Boton de opcion volver
         self.todo_el_registro = ""
         self.fCerrar()
@@ -260,7 +260,6 @@ class ClaseFuncion_new:
         self.fCerrar()
 
     def limpiar_Grid_sel(self):
-
         for item in self.grid_funcsel.get_children():
             self.grid_funcsel.delete(item)
 
@@ -282,38 +281,42 @@ class ClaseFuncion_new:
         cur = self.cnn.cursor()
         cur.execute("SELECT * FROM " + argumento)
         datos = cur.fetchall()
-        self.cnn.commit()
+        #self.cnn.commit()
         cur.close()
         return datos
 
     def pasar_nombres_campos(self, xtabla):
 
+        """ ✅ SELECT ORDINAL_POSITION, COLUMN_NAME
+            Le estás diciendo:
+            ORDINAL_POSITION → posición de la columna(1, 2, 3, …)
+            COLUMN_NAME → nombre de la columna
+            👉 Ejemplo de resultado:
+            ORDINAL_POSITION       COLUMN_NAME
+            1                          id
+            2                         nombre
+            3                         precio """
+
         cur = self.cnn.cursor()
         expresion=(f"SELECT ORDINAL_POSITION, COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS "
                    f"WHERE TABLE_NAME = '{xtabla}' ORDER BY ORDINAL_POSITION")
-        #cur.execute("SELECT ORDINAL_POSITION, COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'clientes'
-        # ORDER BY ORDINAL_POSITION")
         cur.execute(expresion)
         datos = cur.fetchall()
-        self.cnn.commit()
+        #self.cnn.commit()
         cur.close()
         return datos
 
     def pasar_item_seleccionado(self, Id, is_ztabla):
 
-        """
-        Esta funcion fue creada para asistir a la ventana de seleccion de items (famosa SEL). Va a devolver
-        el registro seleccionado (a traves del Id que nos viene coo parametro), de la tabla que se nos proporciona
-        tambien como parametrole
-        """
+        """ Esta funcion fue creada para asistir a la ventana de seleccion de items (famosa SEL). Va a devolver
+            el registro seleccionado (a traves del Id que nos viene coo parametro), de la tabla que se nos proporciona
+            tambien como parametrole """
 
         cur = self.cnn.cursor()
-        #expresion=(f"'''SELECT * FROM {ztabla} WHERE Id = {}'''.format(Id)")
-        #sql = '''SELECT * FROM clientes WHERE Id = {}'''.format(Id)
         sql = '''SELECT * FROM '''+is_ztabla+''' WHERE Id = {}'''.format(Id)
         cur.execute(sql)
         datos_inf = cur.fetchall()
-        self.cnn.commit()
+        #self.cnn.commit()
         cur.close()
         return datos_inf
 
@@ -323,7 +326,7 @@ class ClaseFuncion_new:
             cur = self.cnn.cursor()
             cur.execute("SELECT * FROM informa WHERE 1")
             datos_inf = cur.fetchall()
-            self.cnn.commit()
+            #self.cnn.commit()
             cur.close()
             return datos_inf
         except:
@@ -332,34 +335,16 @@ class ClaseFuncion_new:
             exit()
 
     def traer_dolarhoy(self):
-
         dev_informa = self.consultar_informa()
         for row in dev_informa:
             return row[21]
 
     # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    # FIN METODO SEL
+    # IMPORTANT - METODO validar - 2-4-26
     # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-
-    """
-    #------------------------------------------------------------------------------
-    #------------------------------------------------------------------------------
-    # VALIDACIONES
-    #------------------------------------------------------------------------------
-    #------------------------------------------------------------------------------
-    """
-
-    # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    # IMPORTANT - METODO VALIDAR
-    # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     """ Valida los caracteres que ingresan en los campos numericos - solo numeros, punto y guion. """
     def validar(self, value):
-        # codigo = value
-        # for i in codigo:
-        #     if i not in '0123456789.-':
-        #         return  False
-        # return True
         if value == "":
             return True  # permitir borrar
             # Solo caracteres válidos
@@ -373,21 +358,15 @@ class ClaseFuncion_new:
         if value.count(".") > 1:
             return False
         return True
-    # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    # FIN METODO VALIDAR
-    # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-    # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    # METODO MOSTRAR TOAST
-    # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
     # --------------------------------------------------------------------------
-    # IMPORTANT - METODO MOSTRAR TOAST
-    # Por ahora la uso desde ctacte con los siguientes llamados:
-    # self.varFuncion_new.mostrar_toast(self.pantalla_estad, "🧹 Iniciando borrado de registros...", "green", 2500, "")
-    # --- proceso real ---
-    # self.pantalla_estad.after(3000, lambda: self.varFuncion_new.mostrar_toast(self.pantalla_estad, "✅ Proceso finalizado", "green", 2500, ""))
-    # --------------------------------------------------------------------------
+    # IMPORTANT - METODO mostrar_toast - 10-2-26
+    """ Por ahora la uso desde ctacte con los siguientes llamados:
+        self.varFuncion_new.mostrar_toast(self.pantalla_estad, "🧹 Iniciando borrado de registros..", "green", 2500, "")
+        --- proceso real ---
+        self.pantalla_estad.after(3000, lambda: self.varFuncion_new.mostrar_toast(self.pantalla_estad, "✅ Proceso 
+        finalizado", "green", 2500, ""))
+    """
 
     def mostrar_toast(self, pantalla_padre, mensaje, pa_color, duracion=3000, tipo="info"):
 
@@ -450,6 +429,23 @@ class ClaseFuncion_new:
         # Auto cerrar
         toast.after(duracion, toast.destroy)
 
-    #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    # FIN METODO MOSTRAR TOAST
-    #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+    # --------------------------------------------------------------------------
+    # IMPORTANT - METODOS FECHAS 25-3-26
+    # --------------------------------------------------------------------------
+    """ Toma una fecha en formato 2025-12-26 y  la devuelve 26/12/2026"""
+    def fecha_es(self, fecha_mysql):
+        fecha = datetime.strptime(fecha_mysql, "%Y-%m-%d")
+        return fecha.strftime("%d/%m/%Y")
+
+    def mover_puntero_topend(self, tree, posicion):
+        items = tree.get_children()
+        if not items:
+            return
+
+        item = items[0] if posicion == 'TOP' else items[-1]
+
+        tree.focus_set()
+        tree.selection_set(item)
+        tree.focus(item)
+        tree.see(item)

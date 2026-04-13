@@ -1,9 +1,6 @@
 import mysql.connector
-from mysql.connector import Error
-# ----------------------------------------
+#from mysql.connector import Error
 from datetime import datetime
-# ----------------------------------------
-from tkinter import messagebox
 
 class datosClientes:
 
@@ -11,81 +8,78 @@ class datosClientes:
 
         self.master = pantalla
 
+        # try:
+        #     self.cnn = mysql.connector.connect(host="localhost", user="root", passwd="", database="sist_prom")
+        # except Error as ex:
+        #     print("Error de conexion: {0}".format(ex))
+
+    def get_connection(self):
+        print("OK= Escuchando.....")
+        return mysql.connector.connect(
+            host="localhost",
+            user="root",
+            passwd="",
+            database="sist_prom"
+        )
+
+    # def consultar_clientes(self, tofil):
+    def consultar_clientes(self, orden=""):
+
+        """👉 buffered=True = MySQL:manda TODO el resultado de una, el cursor lo guarda en memoria.
+        ✔ Después podés hacer lo que quieras: otro execute, cerrar cursor, no consumir todo
+        SIN errores"""
+
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            self.cnn = mysql.connector.connect(host="localhost", user="root", passwd="", database="sist_prom")
-        except Error as ex:
-            print("Error de conexion: {0}".format(ex))
+            sql = "SELECT * FROM clientes"
+            if orden:
+                # if not orden.upper().startswith("ORDER BY"):
+                #     raise ValueError("Solo se permite ORDER BY")
+                sql += " " + orden
+            # else:
+            #     sql += " ORDER BY apellido, nombres ASC"
 
-    # def __str__(self):
-    #
-    #     datos = self.consultar_clientes("")
-    #     aux = ""
-    #     for row in datos:
-    #         aux = aux + str(row) + "\n"
-    #     return aux
-
-    def consultar_clientes(self, tofil):
-
-        try:
-            cur = self.cnn.cursor()
-            cur.execute("SELECT * FROM "+ tofil)
-            datos = cur.fetchall()
-            self.cnn.commit()
+            cur.execute(sql)
+            return cur.fetchall()
+        finally:
             cur.close()
-            return datos
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=Consultar-",
-                                 parent=self.master)
-            exit()
+            cnn.close()
 
-    def traer_ultimo(self, xparametro):
+        # try:
+        #     cur.execute("SELECT * FROM clientes "+ tofil)
+        #     datos = cur.fetchall()
+        #     return datos
+        # except Exception:
+        #     raise
+        # finally:
+        #     cur.close()
 
-        # Trae el último código de cliente en la tabla para proponer el nuevo número en alta
+    def traer_ultimo(self):
 
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            cur = self.cnn.cursor()
-            cur.execute("SELECT * FROM clientes ORDER BY codigo ASC")
-            datos = cur.fetchall()
-            aux = ""
-            for row in datos:
-                if xparametro == 1:
-                    aux = str(row[1]) + "\n"
-                else:
-                    aux = str(row[0]) + "\n"
-            self.cnn.commit()
+            cur.execute("SELECT MAX(codigo) FROM clientes")
+            resultado = cur.fetchone()[0]
+            return resultado or 0  # 👈 clave
+        except Exception:
+            raise
+        finally:
             cur.close()
-            return aux
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=traer ultimo",
-                                 parent=self.master)
-            exit()
-
-    def buscar_entabla(self, argumento):
-
-        try:
-            cur = self.cnn.cursor()
-            if len(argumento) <= 0:
-                return
-            cur.execute("SELECT * FROM " + argumento)
-            datos = cur.fetchall()
-            self.cnn.commit()
-            cur.close()
-            return datos
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=buscar_entabla",
-                                 parent=self.master)
-            exit()
-
-    # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    # CRUD
-    # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+            cnn.close()
 
     def insertar_clientes(self, cliente):
 
+        if not cliente.get("codigo"):
+            raise ValueError("El código es obligatorio")
+        if not cliente.get("apellido"):
+            raise ValueError("El apellido es obligatorio")
+
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
             fecha_ingreso = datetime.strptime(cliente["fecha_ingreso"], '%d/%m/%Y')
-
-            cur = self.cnn.cursor()
 
             sql = """
                   INSERT INTO clientes (codigo, apellido, nombres, direccion, localidad, provincia, postal, \
@@ -95,37 +89,44 @@ class datosClientes:
                   """
 
             valores = (
-                cliente["codigo"], cliente["apellido"], cliente["nombres"], cliente["direccion"],
-                cliente["localidad"], cliente["provincia"], cliente["postal"],
-                cliente["telef_pers"], cliente["telef_trab"], cliente["mail"],
-                fecha_ingreso, cliente["sit_fis"], cliente["cuit"],
-                cliente["observaciones"], cliente["apenombre"]
+                cliente["codigo"],
+                cliente["apellido"],
+                cliente["nombres"],
+                cliente["direccion"],
+                cliente["localidad"],
+                cliente["provincia"],
+                cliente["postal"],
+                cliente["telef_pers"],
+                cliente["telef_trab"],
+                cliente["mail"],
+                fecha_ingreso,
+                cliente["sit_fis"],
+                cliente["cuit"],
+                cliente["observaciones"],
+                cliente["apenombre"]
             )
 
             cur.execute(sql, valores)
-            self.cnn.commit()
-            id_nuevo = cur.lastrowid  # devolvemos el Id generado
-
+            cnn.commit()
+            # devolvemos el Id generado del nuevo cliente
+            id_nuevo = cur.lastrowid
+            return id_nuevo
         except Exception as e:
-
-            self.cnn.rollback()
-            messagebox.showerror("Error inesperado", str(e), parent=self.master)
-            id_nuevo = None
-
+            cnn.rollback()
+            raise
         finally:
             cur.close()
-
-        return id_nuevo
+            cnn.close()
 
     def modificar_clientes(self, cliente):
 
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-
             # Convierto fecha nuevamente de String a Datetime para guardar en SQL
             fecha_ingreso = datetime.strptime(cliente["fecha_ingreso"], '%d/%m/%Y')
 
-            cur = self.cnn.cursor()
-
+            # genero instruccion sql
             sql = """
                   UPDATE clientes \
                   SET codigo=%s, \
@@ -166,32 +167,52 @@ class datosClientes:
                 cliente["apenombre"],
                 cliente["Id"]
             )
-
             cur.execute(sql, valores)
-            self.cnn.commit()
-            cur.close()
+            cnn.commit()
             return
-
         except Exception as e:
-            messagebox.showerror("Error inesperado", f"{e}", parent=self.master)
+            cnn.rollback()
+            raise
+        finally:
+            cur.close()
+            cnn.close()
 
     def eliminar_clientes(self, Id):
 
-        cur = self.cnn.cursor()
-
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
             sql = "DELETE FROM clientes WHERE Id = %s"
             # 1 parámetro → (valor,)
             # varios → (v1, v2, v3)
             cur.execute(sql, (Id,))
             n = cur.rowcount
-            self.cnn.commit()
+            cnn.commit()
             return n
-
         except Exception as e:
-            self.cnn.rollback()
-            messagebox.showerror("Error inesperado", str(e), parent=self.master)
-            return 0
-
+            cnn.rollback()
+            raise
         finally:
             cur.close()
+            cnn.close()
+
+    def buscar_clientes(self, texto):
+
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
+        try:
+            sql = """
+                  SELECT * FROM clientes WHERE apellido LIKE %s OR nombres LIKE %s OR apenombre LIKE %s
+                  ORDER BY apellido, nombres ASC \
+                  """
+
+            param = f"%{texto}%"
+
+            cur.execute(sql, (param, param, param))
+            datos = cur.fetchall()
+            return datos
+        except Exception:
+            raise
+        finally:
+            cur.close()
+            cnn.close()

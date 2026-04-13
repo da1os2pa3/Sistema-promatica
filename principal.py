@@ -1,27 +1,29 @@
 """ Este es el modulo menu principal desde donde accedemos a cada ABM y proceso del sistema"""
-import locale
-import tkinter as tk
-from PIL.Image import Resampling
+from tkinter import Frame, LabelFrame, Button, Toplevel
+from PIL import Image, ImageTk
 
-from articulos import VentArt
-from clientes import Ventana
-from compras import clase_compras
-from configuracion import *
-from cotiz_vta import *
-from ctacte import CuentaCorriente
-from garantias import clase_garantias
-from guias_tecnicas import clase_GuiasTecnicas
-from inf_tecnicos import clase_inf_tecnicos
-from marcas import Vent_marcas
-from orden_reparacion import *
-from planilla_caja import PlaniCaja
-from presupuestos import clase_presupuestos
-from proved import *
-from recibos import clase_recibos
-from respaldos import *
-from rma import clase_rma
-from rubros import Vent_rubros
-from saldosctacte import Saldosctacte
+#import locale
+import tkinter as tk
+
+from articulos import Clase_Articulos
+from clientes import Clase_Clientes
+from compras import Clase_Compras
+from configuracion import Clase_Configuracion
+from cotiz_vta import Clase_CotizVenta
+from ctacte import Clase_CuentaCorriente
+from garantias import Clase_Garantias
+from guias_tecnicas import Clase_GuiasTecnicas
+from inf_tecnicos import Clase_InformeTecnico
+from marcas import Clase_Marcas
+from orden_reparacion import Clase_OrdenesRepara
+from planilla_caja import V_PlaniCaja
+from presupuestos import Clase_Presupuestos
+from proved import Clase_Proved
+from recibos import Clase_Recibos
+from respaldos import Clase_Backup
+from rma import Clase_Rma
+from rubros import Clase_Rubros
+from saldosctacte import Clase_SaldosCuentaCorriente
 
 """ esta clase Principal, hereda de la clase Frame"""
 
@@ -44,7 +46,7 @@ class Principal(Frame):
         # propiedades instanciamientos (serian las variables de la clase)
         self.master = master
 
-        locale.setlocale(locale.LC_ALL, '')
+        # locale.setlocale(locale.LC_ALL, '')
         # locale.setlocale(locale.LC_ALL, 'ar_AR')
         # print(locale.localeconv())
 
@@ -66,7 +68,8 @@ class Principal(Frame):
 
         # Imagen de fondo -------------------------------------------------------
         self.imagen = Image.open("promatica.jpg")
-        self.imagen = self.imagen.resize((self.ancho_ventana, self.alto_ventana), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
+        # Redimension (Alto, Ancho)
+        self.imagen = self.imagen.resize((self.ancho_ventana, self.alto_ventana), Image.Resampling.LANCZOS)
         self.fondo = ImageTk.PhotoImage(self.imagen)
         self.label_fondo = tk.Label(self.master, image=self.fondo)
         self.label_fondo.place(x=0, y=0, relwidth=1, relheight=1)
@@ -87,7 +90,7 @@ class Principal(Frame):
         menu_archivo = tk.Menu(menu_principal, tearoff=0)
         menu_archivo.add_command(label='* Archivo de Clientes', command=self.fClientes)
         menu_archivo.add_command(label='* Archivo de Proveedores', command=self.fProved)
-        menu_archivo.add_command(label='* Archivo de Marcas', command=self.m_marcas)
+        menu_archivo.add_command(label='* Archivo de Marcas', command=self.fMarcas)
         menu_archivo.add_command(label='* Archivo de Rubros', command=self.fRubros)
         menu_archivo.add_command(label='* Configuracion', command=self.fConfiguracion)
 
@@ -125,9 +128,6 @@ class Principal(Frame):
         self.cuadro_cinta_superior()
         self.frame2.pack(side="top", fill="x", pady=10, padx=5)
 
-        self.master.mainloop()
-
-
     # def ajustar_fondo(self, event):
     #
     #     if event.width < 10 or event.height < 10:
@@ -140,7 +140,6 @@ class Principal(Frame):
     #
     #     self.fondo = ImageTk.PhotoImage(imagen_redimensionada)
     #     self.label_fondo.config(image=self.fondo)
-
 
     def cuadro_cinta_superior(self):
 
@@ -232,7 +231,7 @@ class Principal(Frame):
         img = Image.open("reparar.png").resize((35, 35))
         icono = ImageTk.PhotoImage(img)
         self.btn_orden_rep = Button(self.frame1, text="Orden Reparacion", compound="top", pady=3, border=3,
-                                   command=self.m_orden_repara, bg="blue", fg="white")
+                                   command=self.fOrdenRepara, bg="blue", fg="white")
         self.btn_orden_rep.image = icono
         self.btn_orden_rep.config(image=icono)
         self.btn_orden_rep.grid(row=0, column=1, padx=3, pady=3, sticky="nsew")
@@ -240,11 +239,11 @@ class Principal(Frame):
         # PRESUPUESTOS COTIZACIONES - INGRESO VENTAS
         img = Image.open("presupuesto.png").resize((35, 35))
         icono = ImageTk.PhotoImage(img)
-        self.btn_presupuestos = Button(self.frame1, text="Cotizar/Venta", compound="top", pady=3, command=self.fCotVta,
+        self.btn_cotiz_vta = Button(self.frame1, text="Cotizar/Venta", compound="top", pady=3, command=self.fCotVta,
                                 border=3, bg="blue", fg="white")
-        self.btn_presupuestos.image = icono
-        self.btn_presupuestos.config(image=icono)
-        self.btn_presupuestos.grid(row=0, column=2, padx=3, pady=3, sticky="nsew")
+        self.btn_cotiz_vta.image = icono
+        self.btn_cotiz_vta.config(image=icono)
+        self.btn_cotiz_vta.grid(row=0, column=2, padx=3, pady=3, sticky="nsew")
 
         # PLANILLA DE CAJA
         img = Image.open("planilla.png").resize((35, 35))
@@ -282,215 +281,84 @@ class Principal(Frame):
         self.master.quit()
         self.master.destroy()
 
+    # ----------------------------------------------------------------------------
+
     """ En los proximos metods, Defino una variable vent que toma valores de una pantalla "TOPLEVEL" dependiendo
         de master de principal entiendo ???ver eso de depender de principal """
 
     def fPlaniCaja(self):
+        self.abrir_ventana(V_PlaniCaja, "Planilla de caja")
 
-        # PLANILLA DE CAJA
-
-        vent = Toplevel()
-        vent.title("Planilla de Caja")
-        vent.grab_set()
-        vent.focus_set()
-        app = PlaniCaja(vent)
-        app.mainloop()
+    # def fPlaniCaja(self):
+    #     # PLANILLA DE CAJA
+    #     vent = Toplevel()
+    #     vent.title("Planilla de Caja")
+    #     vent.grab_set()
+    #     vent.focus_set()
+    #     app = PlaniCaja(vent)
+    #     app.mainloop()
 
     def fCotVta(self):
+        self.abrir_ventana(Clase_CotizVenta, "Cotizaciones - Ventas")
 
-        # VENTAS COTIZACIONES
+    def fOrdenRepara(self):
+        self.abrir_ventana(Clase_OrdenesRepara, "Ordenes de reparacion")
 
-        vent = Toplevel()
-        vent.title("Cotizaciones/Ventas")
-        vent.grab_set()
-        vent.focus_set()
-        app = VentCotiz(vent)
-        app.mainloop()
-
-    def m_orden_repara(self):
-
-        # ORDENES DE REPARACION
-
-        vent = Toplevel()
-        vent.title("Ordenes de Reparacion")
-        # Asigno la clase Ventart que esta en articulos.py a la variable app
-        app = OrdenesRepara(vent)
-        app.mainloop()
-
-    def m_marcas(self):
-
-        # MARCAS PRODUCTOS
-
-        vent = Toplevel(self.master)
-        vent.title("ABM Marcas de Articulos")
-        vent.grab_set()
-        vent.focus_set()
-        app = Vent_marcas(vent)
-        vent.mainloop()
+    def fMarcas(self):
+        self.abrir_ventana(Clase_Marcas, "Marcas")
 
     def fRubros(self):
-
-        # RUBROS DE PRODUCTOS
-
-        vent = Toplevel(self.master)
-        vent.title("ABM Rubros de Articulos")
-        vent.grab_set()
-        vent.focus_set()
-        app = Vent_rubros(vent)
-        vent.mainloop()
+        self.abrir_ventana(Clase_Rubros, "Rubros de Articulos")
 
     def fClientes(self):
-
-        # CLIENTES
-
-        vent = Toplevel(self.master)
-        vent.title("ABM Clientes")
-        vent.grab_set()
-        vent.focus_set()
-        app = Ventana(vent)
-        vent.mainloop()
+        self.abrir_ventana(Clase_Clientes, "ABM Clientes")
 
     def fProved(self):
-
-        # PROVEEDORES
-
-        vent = Toplevel(self.master)
-        vent.title("ABM Proveedores")
-        vent.grab_set()
-        vent.focus_set()
-        app = Ventproved(vent)
-        vent.mainloop()
+        self.abrir_ventana(Clase_Proved, "ABM Proveeores")
 
     def fArticulos(self):
-
-        # ARTICULOS
-
-        vent = Toplevel()
-        vent.title("ABM Articulos")
-        # Asigno la clase Ventart que esta en articulos.py a la variable app
-        app = VentArt(vent)
-        app.mainloop()
+        self.abrir_ventana(Clase_Articulos, "ABM Articulos")
 
     def fCtacte(self):
-
-        # CUENTAS CORRIENTES
-
-        vent = Toplevel()
-        vent.title("Cuentas Corrientes")
-        vent.grab_set()
-        vent.focus_set()
-        app = CuentaCorriente(vent)
-        app.mainloop()
+        self.abrir_ventana(Clase_CuentaCorriente, "ABM Cuentas Corrientes")
 
     def fGarantia(self):
-
-        # GARANTIAS
-
-        vent = Toplevel()
-        vent.title("Garantias")
-        vent.grab_set()
-        vent.focus_set()
-        app = clase_garantias(vent)
-        app.mainloop()
+        self.abrir_ventana(Clase_Garantias, "Garantias")
 
     def fRecibos(self):
-
-        # RECIBOS
-
-        vent = Toplevel()
-        vent.title("Recibos")
-        vent.grab_set()
-        vent.focus_set()
-        app = clase_recibos(vent)
-        app.mainloop()
+        self.abrir_ventana(Clase_Recibos, "Recibos")
 
     def fPresupuestos(self):
-
-        # PRESUPUESTOS
-
-        vent = Toplevel()
-        vent.title("Presupuestos")
-        vent.grab_set()
-        vent.focus_set()
-        app = clase_presupuestos(vent)
-        app.mainloop()
+        self.abrir_ventana(Clase_Presupuestos, "Presupuestos")
 
     def fCompras(self):
-
-        # COMPRAS
-
-        vent = Toplevel()
-        vent.title("Articulos Faltantes")
-        vent.grab_set()
-        vent.focus_set()
-        app = clase_compras(vent)
-        app.mainloop()
+        self.abrir_ventana(Clase_Compras, "Articulos faltantes")
 
     def fRma(self):
-
-        # RMA
-
-        vent = Toplevel()
-        vent.title("RMA")
-        vent.grab_set()
-        vent.focus_set()
-        app = clase_rma(vent)
-        app.mainloop()
+        self.abrir_ventana(Clase_Rma, "RMA")
 
     def fBackup(self):
-
-        # BACKUP
-
-        vent = Toplevel()
-        vent.title("Backup")
-        vent.grab_set()
-        vent.focus_set()
-        app = clase_backup(vent)
-        app.mainloop()
+        self.abrir_ventana(Clase_Backup, "Backup")
 
     def fConfiguracion(self):
-
-        # CONFIGURACION
-
-        vent = Toplevel()
-        vent.title("Configuracion - Parametros")
-        vent.grab_set()
-        vent.focus_set()
-        app = Ventconfig(vent)
-        app.mainloop()
+        self.abrir_ventana(Clase_Configuracion, "Configuracion - Parametros")
 
     def fInf_ctacte(self):
-
-        # INFORME DE CUENTA CORRIENTE
-
-        vent = Toplevel()
-        vent.title("Saldos en Cuentas Corrientes")
-        vent.grab_set()
-        vent.focus_set()
-        app = Saldosctacte(vent)
-        app.mainloop()
+        self.abrir_ventana(Clase_SaldosCuentaCorriente, "Saldos en Cuentas Corrientes")
 
     def fInf_tecnico(self):
-
-        # INFORMES TECNICOS
-
-        vent = Toplevel()
-        vent.title("Informes tecnicos")
-        vent.grab_set()
-        vent.focus_set()
-        app = clase_inf_tecnicos(vent)
-        app.mainloop()
+        self.abrir_ventana(Clase_InformeTecnico, "Informes tecnicos")
 
     def fTecnicas(self):
-
-        # INFORMACION TECNICA Y VIDEOS/CONSULTAS
-
-        vent = Toplevel()
-        vent.title("Guias Tecnicas")
-        vent.grab_set()
-        vent.focus_set()
-        app = clase_GuiasTecnicas(vent)
-        app.mainloop()
+        self.abrir_ventana(Clase_GuiasTecnicas, "Guias tecnicas")
+    # --------------------------------------------------------------------------
 
     def fSalir(self):
         self.master.destroy()
+
+    def abrir_ventana(self, clase, titulo):
+        vent = Toplevel(self.master)
+        vent.title(titulo)
+        vent.grab_set()
+        vent.focus_set()
+        clase(vent)
