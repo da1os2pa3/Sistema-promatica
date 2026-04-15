@@ -1,8 +1,6 @@
 import mysql.connector
 from mysql.connector import Error
-# ---------------------------------------
 from datetime import datetime
-# ---------------------------------------
 from tkinter import messagebox
 
 class datosPlanilla:
@@ -19,130 +17,198 @@ class datosPlanilla:
                                  parent=self.master)
             exit()
 
-    # def __str__(self):
-    #
-    #     datos = self.consultar_planilla("")
-    #     aux = ""
-    #     for row in datos:
-    #         aux = aux + str(row) + "\n"
-    #     return aux
+    def get_connection(self):
+        print("OK= Escuchando.....")
+        return mysql.connector.connect(
+            host="localhost",
+            user="root",
+            passwd="",
+            database="sist_prom"
+        )
 
-    def consultar_planilla(self, tofil):
+    def consultar_planilla(self, orden=""):
 
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            cur = self.cnn.cursor()
-            cur.execute("SELECT * FROM " + tofil)
-            # para recuperar todas filas de una tabla de base de datos
-            datos = cur.fetchall()
-            self.cnn.commit()
+            sql = "SELECT * FROM planicaja"
+            if orden:
+                sql += " " + orden
+            cur.execute(sql)
+            return cur.fetchall()
+        finally:
             cur.close()
-            return datos
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo-Consultar planilla-", parent=self.master)
-            exit()
+            cnn.close()
 
     def combo_input(self, xcampo, xtabla, xorden):
 
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            cur = self.cnn.cursor()
+            # cur = self.cnn.cursor()
             cur.execute("SELECT " + xcampo + " FROM " + xtabla + " ORDER BY " + xorden)
             result = cur.fetchall()
-            self.cnn.commit()
-            cur.close()
             return result
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo-combo input-", parent=self.master)
-            exit()
+        except Exception as e:
+            raise
+        finally:
+            cur.close()
+            cnn.close()
 
     def buscar_entabla(self, argumento):
 
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            cur = self.cnn.cursor()
-            if len(argumento) > 0:
-                cur.execute("SELECT * FROM " + argumento)
-            else:
-                cur.execute("SELECT * FROM " + argumento)
+            cur.execute("SELECT * FROM planicaja " + argumento)
             datos = cur.fetchall()
-            self.cnn.commit()
-            cur.close()
             return datos
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo-Buscar en tabla-", parent=self.master)
-            exit()
+        except Exception as e:
+            raise
+        finally:
+            cur.close()
+            cnn.close()
 
     def consultar_informa(self):
 
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            cur = self.cnn.cursor()
             cur.execute("SELECT * FROM informa WHERE 1")
             datos_inf = cur.fetchall()
-            self.cnn.commit()
-            cur.close()
             return datos_inf
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo-combo input-", parent=self.master)
-            exit()
+        except Exception as e:
+            raise
+        finally:
+            cur.close()
+            cnn.close()
 
     def eliminar_item_planilla(self, Id):
 
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            cur = self.cnn.cursor()
             sql = '''DELETE FROM planicaja WHERE Id = {}'''.format(Id)
             cur.execute(sql)
             n = cur.rowcount
-            self.cnn.commit()
-            cur.close()
+            cnn.commit()
             return n
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo-Eliminar item planilla-",
-                                 parent=self.master)
-            exit()
-
-    def insertar_planilla(self, fecha, tipomov, detalle, cantidad, ingreso, egreso, costo, pagoscta, compras, cliente,
-                          tipopago, detapago, garantia, observaciones, proved, ctacte, clavemovim, codcli):
-
-        try:
-            cur = self.cnn.cursor()
-
-            sql = '''INSERT INTO planicaja (pl_fecha, pl_tipomov, pl_detalle, pl_cantidad, pl_ingresos, pl_egreso,
-            pl_costo, pl_pagoscta, pl_compras, pl_cliente, pl_tipopago, pl_detapago, pl_garantia, pl_observacion, 
-            pl_proved, pl_ctacte, pl_clavemov, pl_codcli) VALUES('{}','{}','{}','{}', '{}', '{}','{}','{}','{}','{}',
-            '{}', '{}','{}', '{}', '{}','{}','{}','{}')'''.format(fecha, tipomov,detalle, cantidad, ingreso,
-                                                                  egreso, costo, pagoscta, compras, cliente, tipopago,
-                                                                  detapago, garantia, observaciones, proved, ctacte,
-                                                                  clavemovim, codcli)
-            cur.execute(sql)
-            n = cur.rowcount
-            self.cnn.commit()
+        except Exception as e:
+            cnn.rollback()
+            raise
+        finally:
             cur.close()
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo-Insertar planilla-", parent=self.master)
-            exit()
+            cnn.close()
 
-    def modificar_planilla(self, Id, fechapla, tipomov, detalle, cantidad, ingreso, egreso, costo, pagoscta, compras,
-                           cliente, tipopago, detapago, garantia, observaciones, proved, ctacte, clavemovim, codcli):
+    def insertar_planilla(self, planilla):
 
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            # Convierto fecha nuevamente de String a Datetime para guardar en SQL  ------------------------
-            algo = fechapla
-            fechapla = datetime.strptime(algo, '%d/%m/%Y')
+            sql = """
+                  INSERT INTO planicaja (pl_fecha, pl_tipomov, pl_detalle, pl_cantidad, pl_ingresos, pl_egreso, pl_costo, \
+                                        pl_pagoscta, pl_compras, pl_cliente, pl_tipopago, pl_detapago, pl_garantia, \
+                                        pl_observacion, pl_proved, pl_ctacte, pl_clavemov, pl_codcli) \
+                  VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) \
+                  """
 
-            cur = self.cnn.cursor()
-            sql = '''UPDATE planicaja SET pl_fecha='{}', pl_tipomov='{}', pl_detalle='{}', pl_cantidad='{}', 
-            pl_ingresos='{}', pl_egreso='{}', pl_costo='{}', pl_pagoscta='{}', pl_compras='{}', pl_cliente='{}', 
-            pl_tipopago='{}', pl_detapago='{}', pl_garantia='{}', pl_observacion='{}', pl_proved='{}', 
-            pl_ctacte='{}', pl_clavemov='{}', pl_codcli='{}'
-            WHERE Id={}'''.format(fechapla, tipomov, detalle, cantidad, ingreso, egreso, costo, pagoscta, compras,
-                                  cliente, tipopago, detapago, garantia, observaciones, proved, ctacte, clavemovim,
-                                  codcli, Id)
-            cur.execute(sql)
-            n = cur.rowcount
-            self.cnn.commit()
+            valores = (
+                planilla["pl_fecha"],
+                planilla["pl_tipomov"],
+                planilla["pl_detalle"],
+                planilla["pl_cantidad"],
+                planilla["pl_ingresos"],
+                planilla["pl_egreso"],
+                planilla["pl_costo"],
+                planilla["pl_pagoscta"],
+                planilla["pl_compras"],
+                planilla["pl_cliente"],
+                planilla["pl_tipopago"],
+                planilla["pl_detapago"],
+                planilla["pl_garantia"],
+                planilla["pl_observacion"],
+                planilla["pl_proved"],
+                planilla["pl_ctacte"],
+                planilla["pl_clavemov"],
+                planilla["pl_codcli"]
+            )
+
+            cur.execute(sql, valores)
+            cnn.commit()
+            # devolvemos el Id generado del nuevo cliente
+            id_nuevo = cur.lastrowid
+            return id_nuevo
+        except Exception as e:
+            cnn.rollback()
+            raise
+        finally:
             cur.close()
-            return n
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo-Modificar planilla-", parent=self.master)
-            exit()
+            cnn.close()
+
+    def modificar_planilla(self, planilla):
+
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
+        try:
+
+            # # Convierto fecha nuevamente de String a Datetime para guardar en SQL  ------------------------
+            # algo = fechapla
+            # fechapla = datetime.strptime(algo, '%d/%m/%Y')
+
+            sql = ('''UPDATE planicaja 
+                SET pl_fecha=%s, 
+                    pl_tipomov=%s,
+                    pl_detalle=%s, 
+                    pl_cantidad=%s, 
+                    pl_ingresos=%s, 
+                    pl_egreso=%s, 
+                    pl_costo=%s, 
+                    pl_pagoscta=%s, 
+                    pl_compras=%s, 
+                    pl_cliente=%s,
+                    pl_tipopago=%s, 
+                    pl_detapago=%s,
+                    pl_garantia=%s,
+                    pl_observacion=%s,
+                    pl_proved=%s,
+                    pl_ctacte=%s,
+                    pl_clavemov=%s,
+                    pl_codcli=%s
+                WHERE Id=%s''')
+
+            valores = (
+                planilla["pl_fecha"],
+                planilla["pl_tipomov"],
+                planilla["pl_detalle"],
+                planilla["pl_cantidad"],
+                planilla["pl_ingresos"],
+                planilla["pl_egreso"],
+                planilla["pl_costo"],
+                planilla["pl_pagoscta"],
+                planilla["pl_compras"],
+                planilla["pl_cliente"],
+                planilla["pl_tipopago"],
+                planilla["pl_detapago"],
+                planilla["pl_garantia"],
+                planilla["pl_observacion"],
+                planilla["pl_proved"],
+                planilla["pl_ctacte"],
+                planilla["pl_clavemov"],
+                planilla["pl_codcli"],
+                planilla["Id"]
+            )
+
+            cur.execute(sql, valores)
+            cnn.commit()
+            # devolvemos el Id generado del nuevo cliente
+            id_nuevo = cur.lastrowid
+            return id_nuevo
+        except Exception as e:
+            cnn.rollback()
+            raise
+        finally:
+            cur.close()
+            cnn.close()
 
     def insertar_ctacte(self, fecha, detalle, ingreso, egreso, codcli, nomcli, clavemov):
 
@@ -205,7 +271,6 @@ class datosPlanilla:
                 else:
                     aux = (str(row[0]))
                            #+ "\n")
-            self.cnn.commit()
             cur.close()
             if aux == "":
                 aux = 0

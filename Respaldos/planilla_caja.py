@@ -406,8 +406,11 @@ class V_PlaniCaja(tk.Frame):
 
         # Posicionamiento del foco en el Grid, voy al Id valor del set_foco --------------
         for item in children:
+
             texto = self.grid_planilla.item(item, "text")
+
             if texto == set_foco:  # suponiendo que el ID está en la columna 0
+
                 # 👉 Fuerza a Tkinter a procesar actualizaciones pendientes de la UI. Sirve para asegurarse
                 # que el widget esté actualizado antes de hacer foco / scroll.
                 self.grid_planilla.update_idletasks()
@@ -420,6 +423,51 @@ class V_PlaniCaja(tk.Frame):
                 self.grid_planilla.see(item)
                 break
         # --------------------------------------------------------------------------------
+
+
+        # if len(self.grid_planilla.get_children()) > 0:
+        #     self.grid_planilla.selection_set(self.grid_planilla.get_children()[0])
+
+        # # ----------------------------------------------------------------------------------
+        # # Procedimiento para acomodar los punteros en caso de altas, modif. ....)
+        # # ----------------------------------------------------------------------------------
+        #
+        # """ ult_tabla_id = Trae el Id de la tabla (21, 60, 61, ..) correspondiente identificando al registro
+        # en el cual yo quiero que se ponga el puntero del GRID.
+        # Traera blanco ('') si la funcion llena_grilla es llamada desde cualquier lugar que no
+        # necesite acomodar puntero en un item en particular (caso altas, modificaciones ...)."""
+        #
+        # if ult_tabla_id:
+        #
+        #     """ regis = Guardo todos los Id del Grid (I001, IB003, ...)"""
+        #     regis = self.grid_planilla.get_children()
+        #     rg = ""
+        #
+        #     for rg in regis:
+        #
+        #         """ buscado = guardo el 'text' correspondiente al Id del grid que esta en regis y muevo toda
+        #                 la linea de datos del treeview a la variable buscado), o sea, para el Id I0001 paso el Id de la
+        #                 tabla 57... y asi ira cambiando para cada rg
+        #             text = te da el valor de la primera columna del grid, que es donde veo el Id del registro
+        #                 asignado en la tabla"""
+        #
+        #         buscado = self.grid_planilla.item(rg)['text']
+        #         if int(buscado) == int(ult_tabla_id):
+        #             """ Si coinciden los Id quiere decir que encontre al registro que estoy buscando por Id de tabla."""
+        #             break
+        #
+        #     """ Ahora ejecuto este procedimiento que se encarga de poner el puntero en el registro que acabamos
+        #     de encontrar correspondiente al Id de tabla asignado en el parametro de la funcion llena_grilla.
+        #         "rg" = es el Text o Index del registro en el Treeview I001, IB002.... y ahi posiciono el foco
+        #     con las siguientes instrucciones. """
+        #
+        #     self.grid_planilla.selection_set(rg)
+        #     # Para que no me diga que no hay nada seleccionado
+        #     self.grid_planilla.focus(rg)
+        #     # para que la linea seleccionada no me quede fuera del area visible del treeview
+        #     self.grid_planilla.yview(self.grid_planilla.index(rg))
+        # else:
+        #     self.mover_puntero_topend("END")
 
     def filtrar_grilla(self, fecha_filtrar):
 
@@ -761,6 +809,7 @@ class V_PlaniCaja(tk.Frame):
             return
 
         self.alta_modif = 2
+        self.var_Id = self.clave  # puede traer -1 , en ese caso seria un alta
 
         self.estado_boton_nuevo()
 
@@ -838,13 +887,14 @@ class V_PlaniCaja(tk.Frame):
 
             # Elimino de tabla ctacte si existe clave de movimiento
             if int(self.clavemov_ant) > 0:
+
                 # Aqui lo elimino de la tabla de ctacte
                 self.varPlanilla.eliminar_item_ctacte_xmodif(self.clavemov_ant)
-                # messagebox.showinfo("Eliminar", "Registro eliminado EN PLANILLA Y CUENTA CORRIENTE", parent=self)
-                self.set_status("🗑 Registro eliminado EN PLANILLA Y CUENTA CORRIENTE", "ok")
+                messagebox.showinfo("Eliminar", "Registro eliminado EN PLANILLA Y CUENTA CORRIENTE", parent=self)
+
             else:
-                # messagebox.showinfo("Eliminar", "Registro eliminado en PLANILLA", parent=self)
-                self.set_status("🗑 Registro eliminado solo EN PLANILLA", "ok")
+
+                messagebox.showinfo("Eliminar", "Registro eliminado en PLANILLA", parent=self)
 
             self.llena_grilla(self.clave_ant)
 
@@ -874,12 +924,16 @@ class V_PlaniCaja(tk.Frame):
         # -----------------------------------------------------------------------
 
         # Defino variables para simplificar calculos ----------------------------
-        ingreso = float(self.strvar_ingreso.get() or 0)
-        cantidad = float(self.strvar_cantidad.get() or 0)
-        egreso = float(self.strvar_egreso.get() or 0)
-        compras = float(self.strvar_compras.get() or 0)
-        pagos = float(self.strvar_pagos_ctacte.get() or 0)
+        ingreso = float(self.strvar_ingreso.get())
+        cantidad = float(self.strvar_cantidad.get())
+        egreso = float(self.strvar_egreso.get())
+        compras = float(self.strvar_compras.get())
+        pagos = float(self.strvar_pagos_ctacte.get())
         # -----------------------------------------------------------------------
+
+        # CAMPOS DE IMPORTE
+        # if (self.combo_tipomov.get() == "Venta_articulos" or self.combo_tipomov.get() == "Venta_servicios"
+        #         or self.combo_tipomov.get() == "Ingresos_varios"):
 
         # Validaciones campos numericos segun el tipo de movimiento -------------
 
@@ -888,209 +942,292 @@ class V_PlaniCaja(tk.Frame):
         if tipo in ("Venta_articulos", "Venta_servicios", "Ingresos_varios"):
 
             # debe haber un valor en ingreso , puede haber pagos a ctacte , no puede haber egreso ni compras
-            if self.validar(ingreso == 0, "Importe de ingreso en cero", self.entry_ingresos): return
+            if ingreso == 0:
+                messagebox.showerror("Error", "Importe de ingreso en cero", parent=self)
+                self.entry_ingresos.focus()
+                return
             # debe haber una cantidad
-            if self.validar(cantidad == 0, "Coloque cantidad", self.entry_cantidad): return
-            # no debe haber importe de egreso
-            if self.validar(egreso != 0, "No puede haber egreso", self.entry_egreso): return
-            # # no debe haber importe de compras
-            if self.validar(compras != 0, "No puede haber compras", self.entry_compras): return
+            if cantidad == 0:
+                messagebox.showerror("Error", "Coloque cantidad", parent=self)
+                self.entry_cantidad.focus()
+                return
+            # no debe haber importe de agreso
+            if egreso != 0:
+                messagebox.showerror("Error", "No puede haber importe de egreso", parent=self)
+                self.entry_egreso.focus()
+                return
+            # no debe haber importe de compras
+            if compras != 0:
+                messagebox.showerror("Error", "No puede haber importe de compras", parent=self)
+                self.entry_compras.focus()
+                return
 
-        elif tipo == "Compras":   # Es un valor de egreso
+        elif tipo == "Compras":
 
-            #  # SI debe haber importe de compra
-            if self.validar(compras == 0, "Importe de compras en cero", self.entry_compras): return
+            # Es un valor de egreso
+
+            # SI debe haber importe de compra
+            if compras == 0:
+                messagebox.showerror("Error", "Importe de compras en cero", parent=self)
+                self.entry_compras.focus()
+                return
             # NO puede haber importe de ingreso
-            if self.validar(ingreso != 0, "No puede haber ingreso", self.entry_ingresos): return
+            if ingreso != 0:
+                messagebox.showerror("Error", "No puede haber importe en ingreso", parent=self)
+                self.entry_ingresos.focus()
+                return
             # NO puede haber imoprte en pagos a ctacte
-            if self.validar(pagos != 0, "No puede haber pagos ctacte", self.entry_pagoscta): return
+            if float(self.strvar_pagos_ctacte.get()) != 0:
+                messagebox.showerror("Error", "No puede haber importe en pagos ctacte", parent=self)
+                self.entry_pagoscta.focus()
+                return
             # NO puede haber importe de agreso
-            if self.validar(egreso != 0, "No puede haber egreso", self.entry_egreso): return
+            if egreso != 0:
+                messagebox.showerror("Error", "No puede haber importe de egreso", parent=self)
+                self.entry_egreso.focus()
+                return
 
-        elif tipo == "Egresos_varios":     # Es un valor de egreso
+        elif tipo == "Egresos_varios":
+
+            # Es un valor de egreso
 
             # SI debe haber importe de egreso
-            if self.validar(egreso == 0, "Importe de egresos en cero", self.entry_egreso): return
+            if egreso == 0:
+                messagebox.showerror("Error", "Importe de egresos en cero", parent=self)
+                self.entry_egreso.focus()
+                return
             # NO puede haber importe de ingreso
-            if self.validar(ingreso != 0, "No puede haber ingreso", self.entry_ingresos): return
+            if ingreso != 0:
+                messagebox.showerror("Error", "No puede haber importe en ingreso", parent=self)
+                self.entry_ingresos.focus()
+                return
             # NO puede haber importe de compra
-            if self.validar(compras != 0, "No puede haber compras", self.entry_compras): return
+            if compras != 0:
+                messagebox.showerror("Error", "No puede haber importe en compras", parent=self)
+                self.entry_compras.focus()
+                return
         # -----------------------------------------------------------------------
 
+
+
+
+
+
+
+
+
+
+
         # ----------------------------------------------------------------------------
-        # guardo el Id del Treeview en selected para ubicacion del foco a posteriori I001, IB003
-        self.selected = self.grid_planilla.focus()
-        # Guardo el Id del registro de la Tabla (no es el mismo que el otro, este puedo verlo en la base)
-        self.clave = self.grid_planilla.item(self.selected, 'text')
+        aa = 0
+        #try:
+        if aa == 0:
 
-        # Identifica movimiento a cuenta corriente - debe ser cero si es un alta de nuevo movimiento
-        self.strvar_clavemov.set(value="0")
-        self.movim_a_cta = 'N'
+            # guardo el Id del Treeview en selected para ubicacion del foco a posteriori I001, IB003
+            self.selected = self.grid_planilla.focus()
+            # Guardo el Id del registro de la Tabla (no es el mismo que el otro, este puedo verlo en la base)
+            self.clave = self.grid_planilla.item(self.selected, 'text')
 
-        # ALTA ===============================================================================
-        if self.alta_modif == 1:
+            if self.alta_modif == 1:
 
-            # Si pagos a cuenta cte es "" le meto un "0" por las dudas
-            if self.strvar_pagos_ctacte.get() == "":
-                self.strvar_pagos_ctacte.set(value="0")
+                # Tratamiento si es un movimiento a cuenta corriente ----------------------------------
+                # identifica movimiento a cuenta corriente - debe ser cero si es un alta de nuevo movimiento
+                self.strvar_clavemov.set(value="0")
+                self.movim_a_cta = 'N'
 
-            self.movim_a_cta = 'S' if (self.strvar_check1.get() == "1" or float(self.strvar_pagos_ctacte.get()) != 0) else 'N'
+                # verifico que sea un movimiento a cuenta corriente, si esta marcado el check es un movim a ctacte
+                if self.strvar_check1.get() == "1":
+                    self.movim_a_cta = 'S'
 
-            if self.movim_a_cta == 'S':
+                # Si pagos a cuenta cte es "" le meto un "0" por las dudas
+                if self.strvar_pagos_ctacte.get() == "":
+                    self.strvar_pagos_ctacte.set(value="0")
 
-                # CODIGO CLIENTE
-                if not float(self.strvar_codcli.get()):
-                    messagebox.showerror("Error", "Cuenta corriente debe tener codigo cliente - "
-                                                  "falta codigo", parent=self)
-                    self.entry_cliente.focus()
-                    return
-                # NOMBRE DE CLIENTE
-                if not self.strvar_cliente.get():
-                    messagebox.showerror("Error", "Cuenta corriente debe tener nombre cliente - "
-                                                  "falta nombre", parent=self)
-                    self.entry_cliente.focus()
-                    return
+                # Ahora si puedo convertirlo a float con valor numerico 0 - Si pagos a cta trae importe es un movim a ctacte
+                if float(self.strvar_pagos_ctacte.get()) != 0:
+                    self.movim_a_cta = 'S'
 
-                # Si la cosa es correcto, genero nueva clave aleatoria para identificar el movimiento en ctacte
-                self.strvar_clavemov.set(value=str(random.randint(1, 1000000)))
-            # ----------------------------------------------------------------------------
+                if self.movim_a_cta == 'S':
 
-            # Preparo Diccionario --------------------------------------------------------
-            fecha_aux = datetime.strptime(self.strvar_fecha_planilla.get(), '%d/%m/%Y')
-            planilla = self.get_planilla_dict(fecha_aux)
-            # ----------------------------------------------------------------------------
+                    # debe existir codigo de cliente y nombre para ingresar movimientos a ctacte
 
-            try:
-                self.id_nuevo = self.varPlanilla.insertar_planilla(planilla)
-                self.id_ref = self.id_nuevo
-            except ValueError as e:
-                messagebox.showwarning("Datos inválidos - error al insertar/modificar articulo", str(e))
-                self.set_status("⚠ Error en los datos", "warn")
-                return
-            except Exception as e:
-                messagebox.showerror("Error del sistema - al insertar/modificar articulo", str(e))
-                self.set_status("❌ Error al guardar", "error")
-                return
+                    # CODIGO CLIENTE
+                    if not float(self.strvar_codcli.get()):
+                        messagebox.showerror("Error", "Cuenta corriente debe tener codigo cliente - "
+                                                      "falta codigo", parent=self)
+                        self.entry_cliente.focus()
+                        return
+                    # NOMBRE DE CLIENTE
+                    if not self.strvar_cliente.get():
+                        messagebox.showerror("Error", "Cuenta corriente debe tener nombre cliente - "
+                                                      "falta nombre", parent=self)
+                        self.entry_cliente.focus()
+                        return
 
-            # self.varPlanilla.insertar_planilla(fecha_aux, self.strvar_tipomov.get(),
-            #                 self.strvar_detalle_movim.get(), self.strvar_cantidad.get(), self.strvar_ingreso.get(),
-            #                 self.strvar_egreso.get(), self.strvar_costo.get(), self.strvar_pagos_ctacte.get(),
-            #                 self.strvar_compras.get(), self.strvar_cliente.get(), self.strvar_forma_pago.get(),
-            #                 self.strvar_detalle_pago.get(), self.strvar_garantia.get(),
-            #                 self.strvar_observaciones.get(), self.strvar_proved.get(), self.strvar_check1.get(),
-            #                 self.strvar_clavemov.get(), self.strvar_codcli.get())
+                    # Si la cosa es correcto, genero nueva clave aleatoria para identificar el movimiento en ctacte
+                    self.strvar_clavemov.set(value=str(random.randint(1, 1000000)))
+                # ----------------------------------------------------------------------------
 
-            # 3- Si se ha generado clave de movimiento a cta. y ademas la variable movimiento a cta esta en "S"
-            # Corresponde guardar el movimiento en la tabla de ctacte
-            if float(self.strvar_clavemov.get()) != 0 and self.movim_a_cta == 'S':
+                # Preparo Diccionario ----------------------------------------------------------------
 
-                # guardo movimiento en tabla de ctacte
-                self.varPlanilla.insertar_ctacte(fecha_aux, self.strvar_detalle_movim.get(),
-                            (float(self.strvar_ingreso.get()) * float(self.strvar_cantidad.get())),
+                fecha_aux = datetime.strptime(self.strvar_fecha_planilla.get(), '%d/%m/%Y')
+
+                # clientes = {
+                #     #"Id": self.var_Id,
+                #     "Id": self.clave,
+                #     "pl_fecha": fecha_aux,
+                #     "pl_tipomov": self.strvar_tipomov.get(),
+                #     "pl_detalle": self.strvar_detalle_movim.get(),
+                #     "pl_cantidad": self.strvar_cantidad.get(),
+                #     "pl_ingresos": self.strvar_ingreso.get(),
+                #     "pl_egreso": self.strvar_egreso.get(),
+                #     "pl_costo": self.strvar_costo.get(),
+                #     "pl_pagoscta": self.strvar_pagos_ctacte.get(),
+                #     "pl_compras": self.strvar_compras.get(),
+                #     "pl_cliente": self.strvar_cliente.get(),
+                #     "pl_tipopago": self.strvar_forma_pago.get(),
+                #     "pl_detapago": self.strvar_detalle_pago.get(),
+                #     "pl_garantia": self.strvar_garantia.get(),
+                #     "pl_observacion": self.strvar_observaciones.get(),
+                #     "pl_proved": self.strvar_proved.get(),
+                #     "pl_ctacte": self.strvar_check1.get(),
+                #     "pl_clavemov": self.strvar_clavemov.get(),
+                #     "pl_codcli": self.strvar_codcli.get(),
+                # }
+                # ------------------------------------------------------------------------------------
+                # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+
+
+                # 2- Guardar movimiento en planilla de caja
+                # fecha_aux = datetime.strptime(self.strvar_fecha_planilla.get(), '%d/%m/%Y')
+
+                self.varPlanilla.insertar_planilla(fecha_aux, self.strvar_tipomov.get(),
+                                self.strvar_detalle_movim.get(), self.strvar_cantidad.get(), self.strvar_ingreso.get(),
+                                self.strvar_egreso.get(), self.strvar_costo.get(), self.strvar_pagos_ctacte.get(),
+                                self.strvar_compras.get(), self.strvar_cliente.get(), self.strvar_forma_pago.get(),
+                                self.strvar_detalle_pago.get(), self.strvar_garantia.get(),
+                                self.strvar_observaciones.get(), self.strvar_proved.get(), self.strvar_check1.get(),
+                                self.strvar_clavemov.get(), self.strvar_codcli.get())
+
+                # 3- Si se ha generado clave de movimiento a cta. y ademas la variable movimiento a cta esta en "S"
+                # Corresponde guardar el movimiento en la tabla de ctacte
+                if float(self.strvar_clavemov.get()) != "0" and self.movim_a_cta == 'S':
+
+                    # guardo movimiento en tabla de ctacte
+                    self.varPlanilla.insertar_ctacte(fecha_aux, self.strvar_detalle_movim.get(),
+                                (float(self.strvar_ingreso.get()) * float(self.strvar_cantidad.get())),
+                                self.strvar_pagos_ctacte.get(), self.strvar_codcli.get(),
+                                self.strvar_cliente.get(), self.strvar_clavemov.get())
+
+                    # messagebox.showinfo("Correcto", "Item ingresado en Planilla y Cuenta Corriente", parent=self)
+                    self.set_status("✔ Registracion correcta en Planillas y cuenta corriente", "ok")
+
+                else:
+
+                    # messagebox.showinfo("Correcto", "Item ingresado en Planilla", parent=self)
+                    self.set_status("✔ Registracion correcta solo Planillas", "ok")
+
+            if self.alta_modif == 2:
+
+                self.strvar_clavemov.set(value="0")
+                self.movim_a_cta = 'N'
+
+                # ojo puede ser que haya sido uno que estaba en ctacte y ahora lo sacamos "ver bien"
+                # Si la variale me trae un "1" significa checkbox marcado
+                if self.strvar_check1.get() == "1":
+
+                    self.movim_a_cta = 'S'
+
+                    # Si pagos a cuenta cte es "" le meto un "0" por las dudas
+                    if self.strvar_pagos_ctacte.get() == "":
+                        self.strvar_pagos_ctacte.set(value="0")
+
+                    # Si pagos a cta trae un importe es un movim a ctacte
+                    if float(self.strvar_pagos_ctacte.get()) != 0:
+                        self.movim_a_cta = 'S'
+
+                    if self.movim_a_cta == 'S':
+
+                        # Si codigo de cliente es "" le meto un "0" pora luego validar
+                        if self.strvar_codcli.get() == "":
+                            self.strvar_codcli.set(value="0")
+
+                        # Requiero codigo de cliente
+                        if not float(self.strvar_codcli.get()):
+                            messagebox.showerror("Error", "Es necesario codigo de cliente - falta codigo",
+                                                 parent=self)
+                            self.entry_cliente.focus()
+                            return
+
+                        # Requiero nombre de cliente
+                        if not self.strvar_cliente.get():
+                            messagebox.showerror("Error", "Es necesario nombre de clientee - falta nombre",
+                                                 parent=self)
+                            self.entry_cliente.focus()
+                            return
+
+                    # genero nueva clave aleatoria
+                    self.strvar_clavemov.set(value=str(random.randint(1, 1000000)))
+
+                # Borrado previo del movim. de cta cte --------------------------------------------
+                # Al ser modificacion, borrar todos los movimientos en tabla de ctacte
+                # con clavemov  = strvar_clavemov_ant
+                if float(self.strvar_clavemov_ant.get()) != 0 and self.movim_a_cta == 'S':
+                    self.varPlanilla.eliminar_item_ctacte_xmodif(self.strvar_clavemov_ant.get())
+                # ----------------------------------------------------------------------------------
+
+                # Modificacion en planillas --------------------------------------------------------
+                # Guardado del movimiento en Planilas de caja-guardo modificacion con clave nueva ( cero u otra )
+                self.varPlanilla.modificar_planilla(self.var_Id, self.strvar_fecha_planilla.get(),
+                            self.strvar_tipomov.get(), self.strvar_detalle_movim.get(), self.strvar_cantidad.get(),
+                            self.strvar_ingreso.get(), self.strvar_egreso.get(), self.strvar_costo.get(),
+                            self.strvar_pagos_ctacte.get(), self.strvar_compras.get(), self.strvar_cliente.get(),
+                            self.strvar_forma_pago.get(), self.strvar_detalle_pago.get(), self.strvar_garantia.get(),
+                            self.strvar_observaciones.get(), self.strvar_proved.get(), self.strvar_check1.get(),
+                            self.strvar_clavemov.get(), self.strvar_codcli.get())
+                # ---------------------------------------------------------------------------------
+
+                # Guardo de movimiento en cta cte si corresponde -----------------------------------
+                if float(self.strvar_clavemov.get()) != 0 and self.movim_a_cta == 'S':
+
+                    # guardo (como ALTA) movimiento modificado en ctacte con clave nueva, porque el que existia
+                    # anteriormente fue borrado previamente.
+                    fecha_aux = datetime.strptime(self.strvar_fecha_planilla.get(), '%d/%m/%Y')
+                    self.varPlanilla.insertar_ctacte(fecha_aux, self.strvar_detalle_movim.get(),
+                            (float(self.strvar_ingreso.get())*float(self.strvar_cantidad.get())),
                             self.strvar_pagos_ctacte.get(), self.strvar_codcli.get(),
                             self.strvar_cliente.get(), self.strvar_clavemov.get())
 
-                self.set_status("✔ Registracion correcta en Planillas y cuenta corriente", "ok")
+                    self.set_status("✔ Modificacion correcta en Planillas y cuenta corriente", "ok")
+                    # messagebox.showinfo("Modificacion", "Modificacion correcta en Planilla y Cuenta Corriente", parent=self)
+                else:
+                    self.set_status("✔ Modificacion correcta solo Planillas", "ok")
+                    # messagebox.showinfo("Modificacion", "Modificacion correcta en Planilla", parent=self)
+                # -----------------------------------------------------------------------------------
 
-            else:
+                self.var_Id == -1
 
-                self.set_status("✔ Registracion correcta solo Planillas", "ok")
-        # ================================================================================================
+            self.movim_a_cta = 'N'
+            self.reset_stringvars()
+            self.habilitar_text()
 
-        # MODIFICACION ===================================================================================
-        if self.alta_modif == 2:
+            if self.alta_modif == 1:
+                id_ref = self.varPlanilla.traer_ultimo(0)
+                self.llena_grilla(id_ref)
+            elif self.alta_modif == 2:
+                self.llena_grilla(self.clave)
 
-            # Si pagos a cuenta cte es "" le meto un "0" por las dudas
-            if self.strvar_pagos_ctacte.get() == "":
-                self.strvar_pagos_ctacte.set(value="0")
+            self.alta_modif = 0
 
-            self.movim_a_cta = 'S' if (self.strvar_check1.get() == "1" or float(self.strvar_pagos_ctacte.get()) != 0) else 'N'
+            self.btn_nuevoitem.focus()
 
-            if self.movim_a_cta == 'S':
+        else:
+        #except:
 
-                # Si codigo de cliente es "" le meto un "0" pora luego validar
-                if self.strvar_codcli.get() == "":
-                    self.strvar_codcli.set(value="0")
-
-                # Requiero codigo de cliente
-                if not float(self.strvar_codcli.get() or 0):
-                    messagebox.showerror("Error", "Es necesario codigo de cliente - falta codigo",
-                                         parent=self)
-                    self.entry_cliente.focus()
-                    return
-
-                # Requiero nombre de cliente
-                if not self.strvar_cliente.get():
-                    messagebox.showerror("Error", "Es necesario nombre de clientee - falta nombre",
-                                         parent=self)
-                    self.entry_cliente.focus()
-                    return
-
-                # genero nueva clave aleatoria
-                self.strvar_clavemov.set(value=str(random.randint(1, 1000000)))
-
-            # Preparo Diccionario ----------------------------------------------------------------
-            fecha_aux = datetime.strptime(self.strvar_fecha_planilla.get(), '%d/%m/%Y')
-            planilla = self.get_planilla_dict(fecha_aux)
-
-            # ----------------------------------------------------------------------------------
-            # Borrado previo de los movimientos de ctacte - Al ser modificacion, borrar todos los movimientos
-            # en tabla de ctacte con clavemov  = strvar_clavemov_ant
-            if float(self.strvar_clavemov_ant.get()) != 0 and self.movim_a_cta == 'S':
-                self.varPlanilla.eliminar_item_ctacte_xmodif(self.strvar_clavemov_ant.get())
-            # ----------------------------------------------------------------------------------
-
-            try:
-                self.varPlanilla.modificar_planilla(planilla)
-                self.id_ref = self.clave
-            except ValueError as e:
-                messagebox.showwarning("Datos inválidos - error al insertar/modificar articulo", str(e))
-                self.set_status("⚠ Error en los datos", "warn")
-                return
-            except Exception as e:
-                messagebox.showerror("Error del sistema - al insertar/modificar articulo", str(e))
-                self.set_status("❌ Error al guardar", "error")
-                return
-
-            # # Modificacion en planillas --------------------------------------------------------
-            # # Guardado del movimiento en Planilas de caja-guardo modificacion con clave nueva ( cero u otra )
-            # self.varPlanilla.modificar_planilla(self.var_Id, self.strvar_fecha_planilla.get(),
-            #             self.strvar_tipomov.get(), self.strvar_detalle_movim.get(), self.strvar_cantidad.get(),
-            #             self.strvar_ingreso.get(), self.strvar_egreso.get(), self.strvar_costo.get(),
-            #             self.strvar_pagos_ctacte.get(), self.strvar_compras.get(), self.strvar_cliente.get(),
-            #             self.strvar_forma_pago.get(), self.strvar_detalle_pago.get(), self.strvar_garantia.get(),
-            #             self.strvar_observaciones.get(), self.strvar_proved.get(), self.strvar_check1.get(),
-            #             self.strvar_clavemov.get(), self.strvar_codcli.get())
-
-            # Guardo de movimiento en cta cte si corresponde -----------------------------------
-            if float(self.strvar_clavemov.get()) != 0 and self.movim_a_cta == 'S':
-                # guardo (como ALTA) movimiento modificado en ctacte con clave nueva, porque el que existia
-                # anteriormente fue borrado previamente.
-                fecha_aux = datetime.strptime(self.strvar_fecha_planilla.get(), '%d/%m/%Y')
-                self.varPlanilla.insertar_ctacte(fecha_aux, self.strvar_detalle_movim.get(),
-                        (float(self.strvar_ingreso.get())*float(self.strvar_cantidad.get())),
-                        self.strvar_pagos_ctacte.get(), self.strvar_codcli.get(),
-                        self.strvar_cliente.get(), self.strvar_clavemov.get())
-
-                self.set_status("✔ Modificacion correcta en Planillas y cuenta corriente", "ok")
-            else:
-                self.set_status("✔ Modificacion correcta solo Planillas", "ok")
-            # -----------------------------------------------------------------------------------
-
-            #self.var_Id == -1
-
-        self.movim_a_cta = 'N'
-        self.reset_stringvars()
-        self.habilitar_text()
-
-        if self.alta_modif == 1:
-            #id_ref = self.varPlanilla.traer_ultimo(0)
-            self.llena_grilla(self.id_ref)
-        elif self.alta_modif == 2:
-            self.llena_grilla(self.id_ref)
-
-        self.alta_modif = 0
-        self.btn_nuevoitem.focus()
+            messagebox.showerror("Error", "Error inesperado, revise datos ingresados", parent=self)
+            self.entry_fecha_planilla.focus()
+            return
 
     # ---------------------------------------------------------------------------------
     # VARIAS
@@ -1127,6 +1264,7 @@ class V_PlaniCaja(tk.Frame):
 
         elif retorno_VerFal == "N":
             # esto es error en el año y decidio no seguir
+            #            self.strvar_fecha_planilla.set(value=estado_antes)
             self.strvar_fecha_planilla.set(value=self.strvar_fecha_error.get())
             self.entry_fecha_planilla.focus()
             return ("error")
@@ -1140,21 +1278,19 @@ class V_PlaniCaja(tk.Frame):
 
     def tildo_cuenta(self, cposa):
 
-        # Pone el checkbox en 1 si es movimiento a cuenta corriente o el valor del campo pago es distinto de cero
-
-        valor = self.strvar_pagos_ctacte.get()
-        fpago = self.combo_forma_pago.get()
-
         try:
-            monto = float(valor) if valor else 0.0
-        except ValueError:
-            messagebox.showerror("Error", "Ingrese un valor numérico válido", parent=self)
+            if self.strvar_pagos_ctacte.get() == "" or self.strvar_pagos_ctacte.get() == "-" or self.strvar_pagos_ctacte.get() == ".":
+                self.strvar_pagos_ctacte.set(value="0.00")
+
+            if float(self.strvar_pagos_ctacte.get()) != 0:
+                self.strvar_check1.set(value="1")
+            else:
+                self.strvar_check1.set(value="0")
+            return
+        except:
+            messagebox.showerror("Error", "Revise tilde ingreso a cuenta corriente", parent=self)
             self.entry_pagoscta.focus()
             return
-
-        # Seteo checkbox
-        self.strvar_check1.set("1" if monto != 0 else "0")
-        self.strvar_check1.set("1" if fpago == "Cuenta Corriente" else "0")
 
     def obtener_fecha_inicial(self):
 
@@ -1179,32 +1315,31 @@ class V_PlaniCaja(tk.Frame):
 
     def fBuscar_en_tabla(self):
 
-        texto = self.strvar_buscostring.get().strip()
+        # busca un texto cualquiera en la tabla de planillas de caja
 
-        if not texto:
+        # verifico que el string de busqueda traiga algo o este vacio
+        if len(self.strvar_buscostring.get()) <= 0:
             messagebox.showwarning("Buscar", "No ingreso busqueda", parent=self)
             return
 
-        # Sanitizar básico (evitar romper SQL) por si viene un nombre O''connor jode las comillas
-        texto = texto.replace("'", "''")
+        se_busca = self.strvar_buscostring.get()
 
         self.filtro_anterior = self.filtro_activo
 
-        # Hago una lista con las cuatro condiciones
-        campos = ["pl_detalle", "pl_cliente", "pl_proved", "pl_tipopago"]
-        # esto lo hace para cada campo - muy buena instruccion
-        condiciones = [f"INSTR({campo}, '{texto}') > 0" for campo in campos]
-
-        # unir las condiciones
-        self.filtro_activo = "WHERE " + " OR ".join(condiciones)
+        self.filtro_activo = "WHERE INSTR(pl_detalle, '" + se_busca + "') > 0" \
+                             + " OR " + "INSTR(pl_cliente, '" + se_busca + "') > 0" \
+                             + " OR " + "INSTR(pl_proved, '" + se_busca + "') > 0" \
+                             + " OR " + "INSTR(pl_tipopago, '" + se_busca + "') > 0"
 
         self.varPlanilla.buscar_entabla(self.filtro_activo)
         self.llena_grilla("")
 
-        # Mantener foco
-        items = self.grid_planilla.selection()
-        if items:
-            self.grid_planilla.focus(items[0])
+        # -------------------------------------------------------------------------------
+        """ Obtengo el Id del grid para que me tome la seleccion y el foco se coloque efectivamente en el 
+        item buscado y asi cuando le doy -show all- el puntero se sigue quedando en el registro buscado"""
+        item = self.grid_planilla.selection()
+        self.grid_planilla.focus(item)
+        # -------------------------------------------------------------------------------
 
     def fShowall(self):
 
@@ -1233,12 +1368,89 @@ class V_PlaniCaja(tk.Frame):
     def calcular(self, que_campo):
 
         try:
+
             # Funcion controlo los ceros y los blancos
             if not self.control_blanco():
+                #self.entry_costo_historico.focus()
                 return
 
             # Controla allsobre los "-" y "."
             self.control_valores()
+
+            # # Control de que no ingresen mas de una vez el '-' o el '.' - Funcion en funciones.py
+            # if not control_forma(self.strvar_ingreso.get()):
+            #     self.strvar_ingreso.set(value="0")
+            #     self.entry_ingresos.focus()
+            #     return
+            # if not control_forma(self.strvar_costo.get()):
+            #     self.strvar_costo.set(value="0")
+            #     self.entry_costo.focus()
+            #     return
+            # if not control_forma(self.strvar_cantidad.get()):
+            #     self.strvar_cantidad.set(value="0")
+            #     self.entry_cantidad.focus()
+            #     return
+            # if not control_forma(self.strvar_egreso.get()):
+            #     self.strvar_egreso.set(value="0")
+            #     self.entry_egreso.focus()
+            #     return
+            # if not control_forma(self.strvar_pagos_ctacte.get()):
+            #     self.strvar_pagos_ctacte.set(value="0")
+            #     self.entry_pagoscta.focus()
+            #     return
+            # if not control_forma(self.strvar_compras.get()):
+            #     self.strvar_compras.set(value="0")
+            #     self.entry_compras.focus()
+            #     return
+
+
+
+
+
+
+
+            # # Valido que los campos no me ingresen en blanco ---------------------------------------------
+            # if self.strvar_ingreso.get() == "" or self.strvar_ingreso.get() == "-" or self.strvar_ingreso.get() == ".":
+            #     self.strvar_ingreso.set(value="0")
+            #     self.entry_ingresos.focus()
+            #     return
+            # else:
+            #     self.strvar_ingreso.set(value=str(round(float(self.strvar_ingreso.get()), 2)))
+            #
+            # if self.strvar_costo.get() == "" or self.strvar_costo.get() == "-" or self.strvar_costo.get() == ".":
+            #     self.strvar_costo.set(value="0")
+            #     self.entry_costo.focus()
+            #     return
+            # else:
+            #     self.strvar_costo.set(value=str(round(float(self.strvar_costo.get()), 2)))
+            #
+            # if self.strvar_cantidad.get() == "" or self.strvar_cantidad.get() == "-" or self.strvar_cantidad.get() == ".":
+            #     self.strvar_cantidad.set(value="0")
+            #     self.entry_cantidad.focus()
+            #     return
+            # else:
+            #     self.strvar_cantidad.set(value=str(round(float(self.strvar_cantidad.get()), 2)))
+            #
+            # if self.strvar_egreso.get() == "" or self.strvar_egreso.get() == "-" or self.strvar_egreso.get() == ".":
+            #     self.strvar_egreso.set(value="0")
+            #     self.entry_egreso.focus()
+            #     return
+            # else:
+            #     self.strvar_egreso.set(value=str(round(float(self.strvar_egreso.get()), 2)))
+            #
+            # if self.strvar_pagos_ctacte.get() == "" or self.strvar_pagos_ctacte.get() == "-" or self.strvar_pagos_ctacte.get() == ".":
+            #     self.strvar_pagos_ctacte.set(value="0")
+            #     self.entry_pagoscta.focus()
+            #     return
+            # else:
+            #     self.strvar_pagos_ctacte.set(value=str(round(float(self.strvar_pagos_ctacte.get()), 2)))
+            #
+            # if self.strvar_compras.get() == "" or self.strvar_compras.get() == "-" or self.strvar_compras.get() == ".":
+            #     self.strvar_compras.set(value="0")
+            #     self.entry_compras.focus()
+            #     return
+            # else:
+            #     self.strvar_compras.set(value=str(round(float(self.strvar_compras.get()), 2)))
 
             # Evaluo segun el parametro de calculo que asigno en el Entry --------------------------------
             if que_campo == "general":
@@ -1248,7 +1460,9 @@ class V_PlaniCaja(tk.Frame):
 
                 self.strvar_totingresos.set(value=str(round(x_ingreso * x_cantidad, 2)))
                 self.strvar_totcosto.set(value=str(round(x_costo * x_cantidad, 2)))
+
         except:
+
             messagebox.showerror("Except-Error", "Revise entradas numericas 5", parent=self)
             self.entry_detalle_movim.focus()
             return
@@ -1311,6 +1525,13 @@ class V_PlaniCaja(tk.Frame):
             var.set("0.00")
     # -----------------------------------------------------------------------------------------
 
+
+
+
+
+
+
+
     # ---------------------------------------------------------------------------------
     # SEL
     # ---------------------------------------------------------------------------------
@@ -1320,13 +1541,10 @@ class V_PlaniCaja(tk.Frame):
         """ Creo una variable (que_busco) que contiene los parametros de busqueda - Tabla, el string de busqueda y en que
         campos debe hacerse """
 
-        texto = self.strvar_cliente.get()
-        que_busco = (
-            f"clientes WHERE INSTR(apellido, '{texto}') > 0 "
-            f"OR INSTR(nombres, '{texto}') > 0 "
-            f"OR INSTR(apenombre, '{texto}') > 0 "
-            f"ORDER BY apenombre"
-        )
+        que_busco = "clientes WHERE INSTR(apellido, '" + self.strvar_cliente.get() + "') > 0" \
+                    + " OR INSTR(nombres, '" + self.strvar_cliente.get() + "') > 0" \
+                    + " OR INSTR(apenombre, '" + self.strvar_cliente.get() + "') > 0" \
+                    + " ORDER BY apenombre"
 
         """ Llamo a la funcion ventana de seleccion de items. Paso parametros de Tabla-campos a mostrar en orden de 
         como quiero verlos-Titulos para cada columna de esos campos-String de busqueda definido arriba (que_busco) """
@@ -1349,16 +1567,12 @@ class V_PlaniCaja(tk.Frame):
 
         """ Paso los parametros de busqueda - Tabla, el string de busqueda y en que campos debe hacerse """
 
-        texto = self.strvar_detalle_movim.get().strip().replace("'", "''")
-
-        campos = ["descripcion", "marca", "rubro", "codbar", "codigo"]
-        condiciones = [f"INSTR({campo}, '{texto}') > 0" for campo in campos]
-
-        que_busco = (
-                "articulos WHERE "
-                + " OR ".join(condiciones)
-                + " ORDER BY rubro, marca, descripcion"
-        )
+        que_busco = "articulos WHERE INSTR(descripcion, '" + self.strvar_detalle_movim.get() + "') > 0" \
+                    + " OR INSTR(marca, '" + self.strvar_detalle_movim.get() + "') > 0" \
+                    + " OR INSTR(rubro, '" + self.strvar_detalle_movim.get() + "') > 0" \
+                    + " OR INSTR(codbar, '" + self.strvar_detalle_movim.get() + "') > 0" \
+                    + " OR INSTR(codigo, '" + self.strvar_detalle_movim.get() + "') > 0" \
+                    + " ORDER BY rubro, marca, descripcion"
 
         valores_new = self.varFuncion_new.ventana_selec("articulos", "descripcion", "marca",
                                                         "costodolar", "Descripcion", "Marca",
@@ -1376,29 +1590,25 @@ class V_PlaniCaja(tk.Frame):
             masiva = round((float(costopesos_neto) * (1 + ((float(item[7]) / 100)))), 2)
             masganancia = round((float(masiva) * (1 + ((float(item[9]) / 100)))), 2)
 
-        self.strvar_ingreso.set(value=str(masganancia))
-        self.strvar_costo.set(value=str(masiva))
+        self.strvar_ingreso.set(value=masganancia)
+        self.strvar_costo.set(value=masiva)
 
         self.entry_detalle_movim.focus()
         self.entry_detalle_movim.icursor(tk.END)
+
+        # if len(self.strvar_detalle_articulo.get()) < 3:
+        #     messagebox.showwarning("Aviso", "Falta argumento de busqueda minimo tres caracteres", parent=self)
+        #     self.entry_detalle_articulo.focus()
+        #     return
 
     def fBusprov(self):
 
         """ Creo una variable (que_busco) que contiene los parametros de busqueda - Tabla, el string de busqueda y en
         que campos debe hacerse """
 
-        texto = self.strvar_proved.get().strip().replace("'", "''")
-        campos = ["denominacion", "direccion"]
-        condiciones = [f"INSTR({campo}, '{texto}') > 0" for campo in campos]
-        que_busco = (
-                "proved WHERE "
-                + " OR ".join(condiciones)
-                + " ORDER BY denominacion"
-        )
-
-        # que_busco = "proved WHERE INSTR(denominacion, '" + self.strvar_proved.get() + "') > 0" \
-        #             + " OR INSTR(direccion, '" + self.strvar_proved.get() + "') > 0" \
-        #             + " ORDER BY denominacion"
+        que_busco = "proved WHERE INSTR(denominacion, '" + self.strvar_proved.get() + "') > 0" \
+                    + " OR INSTR(direccion, '" + self.strvar_proved.get() + "') > 0" \
+                    + " ORDER BY denominacion"
 
         """  Llamo a la funcion ventana de seleccion de items. Paso parametros de Tabla-campos a mostrar en orden de 
         como quiero verlos-Titulos para cada columna de esos campos-String de busqueda definido arriba (que_busco) """
@@ -1427,41 +1637,41 @@ class V_PlaniCaja(tk.Frame):
     # PUNTEROS
     # ---------------------------------------------------------------------------------
 
-    # def mover_puntero_topend(self, param_topend):
-    #
-    #     if param_topend == 'TOP':
-    #
-    #         # obtengo una lista con todos los Id del treeview
-    #         regis = self.grid_planilla.get_children()
-    #         # barro y salgo al primero, pero me quedo en el primero
-    #         rg = ""
-    #         for rg in regis:
-    #             break
-    #         if rg == "":
-    #             return
-    #         # selecciono el Id primero de la lista en este caso
-    #         self.grid_planilla.selection_set(rg)
-    #         # pongo el foco sobre el primero Id
-    #         self.grid_planilla.focus(rg)
-    #         # Lleva el foco al principio del treeview con esta instruccion que encontre
-    #         self.grid_planilla.yview(self.grid_planilla.index(self.grid_planilla.get_children()[0]))
-    #
-    #     elif param_topend == 'END':
-    #
-    #         # Obtengo una lista con todos los Id del treeview
-    #         regis = self.grid_planilla.get_children()
-    #         # Barro la lista y ,me quedo conel ultimo Id
-    #         rg = ""
-    #         for rg in regis:
-    #             pass
-    #         if rg == "":
-    #             return
-    #         # Selecciono el ultimo Id en este caso
-    #         self.grid_planilla.selection_set(rg)
-    #         # Pongo el foco alultimo elemento de la lista (al final)
-    #         self.grid_planilla.focus(rg)
-    #         # lleva el foco al final del treeview
-    #         self.grid_planilla.yview(self.grid_planilla.index(self.grid_planilla.get_children()[-1]))
+    def mover_puntero_topend(self, param_topend):
+
+        if param_topend == 'TOP':
+
+            # obtengo una lista con todos los Id del treeview
+            regis = self.grid_planilla.get_children()
+            # barro y salgo al primero, pero me quedo en el primero
+            rg = ""
+            for rg in regis:
+                break
+            if rg == "":
+                return
+            # selecciono el Id primero de la lista en este caso
+            self.grid_planilla.selection_set(rg)
+            # pongo el foco sobre el primero Id
+            self.grid_planilla.focus(rg)
+            # Lleva el foco al principio del treeview con esta instruccion que encontre
+            self.grid_planilla.yview(self.grid_planilla.index(self.grid_planilla.get_children()[0]))
+
+        elif param_topend == 'END':
+
+            # Obtengo una lista con todos los Id del treeview
+            regis = self.grid_planilla.get_children()
+            # Barro la lista y ,me quedo conel ultimo Id
+            rg = ""
+            for rg in regis:
+                pass
+            if rg == "":
+                return
+            # Selecciono el ultimo Id en este caso
+            self.grid_planilla.selection_set(rg)
+            # Pongo el foco alultimo elemento de la lista (al final)
+            self.grid_planilla.focus(rg)
+            # lleva el foco al final del treeview
+            self.grid_planilla.yview(self.grid_planilla.index(self.grid_planilla.get_children()[-1]))
 
     def fAntes(self):
 
@@ -1507,12 +1717,10 @@ class V_PlaniCaja(tk.Frame):
         self.llena_grilla("")
 
     def fToparch(self):
-        self.varFuncion_new.mover_puntero_topend(self.grid_planilla, 'TOP')
-        # self.mover_puntero_topend('TOP')
+        self.mover_puntero_topend('TOP')
 
     def fFinarch(self):
-        self.varFuncion_new.mover_puntero_topend(self.grid_planilla, 'END')
-        # self.mover_puntero_topend('END')
+        self.mover_puntero_topend('END')
 
     def botones_grid(self):
 
@@ -1786,7 +1994,6 @@ class V_PlaniCaja(tk.Frame):
         self.combo_forma_pago['value'] = ["Efectivo", "Transferencia", "Cuenta Corriente", "Tarjeta Debito",
                                           "Cheques", "Otros"]
         self.combo_forma_pago.current(0)
-        self.combo_forma_pago.bind("<FocusOut>", self.tildo_cuenta)
         self.combo_forma_pago.grid(row=0, column=1, padx=5, pady=2, sticky=tk.W)
 
         # DETALLE DEL PAGO ---------------------------------------------------------------------------
@@ -1980,34 +2187,3 @@ class V_PlaniCaja(tk.Frame):
 
 
 
-
-    # Trabajan con fGuardar
-    def validar(self, condicion, mensaje, widget_focus):
-        if condicion:
-            messagebox.showerror("Error", mensaje, parent=self)
-            widget_focus.focus()
-            return True
-        return False
-
-    def get_planilla_dict(self, fecha_aux):
-        return {
-            "Id": self.clave,
-            "pl_fecha": fecha_aux,
-            "pl_tipomov": self.strvar_tipomov.get(),
-            "pl_detalle": self.strvar_detalle_movim.get(),
-            "pl_cantidad": self.strvar_cantidad.get(),
-            "pl_ingresos": self.strvar_ingreso.get(),
-            "pl_egreso": self.strvar_egreso.get(),
-            "pl_costo": self.strvar_costo.get(),
-            "pl_pagoscta": self.strvar_pagos_ctacte.get(),
-            "pl_compras": self.strvar_compras.get(),
-            "pl_cliente": self.strvar_cliente.get(),
-            "pl_tipopago": self.strvar_forma_pago.get(),
-            "pl_detapago": self.strvar_detalle_pago.get(),
-            "pl_garantia": self.strvar_garantia.get(),
-            "pl_observacion": self.strvar_observaciones.get(),
-            "pl_proved": self.strvar_proved.get(),
-            "pl_ctacte": self.strvar_check1.get(),
-            "pl_clavemov": self.strvar_clavemov.get(),
-            "pl_codcli": self.strvar_codcli.get(),
-        }

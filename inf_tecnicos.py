@@ -1,10 +1,10 @@
 import os
 from funciones import *
-# from funcion_new import ClaseFuncion_new
+#from funcion_new import ClaseFuncion_new
 from inf_tecnicos_ABM import *
 
 import tkinter as tk
-import tkinter as ttk
+from tkinter import ttk
 from tkinter.scrolledtext import *
 
 from datetime import date, datetime

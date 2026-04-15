@@ -31,12 +31,7 @@ class datosArtic:
         try:
             sql = "SELECT * FROM articulos"
             if orden:
-                # if not orden.upper().startswith("ORDER BY"):
-                #     raise ValueError("Solo se permite ORDER BY")
                 sql += " " + orden
-            # else:
-            #     sql += " ORDER BY apellido, nombres ASC"
-
             cur.execute(sql)
             return cur.fetchall()
         finally:

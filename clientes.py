@@ -2,15 +2,14 @@ from funciones import *
 from funcion_new import ClaseFuncion_new
 from clientes_ABM import datosClientes
 #-------------------------------------------------
-from tkinter import messagebox
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 import tkinter.font as tkFont
-from tktooltip import ToolTip
-#-------------------------------------------------
-from datetime import date
-from datetime import datetime
+
+from datetime import date, datetime
 from PIL import Image, ImageTk
+from tktooltip import ToolTip
 
 class Clase_Clientes(tk.Frame):
 

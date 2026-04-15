@@ -438,7 +438,6 @@ class Clase_Articulos(tk.Frame):
         self.fResetrubro()
         self.llena_grilla("")
         self.varFuncion_new.mover_puntero_topend(self.grid_articulos, 'TOP')
-        # self.mover_puntero_topend("TOP")
         self.btn_nuevo.focus()
 
     def DobleClickGrid(self, event):
@@ -650,7 +649,7 @@ class Clase_Articulos(tk.Frame):
         else:
             self.set_status("✔ Registro guardado correctamente", "ok")
 
-        # Terminacion y habilitaciones y seteo variables ----------------------------------------
+        # Terminacion y habilitaciones y seteo variables ---------------------------------------
         self.limpiar_text()
         self.habilitar_Btn_Final("disabled")
         self.habilitar_Btn_Oper("normal")
