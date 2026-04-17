@@ -555,108 +555,190 @@ class V_PlaniCaja(tk.Frame):
 
         self.divido_tipomov()
 
+    # Grupo de funciones combinadas ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    # Auxiliar usada por divido_tipomov
+    def set_state(self, state, *widgets):
+        for w in widgets:
+            w.configure(state=state)
+
+    # Auxiliar usada por divido_tipomov
+    def reset_vars(self, *vars):
+        for var in vars:
+            var.set("0.00")
+
     def divido_tipomov(self):
 
-        self.entry_egreso.configure(state="normal")
-        self.entry_compras.configure(state="normal")
-        self.entry_ingresos.configure(state="normal")
-        self.entry_pagoscta.configure(state="normal")
-        self.entry_costo.configure(state="normal")
-        self.entry_cantidad.configure(state="normal")
-        self.check_ctacte.configure(onvalue=1)
-        self.check_ctacte.configure(state="normal")
-        self.entry_proved.configure(state="normal")
-        self.entry_cliente.configure(state="normal")
+        # self.entry_egreso.configure(state="normal")
+        # self.entry_compras.configure(state="normal")
+        # self.entry_ingresos.configure(state="normal")
+        # self.entry_pagoscta.configure(state="normal")
+        # self.entry_costo.configure(state="normal")
+        # self.entry_cantidad.configure(state="normal")
+        # self.check_ctacte.configure(onvalue=1)
+        # self.check_ctacte.configure(state="normal")
+        # self.entry_proved.configure(state="normal")
+        # self.entry_cliente.configure(state="normal")
 
-        match self.combo_tipomov.get():
+        # Habilito todo primero
+        self.set_state("normal",
+                       self.entry_egreso,
+                       self.entry_compras,
+                       self.entry_ingresos,
+                       self.entry_pagoscta,
+                       self.entry_costo,
+                       self.entry_cantidad,
+                       self.entry_proved,
+                       self.entry_cliente)
+        self.check_ctacte.configure(onvalue=1, state="normal")
 
-            case "Venta_articulos":
+        tipo = self.combo_tipomov.get()
+        # match self.combo_tipomov.get():
+        match tipo:
 
-                """ pongo en cero todos los camos numericos por si se cambio de tipo movimiento habiendo
-                cargado previamente otro tipo de movimiento """
+            case "Venta_articulos" | "Venta_servicios" | "Ingresos_varios":
 
-                self.strvar_egreso.set(value="0.00")
-                self.strvar_compras.set(value="0.00")
-                self.strvar_proved.set(value="")
-                # si es venta deshabilito : Egresos y compras
-                self.entry_egreso.configure(state="disabled")
-                self.entry_compras.configure(state="disabled")
-                self.entry_proved.configure(state="disabled")
-
-            case "Venta_servicios":
-
-                """ pongo en cero todos los campos numericos por si se cambio de tipo movimiento habiendo
-                cargado previamente otro tipo de movimiento """
-
-                self.strvar_egreso.set(value="0.00")
-                self.strvar_compras.set(value="0.00")
-                self.strvar_proved.set(value="")
-                # si es venta servicios : Egresos y compras
-                self.entry_egreso.configure(state="disabled")
-                self.entry_compras.configure(state="disabled")
-                self.entry_proved.configure(state="disabled")
-
-            case "Ingresos_varios":
-
-                """ Pongo en cero todos los camos numericos por si se cambio de tipo movimiento habiendo
-                # cargado previamente otro tipo de movimiento. """
-
-                self.strvar_egreso.set(value="0.00")
-                self.strvar_compras.set(value="0.00")
-                self.strvar_proved.set(value="")
-                # si es ingresos varios : Egresos y compras
-                self.entry_egreso.configure(state="disabled")
-                self.entry_compras.configure(state="disabled")
-                self.entry_proved.configure(state="disabled")
+                self.reset_vars(self.strvar_egreso, self.strvar_compras)
+                self.strvar_proved.set("")
+                self.set_state("disabled",
+                               self.entry_egreso,
+                               self.entry_compras,
+                               self.entry_proved)
 
             case "Pagos_ctacte":
 
-                """ Pongo en cero todos los camos numericos por si se cambio de tipo movimiento habiendo
-                cargado previamente otro tipo de movimiento """
-
-                self.strvar_compras.set(value="0.00")
-                self.strvar_proved.set(value="")
-                self.strvar_totingresos.set(value="0.00")
-                # si es un pago a ctacte
-                self.entry_compras.configure(state="disabled")
-                self.entry_proved.configure(state="disabled")
+                self.reset_vars(self.strvar_compras, self.strvar_totingresos)
+                self.strvar_proved.set("")
+                self.set_state("disabled",
+                               self.entry_compras,
+                               self.entry_proved)
 
             case "Compras":
 
-                """ Pongo en cero todos los camos numericos por si se cambio de tipo movimiento habiendo
-                cargado previamente otro tipo de movimiento. """
+                self.reset_vars(
+                    self.strvar_ingreso,
+                    self.strvar_pagos_ctacte,
+                    self.strvar_costo,
+                    self.strvar_egreso,
+                    self.strvar_totingresos)
 
-                self.strvar_ingreso.set(value="0.00")
-                self.strvar_pagos_ctacte.set(value="0.00")
-                self.strvar_costo.set(value="0.00")
-                self.strvar_cantidad.set(value="1.00")
-                self.strvar_egreso.set(value="0.00")
-                self.strvar_totingresos.set(value="0.00")
-                self.check_ctacte.configure(onvalue=1)
+                self.strvar_cantidad.set("1.00")
 
-                self.entry_ingresos.configure(state="disabled")
-                self.entry_pagoscta.configure(state="disabled")
-                self.entry_costo.configure(state="disabled")
-                self.entry_cantidad.configure(state="disabled")
-                self.entry_egreso.configure(state="disabled")
+                self.set_state("disabled",
+                               self.entry_ingresos,
+                               self.entry_pagoscta,
+                               self.entry_costo,
+                               self.entry_cantidad,
+                               self.entry_egreso)
+
                 self.check_ctacte.configure(state="disabled")
                 self.btn_bus_prov.configure(state="normal")
 
             case "Egresos_varios":
 
-                self.strvar_ingreso.set(value="0.00")
-                self.strvar_costo.set(value="0.00")
-                self.strvar_compras.set(value="0.00")
-                self.strvar_cantidad.set(value="1.00")
-                self.strvar_totingresos.set(value="0.00")
+                self.reset_vars(
+                    self.strvar_ingreso,
+                    self.strvar_costo,
+                    self.strvar_compras,
+                    self.strvar_totingresos)
 
-                self.entry_ingresos.configure(state="disabled")
-                self.entry_costo.configure(state="disabled")
-                self.entry_compras.configure(state="disabled")
-                self.entry_cantidad.configure(state="disabled")
+                self.strvar_cantidad.set("1.00")
 
+                self.set_state("disabled",
+                               self.entry_ingresos,
+                               self.entry_costo,
+                               self.entry_compras,
+                               self.entry_cantidad)
             case _:
                 pass
+
+            # case "Venta_articulos":
+            #
+            #     """ pongo en cero todos los camos numericos por si se cambio de tipo movimiento habiendo
+            #     cargado previamente otro tipo de movimiento """
+            #
+            #     self.strvar_egreso.set(value="0.00")
+            #     self.strvar_compras.set(value="0.00")
+            #     self.strvar_proved.set(value="")
+            #     # si es venta deshabilito : Egresos y compras
+            #     self.entry_egreso.configure(state="disabled")
+            #     self.entry_compras.configure(state="disabled")
+            #     self.entry_proved.configure(state="disabled")
+            #
+            # case "Venta_servicios":
+            #
+            #     """ pongo en cero todos los campos numericos por si se cambio de tipo movimiento habiendo
+            #     cargado previamente otro tipo de movimiento """
+            #
+            #     self.strvar_egreso.set(value="0.00")
+            #     self.strvar_compras.set(value="0.00")
+            #     self.strvar_proved.set(value="")
+            #     # si es venta servicios : Egresos y compras
+            #     self.entry_egreso.configure(state="disabled")
+            #     self.entry_compras.configure(state="disabled")
+            #     self.entry_proved.configure(state="disabled")
+            #
+            # case "Ingresos_varios":
+            #
+            #     """ Pongo en cero todos los camos numericos por si se cambio de tipo movimiento habiendo
+            #     # cargado previamente otro tipo de movimiento. """
+            #
+            #     self.strvar_egreso.set(value="0.00")
+            #     self.strvar_compras.set(value="0.00")
+            #     self.strvar_proved.set(value="")
+            #     # si es ingresos varios : Egresos y compras
+            #     self.entry_egreso.configure(state="disabled")
+            #     self.entry_compras.configure(state="disabled")
+            #     self.entry_proved.configure(state="disabled")
+            #
+            # case "Pagos_ctacte":
+            #
+            #     """ Pongo en cero todos los camos numericos por si se cambio de tipo movimiento habiendo
+            #     cargado previamente otro tipo de movimiento """
+            #
+            #     self.strvar_compras.set(value="0.00")
+            #     self.strvar_proved.set(value="")
+            #     self.strvar_totingresos.set(value="0.00")
+            #     # si es un pago a ctacte
+            #     self.entry_compras.configure(state="disabled")
+            #     self.entry_proved.configure(state="disabled")
+            #
+            # case "Compras":
+            #
+            #     """ Pongo en cero todos los camos numericos por si se cambio de tipo movimiento habiendo
+            #     cargado previamente otro tipo de movimiento. """
+            #
+            #     self.strvar_ingreso.set(value="0.00")
+            #     self.strvar_pagos_ctacte.set(value="0.00")
+            #     self.strvar_costo.set(value="0.00")
+            #     self.strvar_cantidad.set(value="1.00")
+            #     self.strvar_egreso.set(value="0.00")
+            #     self.strvar_totingresos.set(value="0.00")
+            #     self.check_ctacte.configure(onvalue=1)
+            #
+            #     self.entry_ingresos.configure(state="disabled")
+            #     self.entry_pagoscta.configure(state="disabled")
+            #     self.entry_costo.configure(state="disabled")
+            #     self.entry_cantidad.configure(state="disabled")
+            #     self.entry_egreso.configure(state="disabled")
+            #     self.check_ctacte.configure(state="disabled")
+            #     self.btn_bus_prov.configure(state="normal")
+            #
+            # case "Egresos_varios":
+            #
+            #     self.strvar_ingreso.set(value="0.00")
+            #     self.strvar_costo.set(value="0.00")
+            #     self.strvar_compras.set(value="0.00")
+            #     self.strvar_cantidad.set(value="1.00")
+            #     self.strvar_totingresos.set(value="0.00")
+            #
+            #     self.entry_ingresos.configure(state="disabled")
+            #     self.entry_costo.configure(state="disabled")
+            #     self.entry_compras.configure(state="disabled")
+            #     self.entry_cantidad.configure(state="disabled")
+            #
+            # case _:
+            #     pass
+    # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     def estado_resumen(self):
 
@@ -1422,46 +1504,6 @@ class V_PlaniCaja(tk.Frame):
 
     def fVer_blanco(self, pollo):
         self.strvar_fecha_error.set(value=self.strvar_fecha_planilla.get())
-
-    # ---------------------------------------------------------------------------------
-    # PUNTEROS
-    # ---------------------------------------------------------------------------------
-
-    # def mover_puntero_topend(self, param_topend):
-    #
-    #     if param_topend == 'TOP':
-    #
-    #         # obtengo una lista con todos los Id del treeview
-    #         regis = self.grid_planilla.get_children()
-    #         # barro y salgo al primero, pero me quedo en el primero
-    #         rg = ""
-    #         for rg in regis:
-    #             break
-    #         if rg == "":
-    #             return
-    #         # selecciono el Id primero de la lista en este caso
-    #         self.grid_planilla.selection_set(rg)
-    #         # pongo el foco sobre el primero Id
-    #         self.grid_planilla.focus(rg)
-    #         # Lleva el foco al principio del treeview con esta instruccion que encontre
-    #         self.grid_planilla.yview(self.grid_planilla.index(self.grid_planilla.get_children()[0]))
-    #
-    #     elif param_topend == 'END':
-    #
-    #         # Obtengo una lista con todos los Id del treeview
-    #         regis = self.grid_planilla.get_children()
-    #         # Barro la lista y ,me quedo conel ultimo Id
-    #         rg = ""
-    #         for rg in regis:
-    #             pass
-    #         if rg == "":
-    #             return
-    #         # Selecciono el ultimo Id en este caso
-    #         self.grid_planilla.selection_set(rg)
-    #         # Pongo el foco alultimo elemento de la lista (al final)
-    #         self.grid_planilla.focus(rg)
-    #         # lleva el foco al final del treeview
-    #         self.grid_planilla.yview(self.grid_planilla.index(self.grid_planilla.get_children()[-1]))
 
     def fAntes(self):
 

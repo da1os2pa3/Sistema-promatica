@@ -5,10 +5,10 @@ from articulos_ABM import datosArtic
 from funciones import *
 from funcion_new import ClaseFuncion_new
 # ---------------------------------------------------
-from tkinter import ttk
+from tkinter import ttk, messagebox, filedialog
 import tkinter as tk
 import tkinter.font as tkFont
-from tkinter import messagebox, filedialog
+#from tkinter import messagebox, filedialog
 from tktooltip import ToolTip
 # ---------------------------------------------------
 from datetime import date, datetime
@@ -492,7 +492,6 @@ class Clase_Articulos(tk.Frame):
         self.limpiar_text()
 
         # --------------------------------------------
-        # self.filtro_activo = "articulos WHERE Id = " + str(self.clave)
         """ para que permanezca mostrandose el filtro de busqueda actual luego de modificar el articulo que sea. 
         Por ejemplo: busco el cArtucho 133 y me muestra 10 registros, modifico uno de ellos y vuelvo al grid con 
         los mismo 10 aun seleccionados y filtrados"""
@@ -544,7 +543,6 @@ class Clase_Articulos(tk.Frame):
         self.clave_ant = self.grid_articulos.item(self.selected_ant, 'text')
 
         if self.clave == "":
-            # messagebox.showwarning("Alerta", "No hay nada seleccionado", parent=self)
             self.set_status("✔ No hay nada seleccionado", "ok")
             return
 
@@ -561,7 +559,7 @@ class Clase_Articulos(tk.Frame):
             self.varArtic.eliminar_articulo(self.clave)
         except Exception as e:
             messagebox.showerror("Error del sistema - al eliminar articulo", str(e))
-            self.set_status("❌ Error al eliminar", "error")
+            # self.set_status("❌ Error al eliminar", "error")
             return
         else:
             self.set_status("🗑 Registro eliminado correctamente", "ok")
@@ -628,7 +626,7 @@ class Clase_Articulos(tk.Frame):
         }
         # ------------------------------------------------------------------------------------
 
-        # Ingreso datos a las tablas ---------------------------------------------------------
+        # Ingreso datos a las tablas - Paso diccionario como parametro -----------------------
         try:
             if self.alta_modif == 1:
                 self.id_nuevo = self.varArtic.insertar_articulo(articulos)
@@ -640,11 +638,11 @@ class Clase_Articulos(tk.Frame):
         # Evaluacion de errores ---------------------------------------------------------------
         except ValueError as e:
             messagebox.showwarning("Datos inválidos - error al insertar/modificar articulo", str(e))
-            self.set_status("⚠ Error en los datos", "warn")
+            #self.set_status("⚠ Error en los datos", "warn")
             return
         except Exception as e:
             messagebox.showerror("Error del sistema - al insertar/modificar articulo", str(e))
-            self.set_status("❌ Error al guardar", "error")
+            #self.set_status("❌ Error al guardar", "error")
             return
         else:
             self.set_status("✔ Registro guardado correctamente", "ok")
@@ -669,14 +667,18 @@ class Clase_Articulos(tk.Frame):
 
         """ Esta funcion abre un dialogo para poder seleccionar el archivo imagen de articulo en el proceso de altas"""
 
-        self.dev_ruta = self.varArtic.consultar_informa()
+        # self.dev_ruta = self.varArtic.consultar_informa()
+        # print(self.dev_ruta)
 
         self.strvar_ruta_fotos = tk.StringVar(value="")
+
+        print(self.dev_informa)
 
         for row in self.dev_informa:
             self.strvar_ruta_fotos.set(value=row[27])
 
-        # Abro ventana dialogo en la ruta de las fotos
+        # Abro ventana dialogo en la ruta de las fotos -
+        # OJO ESTO DEBERIA IR EN INFORMA
         self.file_ruta = filedialog.askopenfilename(initialdir="C:\\Proyectos_Python\\ABM_Clientes\\fotos",
                                                     title="Seleccione imagen", parent=self.master)
         # Guardo solo el nombre del archivo y no su ruta completa
@@ -733,7 +735,7 @@ class Clase_Articulos(tk.Frame):
                 retorno = self.varArtic.buscar_entabla(que_busco)
             except Exception as e:
                 messagebox.showerror("Error del sistema - al buscar articulo", str(e))
-                self.set_status("❌ Error al buscar", "error")
+                #self.set_status("❌ Error al buscar", "error")
                 return
 
             if retorno != []:
@@ -806,30 +808,50 @@ class Clase_Articulos(tk.Frame):
         self.lbl_imagen_art = tk.Label(self.sector_imagen, image=self.imagen_art, bg="white", relief="ridge", bd=5)
         self.lbl_imagen_art.pack(expand=1, side="top", fill="both", pady=2, padx=2)
 
-    def amplia_img(self,koko):
+    # def amplia_img(self,koko):
+    #
+    #     if len(self.strvar_imagen_Art.get()) != 0:
+    #
+    #         # crear toplevel con imagen grande
+    #         self.vent_img = tk.Toplevel(self.master)
+    #         self.vent_img.geometry('420x500+1200+200')
+    #         self.vent_img.config(bg='white', padx=5, pady=5)
+    #         # ayuda_top.resizable(0,0)
+    #         self.vent_img.resizable(1, 1)
+    #         self.vent_img.title("Imagen ampliada")
+    #
+    #         self.photo_b = Image.open(os.path.join(self.carpeta_fotos, self.imagen_defa))
+    #         self.photo_b = self.photo_b.resize((300, 300), Image.LANCZOS)  # Redimension (Alto, Ancho)
+    #         self.imagen_art_b = ImageTk.PhotoImage(self.photo_b)
+    #
+    #         # muestro la imagen en el frame
+    #         self.lbl_im_art_b = tk.Label(self.vent_img, image=self.imagen_art_b, bg="white", relief="ridge", bd=5)
+    #
+    #         self.lbl_im_art_b.pack(expand=1, side="top", fill="both", pady=2, padx=2)
+    #         self.vent_img.grab_set()
+    #         self.vent_img.focus_set()
+    #
+    #         #tk.mainloop()
 
-        if len(self.strvar_imagen_Art.get()) != 0:
+    def amplia_img(self, event):
 
-            # crear toplevel con imagen grande
-            self.vent_img = tk.Toplevel()
+        if self.strvar_imagen_Art.get():
+            self.vent_img = tk.Toplevel(self.master)
             self.vent_img.geometry('420x500+1200+200')
             self.vent_img.config(bg='white', padx=5, pady=5)
-            # ayuda_top.resizable(0,0)
             self.vent_img.resizable(1, 1)
             self.vent_img.title("Imagen ampliada")
 
-            self.photo_b = Image.open(os.path.join(self.carpeta_fotos, self.imagen_defa))
-            self.photo_b = self.photo_b.resize((300, 300), Image.LANCZOS)  # Redimension (Alto, Ancho)
-            self.imagen_art_b = ImageTk.PhotoImage(self.photo_b)
+            photo = Image.open(os.path.join(self.carpeta_fotos, self.imagen_defa))
+            photo = photo.resize((300, 300), Image.LANCZOS)
+            imagen = ImageTk.PhotoImage(photo)
 
-            # muestro la imagen en el frame
-            self.lbl_im_art_b = tk.Label(self.vent_img, image=self.imagen_art_b, bg="white", relief="ridge", bd=5)
+            lbl = tk.Label(self.vent_img, image=imagen, bg="white", relief="ridge", bd=5)
+            lbl.image = imagen  # mantener referencia
+            lbl.pack(expand=1, fill="both", pady=2, padx=2)
 
-            self.lbl_im_art_b.pack(expand=1, side="top", fill="both", pady=2, padx=2)
             self.vent_img.grab_set()
             self.vent_img.focus_set()
-
-            tk.mainloop()
 
     # -----------------------------------------------------------------
     # BUSQUEDAS -*-
@@ -1266,7 +1288,7 @@ class Clase_Articulos(tk.Frame):
             self.dev_informa = self.varArtic.consultar_informa()
         except Exception as e:
             messagebox.showerror("Error del sistema - al consultar informa", str(e))
-            self.set_status("❌ Error de consulta", "error")
+            #self.set_status("❌ Error de consulta", "error")
             return
 
         for row in self.dev_informa:
@@ -1610,18 +1632,6 @@ class Clase_Articulos(tk.Frame):
                 self.bell()
 
         self.after(tiempo, self.clear_status)
-
-        # # 🔊 sonido
-        # if tipo == "ok":
-        #     self.bell()
-        # elif tipo == "error":
-        #     self.bell()
-        #     self.after(120, self.bell)
-        # elif tipo == "warn":
-        #     self.bell()
-        #
-        # # ⏳ limpiar después de X tiempo
-        # self.after(tiempo, self.clear_status)
 
     def clear_status(self):
         self.status_var.set("")

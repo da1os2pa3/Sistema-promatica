@@ -8,7 +8,7 @@ from datetime import date, datetime
 # ---------------------------------------------
 # from tkinter import *
 import tkinter as tk
-# from tkinter import ttk
+from tkinter import ttk
 from tkinter import messagebox
 from tkinter.scrolledtext import *
 # ---------------------------------------------
@@ -17,7 +17,7 @@ from PDF_clase import *
 from fpdf import FPDF
 from tktooltip import ToolTip
 
-class Clase_OrdenesRepara(Frame):
+class Clase_OrdenesRepara(tk.Frame):
 
     def __init__(self, master=None):
 
@@ -137,8 +137,8 @@ class Clase_OrdenesRepara(Frame):
         # ------------------------------------------------------------------
         # TREEVIEW -*-
         # ------------------------------------------------------------------
-        self.frame_superior = Frame(self.master)
-        self.frame_tvw_ordenes = LabelFrame(self.frame_superior, text="", foreground="#CF09BD")
+        self.frame_superior = tk.Frame(self.master)
+        self.frame_tvw_ordenes = tk.LabelFrame(self.frame_superior, text="", foreground="#CF09BD")
         self.frame_treeview()
         self.grid_orden.pack(side="top", fill="both", expand=0, padx=3, pady=2)
         self.frame_tvw_ordenes.pack(side="left", fill="both", expand=1, padx=3, pady=2)
@@ -148,7 +148,7 @@ class Clase_OrdenesRepara(Frame):
         # ----------------------------------------------------------------------
         # BOTONES SOBRE EL GRID (CRUD - IMPRESION - MOVIMIENTOS EN LA GRILLA
         # ----------------------------------------------------------------------
-        self.frame_botones_grid = LabelFrame(self.master, text="")
+        self.frame_botones_grid = tk.LabelFrame(self.master, text="")
         self.cuadro_botones_grid()
         self.frame_botones_grid.pack(side="top", fill="both", expand=0, padx=3, pady=2)
         # ------------------------------------------------------------------
@@ -156,7 +156,7 @@ class Clase_OrdenesRepara(Frame):
         # ------------------------------------------------------------------
         # ENTRYS -*-
         # ------------------------------------------------------------------
-        self.frame_entrys_uno = LabelFrame(self.master, text="")
+        self.frame_entrys_uno = tk.LabelFrame(self.master, text="")
         self.cuadro_entrys()
         self.frame_entrys_dos.pack(side="top", fill="both", expand=0, padx=5, pady=2)
         # ---------------------------------------------------------------------
@@ -164,7 +164,7 @@ class Clase_OrdenesRepara(Frame):
         # ------------------------------------------------------------------
         # ENTRYS DATOS EQUIPO
         # ------------------------------------------------------------------
-        self.frame_entrys_uno_bis = LabelFrame(self.master, text="", bd=3, relief="ridge")
+        self.frame_entrys_uno_bis = tk.LabelFrame(self.master, text="", bd=3, relief="ridge")
         self.cuadro_entrys_equipo()
         self.frame_entrys_uno_bis.pack(side="top", fill="both", expand=0, padx=5, pady=2)
         # ------------------------------------------------------------------
@@ -172,7 +172,7 @@ class Clase_OrdenesRepara(Frame):
         # ------------------------------------------------------------------
         # ENTRYS DATOS EQUIPO DOS
         # ------------------------------------------------------------------
-        self.frame_entrys_tres = LabelFrame(self.master, text="", bd=3, relief="ridge")
+        self.frame_entrys_tres = tk.LabelFrame(self.master, text="", bd=3, relief="ridge")
         self.cuadro_entrys_equipo_dos()
         self.frame_entrys_tres.pack(side="top", fill="both", expand=0, padx=5, pady=2)
         # ---------------------------------------------------------------------
@@ -180,7 +180,7 @@ class Clase_OrdenesRepara(Frame):
         # ------------------------------------------------------------------
         # ENTRYS DATOS EQUIPO TRES
         # ------------------------------------------------------------------
-        self.frame_entrys_cuatro = LabelFrame(self.master, text="", bd=3, relief="ridge")
+        self.frame_entrys_cuatro = tk.LabelFrame(self.master, text="", bd=3, relief="ridge")
         self. cuadro_entrys_equipo_tres()
         self.frame_entrys_cuatro.pack(side="top", fill="both", expand=0, padx=5, pady=2)
         # ------------------------------------------------------------------
@@ -188,7 +188,7 @@ class Clase_OrdenesRepara(Frame):
         # ------------------------------------------------------------------
         # ENTRYS DATOS EQUIPO PIE
         # ------------------------------------------------------------------
-        self.frame_entrys_cinco = LabelFrame(self.master, text="")
+        self.frame_entrys_cinco = tk.LabelFrame(self.master, text="")
         self.cuadro_entrys_pie()
         self.frame_entrys_cinco.pack(side="top", fill="both", expand=0, padx=5, pady=2)
         # ------------------------------------------------------------------
@@ -196,7 +196,7 @@ class Clase_OrdenesRepara(Frame):
         # ------------------------------------------------------------------
         # ENTRYS DATOS EQUIPO TOTALES
         # ------------------------------------------------------------------
-        self.frame_entrys_seis = LabelFrame(self.master, text="")
+        self.frame_entrys_seis = tk.LabelFrame(self.master, text="")
         self.cuadro_entrys_totales()
         self.frame_entrys_seis.pack(side="top", fill="both", expand=0, padx=5, pady=2)
         # ------------------------------------------------------------------
@@ -254,14 +254,14 @@ class Clase_OrdenesRepara(Frame):
 
     def limpiar_text(self):
 
-        self.entry_nombre_cliente.delete(0, END)
+        self.entry_nombre_cliente.delete(0, "end")
 
         self.strvar_codigo_cliente.set(value="0")
         self.strvar_cli_datosmas.set(value="")
 
         # tratamiento de nro de orden
         self.entry_nro_orden.configure(state="normal")
-        self.entry_nro_orden.delete(0, END)
+        self.entry_nro_orden.delete(0, "end")
         self.entry_nro_orden.configure(state="disabled")
         self.strvar_fecha_ingreso.set(value="")
         self.strvar_fecha_egreso.set(value="")
@@ -436,7 +436,7 @@ class Clase_OrdenesRepara(Frame):
         datos = self.varOrdenes.consultar_ordenes(argg2)
 
         for row in datos:
-            self.grid_orden.insert("", END, text=row[0], values=(row[1], row[2], row[3], row[4], row[5]))
+            self.grid_orden.insert("", "end", text=row[0], values=(row[1], row[2], row[3], row[4], row[5]))
 
         if len(self.grid_orden.get_children()) > 0:
             self.grid_orden.selection_set(self.grid_orden.get_children()[0])
@@ -520,11 +520,11 @@ class Clase_OrdenesRepara(Frame):
 
         self.strvar_cuentas.set(value=datos_registro_selec[15])
         self.strvar_requerido.set(value=datos_registro_selec[16])
-        self.text_diagnostico.insert(END, datos_registro_selec[17])
+        self.text_diagnostico.insert("end", datos_registro_selec[17])
         self.strvar_presupuesto.set(value=datos_registro_selec[18])
-        self.text_trabajo_realizado.insert(END, datos_registro_selec[19])
+        self.text_trabajo_realizado.insert("end", datos_registro_selec[19])
         self.strvar_partes.set(value=datos_registro_selec[20])
-        self.text_anotaciones.insert(END, datos_registro_selec[21])
+        self.text_anotaciones.insert("end", datos_registro_selec[21])
         self.strvar_total_manodeobra.set(value=datos_registro_selec[22])
         self.strvar_total_partes.set(value=datos_registro_selec[23])
         self.strvar_retirado.set(value=datos_registro_selec[24])
@@ -622,11 +622,11 @@ class Clase_OrdenesRepara(Frame):
 
         self.strvar_cuentas.set(value=datos_registro_selec[15])
         self.strvar_requerido.set(value=datos_registro_selec[16])
-        self.text_diagnostico.insert(END, datos_registro_selec[17])
+        self.text_diagnostico.insert("end", datos_registro_selec[17])
         self.strvar_presupuesto.set(value=datos_registro_selec[18])
-        self.text_trabajo_realizado.insert(END, datos_registro_selec[19])
+        self.text_trabajo_realizado.insert("end", datos_registro_selec[19])
         self.strvar_partes.set(value=datos_registro_selec[20])
-        self.text_anotaciones.insert(END, datos_registro_selec[21])
+        self.text_anotaciones.insert("end", datos_registro_selec[21])
         self.strvar_total_manodeobra.set(value=datos_registro_selec[22])
         self.strvar_total_partes.set(value=datos_registro_selec[23])
         self.strvar_retirado.set(value=datos_registro_selec[24])
@@ -832,7 +832,7 @@ class Clase_OrdenesRepara(Frame):
         self.strvar_estad_pespendi.set(value=str(total_pesos_pendientes))
         self.strvar_estad_pesmesact.set(value=str(total_pesos_mesactual))
 
-        self.pantalla_estad = Toplevel()
+        self.pantalla_estad = tk.Toplevel()
         self.pantalla_estad.geometry('220x180+1200+200')
         self.pantalla_estad.transient(master=self.master)
         self.pantalla_estad.config(bg='light green', padx=5, pady=5)
@@ -840,25 +840,25 @@ class Clase_OrdenesRepara(Frame):
         self.pantalla_estad.title("Estadisticas")
 
         # muestro la imagen en el frame
-        self.lbl_total_ordenes1 = Label(self.pantalla_estad, text="Total ordenes: ", bg="light blue",
+        self.lbl_total_ordenes1 = tk.Label(self.pantalla_estad, text="Total ordenes: ", bg="light blue",
                                         relief="ridge", bd=5)
-        self.lbl_total_ordenes2 = Label(self.pantalla_estad, textvariable=self.strvar_estad_total, bg="plum1",
+        self.lbl_total_ordenes2 = tk.Label(self.pantalla_estad, textvariable=self.strvar_estad_total, bg="plum1",
                                         relief="ridge", bd=5)
-        self.lbl_pendi_ordenes1 = Label(self.pantalla_estad, text="Ordenes pendientes: ", bg="light blue",
+        self.lbl_pendi_ordenes1 = tk.Label(self.pantalla_estad, text="Ordenes pendientes: ", bg="light blue",
                                         relief="ridge", bd=5)
-        self.lbl_pendi_ordenes2 = Label(self.pantalla_estad, textvariable=self.strvar_estad_pendi, bg="plum1",
+        self.lbl_pendi_ordenes2 = tk.Label(self.pantalla_estad, textvariable=self.strvar_estad_pendi, bg="plum1",
                                         relief="ridge", bd=5)
-        self.lbl_pespendi_ordenes1 = Label(self.pantalla_estad, text="Pesos pendientes: ", bg="light blue",
+        self.lbl_pespendi_ordenes1 = tk.Label(self.pantalla_estad, text="Pesos pendientes: ", bg="light blue",
                                            relief="ridge", bd=5)
-        self.lbl_pespendi_ordenes2 = Label(self.pantalla_estad, textvariable=self.strvar_estad_pespendi, bg="plum1",
+        self.lbl_pespendi_ordenes2 = tk.Label(self.pantalla_estad, textvariable=self.strvar_estad_pespendi, bg="plum1",
                                            relief="ridge", bd=5)
-        self.lbl_mesact_ordenes1 = Label(self.pantalla_estad, text="Ordenes mes actual: ", bg="light blue",
+        self.lbl_mesact_ordenes1 = tk.Label(self.pantalla_estad, text="Ordenes mes actual: ", bg="light blue",
                                          relief="ridge", bd=5)
-        self.lbl_mesact_ordenes2 = Label(self.pantalla_estad, textvariable=self.strvar_estad_mesact, bg="plum1",
+        self.lbl_mesact_ordenes2 = tk.Label(self.pantalla_estad, textvariable=self.strvar_estad_mesact, bg="plum1",
                                          relief="ridge", bd=5)
-        self.lbl_pesmesact_ordenes1 = Label(self.pantalla_estad, text="Pesos mes actual: ", bg="light blue",
+        self.lbl_pesmesact_ordenes1 = tk.Label(self.pantalla_estad, text="Pesos mes actual: ", bg="light blue",
                                             relief="ridge", bd=5)
-        self.lbl_pesmesact_ordenes2 = Label(self.pantalla_estad, textvariable=self.strvar_estad_pesmesact, bg="plum1",
+        self.lbl_pesmesact_ordenes2 = tk.Label(self.pantalla_estad, textvariable=self.strvar_estad_pesmesact, bg="plum1",
                                             relief="ridge", bd=5)
 
         self.lbl_total_ordenes1.grid(row=0, column=0, padx=5, pady=3, sticky="nsew")
@@ -878,7 +878,7 @@ class Clase_OrdenesRepara(Frame):
         self.pantalla_estad.grab_set()
         self.pantalla_estad.focus_set()
 
-        mainloop()
+        tk.mainloop()
 
         self.filtro_activo = self.filtro_anterior
 
@@ -1100,8 +1100,8 @@ class Clase_OrdenesRepara(Frame):
         self.grid_orden.tag_configure('evenrow', background='white')
 
         # SCROLLBAR del Treeview
-        scroll_x = Scrollbar(self.frame_tvw_ordenes, orient="horizontal")
-        scroll_y = Scrollbar(self.frame_tvw_ordenes, orient="vertical")
+        scroll_x = tk.Scrollbar(self.frame_tvw_ordenes, orient="horizontal")
+        scroll_y = tk.Scrollbar(self.frame_tvw_ordenes, orient="vertical")
         self.grid_orden.config(xscrollcommand=scroll_x.set)
         self.grid_orden.config(yscrollcommand=scroll_y.set)
         scroll_x.config(command=self.grid_orden.xview)
@@ -1140,11 +1140,11 @@ class Clase_OrdenesRepara(Frame):
         # BUSCAR
         img = Image.open("buscar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        lbl_buscar_orden = Label(self.frame_botones_grid, text=" Buscar:: ", compound="left")
+        lbl_buscar_orden = tk.Label(self.frame_botones_grid, text=" Buscar:: ", compound="left")
         lbl_buscar_orden.image = icono
         lbl_buscar_orden.config(image=icono)
         lbl_buscar_orden.grid(row=0, column=0, padx=4, pady=2, sticky="nsew")
-        self.entry_buscar_orden = Entry(self.frame_botones_grid, textvariable=self.strvar_buscar_orden, width=19)
+        self.entry_buscar_orden = tk.Entry(self.frame_botones_grid, textvariable=self.strvar_buscar_orden, width=19)
         self.entry_buscar_orden.grid(row=0, column=1, padx=4, pady=3, sticky="nsew")
         ToolTip(self.entry_buscar_orden, msg="Ingrese un nombre a buscar")
 
@@ -1152,7 +1152,7 @@ class Clase_OrdenesRepara(Frame):
         # FILTRAR
         img = Image.open("filtrar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_buscar_orden = Button(self.frame_botones_grid, text=" Filtrar", width=19, command=self.fFiltrar_orden,
+        self.btn_buscar_orden = tk.Button(self.frame_botones_grid, text=" Filtrar", width=19, command=self.fFiltrar_orden,
                                        bg="CadetBlue", fg="black", compound="left")
         self.btn_buscar_orden.image = icono
         self.btn_buscar_orden.config(image=icono)
@@ -1163,7 +1163,7 @@ class Clase_OrdenesRepara(Frame):
         # NO RETIRADAS
         img = Image.open("no_retirada.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_no_retiradas = Button(self.frame_botones_grid, text="No retiradas", width=19,
+        self.btn_no_retiradas = tk.Button(self.frame_botones_grid, text="No retiradas", width=19,
                                        command=self.fNoretiradas, bg="CadetBlue", fg="black", compound="left")
         self.btn_no_retiradas.image = icono
         self.btn_no_retiradas.config(image=icono)
@@ -1174,7 +1174,7 @@ class Clase_OrdenesRepara(Frame):
         # SHOW ALL
         img = Image.open("ver_todo.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_showall_orden = Button(self.frame_botones_grid, text="Mostrar todo", width=19, command=self.fShowall,
+        self.btn_showall_orden = tk.Button(self.frame_botones_grid, text="Mostrar todo", width=19, command=self.fShowall,
                                         bg="CadetBlue", fg="black", compound="left")
         self.btn_showall_orden.image = icono
         self.btn_showall_orden.config(image=icono)
@@ -1185,7 +1185,7 @@ class Clase_OrdenesRepara(Frame):
         # ESTADISTICAS
         img = Image.open("estadisticas.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_estadistica = Button(self.frame_botones_grid, text=" Estadistica", width=19, command=self.fEstadistica,
+        self.btn_estadistica = tk.Button(self.frame_botones_grid, text=" Estadistica", width=19, command=self.fEstadistica,
                                       bg="CadetBlue", fg="black", compound="left")
         self.btn_estadistica.image = icono
         self.btn_estadistica.config(image=icono)
@@ -1196,7 +1196,7 @@ class Clase_OrdenesRepara(Frame):
         # INFORME TECNICO
         img = Image.open("impresora.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_inf_tecnico = Button(self.frame_botones_grid, text=" Informe Tècnico", width=18,
+        self.btn_inf_tecnico = tk.Button(self.frame_botones_grid, text=" Informe Tècnico", width=18,
                                       command=self.fInfTecnico, bg="CadetBlue", fg="black", compound="left")
         self.btn_inf_tecnico.image = icono
         self.btn_inf_tecnico.config(image=icono)
@@ -1209,14 +1209,14 @@ class Clase_OrdenesRepara(Frame):
         self.photo_top_arch = Image.open('toparch.png')
         self.photo_top_arch = self.photo_top_arch.resize((25, 20), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo_top_arch = ImageTk.PhotoImage(self.photo_top_arch)
-        self.btn_top_arch = Button(self.frame_botones_grid, text="", image=self.photo_top_arch, command=self.fToparch,
+        self.btn_top_arch = tk.Button(self.frame_botones_grid, text="", image=self.photo_top_arch, command=self.fToparch,
                                    bg="grey", fg="white")
         self.btn_top_arch.grid(row=0, column=7, padx=4, pady=3, sticky="nsew")
         ToolTip(self.btn_top_arch, msg="Ir a principio de archivo")
         self.photo_fin_arch = Image.open('finarch.png')
         self.photo_fin_arch = self.photo_fin_arch.resize((25, 20), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo_fin_arch = ImageTk.PhotoImage(self.photo_fin_arch)
-        self.btn_fin_arch = Button(self.frame_botones_grid, text="", image=self.photo_fin_arch, command=self.fFinarch,
+        self.btn_fin_arch = tk.Button(self.frame_botones_grid, text="", image=self.photo_fin_arch, command=self.fFinarch,
                                    bg="grey", fg="white")
         self.btn_fin_arch.grid(row=1, column=7, padx=4, pady=3, sticky="nsew")
         ToolTip(self.btn_fin_arch, msg="Ir al final del archivo")
@@ -1226,7 +1226,7 @@ class Clase_OrdenesRepara(Frame):
         # NUEVA ORDEN
         img = Image.open("archivo-nuevo.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_nueva_orden = Button(self.frame_botones_grid, text="Nueva", width=18, command=self.fNueva, bg="blue",
+        self.btn_nueva_orden = tk.Button(self.frame_botones_grid, text="Nueva", width=18, command=self.fNueva, bg="blue",
                                       fg="white", compound="left")
         self.btn_nueva_orden.image = icono
         self.btn_nueva_orden.config(image=icono)
@@ -1237,7 +1237,7 @@ class Clase_OrdenesRepara(Frame):
         # EDITAR ORDEN
         img = Image.open("editar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_editar_orden = Button(self.frame_botones_grid, text="Editar", width=18, command=self.fModificar_orden,
+        self.btn_editar_orden = tk.Button(self.frame_botones_grid, text="Editar", width=18, command=self.fModificar_orden,
                                        bg="blue", fg="white", compound="left")
         self.btn_editar_orden.image = icono
         self.btn_editar_orden.config(image=icono)
@@ -1248,7 +1248,7 @@ class Clase_OrdenesRepara(Frame):
         # VER ORDEN
         img = Image.open("ver.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_ver_orden = Button(self.frame_botones_grid, text=" Ver", width=18, command=self.fVer_orden,
+        self.btn_ver_orden = tk.Button(self.frame_botones_grid, text=" Ver", width=18, command=self.fVer_orden,
                                     bg="blue", fg="white", compound="left")
         self.btn_ver_orden.image = icono
         self.btn_ver_orden.config(image=icono)
@@ -1259,7 +1259,7 @@ class Clase_OrdenesRepara(Frame):
         # ELIMINAR ORDEN
         img = Image.open("eliminar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_borrar_orden = Button(self.frame_botones_grid, text=" Eliminar", width=18, command=self.fEliminar_orden,
+        self.btn_borrar_orden = tk.Button(self.frame_botones_grid, text=" Eliminar", width=18, command=self.fEliminar_orden,
                                        bg="red", fg="white", compound="left")
         self.btn_borrar_orden.image = icono
         self.btn_borrar_orden.config(image=icono)
@@ -1270,7 +1270,7 @@ class Clase_OrdenesRepara(Frame):
         # GUARDAR ORDEN
         img = Image.open("guardar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_guardar_orden = Button(self.frame_botones_grid, text=" Guardar", width=18, command=self.fGuardar_orden,
+        self.btn_guardar_orden = tk.Button(self.frame_botones_grid, text=" Guardar", width=18, command=self.fGuardar_orden,
                                         bg="green", fg="white", compound="left")
         self.btn_guardar_orden.image = icono
         self.btn_guardar_orden.config(image=icono)
@@ -1281,7 +1281,7 @@ class Clase_OrdenesRepara(Frame):
         # CANCELAR ORDEN
         img = Image.open("cancelar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_cancelar_orden = Button(self.frame_botones_grid, text=" Cancelar", width=18, command=self.fCancelar,
+        self.btn_cancelar_orden = tk.Button(self.frame_botones_grid, text=" Cancelar", width=18, command=self.fCancelar,
                                          bg="black", fg="white", compound="left")
         self.btn_cancelar_orden.image = icono
         self.btn_cancelar_orden.config(image=icono)
@@ -1298,7 +1298,7 @@ class Clase_OrdenesRepara(Frame):
         # IMPRIMIR ORDEN
         self.img2 = Image.open("impresora.png").resize((18, 18))
         self.icono2 = ImageTk.PhotoImage(self.img2)
-        self.btn_imprime_orden = Button(self.frame_botones_grid, text=" Imprimir Orden", compound="left",
+        self.btn_imprime_orden = tk.Button(self.frame_botones_grid, text=" Imprimir Orden", compound="left",
                                         command=self.fImprimir, bg='#5F9EF5', fg="white")
         self.btn_imprime_orden.image = self.icono2
         self.btn_imprime_orden.config(image=self.icono2)
@@ -1313,34 +1313,34 @@ class Clase_OrdenesRepara(Frame):
     def cuadro_entrys(self):
 
         # nombre de cliente
-        lbl_nombre_cliente = Label(self.frame_entrys_uno, text="Cliente:")
+        lbl_nombre_cliente = tk.Label(self.frame_entrys_uno, text="Cliente:")
         lbl_nombre_cliente.grid(row=0, column=0)
-        self.entry_nombre_cliente = Entry(self.frame_entrys_uno, textvariable=self.strvar_nombre_cliente, width=70,
+        self.entry_nombre_cliente = tk.Entry(self.frame_entrys_uno, textvariable=self.strvar_nombre_cliente, width=70,
                                           justify="left")
         self.entry_nombre_cliente.grid(row=0, column=1, padx=5, pady=2, sticky="nsew")
 
         # codigo cliente
-        self.lbl_codigo_cliente = Label(self.frame_entrys_uno, textvariable=self.strvar_codigo_cliente, width=6,
+        self.lbl_codigo_cliente = tk.Label(self.frame_entrys_uno, textvariable=self.strvar_codigo_cliente, width=6,
                                         anchor='e')
         self.lbl_codigo_cliente.grid(row=0, column=2, padx=5, pady=2, sticky="nsew")
 
         # cliente datos mas
         self.strvar_cli_datosmas.set(value="")
-        lbl_cli_datosmas = Label(self.frame_entrys_uno, text="Datos: ")
+        lbl_cli_datosmas = tk.Label(self.frame_entrys_uno, text="Datos: ")
         lbl_cli_datosmas.grid(row=0, column=7, padx=5, pady=2, sticky="nsew")
-        lbl_cli_direccion = Label(self.frame_entrys_uno, textvariable=self.strvar_cli_datosmas)
+        lbl_cli_direccion = tk.Label(self.frame_entrys_uno, textvariable=self.strvar_cli_datosmas)
         lbl_cli_direccion.grid(row=0, column=8, padx=5, pady=2, sticky="nsew")
-        lbl_cli_deuda1 = Label(self.frame_entrys_uno, text="Deuda: ")
+        lbl_cli_deuda1 = tk.Label(self.frame_entrys_uno, text="Deuda: ")
         lbl_cli_deuda1.grid(row=0, column=9, padx=5, pady=2, sticky="nsew")
         fff = tkFont.Font(family="Arial", size=10, weight="bold")
-        lbl_cli_deuda2 = Label(self.frame_entrys_uno, textvariable=self.strvar_cli_deuda, fg="red", font=fff)
+        lbl_cli_deuda2 = tk.Label(self.frame_entrys_uno, textvariable=self.strvar_cli_deuda, fg="red", font=fff)
         lbl_cli_deuda2.grid(row=0, column=10, padx=5, pady=2, sticky="nsew")
 
         # boton para buscar cliente
         self.photo_bus_cli = Image.open('buscar.png')
         self.photo_bus_cli = self.photo_bus_cli.resize((20, 20), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo_bus_cli = ImageTk.PhotoImage(self.photo_bus_cli)
-        self.btn_bus_cli = Button(self.frame_entrys_uno, text="", image=self.photo_bus_cli, command=self.fBuscli,
+        self.btn_bus_cli = tk.Button(self.frame_entrys_uno, text="", image=self.photo_bus_cli, command=self.fBuscli,
                                   bg="grey", fg="white")
         self.btn_bus_cli.grid(row=0, column=4, padx=5, pady=2, sticky="nsew")
         # ToolTip(self.btnToparch, msg="Ir a principio de archivo")
@@ -1355,34 +1355,34 @@ class Clase_OrdenesRepara(Frame):
         # FRAME ENTRYS DOS -------------------------------------------------
 
         # Datos de la orden ------------------------------------------------
-        self.frame_entrys_dos = LabelFrame(self.master, text="")
+        self.frame_entrys_dos = tk.LabelFrame(self.master, text="")
 
         # nro. de orden
-        lbl_nro_orden = Label(self.frame_entrys_dos, text="Nº Orden:")
+        lbl_nro_orden = tk.Label(self.frame_entrys_dos, text="Nº Orden:")
         lbl_nro_orden.grid(row=0, column=1, padx=5, pady=2, sticky="nsew")
-        self.entry_nro_orden = Entry(self.frame_entrys_dos, textvariable=self.strvar_nro_orden, width=8,
+        self.entry_nro_orden = tk.Entry(self.frame_entrys_dos, textvariable=self.strvar_nro_orden, width=8,
                                      justify="right")
         self.entry_nro_orden.grid(row=0, column=2, padx=5, pady=2, sticky="nsew")
         self.lbl_codigo_cliente.grid(row=0, column=3, padx=5, pady=2, sticky="nsew")
 
         # Fecha y hora de ingreso
-        lbl_fecha_ingreso = Label(self.frame_entrys_dos, text="Fecha y hora de ingreso: ")
+        lbl_fecha_ingreso = tk.Label(self.frame_entrys_dos, text="Fecha y hora de ingreso: ")
         lbl_fecha_ingreso.grid(row=0, column=4, padx=5, pady=2, sticky="nsew")
-        self.lbl_valor_fecha_ingreso = Label(self.frame_entrys_dos, textvariable=self.strvar_fecha_ingreso, width=20,
+        self.lbl_valor_fecha_ingreso = tk.Label(self.frame_entrys_dos, textvariable=self.strvar_fecha_ingreso, width=20,
                                              justify="right")
         self.lbl_valor_fecha_ingreso.grid(row=0, column=5, padx=5, pady=2, sticky="nsew")
 
         # Fecha y hora de egreso
-        lbl_fecha_egreso = Label(self.frame_entrys_dos, text="Fecha y hora de egreso: ")
+        lbl_fecha_egreso = tk.Label(self.frame_entrys_dos, text="Fecha y hora de egreso: ")
         lbl_fecha_egreso.grid(row=0, column=6, padx=5, pady=2, sticky="nsew")
-        self.lbl_valor_fecha_egreso = Label(self.frame_entrys_dos, textvariable=self.strvar_fecha_egreso, width=15,
+        self.lbl_valor_fecha_egreso = tk.Label(self.frame_entrys_dos, textvariable=self.strvar_fecha_egreso, width=15,
                                             justify="right")
         self.lbl_valor_fecha_egreso.grid(row=0, column=7, padx=5, pady=2, sticky="nsew")
 
         # datos del equipo  ---------------------------------------------------------------
 
         # Defino un combobox con los tipos de equipos que se reciben
-        self.lbl_combo_tipos_equipo = Label(self.frame_entrys_dos, text="Grupo de equipo: ")
+        self.lbl_combo_tipos_equipo = tk.Label(self.frame_entrys_dos, text="Grupo de equipo: ")
         self.lbl_combo_tipos_equipo.grid(row=0, column=8, padx=5, pady=2, sticky="nsew")
         # lbl_combo_tipos_equipo.place(x=2, y=55)
         self.grupo_tipo_equipo = ttk.Combobox(self.frame_entrys_dos, textvariable=self.strvar_equ_grupo,
@@ -1401,55 +1401,55 @@ class Clase_OrdenesRepara(Frame):
     def cuadro_entrys_equipo(self):
 
          # Descripcion de equipo que ingresa
-        lbl_equ_ingresa = Label(self.frame_entrys_uno_bis, text="Equipo a Ingresar:")
+        lbl_equ_ingresa = tk.Label(self.frame_entrys_uno_bis, text="Equipo a Ingresar:")
         lbl_equ_ingresa.grid(row=0, column=0, padx=5, pady=2, sticky="nsew")
-        self.entry_equ_ingresa = Entry(self.frame_entrys_uno_bis, textvariable=self.strvar_equ_ingresa, width=50)
+        self.entry_equ_ingresa = tk.Entry(self.frame_entrys_uno_bis, textvariable=self.strvar_equ_ingresa, width=50)
         self.strvar_equ_ingresa.trace("w", lambda *args: self.limitador(self.strvar_equ_ingresa, 60))
         self.entry_equ_ingresa.grid(row=0, column=1, padx=5, pady=2, sticky="nsew")
 
         # Procesador
-        lbl_equipo_procesador = Label(self.frame_entrys_uno_bis, text="Procesador:")
+        lbl_equipo_procesador = tk.Label(self.frame_entrys_uno_bis, text="Procesador:")
         lbl_equipo_procesador.grid(row=0, column=2, padx=5, pady=2, sticky="nsew")
-        self.entry_equipo_procesador = Entry(self.frame_entrys_uno_bis, textvariable=self.strvar_equipo_procesador,
+        self.entry_equipo_procesador = tk.Entry(self.frame_entrys_uno_bis, textvariable=self.strvar_equipo_procesador,
                                              width=30, justify="left")
         self.entry_equipo_procesador.grid(row=0, column=3, padx=5, pady=2, sticky="nsew")
         self.strvar_equipo_procesador.trace("w", lambda *args: self.limitador(self.strvar_equipo_procesador, 30))
 
         # Memoria RAM
-        lbl_equipo_ram = Label(self.frame_entrys_uno_bis, text="RAM Gb.:")
+        lbl_equipo_ram = tk.Label(self.frame_entrys_uno_bis, text="RAM Gb.:")
         lbl_equipo_ram.grid(row=0, column=4, padx=5, pady=2, sticky="nsew")
-        self.entry_equipo_ram = Entry(self.frame_entrys_uno_bis, textvariable=self.strvar_equipo_ram, width=50,
+        self.entry_equipo_ram = tk.Entry(self.frame_entrys_uno_bis, textvariable=self.strvar_equipo_ram, width=50,
                                       justify="left")
         self.entry_equipo_ram.grid(row=0, column=5, padx=5, pady=2, sticky="nsew")
         self.strvar_equipo_ram.trace("w", lambda *args: self.limitador(self.strvar_equipo_ram, 50))
 
         # Discos
-        lbl_equipo_discos = Label(self.frame_entrys_uno_bis, text="Disco/s Gb.:")
+        lbl_equipo_discos = tk.Label(self.frame_entrys_uno_bis, text="Disco/s Gb.:")
         lbl_equipo_discos.grid(row=1, column=0, padx=5, pady=2, sticky="nsew")
-        self.entry_equipo_discos = Entry(self.frame_entrys_uno_bis, textvariable=self.strvar_equipo_discos, width=50,
+        self.entry_equipo_discos = tk.Entry(self.frame_entrys_uno_bis, textvariable=self.strvar_equipo_discos, width=50,
                                          justify="left")
         self.entry_equipo_discos.grid(row=1, column=1, padx=5, pady=2, sticky="nsew")
         self.strvar_equipo_discos.trace("w", lambda *args: self.limitador(self.strvar_equipo_discos, 50))
 
         # Sistema Operativo
-        lbl_equipo_sist_oper = Label(self.frame_entrys_uno_bis, text="S.O.:")
+        lbl_equipo_sist_oper = tk.Label(self.frame_entrys_uno_bis, text="S.O.:")
         lbl_equipo_sist_oper.grid(row=1, column=2, padx=5, pady=2, sticky="nsew")
-        self.entry_equipo_sist_oper = Entry(self.frame_entrys_uno_bis, textvariable=self.strvar_equipo_sist_oper,
+        self.entry_equipo_sist_oper = tk.Entry(self.frame_entrys_uno_bis, textvariable=self.strvar_equipo_sist_oper,
                                             width=30, justify="left")
         self.entry_equipo_sist_oper.grid(row=1, column=3, padx=5, pady=2, sticky="nsew")
         self.strvar_equipo_sist_oper.trace("w", lambda *args: self.limitador(self.strvar_equipo_sist_oper, 30))
 
         # Accesorios que acompañan al equipo
-        lbl_equ_accesorios = Label(self.frame_entrys_uno_bis, text="Accesorios:")
+        lbl_equ_accesorios = tk.Label(self.frame_entrys_uno_bis, text="Accesorios:")
         lbl_equ_accesorios.grid(row=1, column=4, padx=5, pady=2, sticky="nsew")
-        self.entry_equ_accesorios = Entry(self.frame_entrys_uno_bis, textvariable=self.strvar_equ_accesorios, width=50)
+        self.entry_equ_accesorios = tk.Entry(self.frame_entrys_uno_bis, textvariable=self.strvar_equ_accesorios, width=50)
         self.strvar_equ_accesorios.trace("w", lambda *args: self.limitador(self.strvar_equ_accesorios, 50))
         self.entry_equ_accesorios.grid(row=1, column=5, padx=5, pady=2, sticky="nsew")
 
         # Observaciones
-        lbl_equipo_ing_obser = Label(self.frame_entrys_uno_bis, text="Observaciones:")
+        lbl_equipo_ing_obser = tk.Label(self.frame_entrys_uno_bis, text="Observaciones:")
         lbl_equipo_ing_obser.grid(row=2, column=0, padx=5, pady=2, sticky="nsew")
-        self.entry_equipo_ing_obser = Entry(self.frame_entrys_uno_bis, textvariable=self.strvar_equipo_ing_obser,
+        self.entry_equipo_ing_obser = tk.Entry(self.frame_entrys_uno_bis, textvariable=self.strvar_equipo_ing_obser,
                                             width=160, justify="left")
         self.entry_equipo_ing_obser.grid(row=2, column=1, columnspan=5, padx=5, pady=2, sticky="nsew")
         self.strvar_equipo_ing_obser.trace("w", lambda *args: self.limitador(self.strvar_equipo_ing_obser, 160))
@@ -1457,23 +1457,23 @@ class Clase_OrdenesRepara(Frame):
     def cuadro_entrys_equipo_dos(self):
 
         # Estado del equipo
-        lbl_equ_estado = Label(self.frame_entrys_tres, text="Estado:")
+        lbl_equ_estado = tk.Label(self.frame_entrys_tres, text="Estado:")
         lbl_equ_estado.grid(row=1, column=0, padx=5, pady=2, sticky="nsew")
-        self.entry_equ_estado = Entry(self.frame_entrys_tres, textvariable=self.strvar_equ_estado, width=80)
+        self.entry_equ_estado = tk.Entry(self.frame_entrys_tres, textvariable=self.strvar_equ_estado, width=80)
         self.strvar_equ_estado.trace("w", lambda *args: self.limitador(self.strvar_equ_estado, 100))
         self.entry_equ_estado.grid(row=1, column=1, padx=5, pady=2, sticky="nsew")
 
         # Contraseñas y cuentas
-        lbl_equ_cuentas = Label(self.frame_entrys_tres, text="Ctas/Cont.: ")
+        lbl_equ_cuentas = tk.Label(self.frame_entrys_tres, text="Ctas/Cont.: ")
         lbl_equ_cuentas.grid(row=1, column=2)
-        self.entry_cuentas = Entry(self.frame_entrys_tres, textvariable=self.strvar_cuentas, width=70)
+        self.entry_cuentas = tk.Entry(self.frame_entrys_tres, textvariable=self.strvar_cuentas, width=70)
         self.strvar_cuentas.trace("w", lambda *args: self.limitador(self.strvar_cuentas, 100))
         self.entry_cuentas.grid(row=1, column=3, padx=5, pady=2, sticky="nsew")
 
         # Requerimientos
-        lbl_equ_requerido = Label(self.frame_entrys_tres, text="Requerido: ")
+        lbl_equ_requerido = tk.Label(self.frame_entrys_tres, text="Requerido: ")
         lbl_equ_requerido.grid(row=2, column=0, padx=5, pady=2, sticky="nsew")
-        self.entry_requerido = Entry(self.frame_entrys_tres, textvariable=self.strvar_requerido, width=166)
+        self.entry_requerido = tk.Entry(self.frame_entrys_tres, textvariable=self.strvar_requerido, width=166)
         self.strvar_requerido.trace("w", lambda *args: self.limitador(self.strvar_requerido, 170))
         self.entry_requerido.grid(row=2, column=1, columnspan=5, padx=5, pady=2, sticky="nsew")
 
@@ -1484,21 +1484,21 @@ class Clase_OrdenesRepara(Frame):
     def cuadro_entrys_equipo_tres(self):
 
         # Diagnostico
-        lbl_diagnostico = Label(self.frame_entrys_cuatro, text="Diagnostico:")
+        lbl_diagnostico = tk.Label(self.frame_entrys_cuatro, text="Diagnostico:")
         lbl_diagnostico.grid(row=0, column=0, padx=4, pady=1, sticky="nsew")
         self.text_diagnostico = ScrolledText(self.frame_entrys_cuatro)
         self.text_diagnostico.config(width=41, height=6, wrap="word", padx=4, pady=2)
         self.text_diagnostico.grid(row=1, column=0, padx=4, pady=1, sticky="nsew")
 
         # Trabajo realizado
-        lbl_trabajo_realizado = Label(self.frame_entrys_cuatro, text="Trabajo realizado:")
+        lbl_trabajo_realizado = tk.Label(self.frame_entrys_cuatro, text="Trabajo realizado:")
         lbl_trabajo_realizado.grid(row=0, column=1, padx=4, pady=1, sticky="nsew" )
         self.text_trabajo_realizado = ScrolledText(self.frame_entrys_cuatro)
         self.text_trabajo_realizado.config(width=41, height=6, wrap="word", padx=4, pady=2)
         self.text_trabajo_realizado.grid(row=1, column=1, padx=4, pady=1, sticky="nsew")
 
         # Anotaciones
-        lbl_anotaciones = Label(self.frame_entrys_cuatro, text="Notas Internas:")
+        lbl_anotaciones = tk.Label(self.frame_entrys_cuatro, text="Notas Internas:")
         lbl_anotaciones.grid(row=0, column=2, padx=4, pady=1, sticky="nsew")
         self.text_anotaciones = ScrolledText(self.frame_entrys_cuatro)
         self.text_anotaciones.config(width=41, height=4, wrap="word", padx=4, pady=2)
@@ -1511,16 +1511,16 @@ class Clase_OrdenesRepara(Frame):
     def cuadro_entrys_pie(self):
 
         # Presupuesto
-        lbl_presupuesto = Label(self.frame_entrys_cinco, text="Detalle Presupuesto:")
+        lbl_presupuesto = tk.Label(self.frame_entrys_cinco, text="Detalle Presupuesto:")
         lbl_presupuesto.grid(row=0, column=0, padx=4, pady=1, sticky="nsew")
-        self.entry_presupuesto = Entry(self.frame_entrys_cinco, textvariable=self.strvar_presupuesto, width=157)
+        self.entry_presupuesto = tk.Entry(self.frame_entrys_cinco, textvariable=self.strvar_presupuesto, width=157)
         self.strvar_presupuesto.trace("w", lambda *args: self.limitador(self.strvar_presupuesto, 200))
         self.entry_presupuesto.grid(row=0, column=1, padx=4, pady=1, sticky="nsew")
 
         # Partes reemplazadas
-        lbl_partes = Label(self.frame_entrys_cinco, text="Partes reemplazadas:")
+        lbl_partes = tk.Label(self.frame_entrys_cinco, text="Partes reemplazadas:")
         lbl_partes.grid(row=1, column=0, padx=4, pady=1, sticky="nsew")
-        self.entry_partes = Entry(self.frame_entrys_cinco, textvariable=self.strvar_partes, width=157)
+        self.entry_partes = tk.Entry(self.frame_entrys_cinco, textvariable=self.strvar_partes, width=157)
         self.strvar_partes.trace("w", lambda *args: self.limitador(self.strvar_partes, 200))
         self.entry_partes.grid(row=1, column=1, padx=4, pady=1, sticky="nsew")
 
@@ -1531,9 +1531,9 @@ class Clase_OrdenesRepara(Frame):
     def cuadro_entrys_totales(self):
 
         # Total pesos partes
-        lbl_total_partes = Label(self.frame_entrys_seis, text="Total partes:", justify="left")
+        lbl_total_partes = tk.Label(self.frame_entrys_seis, text="Total partes:", justify="left")
         lbl_total_partes.grid(row=0, column=0, padx=5, pady=2, sticky='nsew')
-        self.entry_total_partes = Entry(self.frame_entrys_seis, textvariable=self.strvar_total_partes, width=15,
+        self.entry_total_partes = tk.Entry(self.frame_entrys_seis, textvariable=self.strvar_total_partes, width=15,
                                         justify="right")
         self.entry_total_partes.grid(row=0, column=1, padx=5, pady=2, sticky="nsew")
         self.entry_total_partes.config(validate="key", validatecommand=self.vcmd)
@@ -1542,9 +1542,9 @@ class Clase_OrdenesRepara(Frame):
         self.entry_total_partes.bind('<FocusOut>', lambda e: self.sumar_totalfinal())
 
         # Total pesos mano de obra
-        lbl_total_manodeobra = Label(self.frame_entrys_seis, text="Total Mano de Obra:")
+        lbl_total_manodeobra = tk.Label(self.frame_entrys_seis, text="Total Mano de Obra:")
         lbl_total_manodeobra.grid(row=0, column=2, padx=5, pady=1, sticky='nsew')
-        self.entry_total_manodeobra = Entry(self.frame_entrys_seis, textvariable=self.strvar_total_manodeobra, width=15,
+        self.entry_total_manodeobra = tk.Entry(self.frame_entrys_seis, textvariable=self.strvar_total_manodeobra, width=15,
                                             justify="right")
         self.entry_total_manodeobra.grid(row=0, column=3, padx=5, pady=1, sticky="nsew")
         self.entry_total_manodeobra.config(validate="key", validatecommand=self.vcmd)
@@ -1554,15 +1554,15 @@ class Clase_OrdenesRepara(Frame):
         self.entry_total_manodeobra.bind('<FocusOut>', lambda e: self.sumar_totalfinal())
 
         # Total global pesos
-        lbl_total_global = Label(self.frame_entrys_seis, text="Total a pagar:")
-        lbl_total_global.grid(row=0, column=4, padx=4, pady=1, sticky=W)
-        self.lbl_importe_global = Label(self.frame_entrys_seis, textvariable=self.strvar_tot_final, width=6, anchor='e')
+        lbl_total_global = tk.Label(self.frame_entrys_seis, text="Total a pagar:")
+        lbl_total_global.grid(row=0, column=4, padx=4, pady=1, sticky="w")
+        self.lbl_importe_global = tk.Label(self.frame_entrys_seis, textvariable=self.strvar_tot_final, width=6, anchor='e')
         self.lbl_importe_global.grid(row=0, column=5, padx=5, pady=1, sticky="nsew")
 
         # Equipo retirado ???
-        lbl_equipo_retirado = Label(self.frame_entrys_seis, text="Retirado? [S/N]:")
-        lbl_equipo_retirado.grid(row=0, column=6, padx=4, pady=1, sticky=W)
-        self.entry_retirado = Entry(self.frame_entrys_seis, textvariable=self.strvar_retirado, width=2)
+        lbl_equipo_retirado = tk.Label(self.frame_entrys_seis, text="Retirado? [S/N]:")
+        lbl_equipo_retirado.grid(row=0, column=6, padx=4, pady=1, sticky="w")
+        self.entry_retirado = tk.Entry(self.frame_entrys_seis, textvariable=self.strvar_retirado, width=2)
         self.strvar_retirado.trace("w", lambda *args: self.limitador(self.strvar_retirado, 1))
         # Esta llamada, convierte la letra que pongo a mayuscula
         self.strvar_retirado.trace_add("write", self.on_write)
@@ -1571,7 +1571,7 @@ class Clase_OrdenesRepara(Frame):
         self.photo3 = Image.open('salida.png')
         self.photo3 = self.photo3.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo3 = ImageTk.PhotoImage(self.photo3)
-        self.btn_salir_orden = Button(self.frame_entrys_seis, text="Salir", image=self.photo3, width=65, command=self.fSalir,
+        self.btn_salir_orden = tk.Button(self.frame_entrys_seis, text="Salir", image=self.photo3, width=65, command=self.fSalir,
                                       bg="yellow", fg="white")
         self.btn_salir_orden.grid(row=0, column=8, padx=10, pady=1, sticky="nsew")
 

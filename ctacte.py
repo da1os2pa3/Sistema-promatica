@@ -10,15 +10,10 @@ from PIL import Image, ImageTk
 #-----------------------------------------------
 import tkinter as tk
 from tkinter import ttk
-
-#from tkinter import *
-#from tkinter import ttk
-#import tkinter as tk
-
 import tkinter.font as tkFont
 from tkinter import messagebox
 
-class Clase_CuentaCorriente(Frame):
+class Clase_CuentaCorriente(tk.Frame):
 
     def __init__(self, master=None):
 
@@ -97,19 +92,19 @@ class Clase_CuentaCorriente(Frame):
         # ------------------------------------------------------------------
 
         # Encabezado logo y titulo con PACK
-        self.frame_titulo_top = Frame(self.master)
+        self.frame_titulo_top = tk.Frame(self.master)
 
         # Armo el logo y el titulo
         self.photocc = Image.open('ctacte.png')
         self.photocc = self.photocc.resize((50, 50), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.png_ctacte = ImageTk.PhotoImage(self.photocc)
-        self.lbl_png_ctacte = Label(self.frame_titulo_top, image=self.png_ctacte, bg="red", relief="ridge", bd=5)
+        self.lbl_png_ctacte = tk.Label(self.frame_titulo_top, image=self.png_ctacte, bg="red", relief="ridge", bd=5)
 
-        self.lbl_titulo = Label(self.frame_titulo_top, width=52, text="Cuentas Corrientes",
+        self.lbl_titulo = tk.Label(self.frame_titulo_top, width=52, text="Cuentas Corrientes",
                                 bg="black", fg="gold", font=("Arial bold", 20, "bold"), bd=5, relief="ridge", padx=5)
 
         # Coloco logo y titulo en posicion de pantalla
-        self.lbl_png_ctacte.grid(row=0, column=0, sticky=W, padx=5, ipadx=22)
+        self.lbl_png_ctacte.grid(row=0, column=0, sticky="w", padx=5, ipadx=22)
         self.lbl_titulo.grid(row=0, column=1, sticky="nsew")
         self.frame_titulo_top.pack(side="top", fill="x", padx=5, pady=2)
         # ------------------------------------------------------------------
@@ -136,7 +131,7 @@ class Clase_CuentaCorriente(Frame):
         # ------------------------------------------------------------------
         # GRID - TREVIEEW
         # ------------------------------------------------------------------
-        self.frame_tvw_ctacte=LabelFrame(self.master, text="Cuentas Corrientes: ", foreground="#CF09BD")
+        self.frame_tvw_ctacte=tk.LabelFrame(self.master, text="Cuentas Corrientes: ", foreground="#CF09BD")
         self.cuadro_grid_ctacte()
         self.frame_tvw_ctacte.pack(side="top", fill="both", padx=5, pady=2)
         # ------------------------------------------------------------------
@@ -144,14 +139,14 @@ class Clase_CuentaCorriente(Frame):
         # ------------------------------------------------------------------
         # ENTRYS
         # ------------------------------------------------------------------
-        self.frame_primero=LabelFrame(self.master, text="", foreground="red")
+        self.frame_primero=tk.LabelFrame(self.master, text="", foreground="red")
         self.cuadro_entrys()
         self.frame_primero.pack(side="top", fill="both", expand=0, padx=5, pady=2)
         # ---------------------------------------------------------------------------------
 
         # ---------------------------------------------------------------------------------------
         # ENTRYS MOVIMIENTOS
-        self.frame_tercero=LabelFrame(self.master, text="", foreground="red")
+        self.frame_tercero=tk.LabelFrame(self.master, text="", foreground="red")
         self.cuadro_entrys_movimientos()
         self.frame_tercero.pack(side="top", fill="both", expand=0, padx=5, pady=2)
         # ------------------------------------------------------------------
@@ -159,7 +154,7 @@ class Clase_CuentaCorriente(Frame):
         # ------------------------------------------------------------------
         # BOTONES TREEVIEW
         # ------------------------------------------------------------------
-        self.frame_cuarto=LabelFrame(self.master, text="", foreground="red")
+        self.frame_cuarto=tk.LabelFrame(self.master, text="", foreground="red")
         self.cuadro_botonestv()
         self.frame_cuarto.pack(side="top", fill="both", expand=0, padx=5, pady=2)
         # ------------------------------------------------------------------
@@ -256,7 +251,7 @@ class Clase_CuentaCorriente(Frame):
 
         una_fecha = datetime.strftime(date.today(), "%d/%m/%Y")
         self.strvar_fecha_movim.set(value=una_fecha)
-        self.entry_detalle_movim.delete(0, END)
+        self.entry_detalle_movim.delete(0, "end")
         self.strvar_debito_movim.set(value="0.00")
         self.strvar_credito_movim.set(value="0.00")
 
@@ -754,18 +749,18 @@ class Clase_CuentaCorriente(Frame):
     def cuadro_entrys(self):
 
         # DATOS NOMBRE CLIENTE
-        self.lbl_texto_nombre_cliente = Label(self.frame_primero, text="Cliente: ", justify="left")
-        self.lbl_texto_nombre_cliente.grid(row=0, column=0, padx=5, pady=2, sticky=W)
-        self.entry_nombre_cliente = Entry(self.frame_primero, textvariable=self.strvar_nombre_cliente, width=48)
-        self.entry_nombre_cliente.grid(row=0, column=1, padx=5, pady=2, sticky=W)
-        self.lbl_texto_codigo_cliente = Label(self.frame_primero, textvariable=self.strvar_codigo_cliente, width=10 )
-        self.lbl_texto_codigo_cliente.grid(row=0, column=2, padx=5, pady=2, sticky=W)
+        self.lbl_texto_nombre_cliente = tk.Label(self.frame_primero, text="Cliente: ", justify="left")
+        self.lbl_texto_nombre_cliente.grid(row=0, column=0, padx=5, pady=2, sticky="w")
+        self.entry_nombre_cliente = tk.Entry(self.frame_primero, textvariable=self.strvar_nombre_cliente, width=48)
+        self.entry_nombre_cliente.grid(row=0, column=1, padx=5, pady=2, sticky="w")
+        self.lbl_texto_codigo_cliente = tk.Label(self.frame_primero, textvariable=self.strvar_codigo_cliente, width=10 )
+        self.lbl_texto_codigo_cliente.grid(row=0, column=2, padx=5, pady=2, sticky="w")
 
         # BOTON BUSCAR CLIENTE EN LISTBOX
         self.photo_bus_cli = Image.open('buscar.png')
         self.photo_bus_cli = self.photo_bus_cli.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo_bus_cli = ImageTk.PhotoImage(self.photo_bus_cli)
-        self.btn_bus_cli = Button(self.frame_primero, text="", image=self.photo_bus_cli, command=self.fBuscli,
+        self.btn_bus_cli = tk.Button(self.frame_primero, text="", image=self.photo_bus_cli, command=self.fBuscli,
                                   bg="grey", fg="white")
         self.btn_bus_cli.grid(row=0, column=3, padx=5)
 
@@ -773,20 +768,20 @@ class Clase_CuentaCorriente(Frame):
         self.photo_reset_cli = Image.open('reset.png')
         self.photo_reset_cli = self.photo_reset_cli.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo_reset_cli = ImageTk.PhotoImage(self.photo_reset_cli)
-        self.btn_reset_cli = Button(self.frame_primero, text="", image=self.photo_reset_cli, command=self.fReset_selcli,
+        self.btn_reset_cli = tk.Button(self.frame_primero, text="", image=self.photo_reset_cli, command=self.fReset_selcli,
                                     bg="grey", fg="white")
         self.btn_reset_cli.grid(row=0, column=4, padx=5)
 
         # Saldo del cliente
         fff = tkFont.Font(family="Arial", size=10, weight="bold")
-        self.lbl_saldo_cliente = Label(self.frame_primero, text="Saldo: ", font=fff, justify="left")
-        self.lbl_saldo_cliente.grid(row=0, column=5, padx=5, pady=2, sticky=W)
-        self.lbl_importe_saldo_cliente = Label(self.frame_primero, textvariable=self.strvar_saldo_cliente, width=20,
+        self.lbl_saldo_cliente = tk.Label(self.frame_primero, text="Saldo: ", font=fff, justify="left")
+        self.lbl_saldo_cliente.grid(row=0, column=5, padx=5, pady=2, sticky="w")
+        self.lbl_importe_saldo_cliente = tk.Label(self.frame_primero, textvariable=self.strvar_saldo_cliente, width=20,
                                                font=fff, justify="left")
-        self.lbl_importe_saldo_cliente.grid(row=0, column=6, padx=5, pady=2, sticky=W)
+        self.lbl_importe_saldo_cliente.grid(row=0, column=6, padx=5, pady=2, sticky="w")
 
         # Boton para compactar
-        self.btn_compactar = Button(self.frame_primero, text="Compactar", command=self.fCompactar, width=15,
+        self.btn_compactar = tk.Button(self.frame_primero, text="Compactar", command=self.fCompactar, width=15,
                                     bg="medium purple", fg="white")
         self.btn_compactar.grid(row=0, column=7, padx=4, pady=2)
 
@@ -794,7 +789,7 @@ class Clase_CuentaCorriente(Frame):
         self.photo_imp = Image.open('impresora.png')
         self.photo_imp = self.photo_imp.resize((35, 35), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo_imp = ImageTk.PhotoImage(self.photo_imp)
-        self.btn_imprime = Button(self.frame_primero, image=self.photo_imp, pady=3, command=self.fImprime, border=3)
+        self.btn_imprime = tk.Button(self.frame_primero, image=self.photo_imp, pady=3, command=self.fImprime, border=3)
         self.btn_imprime.grid(row=0, column=8, padx=4, pady=2)
         #self.btnPlaniCaja.place(x=555, y=10, width=100, height=100)
 
@@ -802,52 +797,52 @@ class Clase_CuentaCorriente(Frame):
         self.photo4 = Image.open('toparch.png')
         self.photo4 = self.photo4.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo4 = ImageTk.PhotoImage(self.photo4)
-        self.btnToparch = Button(self.frame_primero, text="", image=self.photo4, command=self.fToparch, bg="grey",
+        self.btnToparch = tk.Button(self.frame_primero, text="", image=self.photo4, command=self.fToparch, bg="grey",
                                  fg="white")
         self.btnToparch.grid(row=0, column=9, padx=5, sticky="nsew", pady=2)
         self.photo5 = Image.open('finarch.png')
         self.photo5 = self.photo5.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo5 = ImageTk.PhotoImage(self.photo5)
-        self.btnFinarch = Button(self.frame_primero, text="", image=self.photo5, command=self.fFinarch, bg="grey",
+        self.btnFinarch = tk.Button(self.frame_primero, text="", image=self.photo5, command=self.fFinarch, bg="grey",
                                  fg="white")
         self.btnFinarch.grid(row=0, column=10, padx=5, sticky="nsew", pady=2)
 
     def cuadro_entrys_movimientos(self):
 
         # Fecha del movimiento
-        self.lbl_fecha_movim = Label(self.frame_tercero, text="Fecha: ", justify="left")
-        self.lbl_fecha_movim.grid(row=0, column=0, padx=5, pady=2, sticky=W)
-        self.entry_fecha_movim = Entry(self.frame_tercero, textvariable=self.strvar_fecha_movim, width=10,
+        self.lbl_fecha_movim = tk.Label(self.frame_tercero, text="Fecha: ", justify="left")
+        self.lbl_fecha_movim.grid(row=0, column=0, padx=5, pady=2, sticky="w")
+        self.entry_fecha_movim = tk.Entry(self.frame_tercero, textvariable=self.strvar_fecha_movim, width=10,
                                        justify="right")
         self.entry_fecha_movim.bind("<FocusOut>", self.formato_fecha)
-        self.entry_fecha_movim.grid(row=0, column=1, padx=5, pady=2, sticky=W)
+        self.entry_fecha_movim.grid(row=0, column=1, padx=5, pady=2, sticky="w")
 
         # Detalle del movimiento
-        self.lbl_detalle_movim = Label(self.frame_tercero, text="Detalle: ", justify="left")
-        self.lbl_detalle_movim.grid(row=0, column=2, padx=5, pady=2, sticky=W)
-        self.entry_detalle_movim = Entry(self.frame_tercero, textvariable=self.strvar_detalle_movim, width=125,
+        self.lbl_detalle_movim = tk.Label(self.frame_tercero, text="Detalle: ", justify="left")
+        self.lbl_detalle_movim.grid(row=0, column=2, padx=5, pady=2, sticky="w")
+        self.entry_detalle_movim = tk.Entry(self.frame_tercero, textvariable=self.strvar_detalle_movim, width=125,
                                          justify="left")
         self.strvar_detalle_movim.trace("w", lambda *args: limitador(self.strvar_detalle_movim, 200))
-        self.entry_detalle_movim.grid(row=0, column=3, columnspan = 30, padx=5, pady=2, sticky=W)
+        self.entry_detalle_movim.grid(row=0, column=3, columnspan = 30, padx=5, pady=2, sticky="w")
 
         # Importe Debito
-        self.lbl_debito_movim = Label(self.frame_tercero, text="Debito: ", justify="left")
-        self.lbl_debito_movim.grid(row=1, column=0, padx=5, pady=2, sticky=W)
-        self.entry_debito_movim = Entry(self.frame_tercero, textvariable=self.strvar_debito_movim, width=20,
+        self.lbl_debito_movim = tk.Label(self.frame_tercero, text="Debito: ", justify="left")
+        self.lbl_debito_movim.grid(row=1, column=0, padx=5, pady=2, sticky="w")
+        self.entry_debito_movim = tk.Entry(self.frame_tercero, textvariable=self.strvar_debito_movim, width=20,
                                         justify="right")
         self.entry_debito_movim.config(validate="key", validatecommand=self.vcmd)
-        self.entry_debito_movim.grid(row=1, column=1, padx=5, pady=2, sticky=W)
+        self.entry_debito_movim.grid(row=1, column=1, padx=5, pady=2, sticky="w")
         self.entry_debito_movim.config(validate="key", validatecommand=self.vcmd)
         self.strvar_debito_movim.trace("w", lambda *args: self.limitador(self.strvar_debito_movim, 15))
         self.entry_debito_movim.bind('<Tab>', lambda e: self.calcular())
 
         # Importe Credito
-        self.lbl_credito_movim = Label(self.frame_tercero, text="Credito: ", justify="left")
-        self.lbl_credito_movim.grid(row=1, column=2, padx=5, pady=2, sticky=W)
-        self.entry_credito_movim = Entry(self.frame_tercero, textvariable=self.strvar_credito_movim, width=20,
+        self.lbl_credito_movim = tk.Label(self.frame_tercero, text="Credito: ", justify="left")
+        self.lbl_credito_movim.grid(row=1, column=2, padx=5, pady=2, sticky="w")
+        self.entry_credito_movim = tk.Entry(self.frame_tercero, textvariable=self.strvar_credito_movim, width=20,
                                          justify="right")
         self.entry_credito_movim.config(validate="key", validatecommand=self.vcmd)
-        self.entry_credito_movim.grid(row=1, column=3, padx=5, pady=2, sticky=W)
+        self.entry_credito_movim.grid(row=1, column=3, padx=5, pady=2, sticky="w")
         self.entry_credito_movim.config(validate="key", validatecommand=self.vcmd)
         self.strvar_credito_movim.trace("w", lambda *args: self.limitador(self.strvar_credito_movim, 15))
         self.entry_credito_movim.bind('<Tab>', lambda e: self.calcular())
@@ -865,7 +860,7 @@ class Clase_CuentaCorriente(Frame):
         # Nuevo ingreso a cuenta
         img = Image.open("archivo-nuevo.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_nuevoitem = Button(self.frame_cuarto, text="Nuevo Item", command=self.fNuevo, width=24, bg="blue",
+        self.btn_nuevoitem = tk.Button(self.frame_cuarto, text="Nuevo Item", command=self.fNuevo, width=24, bg="blue",
                                     fg="white", compound="left")
         self.btn_nuevoitem.image = icono
         self.btn_nuevoitem.config(image=icono)
@@ -874,7 +869,7 @@ class Clase_CuentaCorriente(Frame):
         # Editar movimiento
         img = Image.open("editar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_editaitem = Button(self.frame_cuarto, text="Edita Item", command=self.fEditar, width=24, bg="blue",
+        self.btn_editaitem = tk.Button(self.frame_cuarto, text="Edita Item", command=self.fEditar, width=24, bg="blue",
                                     fg="white", compound="left")
         self.btn_editaitem.image = icono
         self.btn_editaitem.config(image=icono)
@@ -883,7 +878,7 @@ class Clase_CuentaCorriente(Frame):
         # Borrar un movimiento
         img = Image.open("eliminar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_borraitem = Button(self.frame_cuarto, text="Elimina Item", command=self.fBorrar, width=24, bg="blue",
+        self.btn_borraitem = tk.Button(self.frame_cuarto, text="Elimina Item", command=self.fBorrar, width=24, bg="blue",
                                     fg="white", compound="left")
         self.btn_borraitem.image = icono
         self.btn_borraitem.config(image=icono)
@@ -892,7 +887,7 @@ class Clase_CuentaCorriente(Frame):
         # Guardar movimiento en archivos
         img = Image.open("guardar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_guardaritem = Button(self.frame_cuarto, text="Guardar item", command=self.fGuardar, width=24,
+        self.btn_guardaritem = tk.Button(self.frame_cuarto, text="Guardar item", command=self.fGuardar, width=24,
                                       bg="green", fg="white", compound="left")
         self.btn_guardaritem.image = icono
         self.btn_guardaritem.config(image=icono)
@@ -901,7 +896,7 @@ class Clase_CuentaCorriente(Frame):
         # Cancelar lo que se este haciendo
         img = Image.open("cancelar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_Cancelar = Button(self.frame_cuarto, text="Cancelar", command=self.fCancelar, width=24, bg="black",
+        self.btn_Cancelar = tk.Button(self.frame_cuarto, text="Cancelar", command=self.fCancelar, width=24, bg="black",
                                    fg="white", compound="left")
         self.btn_Cancelar.image = icono
         self.btn_Cancelar.config(image=icono)
@@ -914,7 +909,7 @@ class Clase_CuentaCorriente(Frame):
         self.photo3 = Image.open('salida.png')
         self.photo3 = self.photo3.resize((30, 30), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo3 = ImageTk.PhotoImage(self.photo3)
-        self.btnSalir=Button(self.frame_cuarto, text="Salir", image=self.photo3, width=65, command=self.fSalir,
+        self.btnSalir=tk.Button(self.frame_cuarto, text="Salir", image=self.photo3, width=65, command=self.fSalir,
                              bg="yellow", fg="white")
         self.btnSalir.grid(row=0, column=5, padx=5, pady=2, sticky="nsew")
 
@@ -948,8 +943,8 @@ class Clase_CuentaCorriente(Frame):
         self.grid_ctacte.heading("col6", text="Clave", anchor="center")
 
         # SCROLLBAR del Treeview
-        scroll_x = Scrollbar(self.frame_tvw_ctacte, orient="horizontal")
-        scroll_y = Scrollbar(self.frame_tvw_ctacte, orient="vertical")
+        scroll_x = tk.Scrollbar(self.frame_tvw_ctacte, orient="horizontal")
+        scroll_y = tk.Scrollbar(self.frame_tvw_ctacte, orient="vertical")
         self.grid_ctacte.config(xscrollcommand=scroll_x.set)
         self.grid_ctacte.config(yscrollcommand=scroll_y.set)
         scroll_x.config(command=self.grid_ctacte.xview)
@@ -1060,7 +1055,7 @@ class Clase_CuentaCorriente(Frame):
         # ---------------------------------------------------------------------------
         # DEFINO PANTALLA FLOTANTE
 
-        self.pantalla_estad = Toplevel()
+        self.pantalla_estad = tk.Toplevel()
         self.pantalla_estad.geometry('630x390+660+380')
         self.pantalla_estad.transient(master=self.master)
         self.pantalla_estad.config(bg='light green', padx=5, pady=5)
@@ -1071,19 +1066,19 @@ class Clase_CuentaCorriente(Frame):
         # ---------------------------------------------------------------------------
         # TITULOS
 
-        self.frame_titulo_compactar = Frame(self.pantalla_estad, bg="light green")
+        self.frame_titulo_compactar = tk.Frame(self.pantalla_estad, bg="light green")
 
         # Armo el logo y el titulo
         self.photo = Image.open('ctacte.png')
         self.photo = self.photo.resize((30, 30), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.png_cta = ImageTk.PhotoImage(self.photo)
-        self.lbl_png_cta = Label(self.frame_titulo_compactar, image=self.png_cta, bg="red", relief="ridge", bd=5)
+        self.lbl_png_cta = tk.Label(self.frame_titulo_compactar, image=self.png_cta, bg="red", relief="ridge", bd=5)
 
-        self.lbl_tit = Label(self.frame_titulo_compactar, width=22, text="Compactar",
+        self.lbl_tit = tk.Label(self.frame_titulo_compactar, width=22, text="Compactar",
                              bg="black", fg="gold", font=("Arial bold", 20, "bold"), bd=5, relief="ridge", padx=5)
 
         # Coloco logo y titulo en posicion de pantalla
-        self.lbl_png_cta.grid(row=0, column=0, sticky=W, padx=5, ipadx=22)
+        self.lbl_png_cta.grid(row=0, column=0, sticky="w", padx=5, ipadx=22)
         self.lbl_tit.grid(row=0, column=1, sticky="nsew")
         self.frame_titulo_compactar.pack(side="top", fill="x", padx=5, pady=2)
         # ---------------------------------------------------------------------------
@@ -1092,21 +1087,21 @@ class Clase_CuentaCorriente(Frame):
         # VARIABLES STRINGVARS
 
         # Fechas inferior y tope de compactacion
-        self.strvar_fecha_inicial = StringVar(value="")
-        self.strvar_fecha_ultima = StringVar(value="")
-        self.strvar_fecha_tope_compactar = StringVar(value="")
+        self.strvar_fecha_inicial = tk.StringVar(value="")
+        self.strvar_fecha_ultima = tk.StringVar(value="")
+        self.strvar_fecha_tope_compactar = tk.StringVar(value="")
 
         # Debitos y creditos existentes todos
-        self.strvar_suma_debitos_ant = StringVar(value="0")
-        self.strvar_suma_creditos_ant = StringVar(value="0")
+        self.strvar_suma_debitos_ant = tk.StringVar(value="0")
+        self.strvar_suma_creditos_ant = tk.StringVar(value="0")
 
         # Saldo inicial luego de borrar los debitos y creditos comprendidos entre las fechas a compactar
-        self.strvar_nuevo_saldo_inicial = StringVar(value="0")
+        self.strvar_nuevo_saldo_inicial = tk.StringVar(value="0")
 
         # sumas de debitos y creditos a eliminar y recalculo del saldo para control
-        self.strvar_suma_debitos_eliminar = StringVar(value="0")
-        self.strvar_suma_creditos_eliminar = StringVar(value="0")
-        self.strvar_saldo_despues_eliminar = StringVar(value="0")
+        self.strvar_suma_debitos_eliminar = tk.StringVar(value="0")
+        self.strvar_suma_creditos_eliminar = tk.StringVar(value="0")
+        self.strvar_saldo_despues_eliminar = tk.StringVar(value="0")
         # ---------------------------------------------------------------------------
 
         # guardo filtro activo
@@ -1154,48 +1149,48 @@ class Clase_CuentaCorriente(Frame):
         forma_normal_final = fecha_str_reves_normal(self, datetime.strftime(fecha_inicial_mas30, '%Y-%m-%d'), False)
         forma_normal_ultima = fecha_str_reves_normal(self, datetime.strftime(ultima_fecha, '%Y-%m-%d'), False)
 
-        self.strvar_fecha_inicial = StringVar(value=forma_normal_inicial)
-        self.strvar_fecha_ultima = StringVar(value=forma_normal_ultima)
-        self.strvar_fecha_tope_compactar = StringVar(value=forma_normal_final)
+        self.strvar_fecha_inicial = tk.StringVar(value=forma_normal_inicial)
+        self.strvar_fecha_ultima = tk.StringVar(value=forma_normal_ultima)
+        self.strvar_fecha_tope_compactar = tk.StringVar(value=forma_normal_final)
 
-        self.strvar_suma_debitos_ant = StringVar(value=str(self.suma_debitos))
-        self.strvar_suma_creditos_ant = StringVar(value=str(self.suma_creditos))
+        self.strvar_suma_debitos_ant = tk.StringVar(value=str(self.suma_debitos))
+        self.strvar_suma_creditos_ant = tk.StringVar(value=str(self.suma_creditos))
         # ---------------------------------------------------------------------------
 
         # ---------------------------------------------------------------------------
         # TOTAL SALDOS DEBITOS CREDITOS
-        self.frame_info_saldos = LabelFrame(self.pantalla_estad, bg="light green")
+        self.frame_info_saldos = tk.LabelFrame(self.pantalla_estad, bg="light green")
         self.cuadro_saldos_estado_actual()
         self.frame_info_saldos.pack(side="top", fill="x", padx=5, pady=5)
         # ---------------------------------------------------------------------------
 
         # ---------------------------------------------------------------------------
         # CUADRO DE INFORMACION SOBRE FECHAS
-        self.frame_info_compactar = LabelFrame(self.pantalla_estad, bg="light green")
+        self.frame_info_compactar = tk.LabelFrame(self.pantalla_estad, bg="light green")
         self.cuadro_informacion_fechas()
         self.frame_info_compactar.pack(side="top", fill="x", padx=5, pady=5)
         # ---------------------------------------------------------------------------
 
         # ---------------------------------------------------------------------------
         # ENTRY HASTA QUE FECHA COMPACTAR MOVIMIENTOS
-        self.frame_parametros_compactar = LabelFrame(self.pantalla_estad, bg="light green")
+        self.frame_parametros_compactar = tk.LabelFrame(self.pantalla_estad, bg="light green")
         self.entrys_fecha_compactar()
         self.frame_parametros_compactar.pack(side="top", fill="x", padx=5, pady=5)
         # ---------------------------------------------------------------------------
 
         # ---------------------------------------------------------------------------
         # BOTON PREVISUALIZAR RESULTADOS PARA CONTROL
-        self.frame_botones_previsual = LabelFrame(self.pantalla_estad, bg="light green")
+        self.frame_botones_previsual = tk.LabelFrame(self.pantalla_estad, bg="light green")
         self.botones_previsualizar()
         self.frame_botones_previsual.pack(side="top", fill="x", padx=5, pady=5)
         # ---------------------------------------------------------------------------
 
-        self.frame_previsualizar = LabelFrame(self.pantalla_estad, bg="light green")
+        self.frame_previsualizar = tk.LabelFrame(self.pantalla_estad, bg="light green")
         self.frame_previsualizar.pack(side="top", fill="both", expand=True, padx=5, pady=5)
 
         # ---------------------------------------------------------------------------
         # BOTONES Continuar Canccelar
-        self.frame_botones_compactar = LabelFrame(self.pantalla_estad, bg="light green")
+        self.frame_botones_compactar = tk.LabelFrame(self.pantalla_estad, bg="light green")
         self.botones_compactar()
         self.frame_botones_compactar.pack(side="top", fill="x", padx=5, pady=5)
         # ---------------------------------------------------------------------------
@@ -1206,7 +1201,7 @@ class Clase_CuentaCorriente(Frame):
         self.pantalla_estad.grab_set()
         self.pantalla_estad.focus_set()
 
-        mainloop()
+        tk.mainloop()
 
     def fPrevisualizar(self):
 
@@ -1266,34 +1261,34 @@ class Clase_CuentaCorriente(Frame):
             self.frame_previsualizar.grid_columnconfigure(c, weight=1, minsize=120)
 
         # Suma de los debitos a eliminar
-        self.lbl_suma_debitos_eliminar_tit = Label(self.frame_previsualizar, text="Suma debitos a eliminar: ", font=fff,
+        self.lbl_suma_debitos_eliminar_tit = tk.Label(self.frame_previsualizar, text="Suma debitos a eliminar: ", font=fff,
                                            bg="light green", bd=5, justify="center")
         self.lbl_suma_debitos_eliminar_tit.grid(row=0, column=0, padx=5, pady=3, sticky="nsew")
-        self.lbl_suma_debitos_eliminar_var = Label(self.frame_previsualizar, textvariable=self.strvar_suma_debitos_eliminar,
+        self.lbl_suma_debitos_eliminar_var = tk.Label(self.frame_previsualizar, textvariable=self.strvar_suma_debitos_eliminar,
                                                  font=fff, bg="light green", bd=5, justify="center")
         self.lbl_suma_debitos_eliminar_var.grid(row=0, column=1, padx=5, pady=3, sticky="nsew")
 
         # Suma de los creditos a eliminar
-        self.lbl_suma_creditos_eliminar_tit = Label(self.frame_previsualizar, text="Suma creditos a eliminar: ", font=fff,
+        self.lbl_suma_creditos_eliminar_tit = tk.Label(self.frame_previsualizar, text="Suma creditos a eliminar: ", font=fff,
                                            bg="light green", bd=5, justify="center")
         self.lbl_suma_creditos_eliminar_tit.grid(row=0, column=2, padx=5, pady=3, sticky="nsew")
-        self.lbl_suma_creditos_eliminar_var = Label(self.frame_previsualizar, textvariable=self.strvar_suma_creditos_eliminar,
+        self.lbl_suma_creditos_eliminar_var = tk.Label(self.frame_previsualizar, textvariable=self.strvar_suma_creditos_eliminar,
                                                  font=fff, bg="light green", bd=5, justify="center")
         self.lbl_suma_creditos_eliminar_var.grid(row=0, column=3, padx=5, pady=3, sticky="nsew")
 
         # muestro el importe del movimiento que voy a generar como saldo inicial
-        self.lbl_nuevo_saldo_inicial_tit = Label(self.frame_previsualizar, text="Nuevo saldo inicial: ", font=fff,
+        self.lbl_nuevo_saldo_inicial_tit = tk.Label(self.frame_previsualizar, text="Nuevo saldo inicial: ", font=fff,
                                            bg="light green", bd=5, justify="center")
         self.lbl_nuevo_saldo_inicial_tit.grid(row=1, column=0, padx=5, pady=3, sticky="nsew")
-        self.lbl_nuevo_saldo_inicial_var = Label(self.frame_previsualizar, textvariable=self.strvar_nuevo_saldo_inicial,
+        self.lbl_nuevo_saldo_inicial_var = tk.Label(self.frame_previsualizar, textvariable=self.strvar_nuevo_saldo_inicial,
                                                  font=fff, bg="light green", bd=5, justify="center")
         self.lbl_nuevo_saldo_inicial_var.grid(row=1, column=1, padx=5, pady=3, sticky="nsew")
 
         # Saldo resultante de estos movimientos (debe coincidir con el anterior)
-        self.lbl_nuevo_saldo_final_tit = Label(self.frame_previsualizar, text="Saldo resultante: ", font=fff,
+        self.lbl_nuevo_saldo_final_tit = tk.Label(self.frame_previsualizar, text="Saldo resultante: ", font=fff,
                                            bg="light green", bd=5, justify="center")
         self.lbl_nuevo_saldo_final_tit.grid(row=1, column=2, padx=5, pady=3, sticky="nsew")
-        self.lbl_nuevo_saldo_final_var = Label(self.frame_previsualizar, textvariable=self.strvar_saldo_despues_eliminar,
+        self.lbl_nuevo_saldo_final_var = tk.Label(self.frame_previsualizar, textvariable=self.strvar_saldo_despues_eliminar,
                                                  font=fff, bg="light green", bd=5, justify="center")
         self.lbl_nuevo_saldo_final_var.grid(row=1, column=3, padx=5, pady=3, sticky="nsew")
 
@@ -1307,7 +1302,7 @@ class Clase_CuentaCorriente(Frame):
 
     def botones_previsualizar(self):
 
-        self.btn_previsualizar = Button(self.frame_botones_previsual, text=" Previsualizacion",
+        self.btn_previsualizar = tk.Button(self.frame_botones_previsual, text=" Previsualizacion",
                                              command=self.fPrevisualizar, width=50, bg="black", fg="white",
                                              compound="left")
         self.btn_previsualizar.grid(row=0, column=0, padx=5, pady=5)
@@ -1325,7 +1320,7 @@ class Clase_CuentaCorriente(Frame):
 
         img = Image.open("ejecucion.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_cancelar_compactar = Button(self.frame_botones_compactar, text=" Continuar",
+        self.btn_cancelar_compactar = tk.Button(self.frame_botones_compactar, text=" Continuar",
                                              command=self.fEjecutar_compactar, width=24, bg="black", fg="white",
                                              compound="left")
         self.btn_cancelar_compactar.image = icono
@@ -1334,7 +1329,7 @@ class Clase_CuentaCorriente(Frame):
 
         img = Image.open("cancelar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_cancelar_compactar = Button(self.frame_botones_compactar, text=" Salir",
+        self.btn_cancelar_compactar = tk.Button(self.frame_botones_compactar, text=" Salir",
                                              command=self.fSalir_compactar, width=24, bg="black", fg="white",
                                              compound="left")
         self.btn_cancelar_compactar.image = icono
@@ -1355,7 +1350,7 @@ class Clase_CuentaCorriente(Frame):
 
         # Si la fecha tope(hasta donde voy a compactar inclusive) < Fecha inicial (fecha minima de los movimientos)
         if f1 < f2:
-            return FALSE
+            return "false"
 
         # las paso a formato date
         f1 = datetime.strptime(fecha_tope, "%d/%m/%Y")
@@ -1363,7 +1358,7 @@ class Clase_CuentaCorriente(Frame):
 
         # Si la fecha tope(hasta donde voy a compactar inclusive) >= Fecha del ultimo movimiento que registra la cuenta
         if f1 >= f2:
-            return FALSE
+            return "false"
 
         return True
 
@@ -1373,22 +1368,22 @@ class Clase_CuentaCorriente(Frame):
         fff = tkFont.Font(family="Arial", size=10, weight="bold")
 
         # Desde que fecha compacto - Por defecto es desde la mas vieja
-        self.lbl_fecha_inicial_tit = Label(self.frame_parametros_compactar, text="Compactar: ", font=fff,
+        self.lbl_fecha_inicial_tit = tk.Label(self.frame_parametros_compactar, text="Compactar: ", font=fff,
                                            bg="light green", bd=5, justify="center")
         self.lbl_fecha_inicial_tit.grid(row=0, column=0, padx=5, pady=3, sticky="nsew")
-        self.lbl_fecha_inicial_tit = Label(self.frame_parametros_compactar, text="Desde : Fecha inicial: ", font=fff,
+        self.lbl_fecha_inicial_tit = tk.Label(self.frame_parametros_compactar, text="Desde : Fecha inicial: ", font=fff,
                                            bg="light green", bd=5, justify="center")
         self.lbl_fecha_inicial_tit.grid(row=0, column=1, padx=5, pady=3, sticky="nsew")
-        self.lbl_fecha_inicial_var = Label(self.frame_parametros_compactar, textvariable=self.strvar_fecha_inicial,
+        self.lbl_fecha_inicial_var = tk.Label(self.frame_parametros_compactar, textvariable=self.strvar_fecha_inicial,
                                            bg="light green", bd=5)
         self.lbl_fecha_inicial_var.grid(row=0, column=2, padx=5, pady=3, sticky="nsew")
 
         # Hasta que fecha compacto - Fecha a elegirse (control sobre esta fecha que no supere algunos parametros)
         # Por defecto le sumamos 30 dias
-        self.lbl_fecha_final = Label(self.frame_parametros_compactar, text="Hasta: Fecha final: ", font=fff,
+        self.lbl_fecha_final = tk.Label(self.frame_parametros_compactar, text="Hasta: Fecha final: ", font=fff,
                                      bg="light green", bd=5, justify="center")
         self.lbl_fecha_final.grid(row=0, column=3, padx=5, pady=3, sticky="nsew")
-        self.entry_fecha_compactar = Entry(self.frame_parametros_compactar, textvariable=self.strvar_fecha_tope_compactar,
+        self.entry_fecha_compactar = tk.Entry(self.frame_parametros_compactar, textvariable=self.strvar_fecha_tope_compactar,
                                       bd=5, width=10, justify="right")
         self.entry_fecha_compactar.bind("<FocusOut>", self.formato_fecha_compactar)
         self.entry_fecha_compactar.grid(row=0, column=4, padx=5, pady=3, sticky="nsew")
@@ -1400,18 +1395,18 @@ class Clase_CuentaCorriente(Frame):
 
         fff = tkFont.Font(family="Arial", size=10, weight="bold")
         # Fecha mas baja de los movimientos actuales
-        self.lbl_fecha_primer_movimiento_tit = Label(self.frame_info_compactar, text="Fecha primer movimiento: ", font=fff,
+        self.lbl_fecha_primer_movimiento_tit = tk.Label(self.frame_info_compactar, text="Fecha primer movimiento: ", font=fff,
                                                      bg="light green", bd=5, justify="center")
         self.lbl_fecha_primer_movimiento_tit.grid(row=0, column=0, padx=5, pady=3, sticky="nsew")
-        self.lbl_fecha_primer_movimiento_var = Label(self.frame_info_compactar, textvariable=self.strvar_fecha_inicial,
+        self.lbl_fecha_primer_movimiento_var = tk.Label(self.frame_info_compactar, textvariable=self.strvar_fecha_inicial,
                                                      bg="light green", bd=5)
         self.lbl_fecha_primer_movimiento_var.grid(row=0, column=1, padx=5, pady=3, sticky="nsew")
 
         # Fecha mas alta de los movimientos actuales
-        self.lbl_fecha_ultimo_movimiento_tit = Label(self.frame_info_compactar, text="Fecha ultimo movimiento: ", font=fff,
+        self.lbl_fecha_ultimo_movimiento_tit = tk.Label(self.frame_info_compactar, text="Fecha ultimo movimiento: ", font=fff,
                                                      bg="light green", bd=5, justify="center")
         self.lbl_fecha_ultimo_movimiento_tit.grid(row=0, column=2, padx=5, pady=3, sticky="nsew")
-        self.lbl_fecha_ultimo_movimiento_var = Label(self.frame_info_compactar, textvariable=self.strvar_fecha_ultima,
+        self.lbl_fecha_ultimo_movimiento_var = tk.Label(self.frame_info_compactar, textvariable=self.strvar_fecha_ultima,
                                                      bg="light green", bd=5)
         self.lbl_fecha_ultimo_movimiento_var.grid(row=0, column=3, padx=5, pady=3, sticky="nsew")
 
@@ -1419,26 +1414,26 @@ class Clase_CuentaCorriente(Frame):
 
         fff = tkFont.Font(family="Arial", size=10, weight="bold")
         # El saldo actual
-        self.lbl_saldo_tit = Label(self.frame_info_saldos, text="Saldo a la fecha: ", font=fff,
+        self.lbl_saldo_tit = tk.Label(self.frame_info_saldos, text="Saldo a la fecha: ", font=fff,
                                                      bg="light green", bd=5, justify="center")
         self.lbl_saldo_tit.grid(row=0, column=0, padx=5, pady=3, sticky="nsew")
-        self.lbl_saldo_var = Label(self.frame_info_saldos, textvariable=self.strvar_saldo_cliente,
+        self.lbl_saldo_var = tk.Label(self.frame_info_saldos, textvariable=self.strvar_saldo_cliente,
                                                      bg="light green", bd=5)
         self.lbl_saldo_var.grid(row=0, column=1, padx=5, pady=3, sticky="nsew")
 
         # Suma de los debitos antes de compactacion (todos)
-        self.lbl_debitos_tit = Label(self.frame_info_saldos, text="Debitos: ", font=fff,
+        self.lbl_debitos_tit = tk.Label(self.frame_info_saldos, text="Debitos: ", font=fff,
                                                      bg="light green", bd=5, justify="center")
         self.lbl_debitos_tit.grid(row=0, column=2, padx=5, pady=3, sticky="nsew")
-        self.lbl_debitos_var = Label(self.frame_info_saldos, textvariable=self.strvar_suma_debitos_ant,
+        self.lbl_debitos_var = tk.Label(self.frame_info_saldos, textvariable=self.strvar_suma_debitos_ant,
                                                      bg="light green", bd=5)
         self.lbl_debitos_var.grid(row=0, column=3, padx=5, pady=3, sticky="nsew")
 
         # Suma de los creditos antes de compactacion (todos)
-        self.lbl_creditos_tit = Label(self.frame_info_saldos, text="Creditos: ", font=fff,
+        self.lbl_creditos_tit = tk.Label(self.frame_info_saldos, text="Creditos: ", font=fff,
                                                      bg="light green", bd=5, justify="center")
         self.lbl_creditos_tit.grid(row=0, column=4, padx=5, pady=3, sticky="nsew")
-        self.lbl_creditos_var = Label(self.frame_info_saldos, textvariable=self.strvar_suma_creditos_ant,
+        self.lbl_creditos_var = tk.Label(self.frame_info_saldos, textvariable=self.strvar_suma_creditos_ant,
                                                      bg="light green", bd=5)
         self.lbl_creditos_var.grid(row=0, column=5, padx=5, pady=3, sticky="nsew")
 

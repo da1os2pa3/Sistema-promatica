@@ -2,8 +2,8 @@ from funciones import *
 from funcion_new import *
 from garantias_ABM import datosGarantias
 #------------------------------------------------
-#import tkinter as tk
-#from tkinter import ttk
+import tkinter as tk
+from tkinter import ttk
 from tkinter import messagebox
 from tkinter.scrolledtext import *
 #------------------------------------------------
@@ -11,7 +11,7 @@ from datetime import date, datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from PIL import Image, ImageTk
 
-class Clase_Garantias(Frame):
+class Clase_Garantias(tk.Frame):
 
     def __init__(self, master=None):
 
@@ -188,7 +188,7 @@ class Clase_Garantias(Frame):
             forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[1], '%Y-%m-%d'), False)
             forma_normal2 = fecha_str_reves_normal(self, datetime.strftime(row[3], '%Y-%m-%d'), False)
 
-            self.grid_garantias.insert("", END, tags=color, text=row[0], values=(forma_normal, row[2],
+            self.grid_garantias.insert("", "end", tags=color, text=row[0], values=(forma_normal, row[2],
                                                     forma_normal2, row[4], row[5], row[6], row[7], row[8], row[9]))
 
         if len(self.grid_garantias.get_children()) > 0:
@@ -415,7 +415,7 @@ class Clase_Garantias(Frame):
             self.entry_total_oper.insert(0, row[7])
             self.entry_numero_factura.insert(0, row[8])
             self.entry_observaciones.insert(0, row[9])
-            self.text_detalle.insert(END, row[10])
+            self.text_detalle.insert("end", row[10])
 
         self.habilitar_Btn_busquedas("disabled")
         self.habilitar_btn_A("disabled")
@@ -717,7 +717,7 @@ class Clase_Garantias(Frame):
         self.lbl_titulo = tk.Label(self.frame_titulo_top, width=52, text="Garantias",
                                 bg="black", fg="gold", font=("Arial bold", 20, "bold"), bd=5, relief="ridge", padx=5)
         # Coloco logo y titulo en posicion de pantalla
-        self.lbl_png_garantia.grid(row=0, column=0, sticky=W, padx=5, ipadx=22)
+        self.lbl_png_garantia.grid(row=0, column=0, sticky="w", padx=5, ipadx=22)
         self.lbl_titulo.grid(row=0, column=1, sticky="nsew")
 
     def cuadro_grid(self):
@@ -758,8 +758,8 @@ class Clase_Garantias(Frame):
         self.grid_garantias.tag_configure('evenrow', background='white')
 
         # SCROLLBAR del Treeview
-        scroll_x = Scrollbar(self.frame_tvw_garantias, orient="horizontal")
-        scroll_y = Scrollbar(self.frame_tvw_garantias, orient="vertical")
+        scroll_x = tk.Scrollbar(self.frame_tvw_garantias, orient="horizontal")
+        scroll_y = tk.Scrollbar(self.frame_tvw_garantias, orient="vertical")
         self.grid_garantias.config(xscrollcommand=scroll_x.set)
         self.grid_garantias.config(yscrollcommand=scroll_y.set)
         scroll_x.config(command=self.grid_garantias.xview)
@@ -784,13 +784,13 @@ class Clase_Garantias(Frame):
         self.lbl_buscar_titulo.grid(row=0, column=0, padx=5, pady=3, sticky='nsew')
 
         # ENTRY BUSCAR
-        self.entry_buscar_movim=Entry(self.frame_busco_garantia,textvariable=self.strvar_buscostring, width=50)
+        self.entry_buscar_movim=tk.Entry(self.frame_busco_garantia,textvariable=self.strvar_buscostring, width=50)
         self.entry_buscar_movim.grid(row=0, column=1, padx=5, pady=3, sticky='nsew')
 
         # BOTON FILTRAR
         img = Image.open("filtrar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_filtrar_movim = Button(self.frame_busco_garantia, text=" Buscar", command=self.fBuscar_en_tabla,
+        self.btn_filtrar_movim = tk.Button(self.frame_busco_garantia, text=" Buscar", command=self.fBuscar_en_tabla,
                                        bg="blue", fg="white", width=34, compound="left")
         self.btn_filtrar_movim.image = icono
         self.btn_filtrar_movim.config(image=icono)
@@ -799,7 +799,7 @@ class Clase_Garantias(Frame):
         # BOTON SHOW ALL
         img = Image.open("ver_todo.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_showall_movim = Button(self.frame_busco_garantia, text=" Mostrar todo", command=self.fShowall,
+        self.btn_showall_movim = tk.Button(self.frame_busco_garantia, text=" Mostrar todo", command=self.fShowall,
                                  bg="blue", fg="white", width=34, compound="left")
         self.btn_showall_movim.image = icono
         self.btn_showall_movim.config(image=icono)
@@ -817,7 +817,7 @@ class Clase_Garantias(Frame):
         # BOTON NUEVO
         img = Image.open("archivo-nuevo.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_nuevoitem = Button(self.frame_primero, text=" Nuevo Garantia", command=self.fNuevo, width=22, bg="blue",
+        self.btn_nuevoitem = tk.Button(self.frame_primero, text=" Nuevo Garantia", command=self.fNuevo, width=22, bg="blue",
                                     fg="white", compound="left")
         self.btn_nuevoitem.image = icono
         self.btn_nuevoitem.config(image=icono)
@@ -826,7 +826,7 @@ class Clase_Garantias(Frame):
         # BOTON EDITAR
         img = Image.open("editar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_editaitem = Button(self.frame_primero, text=" Editar Garantia", command=self.fEditar, width=22,
+        self.btn_editaitem = tk.Button(self.frame_primero, text=" Editar Garantia", command=self.fEditar, width=22,
                                     bg="blue", fg="white", compound="left")
         self.btn_editaitem.image = icono
         self.btn_editaitem.config(image=icono)
@@ -835,7 +835,7 @@ class Clase_Garantias(Frame):
         # BOTON BORRAR
         img = Image.open("eliminar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_borraitem = Button(self.frame_primero, text=" Eliminar Garantia", command=self.fBorrar, width=22,
+        self.btn_borraitem = tk.Button(self.frame_primero, text=" Eliminar Garantia", command=self.fBorrar, width=22,
                                     bg="red", fg="white", compound="left")
         self.btn_borraitem.image = icono
         self.btn_borraitem.config(image=icono)
@@ -844,7 +844,7 @@ class Clase_Garantias(Frame):
         # BOTON GUARDAR
         img = Image.open("guardar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_guardaritem = Button(self.frame_primero, text=" Guardar Garantia", command=self.fGuardar, width=21,
+        self.btn_guardaritem = tk.Button(self.frame_primero, text=" Guardar Garantia", command=self.fGuardar, width=21,
                                       bg="green", fg="white", compound="left")
         self.btn_guardaritem.image = icono
         self.btn_guardaritem.config(image=icono)
@@ -853,7 +853,7 @@ class Clase_Garantias(Frame):
         # BOTON CANCELAR
         img = Image.open("cancelar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_cancelar = Button(self.frame_primero, text=" Cancelar", command=self.fCancelar, width=21, bg="black",
+        self.btn_cancelar = tk.Button(self.frame_primero, text=" Cancelar", command=self.fCancelar, width=21, bg="black",
                                    fg="white", compound="left")
         self.btn_cancelar.image = icono
         self.btn_cancelar.config(image=icono)
@@ -867,13 +867,13 @@ class Clase_Garantias(Frame):
         self.photo4 = Image.open('toparch.png')
         self.photo4 = self.photo4.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo4 = ImageTk.PhotoImage(self.photo4)
-        self.btnToparch = Button(self.frame_primero, text="", image=self.photo4, command=self.fToparch, bg="grey",
+        self.btnToparch = tk.Button(self.frame_primero, text="", image=self.photo4, command=self.fToparch, bg="grey",
                                  fg="white")
         self.btnToparch.grid(row=0, column=5, padx=5, sticky="nsew", pady=2)
         self.photo5 = Image.open('finarch.png')
         self.photo5 = self.photo5.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo5 = ImageTk.PhotoImage(self.photo5)
-        self.btnFinarch = Button(self.frame_primero, text="", image=self.photo5, command=self.fFinarch, bg="grey",
+        self.btnFinarch = tk.Button(self.frame_primero, text="", image=self.photo5, command=self.fFinarch, bg="grey",
                                  fg="white")
         self.btnFinarch.grid(row=0, column=6, padx=5, sticky="nsew", pady=2)
 
@@ -881,7 +881,7 @@ class Clase_Garantias(Frame):
         self.photo3 = Image.open('salida.png')
         self.photo3 = self.photo3.resize((30, 30), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo3 = ImageTk.PhotoImage(self.photo3)
-        self.btnSalir=Button(self.frame_primero, text="Salir", image=self.photo3, width=65, command=self.fSalir,
+        self.btnSalir=tk.Button(self.frame_primero, text="Salir", image=self.photo3, width=65, command=self.fSalir,
                              bg="yellow", fg="white")
         self.btnSalir.grid(row=0, column=7, padx=5, pady=2, sticky="nsew")
 
@@ -889,36 +889,36 @@ class Clase_Garantias(Frame):
 
         # Fecha del movimiento
         self.lbl_fecha_movim = tk.Label(self.frame_segundo, text="Fecha Ingreso: ", justify="left")
-        self.lbl_fecha_movim.grid(row=0, column=0, padx=5, pady=2, sticky=W)
-        self.entry_fecha_movim = Entry(self.frame_segundo, textvariable=self.strvar_fecha_movim, width=10,
+        self.lbl_fecha_movim.grid(row=0, column=0, padx=5, pady=2, sticky="w")
+        self.entry_fecha_movim = tk.Entry(self.frame_segundo, textvariable=self.strvar_fecha_movim, width=10,
                                        justify="right")
-        self.entry_fecha_movim.grid(row=0, column=1, padx=5, pady=2, sticky=W)
+        self.entry_fecha_movim.grid(row=0, column=1, padx=5, pady=2, sticky="w")
         #self.entry_fecha_movim.bind("<FocusOut>", self.formato_fecha)
         #self.entry_fecha_movim.bind('<Tab>', lambda e: self.calcular())
 
         # Importe Debito
         self.lbl_meses = tk.Label(self.frame_segundo, text="Meses garantia: ", justify="left")
-        self.lbl_meses.grid(row=0, column=2, padx=5, pady=2, sticky=W)
-        self.entry_meses = Entry(self.frame_segundo, textvariable=self.strvar_meses, width=5, justify="right")
+        self.lbl_meses.grid(row=0, column=2, padx=5, pady=2, sticky="w")
+        self.entry_meses = tk.Entry(self.frame_segundo, textvariable=self.strvar_meses, width=5, justify="right")
         self.entry_meses.config(validate="key", validatecommand=self.vcmd)
-        self.entry_meses.grid(row=0, column=3, padx=5, pady=2, sticky=W)
+        self.entry_meses.grid(row=0, column=3, padx=5, pady=2, sticky="w")
         self.strvar_meses.trace("w", lambda *args: self.limitador(self.strvar_meses, 2))
         self.entry_meses.bind('<Tab>', lambda e: self.calcular_fechas())
 
         # Fecha vencimiento de garantia
         self.lbl_fecha_vto = tk.Label(self.frame_segundo, text="Fecha Vencimiento: ", justify="left")
-        self.lbl_fecha_vto.grid(row=0, column=4, padx=5, pady=2, sticky=W)
+        self.lbl_fecha_vto.grid(row=0, column=4, padx=5, pady=2, sticky="w")
         self.lbl_fecha_vto_strvar = tk.Label(self.frame_segundo, textvariable=self.strvar_fecha_vto, width=10,
                                           justify="right")
         #self.lbl_fecha_vto_strvar.bind("<FocusOut>", self.formato_fecha)
-        self.lbl_fecha_vto_strvar.grid(row=0, column=5, padx=5, pady=2, sticky=W)
+        self.lbl_fecha_vto_strvar.grid(row=0, column=5, padx=5, pady=2, sticky="w")
 
         # Importe venta articulo
         self.lbl_total_oper = tk.Label(self.frame_segundo, text="Total operacion: ", justify="left")
-        self.lbl_total_oper.grid(row=0, column=6, padx=5, pady=2, sticky=W)
-        self.entry_total_oper = Entry(self.frame_segundo, textvariable=self.strvar_total_oper, width=15, justify="right")
+        self.lbl_total_oper.grid(row=0, column=6, padx=5, pady=2, sticky="w")
+        self.entry_total_oper = tk.Entry(self.frame_segundo, textvariable=self.strvar_total_oper, width=15, justify="right")
         self.entry_total_oper.config(validate="key", validatecommand=self.vcmd)
-        self.entry_total_oper.grid(row=0, column=7, padx=5, pady=2, sticky=W)
+        self.entry_total_oper.grid(row=0, column=7, padx=5, pady=2, sticky="w")
         self.entry_total_oper.config(validate="key", validatecommand=self.vcmd)
         self.strvar_total_oper.trace("w", lambda *args: self.limitador(self.strvar_total_oper, 15))
 
@@ -926,47 +926,47 @@ class Clase_Garantias(Frame):
 
         # Detalle del articulo
         self.lbl_detalle_articulo = tk.Label(self.frame_tercero, text="Detalle articulo: ", justify="left")
-        self.lbl_detalle_articulo.grid(row=0, column=0, padx=5, pady=2, sticky=W)
+        self.lbl_detalle_articulo.grid(row=0, column=0, padx=5, pady=2, sticky="w")
         self.photo_bus_art = Image.open('buscar.png')
         self.photo_bus_art = self.photo_bus_art.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo_bus_art = ImageTk.PhotoImage(self.photo_bus_art)
-        self.btn_bus_art = Button(self.frame_tercero, text="", image=self.photo_bus_art, command=self.fBusart,
+        self.btn_bus_art = tk.Button(self.frame_tercero, text="", image=self.photo_bus_art, command=self.fBusart,
                                   bg="grey", fg="white")
         self.btn_bus_art.grid(row=0, column=1, padx=5, pady=3)
-        self.entry_detalle_articulo = Entry(self.frame_tercero, textvariable=self.strvar_detalle_articulo, width=143,
+        self.entry_detalle_articulo = tk.Entry(self.frame_tercero, textvariable=self.strvar_detalle_articulo, width=143,
                                             justify="left")
         self.strvar_detalle_articulo.trace("w", lambda *args: limitador(self.strvar_detalle_articulo, 150))
-        self.entry_detalle_articulo.grid(row=0, column=2, columnspan=6, padx=5, pady=2, sticky=W)
+        self.entry_detalle_articulo.grid(row=0, column=2, columnspan=6, padx=5, pady=2, sticky="w")
 
         # DATOS NOMBRE CLIENTE
         self.lbl_texto_nombre_cliente = tk.Label(self.frame_tercero, text="Cliente garantia: ", justify="left")
-        self.lbl_texto_nombre_cliente.grid(row=1, column=0, padx=5, pady=2, sticky=W)
+        self.lbl_texto_nombre_cliente.grid(row=1, column=0, padx=5, pady=2, sticky="w")
         # BOTON BUSCAR CLIENTE EN LISTBOX
         self.photo_bus_cli = Image.open('buscar.png')
         self.photo_bus_cli = self.photo_bus_cli.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo_bus_cli = ImageTk.PhotoImage(self.photo_bus_cli)
-        self.btn_bus_cli = Button(self.frame_tercero, text="", image=self.photo_bus_cli, command=self.fBuscli,
+        self.btn_bus_cli = tk.Button(self.frame_tercero, text="", image=self.photo_bus_cli, command=self.fBuscli,
                                   bg="grey", fg="white")
         self.btn_bus_cli.grid(row=1, column=1, padx=5, pady=3)
-        self.entry_nombre_cliente = Entry(self.frame_tercero, textvariable=self.strvar_nombre_cliente, width=52)
-        self.entry_nombre_cliente.grid(row=1, column=2, padx=5, pady=2, sticky=W)
+        self.entry_nombre_cliente = tk.Entry(self.frame_tercero, textvariable=self.strvar_nombre_cliente, width=52)
+        self.entry_nombre_cliente.grid(row=1, column=2, padx=5, pady=2, sticky="w")
         self.lbl_texto_codigo_cliente = tk.Label(self.frame_tercero, textvariable=self.strvar_codigo_cliente, width=10 )
-        self.lbl_texto_codigo_cliente.grid(row=1, column=3, padx=5, pady=2, sticky=W)
+        self.lbl_texto_codigo_cliente.grid(row=1, column=3, padx=5, pady=2, sticky="w")
 
     def cuadro_entrys_factobs(self):
 
         self.lbl_numero_factura = tk.Label(self.frame_cuarto, text="Factura Nº: ", justify="left")
-        self.lbl_numero_factura.grid(row=0, column=0, padx=5, pady=2, sticky=W)
-        self.entry_numero_factura = Entry(self.frame_cuarto, textvariable=self.strvar_numero_factura, width=15,
+        self.lbl_numero_factura.grid(row=0, column=0, padx=5, pady=2, sticky="w")
+        self.entry_numero_factura = tk.Entry(self.frame_cuarto, textvariable=self.strvar_numero_factura, width=15,
                                           justify="right")
         #self.entry_numero_factura.config(validate="key", validatecommand=vcmd)
-        self.entry_numero_factura.grid(row=0, column=1, padx=5, pady=2, sticky=W)
+        self.entry_numero_factura.grid(row=0, column=1, padx=5, pady=2, sticky="w")
         self.strvar_numero_factura.trace("w", lambda *args: self.limitador(self.strvar_numero_factura, 15))
         self.lbl_observaciones = tk.Label(self.frame_cuarto, text="Observaciones: ", justify="left")
-        self.lbl_observaciones.grid(row=0, column=2, padx=5, pady=2, sticky=W)
-        self.entry_observaciones = Entry(self.frame_cuarto, textvariable=self.strvar_observaciones, width=120,
+        self.lbl_observaciones.grid(row=0, column=2, padx=5, pady=2, sticky="w")
+        self.entry_observaciones = tk.Entry(self.frame_cuarto, textvariable=self.strvar_observaciones, width=120,
                                          justify="left")
-        self.entry_observaciones.grid(row=0, column=3, padx=5, pady=2, sticky=W)
+        self.entry_observaciones.grid(row=0, column=3, padx=5, pady=2, sticky="w")
         self.strvar_observaciones.trace("w", lambda *args: self.limitador(self.strvar_observaciones, 150))
 
     def cuadro_entrys_texto_detalles(self):

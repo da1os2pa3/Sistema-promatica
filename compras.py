@@ -3,8 +3,8 @@ from funcion_new import *
 from funciones import *
 #----------------------------
 #from tkinter import *
-#from tkinter import ttk
-#import tkinter as tk
+from tkinter import ttk
+import tkinter as tk
 #from tkinter.scrolledtext import *     # para campos text
 #----------------------------
 import os
@@ -12,7 +12,7 @@ from datetime import date
 from PIL import Image, ImageTk
 from PDF_clase import *
 
-class Clase_Compras(Frame):
+class Clase_Compras(tk.Frame):
 
     def __init__(self, master=None):
 
@@ -79,7 +79,7 @@ class Clase_Compras(Frame):
         # TITULOS
         # -------------------------------------------------------------------
         # Encabezado logo y titulo
-        self.frame_titulo_top = Frame(self.master)
+        self.frame_titulo_top = tk.Frame(self.master)
         self.cuadro_titulos()
         self.frame_titulo_top.pack(side="top", fill="x", padx=5, pady=2)
         # ---------------------------------------------------------------------
@@ -105,19 +105,19 @@ class Clase_Compras(Frame):
         # ---------------------------------------------------------------------
         # CONTENEDOR
         # ---------------------------------------------------------------------
-        self.frame_art_faltantes = LabelFrame(self.master, text="Articulos faltantes", foreground="#CD5C5C")
+        self.frame_art_faltantes = tk.LabelFrame(self.master, text="Articulos faltantes", foreground="#CD5C5C")
 
         # ---------------------------------------------------------------------
         # CUADRO GRID
         # ---------------------------------------------------------------------
-        self.frame_art_faltantes_dos=LabelFrame(self.frame_art_faltantes, text="", foreground="#CD5C5C")
+        self.frame_art_faltantes_dos=tk.LabelFrame(self.frame_art_faltantes, text="", foreground="#CD5C5C")
         self.cuadro_grid()
         self.frame_art_faltantes_dos.pack(side="top", fill="both", padx=5, pady=2)
 
         # ---------------------------------------------------------------------
         # BOTONES CRUD - BAJO EL GRID
         # ---------------------------------------------------------------------
-        self.frame_art_faltantes_uno = LabelFrame(self.frame_art_faltantes, text="", foreground="#CD5C5C")
+        self.frame_art_faltantes_uno = tk.LabelFrame(self.frame_art_faltantes, text="", foreground="#CD5C5C")
         self.cuadro_botones_crud()
         self.frame_art_faltantes_uno.pack(side="left", fill="both", padx=5, pady=2)
 
@@ -125,7 +125,7 @@ class Clase_Compras(Frame):
         # BUSqUEDA EN EL GRID
         # ---------------------------------------------------------------------
         # Buscar un articulo en Grid
-        self.frame_busqueda_art_faltantes=LabelFrame(self.frame_art_faltantes, text="", border=5, foreground="black",
+        self.frame_busqueda_art_faltantes=tk.LabelFrame(self.frame_art_faltantes, text="", border=5, foreground="black",
                                                      background="light blue")
         self.cuadro_busqueda_grid()
         self.frame_busqueda_art_faltantes.pack(expand=0, side="top", fill="both", padx=5, pady=2)
@@ -133,14 +133,14 @@ class Clase_Compras(Frame):
         # ---------------------------------------------------------------------
         # ENTRYS
         # ---------------------------------------------------------------------
-        self.frame_ingreso_datos = LabelFrame(self.frame_art_faltantes, text="", foreground="black")
+        self.frame_ingreso_datos = tk.LabelFrame(self.frame_art_faltantes, text="", foreground="black")
         self.cuadro_entrys()
         self.frame_ingreso_datos.pack(side="top", fill="both", expand=0, padx=5, pady=5)
 
         # ---------------------------------------------------------------------
         # BOTONES - GUARDAR - SALIR
         # ---------------------------------------------------------------------
-        self.frame_botones2 = LabelFrame(self.frame_art_faltantes)
+        self.frame_botones2 = tk.LabelFrame(self.frame_art_faltantes)
         self.cuadro_botones_guardar()
         self.frame_botones2.pack(expand=0, side="top", fill="both", pady=2, padx=5)
 
@@ -596,12 +596,12 @@ class Clase_Compras(Frame):
         self.photo3 = Image.open('comprasmay.png')
         self.photo3 = self.photo3.resize((60, 60), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.png_compras = ImageTk.PhotoImage(self.photo3)
-        self.lbl_png_compras = Label(self.frame_titulo_top, image=self.png_compras, bg="red", relief="ridge", bd=5)
+        self.lbl_png_compras = tk.Label(self.frame_titulo_top, image=self.png_compras, bg="red", relief="ridge", bd=5)
 
-        self.lbl_titulo = Label(self.frame_titulo_top, width=49, text="Articulos a comprar", bg="black", fg="gold",
+        self.lbl_titulo = tk.Label(self.frame_titulo_top, width=49, text="Articulos a comprar", bg="black", fg="gold",
                                                        font=("Arial bold", 22, "bold"), bd=5, relief="ridge", padx=5)
         # Coloco logo y titulo en posicion de pantalla
-        self.lbl_png_compras.grid(row=0, column=0, sticky=W, padx=5, ipadx=22)
+        self.lbl_png_compras.grid(row=0, column=0, sticky="w", padx=5, ipadx=22)
         self.lbl_titulo.grid(row=0, column=1, sticky="nsew")
 
     def cuadro_grid(self):
@@ -624,8 +624,8 @@ class Clase_Compras(Frame):
         self.grid_art_faltantes.heading("col3", text="Estado", anchor="center")
 
         # SCROLLBAR del Treeview
-        scroll_x = Scrollbar(self.frame_art_faltantes_dos, orient="horizontal")
-        scroll_y = Scrollbar(self.frame_art_faltantes_dos, orient="vertical")
+        scroll_x = tk.Scrollbar(self.frame_art_faltantes_dos, orient="horizontal")
+        scroll_y = tk.Scrollbar(self.frame_art_faltantes_dos, orient="vertical")
         self.grid_art_faltantes.config(xscrollcommand=scroll_x.set)
         self.grid_art_faltantes.config(yscrollcommand=scroll_y.set)
         scroll_x.config(command=self.grid_art_faltantes.xview)
@@ -645,42 +645,42 @@ class Clase_Compras(Frame):
         # nuevo pedido articulo
         img = Image.open("archivo-nuevo.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_nuevo_articulo=Button(self.frame_art_faltantes_uno, text=" Nuevo articulo",
+        self.btn_nuevo_articulo=tk.Button(self.frame_art_faltantes_uno, text=" Nuevo articulo",
                                        command=self.fNuevo_articulo, width=17, bg='blue', fg='white', compound="left")
         self.btn_nuevo_articulo.image = icono
         self.btn_nuevo_articulo.config(image=icono)
-        self.btn_nuevo_articulo.grid(row=0, column=0, padx=3, pady=3, sticky=W)
+        self.btn_nuevo_articulo.grid(row=0, column=0, padx=3, pady=3, sticky="w")
 
         # editar pedido articulo
         img = Image.open("editar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_edito_articulo=Button(self.frame_art_faltantes_uno, text=" Editar articulo",
+        self.btn_edito_articulo=tk.Button(self.frame_art_faltantes_uno, text=" Editar articulo",
                                        command=self.fEdito_articulo, width=17, bg='blue', fg='white', compound="left")
         self.btn_edito_articulo.image = icono
         self.btn_edito_articulo.config(image=icono)
-        self.btn_edito_articulo.grid(row=1, column=0, padx=3, pady=3, sticky=W)
+        self.btn_edito_articulo.grid(row=1, column=0, padx=3, pady=3, sticky="w")
 
         # borrar  pedido articulo
         img = Image.open("eliminar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_borro_articulo=Button(self.frame_art_faltantes_uno, text=" Borrar articulo",
+        self.btn_borro_articulo=tk.Button(self.frame_art_faltantes_uno, text=" Borrar articulo",
                                        command=self.fBorro_articulo, width=17, bg='blue', fg='white', compound="left")
         self.btn_borro_articulo.image = icono
         self.btn_borro_articulo.config(image=icono)
-        self.btn_borro_articulo.grid(row=2, column=0, padx=3, pady=3, sticky=W)
+        self.btn_borro_articulo.grid(row=2, column=0, padx=3, pady=3, sticky="w")
 
         # botones para ir al tope y al fin del archivo
         self.photo4 = Image.open('toparch.png')
         self.photo4 = self.photo4.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo4 = ImageTk.PhotoImage(self.photo4)
-        self.btnToparch = Button(self.frame_art_faltantes_uno, text="", image=self.photo4, command=self.fToparch,
+        self.btnToparch = tk.Button(self.frame_art_faltantes_uno, text="", image=self.photo4, command=self.fToparch,
                                  bg="grey", fg="white")
         self.btnToparch.grid(row=3, column=0, padx=5, sticky="nsew", pady=3)
         # ToolTip(self.btnToparch, msg="Ir a principio de archivo")
         self.photo5 = Image.open('finarch.png')
         self.photo5 = self.photo5.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo5 = ImageTk.PhotoImage(self.photo5)
-        self.btnFinarch = Button(self.frame_art_faltantes_uno, text="", image=self.photo5, command=self.fFinarch,
+        self.btnFinarch = tk.Button(self.frame_art_faltantes_uno, text="", image=self.photo5, command=self.fFinarch,
                                  bg="grey", fg="white")
         self.btnFinarch.grid(row=4, column=0, padx=5, sticky="nsew", pady=3)
         # ToolTip(self.btnFinarch, msg="Ir al final del archivo")
@@ -697,57 +697,57 @@ class Clase_Compras(Frame):
         # lbl texto de busqueda
         img = Image.open("buscar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.lbl_busqueda_compra = Label(self.frame_busqueda_art_faltantes, text=" Articulo buscado:", justify="left",
+        self.lbl_busqueda_compra = tk.Label(self.frame_busqueda_art_faltantes, text=" Articulo buscado:", justify="left",
                                          bg="light blue", compound="left")
         self.lbl_busqueda_compra.image = icono
         self.lbl_busqueda_compra.config(image=icono)
-        self.lbl_busqueda_compra.grid(row=0, column=0, padx=3, pady=2, sticky=W)
+        self.lbl_busqueda_compra.grid(row=0, column=0, padx=3, pady=2, sticky="w")
 
-        self.entry_busqueda_compra = Entry(self.frame_busqueda_art_faltantes, textvariable=self.strvar_buscostring,
+        self.entry_busqueda_compra = tk.Entry(self.frame_busqueda_art_faltantes, textvariable=self.strvar_buscostring,
                                                   state='normal', width=25, justify="left", bg="light blue")
         self.entry_busqueda_compra.grid(row=0, column=1, padx=3, pady=2, sticky='nsew')
 
         # Filtrar la busqueda
         img = Image.open("filtrar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_buscar=Button(self.frame_busqueda_art_faltantes, text=" Filtrar busqueda", command=self.fBuscar_articulo,
+        self.btn_buscar=tk.Button(self.frame_busqueda_art_faltantes, text=" Filtrar busqueda", command=self.fBuscar_articulo,
                                width=11, bg='#5F9EA0', fg='white', compound="left")
         self.btn_buscar.image = icono
         self.btn_buscar.config(image=icono)
-        self.btn_buscar.grid(row=0, column=2, padx=5, pady=2, sticky=W)
+        self.btn_buscar.grid(row=0, column=2, padx=5, pady=2, sticky="w")
 
         # Mostrar todos los articulos
         img = Image.open("ver_todo.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_showall=Button(self.frame_busqueda_art_faltantes, text=" Mostrar todo", command=self.fShowall,
+        self.btn_showall=tk.Button(self.frame_busqueda_art_faltantes, text=" Mostrar todo", command=self.fShowall,
                                 width=11, bg='#5F9EA0', fg='white', compound="left")
         self.btn_showall.image = icono
         self.btn_showall.config(image=icono)
-        self.btn_showall.grid(row=0, column=3, padx=5, pady=2, sticky=W)
+        self.btn_showall.grid(row=0, column=3, padx=5, pady=2, sticky="w")
 
         # Boton Imprimir
         self.photo_imp = Image.open('impresora.png')
         self.photo_imp = self.photo_imp.resize((18, 18), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo_imp = ImageTk.PhotoImage(self.photo_imp)
-        self.btn_imprime = Button(self.frame_busqueda_art_faltantes, image=self.photo_imp, pady=3, command=self.creopdf,
+        self.btn_imprime = tk.Button(self.frame_busqueda_art_faltantes, image=self.photo_imp, pady=3, command=self.creopdf,
                                   border=3)
         self.btn_imprime.grid(row=0, column=4, padx=4, pady=2)
 
-        self.lbl_filtrar_compra = Label(self.frame_busqueda_art_faltantes, text="Estado: ", justify="left",
+        self.lbl_filtrar_compra = tk.Label(self.frame_busqueda_art_faltantes, text="Estado: ", justify="left",
                                         bg="light blue")
-        self.lbl_filtrar_compra.grid(row=0, column=5, padx=5, pady=2, sticky=W)
+        self.lbl_filtrar_compra.grid(row=0, column=5, padx=5, pady=2, sticky="w")
 
         # Combo estado filtrado
         self.combo_filtro = ttk.Combobox(self.frame_busqueda_art_faltantes, textvariable=self.strvar_combo_filtro,
                                          state='readonly', width=10)
         self.combo_filtro['value'] = ["Pendiente", "Comprado", "Finalizado"]
         self.combo_filtro.current(0)
-        self.combo_filtro.grid(row=0, column=6, padx=3, pady=3, sticky=E)
+        self.combo_filtro.grid(row=0, column=6, padx=3, pady=3, sticky="e")
         #self.combo_estado.bind('<Tab>', lambda e: self.calcular("completo"))
 
-        self.btn_filtro=Button(self.frame_busqueda_art_faltantes, text="Filtrar", command=self.fFiltrar,
+        self.btn_filtro=tk.Button(self.frame_busqueda_art_faltantes, text="Filtrar", command=self.fFiltrar,
                                width=11, bg='#5F9EA0', fg='white', compound="left")
-        self.btn_filtro.grid(row=0, column=7, padx=5, pady=2, sticky=W)
+        self.btn_filtro.grid(row=0, column=7, padx=5, pady=2, sticky="w")
 
         # reordenamiento
         for widg in self.frame_busqueda_art_faltantes.winfo_children():
@@ -756,34 +756,34 @@ class Clase_Compras(Frame):
     def cuadro_entrys(self):
 
         # Fecha de Anotacion
-        self.lbl_fecha = Label(self.frame_ingreso_datos, text="Fecha: ", justify="left")
-        self.lbl_fecha.grid(row=0, column=0, padx=3, pady=3, sticky=W)
-        self.entry_fecha = Entry(self.frame_ingreso_datos, textvariable=self.strvar_fecha_anotado, width=13)
-        self.entry_fecha.grid(row=0, column=1, padx=3, pady=3, sticky=E)
+        self.lbl_fecha = tk.Label(self.frame_ingreso_datos, text="Fecha: ", justify="left")
+        self.lbl_fecha.grid(row=0, column=0, padx=3, pady=3, sticky="w")
+        self.entry_fecha = tk.Entry(self.frame_ingreso_datos, textvariable=self.strvar_fecha_anotado, width=13)
+        self.entry_fecha.grid(row=0, column=1, padx=3, pady=3, sticky="e")
         self.entry_fecha.bind("<FocusOut>", self.formato_fecha)
 
         # Entry articulo faltante
-        self.lbl_articulo = Label(self.frame_ingreso_datos, text="Articulo: ", justify="left")
-        self.lbl_articulo.grid(row=0, column=2, padx=3, pady=3, sticky=W)
-        self.entry_articulo = Entry(self.frame_ingreso_datos, textvariable=self.strvar_articulo, width=70, justify="left")
-        self.entry_articulo.grid(row=0, column=3, padx=3, pady=3, sticky=W)
+        self.lbl_articulo = tk.Label(self.frame_ingreso_datos, text="Articulo: ", justify="left")
+        self.lbl_articulo.grid(row=0, column=2, padx=3, pady=3, sticky="w")
+        self.entry_articulo = tk.Entry(self.frame_ingreso_datos, textvariable=self.strvar_articulo, width=70, justify="left")
+        self.entry_articulo.grid(row=0, column=3, padx=3, pady=3, sticky="w")
         self.strvar_articulo.trace("w", lambda *args: limitador(self.strvar_articulo, 100))
 
         # Combo estado
-        self.lbl_combo_estado = Label(self.frame_ingreso_datos, justify="left", foreground="black", text="Estado")
-        self.lbl_combo_estado.grid(row=0, column=4, padx=3, pady=3, sticky=W)
+        self.lbl_combo_estado = tk.Label(self.frame_ingreso_datos, justify="left", foreground="black", text="Estado")
+        self.lbl_combo_estado.grid(row=0, column=4, padx=3, pady=3, sticky="w")
         self.combo_estado = ttk.Combobox(self.frame_ingreso_datos, textvariable=self.strvar_combo_estado,
                                          state='readonly', width=15)
         self.combo_estado['value'] = ["Pendiente", "Comprado", "Finalizado"]
         self.combo_estado.current(0)
-        self.combo_estado.grid(row=0, column=5, padx=3, pady=3, sticky=E)
+        self.combo_estado.grid(row=0, column=5, padx=3, pady=3, sticky="e")
 
         # Entry articulo faltante
-        self.lbl_articulo = Label(self.frame_ingreso_datos, text="Observaciones: ", justify="left")
-        self.lbl_articulo.grid(row=1, column=0, padx=3, pady=3, sticky=W)
-        self.entry_articulo_obser = Entry(self.frame_ingreso_datos, textvariable=self.strvar_articulo_obser, width=125,
+        self.lbl_articulo = tk.Label(self.frame_ingreso_datos, text="Observaciones: ", justify="left")
+        self.lbl_articulo.grid(row=1, column=0, padx=3, pady=3, sticky="w")
+        self.entry_articulo_obser = tk.Entry(self.frame_ingreso_datos, textvariable=self.strvar_articulo_obser, width=125,
                                     justify="left")
-        self.entry_articulo_obser.grid(row=1, column=1, columnspan=5, padx=3, pady=3, sticky=W)
+        self.entry_articulo_obser.grid(row=1, column=1, columnspan=5, padx=3, pady=3, sticky="w")
         self.strvar_articulo_obser.trace("w", lambda *args: limitador(self.strvar_articulo_obser, 150))
 
     def cuadro_botones_guardar(self):
@@ -794,7 +794,7 @@ class Clase_Compras(Frame):
         # Guardar  pedido articulo
         img = Image.open("guardar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_guardar=Button(self.frame_botones2, text="Guardar articulo", command=self.fGuardar, width=48,
+        self.btn_guardar=tk.Button(self.frame_botones2, text="Guardar articulo", command=self.fGuardar, width=48,
                                 bg='Green', fg='white', compound="top")
         self.btn_guardar.image = icono
         self.btn_guardar.config(image=icono)
@@ -803,7 +803,7 @@ class Clase_Compras(Frame):
         # borrar  pedido articulo
         img = Image.open("cancelar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_cancelar=Button(self.frame_botones2, text="Cancelar", command=self.fCancelar, width=48, bg='black',
+        self.btn_cancelar=tk.Button(self.frame_botones2, text="Cancelar", command=self.fCancelar, width=48, bg='black',
                                  fg='white', compound="top")
         self.btn_cancelar.image = icono
         self.btn_cancelar.config(image=icono)
@@ -812,7 +812,7 @@ class Clase_Compras(Frame):
         self.photo3 = Image.open('salida.png')
         self.photo3 = self.photo3.resize((60, 40), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo3 = ImageTk.PhotoImage(self.photo3)
-        self.btn_salir=Button(self.frame_botones2, text="Salir", image=self.photo3, width=130, command=self.fSalir,
+        self.btn_salir=tk.Button(self.frame_botones2, text="Salir", image=self.photo3, width=130, command=self.fSalir,
                              bg="yellow", fg="white")
         self.btn_salir.grid(row=0, column=2, padx=2, pady=3)
         # reordenamiento de self.frame_botones_grid

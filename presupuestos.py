@@ -6,9 +6,9 @@ from presupuestos_ABM import *
 from articulos import *
 #--------------------------------------
 #from tkinter import *
-#from tkinter import ttk
+import tkinter as tk
+from tkinter import ttk
 from tkinter import messagebox
-#import tkinter as tk
 import tkinter.font as tkFont
 from tkinter.scrolledtext import *     # para campos text
 #--------------------------------------
@@ -18,7 +18,7 @@ from PIL import Image, ImageTk
 from datetime import date, datetime
 # -------------------------------------
 
-class Clase_Presupuestos(Frame):
+class Clase_Presupuestos(tk.Frame):
 
     def __init__(self, master=None):
 
@@ -113,7 +113,7 @@ class Clase_Presupuestos(Frame):
         # self.lbl_titulo = Label(self.frame_titulo_top, width=76, text="Ventas",
         #                         bg="black", fg="gold", font=("Arial bold", 15, "bold"), bd=5, relief=RIDGE, padx=5)
         # # Coloco logo y titulo en posicion de pantalla
-        # self.lbl_png_ventas.grid(row=0, column=0, sticky=W, padx=5, ipadx=22)
+        # self.lbl_png_ventas.grid(row=0, column=0, sticky="w", padx=5, ipadx=22)
         # self.lbl_titulo.grid(row=0, column=1, sticky="nsew")
         # self.frame_titulo_top.pack(side=TOP, fill=X, padx=5, pady=2)
         # ----------------------------------------------------------------------
@@ -195,35 +195,35 @@ class Clase_Presupuestos(Frame):
 
         # ----------------------------------------------------------------------
         # grid principal de pantalla excepto barra lateral del menu
-        self.frame_grid_botones=LabelFrame(self.master, text="", foreground="#CD5C5C")
+        self.frame_grid_botones=tk.LabelFrame(self.master, text="", foreground="#CD5C5C")
         # ----------------------------------------------------------------------
 
         # ----------------------------------------------------------------------
         # ABRO FRAME BARRA LATERAL BOTONES IZQUIERDA :::::::::::::::::::::::::::
 
         # Botones Nuevo-Edito-Borro-Guardar-Guardar como-Cancelar barra de la izquierda de arriba hacia abajo
-        self.frame_botones_izquierda=LabelFrame(self.frame_grid_botones, text="", foreground="#CD5C5C")
+        self.frame_botones_izquierda=tk.LabelFrame(self.frame_grid_botones, text="", foreground="#CD5C5C")
 
         # cuadro 1 menu de la izquierda ----------------------------------------
-        self.frame_cuadro1 = LabelFrame(self.frame_botones_izquierda, text="", bg="#CD5C5C")
+        self.frame_cuadro1 = tk.LabelFrame(self.frame_botones_izquierda, text="", bg="#CD5C5C")
         self.cuadro_botones_grid_entregados_1()
         self.frame_cuadro1.pack(side="top", fill="both", padx=5, pady=5)
         # ----------------------------------------------------------------------
 
         # cuadro 2 menu de la izquierda ----------------------------------------
-        self.frame_cuadro2 = LabelFrame(self.frame_botones_izquierda, text="", bg="#B727F5")
+        self.frame_cuadro2 = tk.LabelFrame(self.frame_botones_izquierda, text="", bg="#B727F5")
         self.cuadro_botones_grid_entregados_2()
         self.frame_cuadro2.pack(side="top", fill="both", padx=5, pady=5)
         # ---------------------------------------------------------------------
 
         # cuadro 3 menu de la izquierda ---------------------------------------
-        self.frame_cuadro3 = LabelFrame(self.frame_botones_izquierda, text="", bg="#27F5E4")
+        self.frame_cuadro3 = tk.LabelFrame(self.frame_botones_izquierda, text="", bg="#27F5E4")
         self.cuadro_botones_grid_entregados_3()
         self.frame_cuadro3.pack(side="top", fill="both", padx=5, pady=5)
         # ---------------------------------------------------------------------
 
         # cuadro 4  menu de la izquierda --------------------------------------
-        self.frame_cuadro4 = LabelFrame(self.frame_botones_izquierda, text="")
+        self.frame_cuadro4 = tk.LabelFrame(self.frame_botones_izquierda, text="")
         self.cuadro_botones_grid_entregados_4()
         self.frame_cuadro4.pack(side="top", fill="both", expand = 1, padx=5, pady=5)
         # ----------------------------------------------------------------------
@@ -238,7 +238,7 @@ class Clase_Presupuestos(Frame):
 
         # BUSCAR UN PRESUPUESTO - impresion TOPE Y FIN ARCHIVO - barra horizontal superior
 
-        self.frame_busqueda_presu_entregado=LabelFrame(self.frame_grid_botones, text="", border=5, foreground="black",
+        self.frame_busqueda_presu_entregado=tk.LabelFrame(self.frame_grid_botones, text="", border=5, foreground="black",
                                                   background="light blue")
         self.cuadro_buscar_presup_entregado()
         self.frame_busqueda_presu_entregado.pack(expand=0, side="top", fill="both", pady=2, padx=5)
@@ -253,7 +253,7 @@ class Clase_Presupuestos(Frame):
         # ABRO frame_grid_presup_entregados ::::::::::::::::::::::::::::::::::::
 
         # Tv donde se ven los resumenes de los persupuestos entragados
-        self.frame_grid_presup_entregados=LabelFrame(self.frame_grid_botones, text="Presupuesto entregados",
+        self.frame_grid_presup_entregados=tk.LabelFrame(self.frame_grid_botones, text="Presupuesto entregados",
                                                      foreground="#CD5C5C")
         self.cuadro_tv_presup_entregados()
         self.frame_grid_presup_entregados.pack(side="top", fill="both", padx=5, pady=2)
@@ -267,7 +267,7 @@ class Clase_Presupuestos(Frame):
         # ----------------------------------------------------------------------
         # ABRO FRAME_CAJADETEXTO :::::::::::::::::::::::::::::::::::::::::::::::
 
-        self.frame_cajatexto = LabelFrame(self.frame_grid_botones, text="Descripcion adicional", fg="red")
+        self.frame_cajatexto = tk.LabelFrame(self.frame_grid_botones, text="Descripcion adicional", fg="red")
         self.cuadro_caja_texto_detalles_extensos()
         self.frame_cajatexto.pack(expand=0, side="top", fill="both", pady=3, padx=5)
 
@@ -280,7 +280,7 @@ class Clase_Presupuestos(Frame):
         # ----------------------------------------------------------------------
         # ABRO frame_grid_presup_actual ::::::::::::::::::::::::::::::::::::::::
 
-        self.frame_grid_presup_actual=LabelFrame(self.frame_grid_botones, text="Componentes presupuesto actual",
+        self.frame_grid_presup_actual=tk.LabelFrame(self.frame_grid_botones, text="Componentes presupuesto actual",
                                                  foreground="#CD5C5C")
         self.cuadro_tv_presup_actual()
         self.frame_grid_presup_actual.pack(side="top", fill="both", padx=5, pady=2)
@@ -297,7 +297,7 @@ class Clase_Presupuestos(Frame):
         # ----------------------------------------------------------------------
         # ENTRYS DATOS DEL CLIENTE
         # ----------------------------------------------------------------------
-        self.frame_cliente = LabelFrame(self.master, text="", bg="#CEF2EF", borderwidth=2, relief="solid",
+        self.frame_cliente = tk.LabelFrame(self.master, text="", bg="#CEF2EF", borderwidth=2, relief="solid",
                                         highlightbackground="blue" )
         self.entrys_datos_cliente()
         self.frame_cliente.pack(side="top", fill="both", expand=0, padx=5, pady=3)
@@ -306,7 +306,7 @@ class Clase_Presupuestos(Frame):
         # ----------------------------------------------------------------------
         # ENTRYS FORMA DE PAGO
         # ----------------------------------------------------------------------
-        self.frame_forma_pago = LabelFrame(self.master, text="", bg="#CEF2EF", borderwidth=2, relief="solid",
+        self.frame_forma_pago = tk.LabelFrame(self.master, text="", bg="#CEF2EF", borderwidth=2, relief="solid",
                                         highlightbackground="blue")
         self.entrys_formas_pago()
         self.frame_forma_pago.pack(side="top", fill="both", expand=0, padx=5, pady=2)
@@ -315,7 +315,7 @@ class Clase_Presupuestos(Frame):
         # ----------------------------------------------------------------------
         # ENTRYS DATOS ARTICULO/COMPONENTE A VENDER
         # ----------------------------------------------------------------------
-        self.frame_componentes = LabelFrame(self.master, text="", bg="#81EBCD", borderwidth=2, relief="solid",
+        self.frame_componentes = tk.LabelFrame(self.master, text="", bg="#81EBCD", borderwidth=2, relief="solid",
                                         highlightbackground="blue")
         self.entrys_componentes()
         self.frame_componentes.pack(side="top", fill="both", expand=0, padx=5, pady=2)
@@ -324,7 +324,7 @@ class Clase_Presupuestos(Frame):
         # ----------------------------------------------------------------------
         # ENTRYS IMPORTES DEL PRESUPUESTO - Linea de totales del item a cargar
         # ----------------------------------------------------------------------
-        self.frame_importes_articulo = LabelFrame(self.master, text="", bg="#81EBCD", foreground="black", relief="solid")
+        self.frame_importes_articulo = tk.LabelFrame(self.master, text="", bg="#81EBCD", foreground="black", relief="solid")
         self.entrys_precios_componentes()
         #self.frame_importes_articulo_uno.pack(side="left", fill=BOTH, expand=1, padx=5, pady=2)
         self.frame_importes_articulo.pack(side="top", fill="both", expand=0, padx=5, pady=2)
@@ -333,7 +333,7 @@ class Clase_Presupuestos(Frame):
         # -----------------------------------------------------------------------
         # LABELS TOTALES GENERALES
         # ----------------------------------------------------------------------
-        self.frame_totales_generales = LabelFrame(self.master, text="", foreground="black", border=5, relief="ridge")
+        self.frame_totales_generales = tk.LabelFrame(self.master, text="", foreground="black", border=5, relief="ridge")
         self.labels_totales_generales()
         self.frame_totales_generales.pack(side="top", fill="both", expand=0, padx=5, pady=2)
 
@@ -738,7 +738,7 @@ class Clase_Presupuestos(Frame):
         self.strvar_detalle_pago.set(value=datos_presu_entregado[12])
         self.strvar_total_presup_redondo.set(value=datos_presu_entregado[10])
         self.text_especificaciones.configure(state="normal")
-        self.text_especificaciones.insert(END, datos_presu_entregado[13])
+        self.text_especificaciones.insert("end", datos_presu_entregado[13])
 
         # 3 - Cargar los componentes del presupuesto de deta_presup
 
@@ -1520,7 +1520,7 @@ class Clase_Presupuestos(Frame):
 
     def fVerArticulos(self):
 
-        vent = Toplevel()
+        vent = tk.Toplevel()
         vent.title("ABM Articulos")
         # Asigno la clase Ventart que esta en articulos.py a la variable app
         app = Clase_Articulos(vent)
@@ -1530,7 +1530,7 @@ class Clase_Presupuestos(Frame):
 
         # PANTALLA FLOTANTE DETALLE PRECIO DEL ARTICULO
 
-        self.pantalla_detalle = Toplevel()
+        self.pantalla_detalle = tk.Toplevel()
 
         self.pantalla_detalle.protocol("WM_DELETE_WINDOW", self.fCerrar5)
         self.pantalla_detalle.geometry('580x260+600+400')
@@ -1541,13 +1541,13 @@ class Clase_Presupuestos(Frame):
         self.pantalla_detalle.grab_set()
         self.pantalla_detalle.transient(master=self.master)
 
-        self.frame_detalle_articulo=LabelFrame(self.pantalla_detalle, text="", foreground="#CF09BD")
+        self.frame_detalle_articulo=tk.LabelFrame(self.pantalla_detalle, text="", foreground="#CF09BD")
 
         # -------------------------------------------------------------------
         # DOLARES
 
         # DOLARES Precio neto
-        lbl_neto_dolar_articulo=Label(self.frame_detalle_articulo,
+        lbl_neto_dolar_articulo=tk.Label(self.frame_detalle_articulo,
         text=f"DOLARES - Costo neto x unidad: U$S {self.strvar_neto_dolar.get()} - "
              f"Total costo neto: U$S"
              f" {float(self.strvar_neto_dolar.get())*float(self.strvar_cantidad_vendida.get())}")
@@ -1556,13 +1556,13 @@ class Clase_Presupuestos(Frame):
         # DOLARES Importe del IVA
         self.iva_en_dolares = round(float(self.strvar_neto_dolar.get()) * (float(self.strvar_combo_tasa_iva.get()) / 100), 2)
 
-        lbl_iva_dolar_articulo=Label(self.frame_detalle_articulo,
+        lbl_iva_dolar_articulo=tk.Label(self.frame_detalle_articulo,
         text=f"DOLARES - Importe IVA x unidad: U$S {self.iva_en_dolares} - "
              f"Total IVA: U$S {self.iva_en_dolares * float(self.strvar_cantidad_vendida.get())}")
         lbl_iva_dolar_articulo.grid(row=1, column=0, padx=5, pady=2, sticky="w")
 
         # DOLARES Precio Bruto (con VIA)
-        lbl_bruto_dolar_articulo=Label(self.frame_detalle_articulo,
+        lbl_bruto_dolar_articulo=tk.Label(self.frame_detalle_articulo,
         text=f"DOLARES - Costo bruto x unidad: U$S {self.iva_en_dolares+float(self.strvar_neto_dolar.get())} - "
              f"Total costo bruto: U$S "
              f"{float(self.strvar_cantidad_vendida.get()) * (self.iva_en_dolares+float(self.strvar_neto_dolar.get()))}")
@@ -1572,7 +1572,7 @@ class Clase_Presupuestos(Frame):
         # PESOS
 
         # PESOS Precio neto
-        lbl_neto_pesos_articulo=Label(self.frame_detalle_articulo,
+        lbl_neto_pesos_articulo=tk.Label(self.frame_detalle_articulo,
         text=f"PESOS -      Costo neto x unidad: $ {self.strvar_costo_neto_pesos_unidad.get()} - "
              f"Total costo neto: $ {self.strvar_costo_neto_pesos_xcanti.get()}")
         lbl_neto_pesos_articulo.grid(row=3, column=0, padx=5, pady=2, sticky="w")
@@ -1580,13 +1580,13 @@ class Clase_Presupuestos(Frame):
         # PESOS Importe del IVA
         self.iva_en_pesos = round(float(self.strvar_costo_neto_pesos_unidad.get()) * (float(self.strvar_combo_tasa_iva.get()) / 100), 2)
 
-        lbl_iva_pesos_articulo=Label(self.frame_detalle_articulo,
+        lbl_iva_pesos_articulo=tk.Label(self.frame_detalle_articulo,
         text=f"PESOS -      Importe IVA x unidad: $ {self.iva_en_pesos} - "
              f"Total IVA: $ {self.iva_en_pesos * float(self.strvar_cantidad_vendida.get())}")
         lbl_iva_pesos_articulo.grid(row=4, column=0, padx=5, pady=2, sticky="w")
 
         # PESOS Precio Bruto (con VIA)
-        lbl_bruto_pesos_articulo=Label(self.frame_detalle_articulo,
+        lbl_bruto_pesos_articulo=tk.Label(self.frame_detalle_articulo,
         text=f"PESOS -      Costo bruto x unidad: $ {self.iva_en_pesos+float(self.strvar_costo_neto_pesos_unidad.get())} - "
              f"Total costo bruto: $ "
              f"{float(self.strvar_cantidad_vendida.get()) * (self.iva_en_pesos+float(self.strvar_costo_neto_pesos_unidad.get()))}")
@@ -1596,7 +1596,7 @@ class Clase_Presupuestos(Frame):
         importe_ganancia_unidad =round(float(self.strvar_costo_bruto_pesos_unidad.get()) *
                                        (float(self.strvar_tasa_ganancia.get()) / 100), 2)
         importe_ganancia_total = importe_ganancia_unidad * float(self.strvar_cantidad_vendida.get())
-        lbl_ganancia_pesos_articulo=Label(self.frame_detalle_articulo,
+        lbl_ganancia_pesos_articulo=tk.Label(self.frame_detalle_articulo,
         text=f"PESOS -      Ganancia: % {self.strvar_tasa_ganancia.get()} - "
              f"Importe ganancia x unidad: "
              f"{importe_ganancia_unidad} - "
@@ -1609,14 +1609,14 @@ class Clase_Presupuestos(Frame):
                                           (1 + (float(self.strvar_tasa_ganancia.get()) / 100)), 2)
         precio_venta_final_total = round(precio_venta_final_unidad * float(self.strvar_cantidad_vendida.get()), 2)
 
-        lbl_precio_pesos_venta_final=Label(self.frame_detalle_articulo,
+        lbl_precio_pesos_venta_final=tk.Label(self.frame_detalle_articulo,
         text=f"PESOS -      Precio venta final x unidad: {precio_venta_final_unidad} - "
              f"Precio venta final: {precio_venta_final_total} - Redondeo: {self.strvar_total_item_redondo.get()}")
         lbl_precio_pesos_venta_final.grid(row=7, column=0, padx=5, pady=2, sticky="w")
 
         self.frame_detalle_articulo.pack(side="top", fill="both", expand=1, padx=5, pady=5)
 
-        self.btn_volver_pantalla = Button(self.frame_detalle_articulo, text="Volver", command=self.fCerrar5, width=22,
+        self.btn_volver_pantalla = tk.Button(self.frame_detalle_articulo, text="Volver", command=self.fCerrar5, width=22,
                                     bg="blue", fg="white")
         self.btn_volver_pantalla.grid(row=8, column=0, padx=10, pady=2, sticky="nsew")
 
@@ -1645,35 +1645,35 @@ class Clase_Presupuestos(Frame):
 
         img = Image.open("archivo-nuevo.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_nuevo_presup=Button(self.frame_cuadro1, text=" Nuevo Presupuesto",
+        self.btn_nuevo_presup=tk.Button(self.frame_cuadro1, text=" Nuevo Presupuesto",
                                     command=self.fNuevo_presupuesto, bg='blue', fg='white', compound="left")
         self.btn_nuevo_presup.image = icono
         self.btn_nuevo_presup.config(image=icono)
-        self.btn_nuevo_presup.grid(row=0, column=0, padx=3, pady=3, sticky=W)
+        self.btn_nuevo_presup.grid(row=0, column=0, padx=3, pady=3, sticky="w")
 
         img = Image.open("editar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_edito_presup=Button(self.frame_cuadro1, text=" Editar Presupuesto",
+        self.btn_edito_presup=tk.Button(self.frame_cuadro1, text=" Editar Presupuesto",
                                     command=self.fEdito_presupuesto, width=17, bg='blue', fg='white', compound="left")
         self.btn_edito_presup.image = icono
         self.btn_edito_presup.config(image=icono)
-        self.btn_edito_presup.grid(row=1, column=0, padx=3, pady=3, sticky=W)
+        self.btn_edito_presup.grid(row=1, column=0, padx=3, pady=3, sticky="w")
 
         img = Image.open("eliminar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_borro_presup=Button(self.frame_cuadro1, text=" Borrar Presupuesto",
+        self.btn_borro_presup=tk.Button(self.frame_cuadro1, text=" Borrar Presupuesto",
                                     command=self.fBorro_presupuesto, width=17, bg='red', fg='white', compound="left")
         self.btn_borro_presup.image = icono
         self.btn_borro_presup.config(image=icono)
-        self.btn_borro_presup.grid(row=2, column=0, padx=3, pady=3, sticky=W)
+        self.btn_borro_presup.grid(row=2, column=0, padx=3, pady=3, sticky="w")
 
         img = Image.open("ordenar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_aceptado_presup=Button(self.frame_cuadro1, text=" Acepta presupuesto",
+        self.btn_aceptado_presup=tk.Button(self.frame_cuadro1, text=" Acepta presupuesto",
                                     command=self.fPresupuesto_aceptado, width=17, bg='#75E342', fg='black', compound="left")
         self.btn_aceptado_presup.image = icono
         self.btn_aceptado_presup.config(image=icono)
-        self.btn_aceptado_presup.grid(row=3, column=0, padx=3, pady=3, sticky=W)
+        self.btn_aceptado_presup.grid(row=3, column=0, padx=3, pady=3, sticky="w")
 
         # reordenamiento del frame
         for widg in self.frame_cuadro1.winfo_children():
@@ -1686,27 +1686,27 @@ class Clase_Presupuestos(Frame):
 
         img = Image.open("guardar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_cerrar_presupuesto=Button(self.frame_cuadro2, text=" Actualizar/Guardar\n presupuesto",
+        self.btn_cerrar_presupuesto=tk.Button(self.frame_cuadro2, text=" Actualizar/Guardar\n presupuesto",
                                            command=self.fGuardar, width=17, bg='green', fg='white', compound="left")
         self.btn_cerrar_presupuesto.image = icono
         self.btn_cerrar_presupuesto.config(image=icono)
-        self.btn_cerrar_presupuesto.grid(row=3, column=0, padx=3, pady=3, sticky=W)
+        self.btn_cerrar_presupuesto.grid(row=3, column=0, padx=3, pady=3, sticky="w")
 
         img = Image.open("guardar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_guardar_como=Button(self.frame_cuadro2, text=" Guardar como...", command=self.fGuardar_como,
+        self.btn_guardar_como=tk.Button(self.frame_cuadro2, text=" Guardar como...", command=self.fGuardar_como,
                                      width=17, bg='light green', fg='black', compound="left")
         self.btn_guardar_como.image = icono
         self.btn_guardar_como.config(image=icono)
-        self.btn_guardar_como.grid(row=4, column=0, padx=3, pady=3, sticky=W)
+        self.btn_guardar_como.grid(row=4, column=0, padx=3, pady=3, sticky="w")
 
         img = Image.open("cancelar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_cancelar_presupuesto=Button(self.frame_cuadro2, text=" Cancelar", command=self.fCancela_presup,
+        self.btn_cancelar_presupuesto=tk.Button(self.frame_cuadro2, text=" Cancelar", command=self.fCancela_presup,
                                              width=17, bg='black', fg='white', compound="left")
         self.btn_cancelar_presupuesto.image = icono
         self.btn_cancelar_presupuesto.config(image=icono)
-        self.btn_cancelar_presupuesto.grid(row=5, column=0, padx=3, pady=3, sticky=W)
+        self.btn_cancelar_presupuesto.grid(row=5, column=0, padx=3, pady=3, sticky="w")
 
         # reordenamiento del frame
         for widg in self.frame_cuadro2.winfo_children():
@@ -1725,7 +1725,7 @@ class Clase_Presupuestos(Frame):
         # AGREGAR UN COMPONENTE
         img = Image.open("signo_mas.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_mas_componente=Button(self.frame_cuadro3, text=" Componente", command=self.fMas_componente,
+        self.btn_mas_componente=tk.Button(self.frame_cuadro3, text=" Componente", command=self.fMas_componente,
                                        width=17, bg='blue', fg='white', compound="left")
         self.btn_mas_componente.image = icono
         self.btn_mas_componente.config(image=icono)
@@ -1734,7 +1734,7 @@ class Clase_Presupuestos(Frame):
         # QUITAR UN COMPONENTE
         img = Image.open("signo_menos.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_menos_componente=Button(self.frame_cuadro3, text=" Componente", command=self.fMenos_componente,
+        self.btn_menos_componente=tk.Button(self.frame_cuadro3, text=" Componente", command=self.fMenos_componente,
                                          width=17, bg='blue', fg='white', compound="left")
         self.btn_menos_componente.image = icono
         self.btn_menos_componente.config(image=icono)
@@ -1743,7 +1743,7 @@ class Clase_Presupuestos(Frame):
         # EDITAR COMPONENTE
         img = Image.open("editar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_editar_componente=Button(self.frame_cuadro3, text=" Editar componente",
+        self.btn_editar_componente=tk.Button(self.frame_cuadro3, text=" Editar componente",
                                            command=self.fEditar_item_auxpresup, width=17, bg='blue', fg='white', compound="left")
         self.btn_editar_componente.image = icono
         self.btn_editar_componente.config(image=icono)
@@ -1752,7 +1752,7 @@ class Clase_Presupuestos(Frame):
         # INGRESAR COMPONENTE AL GRID DE PRESUPUESTO ACTUAL
         img = Image.open("agregar-producto.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_ingresar_componente=Button(self.frame_cuadro3, text=" Actualizar\ncomponente",
+        self.btn_ingresar_componente=tk.Button(self.frame_cuadro3, text=" Actualizar\ncomponente",
                                            command=self.fInsertar_item_auxpresup, width=17, bg='blue',
                                            fg='white', compound="left")
         self.btn_ingresar_componente.image = icono
@@ -1762,7 +1762,7 @@ class Clase_Presupuestos(Frame):
         # CANCELAR LA CARGA DEL COMPONENTE AL GRID DE PRESUPUESTO ACTUAL
         img = Image.open("cancelar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_reset_componente=Button(self.frame_cuadro3, text=" Anular ingreso\nde componente",
+        self.btn_reset_componente=tk.Button(self.frame_cuadro3, text=" Anular ingreso\nde componente",
                                          command=self.fReset_articulo, width=17, bg='black', fg='white', compound="left")
         self.btn_reset_componente.image = icono
         self.btn_reset_componente.config(image=icono)
@@ -1770,14 +1770,14 @@ class Clase_Presupuestos(Frame):
 
         img = Image.open("flecha_arriba.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_flecha_sube=Button(self.frame_cuadro3, text="", command=self.fSubir_uno, width=5, bg='white', fg='black')
+        self.btn_flecha_sube=tk.Button(self.frame_cuadro3, text="", command=self.fSubir_uno, width=5, bg='white', fg='black')
         self.btn_flecha_sube.image = icono
         self.btn_flecha_sube.config(image=icono)
         self.btn_flecha_sube.grid(row=11, column=0, padx=2, pady=2, sticky="nsew")
 
         img = Image.open("flecha_abajo.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_flecha_baja=Button(self.frame_cuadro3, text="", command=self.fBajar_uno, width=5, bg='white', fg='black')
+        self.btn_flecha_baja=tk.Button(self.frame_cuadro3, text="", command=self.fBajar_uno, width=5, bg='white', fg='black')
         self.btn_flecha_baja.image = icono
         self.btn_flecha_baja.config(image=icono)
         self.btn_flecha_baja.grid(row=11, column=1, padx=2, pady=2, sticky="nsew")
@@ -1791,7 +1791,7 @@ class Clase_Presupuestos(Frame):
         self.photo3 = Image.open('salida.png')
         self.photo3 = self.photo3.resize((35, 35), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo3 = ImageTk.PhotoImage(self.photo3)
-        self.btnSalir=Button(self.frame_cuadro4, text="Salir", image=self.photo3, width=133, height=40, command=self.fSalir,
+        self.btnSalir=tk.Button(self.frame_cuadro4, text="Salir", image=self.photo3, width=133, height=40, command=self.fSalir,
                              bg="yellow", fg="white")
         self.btnSalir.grid(row=0, column=0, padx=3, pady=3, sticky = 'nsew')
 
@@ -1804,21 +1804,21 @@ class Clase_Presupuestos(Frame):
 
         img = Image.open("buscar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.lbl_busqueda_presup = Label(self.frame_busqueda_presu_entregado, text=" Buscar presupuesto por cliente: ",
+        self.lbl_busqueda_presup = tk.Label(self.frame_busqueda_presu_entregado, text=" Buscar presupuesto por cliente: ",
                                          justify="left", bg="light blue", compound="left")
         self.lbl_busqueda_presup.image = icono
         self.lbl_busqueda_presup.config(image=icono)
         self.lbl_busqueda_presup.grid(row=0, column=0, padx=3, pady=2, sticky="nsew")
 
         # ENTRY BUSCAR PRESUPUESTO REALIZADO
-        self.entry_busqueda_presup = Entry(self.frame_busqueda_presu_entregado, textvariable=self.strvar_buscostring,
+        self.entry_busqueda_presup = tk.Entry(self.frame_busqueda_presu_entregado, textvariable=self.strvar_buscostring,
                                                   state='normal', width=23, justify="left")
         self.entry_busqueda_presup.grid(row=0, column=1, padx=3, pady=2, sticky='nsew')
 
         # BOTON BUSCAR PRESUPUESTO
         img = Image.open("filtrar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_buscar=Button(self.frame_busqueda_presu_entregado, text=" Buscar", command=self.fBuscar_presupuesto,
+        self.btn_buscar=tk.Button(self.frame_busqueda_presu_entregado, text=" Buscar", command=self.fBuscar_presupuesto,
                                bg='Blue', fg='white', width=95, compound="left")
         self.btn_buscar.image = icono
         self.btn_buscar.config(image=icono)
@@ -1827,7 +1827,7 @@ class Clase_Presupuestos(Frame):
         # BOTON MOSTRAR TODO
         img = Image.open("ver_todo.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_showall=Button(self.frame_busqueda_presu_entregado, text=" Mostrar todo", command=self.fShowall,
+        self.btn_showall=tk.Button(self.frame_busqueda_presu_entregado, text=" Mostrar todo", command=self.fShowall,
                                 bg='Blue', fg='white', width=95, compound="left")
         self.btn_showall.image = icono
         self.btn_showall.config(image=icono)
@@ -1839,8 +1839,8 @@ class Clase_Presupuestos(Frame):
         # IMPRIMIR PRESUPUESTO INTERNO
         img = Image.open("impresora.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_showall.grid(row=0, column=3, padx=4, pady=2, sticky=W)
-        self.btn_imprime_presupuesto=Button(self.frame_busqueda_presu_entregado, text=" Presupuesto",
+        self.btn_showall.grid(row=0, column=3, padx=4, pady=2, sticky="w")
+        self.btn_imprime_presupuesto=tk.Button(self.frame_busqueda_presu_entregado, text=" Presupuesto",
                                            command=self.MenuListados, width=105, bg='#5F9EF5', fg='white', compound="left")
         self.btn_imprime_presupuesto.image = icono
         self.btn_imprime_presupuesto.config(image=icono)
@@ -1862,14 +1862,14 @@ class Clase_Presupuestos(Frame):
         self.photo4 = Image.open('toparch.png')
         self.photo4 = self.photo4.resize((18, 18), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo4 = ImageTk.PhotoImage(self.photo4)
-        self.btnToparch = Button(self.frame_busqueda_presu_entregado, text="", image=self.photo4, command=self.fToparch,
+        self.btnToparch = tk.Button(self.frame_busqueda_presu_entregado, text="", image=self.photo4, command=self.fToparch,
                                  bg="grey", fg="white")
         self.btnToparch.grid(row=0, column=6, padx=4, sticky="nsew", pady=2)
 
         self.photo5 = Image.open('finarch.png')
         self.photo5 = self.photo5.resize((18, 18), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo5 = ImageTk.PhotoImage(self.photo5)
-        self.btnFinarch = Button(self.frame_busqueda_presu_entregado, text="", image=self.photo5, command=self.fFinarch,
+        self.btnFinarch = tk.Button(self.frame_busqueda_presu_entregado, text="", image=self.photo5, command=self.fFinarch,
                                  bg="grey", fg="white")
         self.btnFinarch.grid(row=0, column=7, padx=4, sticky="nsew", pady=2)
 
@@ -1928,8 +1928,8 @@ class Clase_Presupuestos(Frame):
         #self.grid_tvw_auxcomp.heading("col12", text="Total Costo", anchor="center")
 
         # SCROLLBAR del Treeview
-        scroll_x = Scrollbar(self.frame_grid_presup_actual, orient="horizontal")
-        scroll_y = Scrollbar(self.frame_grid_presup_actual, orient="vertical")
+        scroll_x = tk.Scrollbar(self.frame_grid_presup_actual, orient="horizontal")
+        scroll_y = tk.Scrollbar(self.frame_grid_presup_actual, orient="vertical")
         self.grid_tvw_auxcomp.config(xscrollcommand=scroll_x.set)
         self.grid_tvw_auxcomp.config(yscrollcommand=scroll_y.set)
         scroll_x.config(command=self.grid_tvw_auxcomp.xview)
@@ -1980,8 +1980,8 @@ class Clase_Presupuestos(Frame):
         self.grid_tvw_presu_entregado.tag_configure('error', background='#AADE64')
 
         # SCROLLBAR del Treeview
-        scroll_x = Scrollbar(self.frame_grid_presup_entregados, orient="horizontal")
-        scroll_y = Scrollbar(self.frame_grid_presup_entregados, orient="vertical")
+        scroll_x = tk.Scrollbar(self.frame_grid_presup_entregados, orient="horizontal")
+        scroll_y = tk.Scrollbar(self.frame_grid_presup_entregados, orient="vertical")
         self.grid_tvw_presu_entregado.config(xscrollcommand=scroll_x.set)
         self.grid_tvw_presu_entregado.config(yscrollcommand=scroll_y.set)
         scroll_x.config(command=self.grid_tvw_presu_entregado.xview)
@@ -2001,37 +2001,37 @@ class Clase_Presupuestos(Frame):
             self.frame_cliente.grid_columnconfigure(c, weight=1, minsize=30)
 
         # NUMERO DE PRESUPUESTO
-        self.lbl_nro_presup = Label(self.frame_cliente, text="Nº: ", width=2, font=www, fg="red", bg="#CEF2EF", justify="right")
-        self.lbl_nro_presup.grid(row=0, column=0, padx=2, pady=2, sticky=W)
-        self.lbl_nro_presup2 = Label(self.frame_cliente, textvariable=self.strvar_nro_presup, font=www, width=2, bg="#CEF2EF",
+        self.lbl_nro_presup = tk.Label(self.frame_cliente, text="Nº: ", width=2, font=www, fg="red", bg="#CEF2EF", justify="right")
+        self.lbl_nro_presup.grid(row=0, column=0, padx=2, pady=2, sticky="w")
+        self.lbl_nro_presup2 = tk.Label(self.frame_cliente, textvariable=self.strvar_nro_presup, font=www, width=2, bg="#CEF2EF",
                                      fg="red")
-        self.lbl_nro_presup2.grid(row=0, column=1, padx=2, pady=2, sticky=W)
+        self.lbl_nro_presup2.grid(row=0, column=1, padx=2, pady=2, sticky="w")
 
         # FECHA DE VENTA
-        self.lbl_fecha_presup = Label(self.frame_cliente, text="Fecha: ", bg="#CEF2EF", justify="right")
-        self.lbl_fecha_presup.grid(row=0, column=2, padx=2, pady=2, sticky=W)
-        self.entry_fecha_presup = Entry(self.frame_cliente, textvariable=self.strvar_fecha_presup, width=11)
-        self.entry_fecha_presup.grid(row=0, column=3, padx=2, pady=2, sticky=W)
+        self.lbl_fecha_presup = tk.Label(self.frame_cliente, text="Fecha: ", bg="#CEF2EF", justify="right")
+        self.lbl_fecha_presup.grid(row=0, column=2, padx=2, pady=2, sticky="w")
+        self.entry_fecha_presup = tk.Entry(self.frame_cliente, textvariable=self.strvar_fecha_presup, width=11)
+        self.entry_fecha_presup.grid(row=0, column=3, padx=2, pady=2, sticky="w")
         self.entry_fecha_presup.bind("<FocusOut>", self.formato_fecha)
 
         # BOTON BUSCAR CLIENTE
         self.photo_bus_cli = Image.open('buscar.png')
         self.photo_bus_cli = self.photo_bus_cli.resize((18, 18), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo_bus_cli = ImageTk.PhotoImage(self.photo_bus_cli)
-        self.btn_bus_cli = Button(self.frame_cliente, text="", image=self.photo_bus_cli, command=self.fBuscli,
+        self.btn_bus_cli = tk.Button(self.frame_cliente, text="", image=self.photo_bus_cli, command=self.fBuscli,
                                   fg="white")
         self.btn_bus_cli.grid(row=0, column=4, padx=3, pady=2, sticky='nsew')
 
         # NOMBRE CLIENTE
-        self.lbl_texto_nombre_cliente = Label(self.frame_cliente, text="Cliente: ", bg="#CEF2EF", justify="left")
-        self.lbl_texto_nombre_cliente.grid(row=0, column=5, padx=3, pady=2, sticky=W)
-        self.entry_nombre_cliente = Entry(self.frame_cliente, textvariable=self.strvar_nombre_cliente, width=40)
-        self.entry_nombre_cliente.grid(row=0, column=6, padx=3, pady=2, sticky=W)
+        self.lbl_texto_nombre_cliente = tk.Label(self.frame_cliente, text="Cliente: ", bg="#CEF2EF", justify="left")
+        self.lbl_texto_nombre_cliente.grid(row=0, column=5, padx=3, pady=2, sticky="w")
+        self.entry_nombre_cliente = tk.Entry(self.frame_cliente, textvariable=self.strvar_nombre_cliente, width=40)
+        self.entry_nombre_cliente.grid(row=0, column=6, padx=3, pady=2, sticky="w")
         self.strvar_nombre_cliente.trace("w", lambda *args: limitador(self.strvar_nombre_cliente, 50))
 
         # SITUACION FISCAL DEL CLIENTE
-        self.lbl_sit_fiscal_cliente = Label(self.frame_cliente, text="SF", bg="#CEF2EF")
-        self.lbl_sit_fiscal_cliente.grid(row=0, column=7, padx=3, pady=2, sticky=W)
+        self.lbl_sit_fiscal_cliente = tk.Label(self.frame_cliente, text="SF", bg="#CEF2EF")
+        self.lbl_sit_fiscal_cliente.grid(row=0, column=7, padx=3, pady=2, sticky="w")
         self.combo_sit_fiscal_cliente = ttk.Combobox(self.frame_cliente, textvariable=self.strvar_sit_fiscal,
                                                      justify="left", state='readonly', width=22)
         # self.cargar_combo = self.varClientes.llenar_combo_rubro()
@@ -2039,30 +2039,30 @@ class Clase_Presupuestos(Frame):
                                                    "RM - Responsable Monotributo", "EX - Exento",
                                                    "RN - Responsable no inscripto"]
         self.combo_sit_fiscal_cliente.current(0)
-        self.combo_sit_fiscal_cliente.grid(row=0, column=8, padx=2, pady=2, sticky=W)
+        self.combo_sit_fiscal_cliente.grid(row=0, column=8, padx=2, pady=2, sticky="w")
 
         # CUIT CLIENTE
-        self.lbl_texto_cuit_cliente = Label(self.frame_cliente, text="CUIT:", bg="#CEF2EF", justify="left")
-        self.lbl_texto_cuit_cliente.grid(row=0, column=9, padx=3, pady=2, sticky=W)
-        self.entry_cuit_cliente = Entry(self.frame_cliente, textvariable=self.strvar_cuit, justify="right", width=13)
-        self.entry_cuit_cliente.grid(row=0, column=10, padx=3, pady=2, sticky=W)
+        self.lbl_texto_cuit_cliente = tk.Label(self.frame_cliente, text="CUIT:", bg="#CEF2EF", justify="left")
+        self.lbl_texto_cuit_cliente.grid(row=0, column=9, padx=3, pady=2, sticky="w")
+        self.entry_cuit_cliente = tk.Entry(self.frame_cliente, textvariable=self.strvar_cuit, justify="right", width=13)
+        self.entry_cuit_cliente.grid(row=0, column=10, padx=3, pady=2, sticky="w")
 
         # % GANANCIA
-        self.lbl_tasa_ganancia = Label(self.frame_cliente, text="Gan.%: ", bg="#CEF2EF", justify="left")
-        self.lbl_tasa_ganancia.grid(row=0, column=11, padx=3, pady=2, sticky=W)
-        self.entry_tasa_ganancia = Entry(self.frame_cliente, textvariable=self.strvar_tasa_ganancia, width=6,
+        self.lbl_tasa_ganancia = tk.Label(self.frame_cliente, text="Gan.%: ", bg="#CEF2EF", justify="left")
+        self.lbl_tasa_ganancia.grid(row=0, column=11, padx=3, pady=2, sticky="w")
+        self.entry_tasa_ganancia = tk.Entry(self.frame_cliente, textvariable=self.strvar_tasa_ganancia, width=6,
                                          justify="right")
-        self.entry_tasa_ganancia.grid(row=0, column=12, padx=3, pady=2, sticky=E)
+        self.entry_tasa_ganancia.grid(row=0, column=12, padx=3, pady=2, sticky="e")
         self.entry_tasa_ganancia.config(validate="key", validatecommand=self.vcmd)
         self.entry_tasa_ganancia.bind('<Tab>', lambda e: self.calcular("completo"))
 
         # COTIZACION DEL DOLAR DEL DIA
         #fff = tkFont.Font(family="Arial", size=8, weight="bold")
-        self.lbl_dolarhoy1 = Label(self.frame_cliente, text="Dolar:", justify="left", bg="#CEF2EF", foreground="red")
-        self.lbl_dolarhoy1.grid(row=0, column=13, padx=3, pady=2, sticky=W)
-        self.entry_dolarhoy2 = Entry(self.frame_cliente, textvariable=self.strvar_valor_dolar_hoy, width=10,
+        self.lbl_dolarhoy1 = tk.Label(self.frame_cliente, text="Dolar:", justify="left", bg="#CEF2EF", foreground="red")
+        self.lbl_dolarhoy1.grid(row=0, column=13, padx=3, pady=2, sticky="w")
+        self.entry_dolarhoy2 = tk.Entry(self.frame_cliente, textvariable=self.strvar_valor_dolar_hoy, width=10,
                                      justify="right", foreground="red")
-        self.entry_dolarhoy2.grid(row=0, column=14, padx=3, pady=2, sticky=E)
+        self.entry_dolarhoy2.grid(row=0, column=14, padx=3, pady=2, sticky="e")
 
         for widg in self.frame_cliente.winfo_children():
             widg.grid_configure(padx=3, pady=3, sticky='nsew')
@@ -2073,20 +2073,20 @@ class Clase_Presupuestos(Frame):
             self.frame_forma_pago.grid_columnconfigure(c, weight=1, minsize=30)
 
         # forma de pago y detalle
-        self.lbl_combo_formapago = Label(self.frame_forma_pago, text="Forma de Pago: ", bg="#CEF2EF", justify="left")
-        self.lbl_combo_formapago.grid(row=0, column=0, padx=2, pady=2, sticky=W)
+        self.lbl_combo_formapago = tk.Label(self.frame_forma_pago, text="Forma de Pago: ", bg="#CEF2EF", justify="left")
+        self.lbl_combo_formapago.grid(row=0, column=0, padx=2, pady=2, sticky="w")
         self.combo_formapago = ttk.Combobox(self.frame_forma_pago, textvariable=self.strvar_combo_formas_pago,
                                             state='readonly', width=15)
         self.combo_formapago['value'] = ["Efectivo", "Transferencia", "Cuenta Corriente", "Tarjeta Debito",
                                          "Tarjeta Credito", "Cheque"]
         self.combo_formapago.current(0)
-        self.combo_formapago.grid(row=0, column=1, padx=4, pady=2, sticky=W)
+        self.combo_formapago.grid(row=0, column=1, padx=4, pady=2, sticky="w")
 
         # Detalle de pago
-        self.lbl_deta_formapago = Label(self.frame_forma_pago, text="Detalle: ", bg="#CEF2EF", justify="left")
-        self.lbl_deta_formapago.grid(row=0, column=2, padx=2, pady=2, sticky=W)
-        self.entry_deta_formapago = Entry(self.frame_forma_pago, textvariable=self.strvar_detalle_pago, width=123)
-        self.entry_deta_formapago.grid(row=0, column=3, padx=4, pady=2, sticky=W)
+        self.lbl_deta_formapago = tk.Label(self.frame_forma_pago, text="Detalle: ", bg="#CEF2EF", justify="left")
+        self.lbl_deta_formapago.grid(row=0, column=2, padx=2, pady=2, sticky="w")
+        self.entry_deta_formapago = tk.Entry(self.frame_forma_pago, textvariable=self.strvar_detalle_pago, width=123)
+        self.entry_deta_formapago.grid(row=0, column=3, padx=4, pady=2, sticky="w")
 
         for widg in self.frame_forma_pago.winfo_children():
             widg.grid_configure(padx=3, pady=3, sticky='nsew')
@@ -2100,57 +2100,57 @@ class Clase_Presupuestos(Frame):
         self.photo_bus_art = Image.open('ver.png')
         self.photo_bus_art = self.photo_bus_art.resize((18, 18), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo_bus_art = ImageTk.PhotoImage(self.photo_bus_art)
-        self.btn_bus_art = Button(self.frame_componentes, text="", image=self.photo_bus_art, command=self.fBusart,
+        self.btn_bus_art = tk.Button(self.frame_componentes, text="", image=self.photo_bus_art, command=self.fBusart,
                                   bg="grey", fg="white")
-        self.btn_bus_art.grid(row=0, column=0, padx=2, pady=2, sticky=E)
+        self.btn_bus_art.grid(row=0, column=0, padx=2, pady=2, sticky="e")
 
         # ENTRY ARTICULO
-        self.lbl_componente = Label(self.frame_componentes, text="Componente: ", bg="#81EBCD", justify="left")
-        self.lbl_componente.grid(row=0, column=1, padx=2, pady=2, sticky=W)
-        self.entry_componente = Entry(self.frame_componentes, textvariable=self.strvar_componente, width=51,
+        self.lbl_componente = tk.Label(self.frame_componentes, text="Componente: ", bg="#81EBCD", justify="left")
+        self.lbl_componente.grid(row=0, column=1, padx=2, pady=2, sticky="w")
+        self.entry_componente = tk.Entry(self.frame_componentes, textvariable=self.strvar_componente, width=51,
                                       justify="left")
-        self.entry_componente.grid(row=0, column=2, padx=2, pady=2, sticky=E)
+        self.entry_componente.grid(row=0, column=2, padx=2, pady=2, sticky="e")
         self.strvar_componente.trace("w", lambda *args: limitador(self.strvar_componente, 95))
 
         # COMBO TASA IVA
-        self.lbl_combo_tasa_iva = Label(self.frame_componentes, justify="left", foreground="black", bg="#81EBCD",
+        self.lbl_combo_tasa_iva = tk.Label(self.frame_componentes, justify="left", foreground="black", bg="#81EBCD",
                                         text="IVA %")
-        self.lbl_combo_tasa_iva.grid(row=0, column=3, padx=2, pady=2, sticky=W)
+        self.lbl_combo_tasa_iva.grid(row=0, column=3, padx=2, pady=2, sticky="w")
         self.combo_tasa_iva = ttk.Combobox(self.frame_componentes, textvariable=self.strvar_combo_tasa_iva,
                                            state='readonly', width=6)
         self.combo_tasa_iva['value'] = ["21.00", "10.50"]
         self.combo_tasa_iva.current(0)
-        self.combo_tasa_iva.grid(row=0, column=4, padx=2, pady=2, sticky=W)
+        self.combo_tasa_iva.grid(row=0, column=4, padx=2, pady=2, sticky="w")
         self.combo_tasa_iva.bind('<Tab>', lambda e: self.calcular("completo"))
 
         # ENTRY CANTIDAD
-        self.lbl_cantidad = Label(self.frame_componentes, text="Cant.: ", bg="#81EBCD", justify="left")
-        self.lbl_cantidad.grid(row=0, column=7, padx=2, pady=2, sticky=W)
-        self.entry_cantidad = Entry(self.frame_componentes, textvariable=self.strvar_cantidad_vendida, width=4,
+        self.lbl_cantidad = tk.Label(self.frame_componentes, text="Cant.: ", bg="#81EBCD", justify="left")
+        self.lbl_cantidad.grid(row=0, column=7, padx=2, pady=2, sticky="w")
+        self.entry_cantidad = tk.Entry(self.frame_componentes, textvariable=self.strvar_cantidad_vendida, width=4,
                                     justify="right")
-        self.entry_cantidad.grid(row=0, column=8, padx=2, pady=2, sticky=E)
+        self.entry_cantidad.grid(row=0, column=8, padx=2, pady=2, sticky="e")
         self.entry_cantidad.config(validate="key", validatecommand=self.vcmd)
         self.entry_cantidad.bind('<Tab>', lambda e: self.calcular("completo"))
 
         # ENTRY NETO DOLAR
-        self.lbl_neto_dolar = Label(self.frame_componentes, text="Neto dolar: ", bg="#81EBCD", justify="left")
-        self.lbl_neto_dolar.grid(row=0, column=9, padx=2, pady=2, sticky=W)
-        self.entry_neto_dolar = Entry(self.frame_componentes, textvariable=self.strvar_neto_dolar, width=8,
+        self.lbl_neto_dolar = tk.Label(self.frame_componentes, text="Neto dolar: ", bg="#81EBCD", justify="left")
+        self.lbl_neto_dolar.grid(row=0, column=9, padx=2, pady=2, sticky="w")
+        self.entry_neto_dolar = tk.Entry(self.frame_componentes, textvariable=self.strvar_neto_dolar, width=8,
                                       justify="right")
-        self.entry_neto_dolar.grid(row=0, column=10, padx=2, pady=2, sticky=E)
+        self.entry_neto_dolar.grid(row=0, column=10, padx=2, pady=2, sticky="e")
         self.entry_neto_dolar.config(validate="key", validatecommand=self.vcmd)
         self.entry_neto_dolar.bind('<Tab>', lambda e: self.calcular("completo"))
 
-        self.lbl_proved = Label(self.frame_componentes, text="Prov.: ", bg="#81EBCD", justify="left")
-        self.lbl_proved.grid(row=0, column=11, padx=2, pady=2, sticky=W)
-        self.entry_proved = Entry(self.frame_componentes, textvariable=self.strvar_proveedor, width=15, justify="left")
-        self.entry_proved.grid(row=0, column=12, padx=2, pady=2, sticky=W)
+        self.lbl_proved = tk.Label(self.frame_componentes, text="Prov.: ", bg="#81EBCD", justify="left")
+        self.lbl_proved.grid(row=0, column=11, padx=2, pady=2, sticky="w")
+        self.entry_proved = tk.Entry(self.frame_componentes, textvariable=self.strvar_proveedor, width=15, justify="left")
+        self.entry_proved.grid(row=0, column=12, padx=2, pady=2, sticky="w")
 
-        self.lbl_codigo_componente = Label(self.frame_componentes, text="Cod.: ", bg="#81EBCD", justify="left")
-        self.lbl_codigo_componente.grid(row=0, column=13, padx=2, pady=2, sticky=W)
-        self.entry_codigo_componente = Entry(self.frame_componentes, textvariable=self.strvar_codigo_componente,
+        self.lbl_codigo_componente = tk.Label(self.frame_componentes, text="Cod.: ", bg="#81EBCD", justify="left")
+        self.lbl_codigo_componente.grid(row=0, column=13, padx=2, pady=2, sticky="w")
+        self.entry_codigo_componente = tk.Entry(self.frame_componentes, textvariable=self.strvar_codigo_componente,
                                              width=15, justify="left")
-        self.entry_codigo_componente.grid(row=0, column=14, padx=2, pady=2, sticky=W)
+        self.entry_codigo_componente.grid(row=0, column=14, padx=2, pady=2, sticky="w")
 
         for widg in self.frame_componentes.winfo_children():
             widg.grid_configure(padx=3, pady=3, sticky='nsew')
@@ -2163,53 +2163,53 @@ class Clase_Presupuestos(Frame):
             self.frame_importes_articulo.grid_columnconfigure(c, weight=1, minsize=30)
 
         # COSTO PESOS CON IVA
-        self.lbl_costo_pesos_bruto_unidad = Label(self.frame_importes_articulo, text="Costo Unidad: ", bg="#81EBCD", justify="left")
-        self.lbl_costo_pesos_bruto_unidad.grid(row=2, column=0, padx=1, pady=2, sticky=W)
-        self.lbl_costo_pesos_bruto_unidad2 = Label(self.frame_importes_articulo,
+        self.lbl_costo_pesos_bruto_unidad = tk.Label(self.frame_importes_articulo, text="Costo Unidad: ", bg="#81EBCD", justify="left")
+        self.lbl_costo_pesos_bruto_unidad.grid(row=2, column=0, padx=1, pady=2, sticky="w")
+        self.lbl_costo_pesos_bruto_unidad2 = tk.Label(self.frame_importes_articulo,
                                                   textvariable=self.strvar_costo_bruto_pesos_unidad, width=10,
                                                   font= fff, fg="blue", justify="right")
-        self.lbl_costo_pesos_bruto_unidad2.grid(row=2, column=1, padx=1, pady=2, sticky=E)
+        self.lbl_costo_pesos_bruto_unidad2.grid(row=2, column=1, padx=1, pady=2, sticky="e")
 
         # COSTO PESOS CON IVA * CANTIDAD
-        self.lbl_costo_bruto_pesos_xcanti = Label(self.frame_importes_articulo, text="Costo total: ", bg="#81EBCD", justify="left")
-        self.lbl_costo_bruto_pesos_xcanti.grid(row=2, column=2, padx=1, pady=2, sticky=W)
-        self.lbl_costo_bruto_pesos_xcanti2 = Label(self.frame_importes_articulo,
+        self.lbl_costo_bruto_pesos_xcanti = tk.Label(self.frame_importes_articulo, text="Costo total: ", bg="#81EBCD", justify="left")
+        self.lbl_costo_bruto_pesos_xcanti.grid(row=2, column=2, padx=1, pady=2, sticky="w")
+        self.lbl_costo_bruto_pesos_xcanti2 = tk.Label(self.frame_importes_articulo,
                                                   textvariable=self.strvar_costo_bruto_pesos_xcanti, width=10,
                                                   font= fff, fg="blue", justify="right")
-        self.lbl_costo_bruto_pesos_xcanti2.grid(row=2, column=3, padx=1, pady=2, sticky=E)
+        self.lbl_costo_bruto_pesos_xcanti2.grid(row=2, column=3, padx=1, pady=2, sticky="e")
 
         # IMPORTE PESOS GANANCIA * CANTIDAD
-        self.lbl_importe_ganancia_xcanti = Label(self.frame_importes_articulo, text="Ganancia: ", bg="#81EBCD", justify="left")
-        self.lbl_importe_ganancia_xcanti.grid(row=2, column=4, padx=1, pady=2, sticky=W)
-        self.lbl_importe_ganancia_xcanti2 = Label(self.frame_importes_articulo,
+        self.lbl_importe_ganancia_xcanti = tk.Label(self.frame_importes_articulo, text="Ganancia: ", bg="#81EBCD", justify="left")
+        self.lbl_importe_ganancia_xcanti.grid(row=2, column=4, padx=1, pady=2, sticky="w")
+        self.lbl_importe_ganancia_xcanti2 = tk.Label(self.frame_importes_articulo,
                                                   textvariable=self.strvar_importe_ganancia_xcanti, width=10,
                                                   fg="blue", font= fff, justify="right")
-        self.lbl_importe_ganancia_xcanti2.grid(row=2, column=5, padx=1, pady=2, sticky=E)
+        self.lbl_importe_ganancia_xcanti2.grid(row=2, column=5, padx=1, pady=2, sticky="e")
 
         # PRECIO DE VENTA
-        self.lbl_precio_final_xcanti = Label(self.frame_importes_articulo, text="Precio venta: ", bg="#81EBCD", justify="left")
-        self.lbl_precio_final_xcanti.grid(row=2, column=6, padx=1, pady=2, sticky=W)
-        self.lbl_precio_final_xcanti2 = Label(self.frame_importes_articulo,
+        self.lbl_precio_final_xcanti = tk.Label(self.frame_importes_articulo, text="Precio venta: ", bg="#81EBCD", justify="left")
+        self.lbl_precio_final_xcanti.grid(row=2, column=6, padx=1, pady=2, sticky="w")
+        self.lbl_precio_final_xcanti2 = tk.Label(self.frame_importes_articulo,
                                                   textvariable=self.strvar_precio_final_xcanti, width=10,
                                                   fg="blue", font= fff, justify="right")
-        self.lbl_precio_final_xcanti2.grid(row=2, column=7, padx=1, pady=2, sticky=E)
+        self.lbl_precio_final_xcanti2.grid(row=2, column=7, padx=1, pady=2, sticky="e")
 
         # Redondeo del total del Item
-        self.lbl_total_item_redondo = Label(self.frame_importes_articulo, text="Redondeo: ", bg="#81EBCD", justify="left")
-        self.lbl_total_item_redondo.grid(row=2, column=8, padx=1, pady=2, sticky=W)
-        self.entry_total_item_redondo = Entry(self.frame_importes_articulo, textvariable=self.strvar_total_item_redondo,
+        self.lbl_total_item_redondo = tk.Label(self.frame_importes_articulo, text="Redondeo: ", bg="#81EBCD", justify="left")
+        self.lbl_total_item_redondo.grid(row=2, column=8, padx=1, pady=2, sticky="w")
+        self.entry_total_item_redondo = tk.Entry(self.frame_importes_articulo, textvariable=self.strvar_total_item_redondo,
                                               width=15, justify="right")
-        self.entry_total_item_redondo.grid(row=2, column=9, padx=1, pady=2, sticky=E)
+        self.entry_total_item_redondo.grid(row=2, column=9, padx=1, pady=2, sticky="e")
         self.entry_total_item_redondo.config(validate="key", validatecommand=self.vcmd)
         self.entry_total_item_redondo.bind('<Tab>', lambda e: self.calcular("precio_venta_unidad"))
 
-        self.btn_detalle_precio_articulo=Button(self.frame_importes_articulo, text="Detalle precio",
+        self.btn_detalle_precio_articulo=tk.Button(self.frame_importes_articulo, text="Detalle precio",
                                                 command=self.fDetalle_precio_articulo, width=15, bg='blue', fg='white')
-        self.btn_detalle_precio_articulo.grid(row=2, column=10, padx=5, pady=2, sticky=W)
+        self.btn_detalle_precio_articulo.grid(row=2, column=10, padx=5, pady=2, sticky="w")
 
-        self.btn_articulo=Button(self.frame_importes_articulo, text="Articulos",
+        self.btn_articulo=tk.Button(self.frame_importes_articulo, text="Articulos",
                                                 command=self.fVerArticulos, width=16, bg='blue', fg='white')
-        self.btn_articulo.grid(row=2, column=11, padx=5, pady=2, sticky=W)
+        self.btn_articulo.grid(row=2, column=11, padx=5, pady=2, sticky="w")
 
         for widg in self.frame_importes_articulo.winfo_children():
             widg.grid_configure(padx=3, pady=3, sticky='nsew')
@@ -2222,37 +2222,37 @@ class Clase_Presupuestos(Frame):
             self.frame_totales_generales.grid_columnconfigure(c, weight=1, minsize=30)
 
         # TOTAL COSTO BRUTO
-        self.lbl_total_costos = Label(self.frame_totales_generales, text="Total Costos: ", justify="left", font=fff,
+        self.lbl_total_costos = tk.Label(self.frame_totales_generales, text="Total Costos: ", justify="left", font=fff,
                                       foreground="#ff33f6")
-        self.lbl_total_costos.grid(row=0, column=0, padx=8, pady=2, sticky=W)
-        self.lbl_total_costos2 = Label(self.frame_totales_generales, textvariable=self.strvar_total_costos, width=15,
+        self.lbl_total_costos.grid(row=0, column=0, padx=8, pady=2, sticky="w")
+        self.lbl_total_costos2 = tk.Label(self.frame_totales_generales, textvariable=self.strvar_total_costos, width=15,
                                        justify="right", font=fff, foreground="#ff33f6")
-        self.lbl_total_costos2.grid(row=0, column=1, padx=8, pady=2, sticky=E)
+        self.lbl_total_costos2.grid(row=0, column=1, padx=8, pady=2, sticky="e")
 
         # TOTAL GANANCIA
-        self.lbl_total_ganancia = Label(self.frame_totales_generales, text="Total ganancia: ", justify="left", font=fff,
+        self.lbl_total_ganancia = tk.Label(self.frame_totales_generales, text="Total ganancia: ", justify="left", font=fff,
                                         foreground="#ff33f6")
-        self.lbl_total_ganancia.grid(row=0, column=2, padx=8, pady=2, sticky=W)
-        self.lbl_total_ganancia2 = Label(self.frame_totales_generales, textvariable=self.strvar_total_ganancia,
+        self.lbl_total_ganancia.grid(row=0, column=2, padx=8, pady=2, sticky="w")
+        self.lbl_total_ganancia2 = tk.Label(self.frame_totales_generales, textvariable=self.strvar_total_ganancia,
                                          width=15, justify="right", font=fff, foreground="#ff33f6")
-        self.lbl_total_ganancia2.grid(row=0, column=3, padx=8, pady=2, sticky=E)
+        self.lbl_total_ganancia2.grid(row=0, column=3, padx=8, pady=2, sticky="e")
 
         # TOTAL PRESUPUESTO GLOBAL
-        self.lbl_total_presupuesto = Label(self.frame_totales_generales, text="Total presupuesto: ", justify="left",
+        self.lbl_total_presupuesto = tk.Label(self.frame_totales_generales, text="Total presupuesto: ", justify="left",
                                            font=fff, foreground="#ff33f6")
-        self.lbl_total_presupuesto.grid(row=0, column=4, padx=8, pady=2, sticky=W)
-        self.lbl_total_presupuesto2 = Label(self.frame_totales_generales, textvariable=self.strvar_total_presupuesto,
+        self.lbl_total_presupuesto.grid(row=0, column=4, padx=8, pady=2, sticky="w")
+        self.lbl_total_presupuesto2 = tk.Label(self.frame_totales_generales, textvariable=self.strvar_total_presupuesto,
                                             width=15, justify="right", font=fff, foreground="#ff33f6")
-        self.lbl_total_presupuesto2.grid(row=0, column=5, padx=8, pady=2, sticky=E)
+        self.lbl_total_presupuesto2.grid(row=0, column=5, padx=8, pady=2, sticky="e")
 
         # TOTAL PRESUPUESTO REDONDEADO
-        self.lbl_total_presup_redondo = Label(self.frame_totales_generales, text="Total redondeado: ", justify="left",
+        self.lbl_total_presup_redondo = tk.Label(self.frame_totales_generales, text="Total redondeado: ", justify="left",
                                               font=fff, foreground="#ff33f6")
-        self.lbl_total_presup_redondo.grid(row=0, column=6, padx=8, pady=2, sticky=W)
-        self.lbl_total_presup_redondo2 = Label(self.frame_totales_generales,
+        self.lbl_total_presup_redondo.grid(row=0, column=6, padx=8, pady=2, sticky="w")
+        self.lbl_total_presup_redondo2 = tk.Label(self.frame_totales_generales,
                                                textvariable=self.strvar_total_presup_redondo, width=15, justify="right",
                                                font=fff, foreground="#ff33f6")
-        self.lbl_total_presup_redondo2.grid(row=0, column=7, padx=8, pady=2, sticky=E)
+        self.lbl_total_presup_redondo2.grid(row=0, column=7, padx=8, pady=2, sticky="e")
 
         for widg in self.frame_totales_generales.winfo_children():
             widg.grid_configure(padx=3, pady=3, sticky='nsew')
@@ -2309,7 +2309,7 @@ class Clase_Presupuestos(Frame):
         # ---------------------------------------------------------------------------
         # DEFINO PANTALLA FLOTANTE
 
-        self.pantalla_imprimir = Toplevel()
+        self.pantalla_imprimir = tk.Toplevel()
         self.pantalla_imprimir.geometry('630x260+660+380')
         self.pantalla_imprimir.transient(master=self.master)
         self.pantalla_imprimir.config(bg='light green', padx=5, pady=5)
@@ -2320,7 +2320,7 @@ class Clase_Presupuestos(Frame):
         # ---------------------------------------------------------------------------
         # TITULOS
 
-        self.frame_titulo_impresion = Frame(self.pantalla_imprimir, bg="light green")
+        self.frame_titulo_impresion = tk.Frame(self.pantalla_imprimir, bg="light green")
 
         # Armo el logo y el titulo
         self.photo = Image.open('impresora.png')
@@ -2332,7 +2332,7 @@ class Clase_Presupuestos(Frame):
                              bg="black", fg="gold", font=("Arial bold", 20, "bold"), bd=5, relief="ridge", padx=5)
 
         # Coloco logo y titulo en posicion de pantalla
-        self.lbl_png_select.grid(row=0, column=0, sticky=W, padx=5, ipadx=22)
+        self.lbl_png_select.grid(row=0, column=0, sticky="w", padx=5, ipadx=22)
         self.lbl_tit.grid(row=0, column=1, sticky="nsew")
         self.frame_titulo_impresion.pack(side="top", fill="x", padx=5, pady=2)
         # ---------------------------------------------------------------------------

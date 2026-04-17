@@ -5,17 +5,18 @@ from recibos_ABM import *
 import os
 # ----------------------------------------
 # from tkinter import *
-# from tkinter import ttk
-# import tkinter as tk
+from tkinter import ttk
+import tkinter as tk
 import tkinter.font as tkFont
-from datetime import date, datetime
 from tkinter.scrolledtext import *
+
+from datetime import date, datetime
 from PIL import Image, ImageTk
 from PDF_clase import *
 
 # ----------------------------------------
 
-class Clase_Recibos(Frame):
+class Clase_Recibos(tk.Frame):
 
     def __init__(self, master=None):
         super().__init__(master, width=880, height=510)
@@ -75,7 +76,7 @@ class Clase_Recibos(Frame):
         # ------------------------------------------------------------------------------
         # TITULOS
         # ------------------------------------------------------------------------------
-        self.frame_titulo_top = Frame(self.master)
+        self.frame_titulo_top = tk.Frame(self.master)
         self.cuadro_titulos()
         self.frame_titulo_top.pack(side="top", fill="x", padx=5, pady=2)
         # --------------------------------------------------------------------------
@@ -100,14 +101,14 @@ class Clase_Recibos(Frame):
         # --------------------------------------------------------------------------
         # TREVIEEW
         # --------------------------------------------------------------------------
-        self.frame_tvw_recibos=LabelFrame(self.master, text="Recibos", foreground="#CF09BD")
+        self.frame_tvw_recibos=tk.LabelFrame(self.master, text="Recibos", foreground="#CF09BD")
         self.cuadro_grid_recibos()
         self.frame_tvw_recibos.pack(side="top", fill="both", padx=5, pady=2)
 
         # --------------------------------------------------------------------------
         # BOTONES GRID - CRUD
         # --------------------------------------------------------------------------
-        self.frame_primero=LabelFrame(self.master, text="", foreground="red")
+        self.frame_primero=tk.LabelFrame(self.master, text="", foreground="red")
         self.cuadro_botones_grid()
         self.frame_primero.pack(side="top", fill="both", expand=0, padx=5, pady=2)
         # -------------------------------------------------------------------------------
@@ -115,7 +116,7 @@ class Clase_Recibos(Frame):
         # -------------------------------------------------------------------------------
         # BUSQUEDA - TOP Y FIN DE ARCHIVOS
         # -------------------------------------------------------------------------------
-        self.frame_tercero=LabelFrame(self.master, text="", foreground="red")
+        self.frame_tercero=tk.LabelFrame(self.master, text="", foreground="red")
         self.cuadro_busquedas()
         self.frame_tercero.pack(side="top", fill="both", expand=0, padx=5, pady=2)
         # -----------------------------------------------------------------------------
@@ -123,12 +124,12 @@ class Clase_Recibos(Frame):
         # -----------------------------------------------------------------------------
         # ENTRYS
         # --------------------------------------------------------------------------------
-        self.frame_segundo=LabelFrame(self.master, text="", foreground="red")
-        self.frame_segundo_1=LabelFrame(self.frame_segundo, text="", foreground="red")
+        self.frame_segundo=tk.LabelFrame(self.master, text="", foreground="red")
+        self.frame_segundo_1=tk.LabelFrame(self.frame_segundo, text="", foreground="red")
         self.cuadro_entrys()
         self.frame_segundo_1.pack(side="top", fill="both", expand=0, padx=5, pady=2)
 
-        self.frame_segundo_2=LabelFrame(self.frame_segundo, text="Detalle recibo", foreground="red")
+        self.frame_segundo_2=tk.LabelFrame(self.frame_segundo, text="Detalle recibo", foreground="red")
         self.cuadro_entrys_dos()
         self.frame_segundo_2.pack(side="top", fill="both", expand=0, padx=5, pady=3)
         self.frame_segundo.pack(side="top", fill="both", expand=0, padx=5, pady=3)
@@ -304,7 +305,7 @@ class Clase_Recibos(Frame):
             self.strvar_numero_recibo.set(value=row[1])
             self.strvar_nombre_cliente.set(value=row[4])
             self.strvar_importe_recibo.set(value=row[5])
-            self.text_detalle.insert(END, row[6])
+            self.text_detalle.insert("end", row[6])
 
             self.habilitar_text("normal")
             self.habilitar_btn_inino("normal")
@@ -670,13 +671,13 @@ class Clase_Recibos(Frame):
         self.photocc = Image.open('recibo.png')
         self.photocc = self.photocc.resize((50, 50), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.png_recibo = ImageTk.PhotoImage(self.photocc)
-        self.lbl_png_recibo = Label(self.frame_titulo_top, image=self.png_recibo, bg="red", relief="ridge", bd=5)
+        self.lbl_png_recibo = tk.Label(self.frame_titulo_top, image=self.png_recibo, bg="red", relief="ridge", bd=5)
 
-        self.lbl_titulo = Label(self.frame_titulo_top, width=52, text="Recibos",
+        self.lbl_titulo = tk.Label(self.frame_titulo_top, width=52, text="Recibos",
                                 bg="black", fg="gold", font=("Arial bold", 20, "bold"), bd=5, relief="ridge", padx=5)
 
         # Coloco logo y titulo en posicion de pantalla
-        self.lbl_png_recibo.grid(row=0, column=0, sticky=W, padx=5, ipadx=22)
+        self.lbl_png_recibo.grid(row=0, column=0, sticky="w", padx=5, ipadx=22)
         self.lbl_titulo.grid(row=0, column=1, sticky="nsew")
 
     def cuadro_grid_recibos(self):
@@ -706,14 +707,14 @@ class Clase_Recibos(Frame):
         self.grid_recibos.heading("col5", text="Detalle", anchor="center")
 
         # SCROLLBAR del Treeview
-        scroll_x = Scrollbar(self.frame_tvw_recibos, orient=HORIZONTAL)
-        scroll_y = Scrollbar(self.frame_tvw_recibos, orient=VERTICAL)
+        scroll_x = tk.Scrollbar(self.frame_tvw_recibos, orient="horizontal")
+        scroll_y = tk.Scrollbar(self.frame_tvw_recibos, orient="vertical")
         self.grid_recibos.config(xscrollcommand=scroll_x.set)
         self.grid_recibos.config(yscrollcommand=scroll_y.set)
         scroll_x.config(command=self.grid_recibos.xview)
         scroll_y.config(command=self.grid_recibos.yview)
         scroll_y.pack(side="right", fill="y")
-        scroll_x.pack(side=BOTTOM, fill="x")
+        scroll_x.pack(side="bottom", fill="x")
         self.grid_recibos['selectmode'] = 'browse'
 
         self.grid_recibos.pack(side="top", fill="both", expand=1, padx=5, pady=2)
@@ -726,7 +727,7 @@ class Clase_Recibos(Frame):
         # Nuevo item recibo
         img = Image.open("archivo-nuevo.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_nuevoitem = Button(self.frame_primero, text=" Nuevo", command=self.fNuevo, width=24, bg="blue",
+        self.btn_nuevoitem = tk.Button(self.frame_primero, text=" Nuevo", command=self.fNuevo, width=24, bg="blue",
                                     fg="white", compound="left")
         self.btn_nuevoitem.image = icono
         self.btn_nuevoitem.config(image=icono)
@@ -735,7 +736,7 @@ class Clase_Recibos(Frame):
         # Editar
         img = Image.open("editar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_editaitem = Button(self.frame_primero, text=" Editar", command=self.fEditar, width=24, bg="blue",
+        self.btn_editaitem = tk.Button(self.frame_primero, text=" Editar", command=self.fEditar, width=24, bg="blue",
                                     fg="white", compound="left")
         self.btn_editaitem.image = icono
         self.btn_editaitem.config(image=icono)
@@ -744,7 +745,7 @@ class Clase_Recibos(Frame):
         # Eliminar
         img = Image.open("eliminar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_borraitem = Button(self.frame_primero, text=" Eliminar", command=self.fBorrar, width=24, bg="red",
+        self.btn_borraitem = tk.Button(self.frame_primero, text=" Eliminar", command=self.fBorrar, width=24, bg="red",
                                     fg="white", compound="left")
         self.btn_borraitem.image = icono
         self.btn_borraitem.config(image=icono)
@@ -753,7 +754,7 @@ class Clase_Recibos(Frame):
         # Guardar
         img = Image.open("guardar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_guardaritem = Button(self.frame_primero, text=" Guardar", command=self.fGuardar, width=24, bg="green",
+        self.btn_guardaritem = tk.Button(self.frame_primero, text=" Guardar", command=self.fGuardar, width=24, bg="green",
                                       fg="white", compound="left")
         self.btn_guardaritem.image = icono
         self.btn_guardaritem.config(image=icono)
@@ -762,7 +763,7 @@ class Clase_Recibos(Frame):
         # Cancelar
         img = Image.open("cancelar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_cancelar = Button(self.frame_primero, text=" Cancelar", command=self.fCancelar, width=24, bg="black",
+        self.btn_cancelar = tk.Button(self.frame_primero, text=" Cancelar", command=self.fCancelar, width=24, bg="black",
                                    fg="white", compound="left")
         self.btn_cancelar.image = icono
         self.btn_cancelar.config(image=icono)
@@ -771,7 +772,7 @@ class Clase_Recibos(Frame):
         # Salir
         img = Image.open("salida.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_salir=Button(self.frame_primero, text="Salir", width=24, command=self.fSalir, bg="yellow", fg="black",
+        self.btn_salir=tk.Button(self.frame_primero, text="Salir", width=24, command=self.fSalir, bg="yellow", fg="black",
                               compound="left")
         self.btn_salir.image = icono
         self.btn_salir.config(image=icono)
@@ -788,51 +789,51 @@ class Clase_Recibos(Frame):
         # Busqueda titular recibo
         img = Image.open("buscar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.lbl_buscar_recibo = Label(self.frame_tercero, text="Buscar: ", justify="left", compound="left")
-        self.lbl_buscar_recibo.grid(row=0, column=0, padx=3, pady=3, sticky=W)
+        self.lbl_buscar_recibo = tk.Label(self.frame_tercero, text="Buscar: ", justify="left", compound="left")
+        self.lbl_buscar_recibo.grid(row=0, column=0, padx=3, pady=3, sticky="w")
         self.lbl_buscar_recibo.image = icono
         self.lbl_buscar_recibo.config(image=icono)
-        self.entry_buscar_recibo = Entry(self.frame_tercero, textvariable=self.strvar_buscostring, width=50)
-        self.entry_buscar_recibo.grid(row=0, column=1, padx=5, pady=3, sticky=W)
+        self.entry_buscar_recibo = tk.Entry(self.frame_tercero, textvariable=self.strvar_buscostring, width=50)
+        self.entry_buscar_recibo.grid(row=0, column=1, padx=5, pady=3, sticky="w")
 
         # Boton buscar recibo
         img = Image.open("filtrar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_buscar_movim = Button(self.frame_tercero, text="Buscar", command=self.fBuscar_en_tabla, bg="blue",
+        self.btn_buscar_movim = tk.Button(self.frame_tercero, text="Buscar", command=self.fBuscar_en_tabla, bg="blue",
                                        fg="white", width=24, compound="left")
         self.btn_buscar_movim.image = icono
         self.btn_buscar_movim.config(image=icono)
-        self.btn_buscar_movim.grid(row=0, column=2, padx=5, pady=3, sticky=W)
+        self.btn_buscar_movim.grid(row=0, column=2, padx=5, pady=3, sticky="w")
 
         # Show all
         img = Image.open("ver_todo.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_showall = Button(self.frame_tercero, text=" Mostrar todo", command=self.fShowall,
+        self.btn_showall = tk.Button(self.frame_tercero, text=" Mostrar todo", command=self.fShowall,
                                   bg="blue", fg="white", width=24, compound="left")
         self.btn_showall.image = icono
         self.btn_showall.config(image=icono)
-        self.btn_showall.grid(row=0, column=3, padx=5, pady=3, sticky=W)
+        self.btn_showall.grid(row=0, column=3, padx=5, pady=3, sticky="w")
 
         # limpiar busqueda
         img = Image.open("limpiar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_reset_buscar = Button(self.frame_tercero, text=" Limpiar busqueda", command=self.fReset_buscar,
+        self.btn_reset_buscar = tk.Button(self.frame_tercero, text=" Limpiar busqueda", command=self.fReset_buscar,
                                        bg="blue", fg="white", width=24, compound="left")
         self.btn_reset_buscar.image = icono
         self.btn_reset_buscar.config(image=icono)
-        self.btn_reset_buscar.grid(row=0, column=4, padx=5, pady=3, sticky=W)
+        self.btn_reset_buscar.grid(row=0, column=4, padx=5, pady=3, sticky="w")
 
         self.photo4 = Image.open('toparch.png')
         self.photo4 = self.photo4.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo4 = ImageTk.PhotoImage(self.photo4)
-        self.btnToparch = Button(self.frame_tercero, text="", image=self.photo4, command=self.fToparch, bg="grey",
+        self.btnToparch = tk.Button(self.frame_tercero, text="", image=self.photo4, command=self.fToparch, bg="grey",
                                  fg="white")
         self.btnToparch.grid(row=0, column=5, padx=5, sticky="nsew", pady=2)
 
         self.photo5 = Image.open('finarch.png')
         self.photo5 = self.photo5.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo5 = ImageTk.PhotoImage(self.photo5)
-        self.btnFinarch = Button(self.frame_tercero, text="", image=self.photo5, command=self.fFinarch, bg="grey",
+        self.btnFinarch = tk.Button(self.frame_tercero, text="", image=self.photo5, command=self.fFinarch, bg="grey",
                                  fg="white")
         self.btnFinarch.grid(row=0, column=6, padx=5, sticky="nsew", pady=2)
 
@@ -843,44 +844,44 @@ class Clase_Recibos(Frame):
 
         # NUMERO DE RECIBO
         fff = tkFont.Font(family="Arial", size=12, weight="bold")
-        self.lbl_numero_recibo = Label(self.frame_segundo_1, text="Nº Recibo: ", justify="left")
-        self.lbl_numero_recibo.grid(row=0, column=0, padx=5, pady=2, sticky=W)
-        self.entry_numero_recibo = Label(self.frame_segundo_1, textvariable=self.strvar_numero_recibo, font=fff,
+        self.lbl_numero_recibo = tk.Label(self.frame_segundo_1, text="Nº Recibo: ", justify="left")
+        self.lbl_numero_recibo.grid(row=0, column=0, padx=5, pady=2, sticky="w")
+        self.entry_numero_recibo = tk.Label(self.frame_segundo_1, textvariable=self.strvar_numero_recibo, font=fff,
                                          fg="blue", width=10, justify="right")
-        self.entry_numero_recibo.grid(row=0, column=1, padx=5, pady=2, sticky=E)
+        self.entry_numero_recibo.grid(row=0, column=1, padx=5, pady=2, sticky="e")
 
         # FECHA DEL RECIBO
-        self.lbl_fecha_recibo = Label(self.frame_segundo_1, text="Fecha: ", justify="left")
-        self.lbl_fecha_recibo.grid(row=0, column=2, padx=5, pady=2, sticky=W)
-        self.entry_fecha_recibo = Entry(self.frame_segundo_1, textvariable=self.strvar_fecha_recibo, width=10,
+        self.lbl_fecha_recibo = tk.Label(self.frame_segundo_1, text="Fecha: ", justify="left")
+        self.lbl_fecha_recibo.grid(row=0, column=2, padx=5, pady=2, sticky="w")
+        self.entry_fecha_recibo = tk.Entry(self.frame_segundo_1, textvariable=self.strvar_fecha_recibo, width=10,
                                         justify="right")
         self.entry_fecha_recibo.bind("<FocusOut>", self.formato_fecha)
-        self.entry_fecha_recibo.grid(row=0, column=3, padx=5, pady=2, sticky=W)
+        self.entry_fecha_recibo.grid(row=0, column=3, padx=5, pady=2, sticky="w")
 
         # BOTON BUSCAR CLIENTE
         self.photo_bus_cli = Image.open('buscar.png')
         self.photo_bus_cli = self.photo_bus_cli.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo_bus_cli = ImageTk.PhotoImage(self.photo_bus_cli)
-        self.btn_bus_cli = Button(self.frame_segundo_1, text="", image=self.photo_bus_cli, command=self.fBuscli,
+        self.btn_bus_cli = tk.Button(self.frame_segundo_1, text="", image=self.photo_bus_cli, command=self.fBuscli,
                                   bg="grey", fg="white")
         self.btn_bus_cli.grid(row=0, column=4, padx=5)
 
         # DATOS NOMBRE CLIENTE
-        self.lbl_nombre_cliente = Label(self.frame_segundo_1, text="Cliente: ", justify="left")
-        self.lbl_nombre_cliente.grid(row=0, column=5, padx=2, pady=2, sticky=W)
-        self.entry_nombre_cliente = Entry(self.frame_segundo_1, textvariable=self.strvar_nombre_cliente, width=52)
-        self.entry_nombre_cliente.grid(row=0, column=6, padx=2, pady=2, sticky=W)
-        self.lbl_codigo_cliente = Label(self.frame_segundo_1, text="(" + self.strvar_codigo_cliente.get() + ")",
+        self.lbl_nombre_cliente = tk.Label(self.frame_segundo_1, text="Cliente: ", justify="left")
+        self.lbl_nombre_cliente.grid(row=0, column=5, padx=2, pady=2, sticky="w")
+        self.entry_nombre_cliente = tk.Entry(self.frame_segundo_1, textvariable=self.strvar_nombre_cliente, width=52)
+        self.entry_nombre_cliente.grid(row=0, column=6, padx=2, pady=2, sticky="w")
+        self.lbl_codigo_cliente = tk.Label(self.frame_segundo_1, text="(" + self.strvar_codigo_cliente.get() + ")",
                                         justify="left")
-        self.lbl_codigo_cliente.grid(row=0, column=7, padx=2, pady=2, sticky=W)
+        self.lbl_codigo_cliente.grid(row=0, column=7, padx=2, pady=2, sticky="w")
 
         # IMPORTE RECIBO
-        self.lbl_importe_recibo = Label(self.frame_segundo_1, text="Importe: ", justify="left")
-        self.lbl_importe_recibo.grid(row=0, column=8, padx=5, pady=2, sticky=W)
-        self.entry_importe_recibo = Entry(self.frame_segundo_1, textvariable=self.strvar_importe_recibo, width=20,
+        self.lbl_importe_recibo = tk.Label(self.frame_segundo_1, text="Importe: ", justify="left")
+        self.lbl_importe_recibo.grid(row=0, column=8, padx=5, pady=2, sticky="w")
+        self.entry_importe_recibo = tk.Entry(self.frame_segundo_1, textvariable=self.strvar_importe_recibo, width=20,
                                           justify="right")
         self.entry_importe_recibo.config(validate="key", validatecommand=self.vcmd)
-        self.entry_importe_recibo.grid(row=0, column=9, padx=5, pady=2, sticky=W)
+        self.entry_importe_recibo.grid(row=0, column=9, padx=5, pady=2, sticky="w")
         self.entry_importe_recibo.bind('<Tab>', lambda e: self.controlar())
         self.strvar_importe_recibo.trace("w", lambda *args: limitador(self.strvar_importe_recibo, 15))
 
@@ -888,7 +889,7 @@ class Clase_Recibos(Frame):
         self.photo_imp = Image.open('impresora.png')
         self.photo_imp = self.photo_imp.resize((35, 35), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo_imp = ImageTk.PhotoImage(self.photo_imp)
-        self.btn_imprime = Button(self.frame_segundo_1, image=self.photo_imp, pady=3, command=self.fImprime, border=3)
+        self.btn_imprime = tk.Button(self.frame_segundo_1, image=self.photo_imp, pady=3, command=self.fImprime, border=3)
         self.btn_imprime.grid(row=0, column=10, padx=4, pady=2)
 
     def cuadro_entrys_dos(self):

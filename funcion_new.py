@@ -1,5 +1,6 @@
+import sys
 from tkinter import messagebox
-from tkinter import *
+#from tkinter import *
 from tkinter import ttk
 import tkinter as tk
 
@@ -55,7 +56,7 @@ class ClaseFuncion_new:
         # ----------------------------------------------------------------------
         # CREO LA PANTALLA
 
-        self.sel_item = Toplevel()
+        self.sel_item = tk.Toplevel()
         self.sel_item.protocol("WM_DELETE_WINDOW", self.fCerrar)
         self.sel_item.geometry('820x300+600+250')
         self.sel_item.config(bg='light grey', padx=5, pady=5)
@@ -69,13 +70,13 @@ class ClaseFuncion_new:
         # STRINGVARS LOCALES
 
         # TRAIGO EL DOLAR ACTUAL
-        self.strvar_dolar_hoy = StringVar(value=self.traer_dolarhoy())
+        self.strvar_dolar_hoy = tk.StringVar(value=self.traer_dolarhoy())
         # -----------------------------------------------------------------
 
         # -----------------------------------------------------------------
         # DEFINO EL TREEVIEW
 
-        self.frame_select=LabelFrame(self.sel_item, text="", foreground="#CF09BD")
+        self.frame_select=tk.LabelFrame(self.sel_item, text="", foreground="#CF09BD")
 
         # STYLE TREEVIEW
         style = ttk.Style(self.frame_select)
@@ -102,14 +103,14 @@ class ClaseFuncion_new:
         self.grid_funcsel.tag_configure('evenrow', background='white')
 
         # SCROLLBAR del Treeview
-        scroll_x = Scrollbar(self.frame_select, orient="horizontal")
-        scroll_y = Scrollbar(self.frame_select, orient="vertical")
+        scroll_x = tk.Scrollbar(self.frame_select, orient="horizontal")
+        scroll_y = tk.Scrollbar(self.frame_select, orient="vertical")
         self.grid_funcsel.config(xscrollcommand=scroll_x.set)
         self.grid_funcsel.config(yscrollcommand=scroll_y.set)
         scroll_x.config(command=self.grid_funcsel.xview)
         scroll_y.config(command=self.grid_funcsel.yview)
-        scroll_y.pack(side=RIGHT, fill="y")
-        scroll_x.pack(side=BOTTOM, fill="x")
+        scroll_y.pack(side="right", fill="y")
+        scroll_x.pack(side="bottom", fill="x")
         self.grid_funcsel['selectmode'] = 'browse'
 
         self.grid_funcsel.pack(side="top", fill="both", expand=1, padx=0, pady=0)
@@ -204,20 +205,20 @@ class ClaseFuncion_new:
         # --------------------------------------------------------------------------
         # BOTONES
 
-        self.frame_botones_select=LabelFrame(self.sel_item, text="", foreground="#CF09BD")
+        self.frame_botones_select=tk.LabelFrame(self.sel_item, text="", foreground="#CF09BD")
 
         # Aca llamo a la funcion que me devuelve el registro completo
-        self.btn_seleccion_sel = Button(self.frame_botones_select, text="Seleccionar",
+        self.btn_seleccion_sel = tk.Button(self.frame_botones_select, text="Seleccionar",
                                         command=lambda:self.fSelec_sel_item(xtabla), width=22, bg="grey", fg="white")
         self.btn_seleccion_sel.grid(row=0, column=0, padx=5, pady=2)
 
         # self.btn_cancelar_sel = Button(self.frame_botones_select, text="Volver", command=self.fCerrar, width=22,
         # bg="grey", fg="white")
-        self.btn_cancelar_sel = Button(self.frame_botones_select, text="Volver", command=lambda :self.fVuelvo_nada(),
+        self.btn_cancelar_sel = tk.Button(self.frame_botones_select, text="Volver", command=lambda :self.fVuelvo_nada(),
                                        width=22, bg="grey", fg="white")
         self.btn_cancelar_sel.grid(row=0, column=1, padx=5, pady=2)
 
-        self.frame_botones_select.pack(side=TOP, padx=0, pady=0)
+        self.frame_botones_select.pack(side="top", padx=0, pady=0)
 
         self.sel_item.mainloop()
 
@@ -449,3 +450,4 @@ class ClaseFuncion_new:
         tree.selection_set(item)
         tree.focus(item)
         tree.see(item)
+

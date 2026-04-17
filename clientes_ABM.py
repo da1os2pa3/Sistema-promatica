@@ -7,21 +7,14 @@ class datosClientes:
 
         self.master = pantalla
 
-        # try:
-        #     self.cnn = mysql.connector.connect(host="localhost", user="root", passwd="", database="sist_prom")
-        # except Error as ex:
-        #     print("Error de conexion: {0}".format(ex))
-
     def get_connection(self):
         print("OK= Escuchando.....")
         return mysql.connector.connect(
             host="localhost",
             user="root",
             passwd="",
-            database="sist_prom"
-        )
+            database="sist_prom")
 
-    # def consultar_clientes(self, tofil):
     def consultar_clientes(self, orden=""):
 
         """👉 buffered=True = MySQL:manda TODO el resultado de una, el cursor lo guarda en memoria.
@@ -33,26 +26,12 @@ class datosClientes:
         try:
             sql = "SELECT * FROM clientes"
             if orden:
-                # if not orden.upper().startswith("ORDER BY"):
-                #     raise ValueError("Solo se permite ORDER BY")
                 sql += " " + orden
-            # else:
-            #     sql += " ORDER BY apellido, nombres ASC"
-
             cur.execute(sql)
             return cur.fetchall()
         finally:
             cur.close()
             cnn.close()
-
-        # try:
-        #     cur.execute("SELECT * FROM clientes "+ tofil)
-        #     datos = cur.fetchall()
-        #     return datos
-        # except Exception:
-        #     raise
-        # finally:
-        #     cur.close()
 
     def traer_ultimo(self):
 

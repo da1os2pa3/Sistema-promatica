@@ -426,7 +426,7 @@ class Clase_Clientes(tk.Frame):
             # ------------------------------------------
         except Exception as e:
             messagebox.showerror("Error del sistema en Eliminar cliente", str(e))
-            self.set_status("❌ Error al eliminar", "error")
+            #self.set_status("❌ Error al eliminar", "error")
             return
         else:
             self.set_status("🗑 Registro eliminado correctamente", "ok")
@@ -492,15 +492,13 @@ class Clase_Clientes(tk.Frame):
             "sit_fis": self.strvar_sit_fis.get(),
             "cuit": self.strvar_cuit.get(),
             "observaciones": self.strvar_observaciones.get(),
-            "apenombre": self.strvar_apellido.get() + ' ' + self.strvar_nombres.get()
-        }
+            "apenombre": self.strvar_apellido.get() + ' ' + self.strvar_nombres.get()}
         #-----------------------------------------------------------------
 
         #-----------------------------------------------------------------
         # GUARDADO DATOS Y EVALUACION DEL PROCEDIMIENTO
         #-----------------------------------------------------------------
         try:
-
             if self.alta_modif == 1:
                 self.id_nuevo = self.varClientes.insertar_clientes(clientes)
                 id_ref = self.id_nuevo
@@ -508,14 +506,13 @@ class Clase_Clientes(tk.Frame):
             elif self.alta_modif == 2:
                 self.varClientes.modificar_clientes(clientes)
                 id_ref = self.clave
-
         except ValueError as e:
             messagebox.showwarning("Datos inválidos en Insertar/Modificar clientes", str(e))
-            self.set_status("⚠ Error en los datos", "warn")
+            #self.set_status("⚠ Error en los datos", "warn")
             return
         except Exception as e:
             messagebox.showerror("Error del sistema en Insertar/Modificar clientes", str(e))
-            self.set_status("❌ Error al guardar", "error")
+            #self.set_status("❌ Error al guardar", "error")
             return
 
         else:
@@ -612,7 +609,7 @@ class Clase_Clientes(tk.Frame):
             datos = self.varClientes.buscar_clientes(se_busca)
         except Exception as e:
             messagebox.showerror("Error del sistema en Buscar cllientes", str(e))
-            self.set_status("❌ Error al buscar un cliente", "error")
+            #self.set_status("❌ Error al buscar un cliente", "error")
             return
 
         # Limpio el grid
@@ -847,7 +844,7 @@ class Clase_Clientes(tk.Frame):
         self.lbl_observaciones.grid(row=6, column=2, padx=10, pady=3, sticky="w")
         self.entry_observaciones = tk.Entry(self.sector_entry, textvariable=self.strvar_observaciones, justify="left",
                                          width=40)
-        self.strvar_observaciones.trace_add("write", lambda *args: self.limitador(self.strvar_observaciones, 50))
+        self.strvar_observaciones.trace_add("write", lambda *args: self.limitador(self.strvar_observaciones, 100))
         self.entry_observaciones.grid(row=6, column=3, padx=10, pady=3, sticky="w")
 
     def cuadro_buscar(self):
@@ -875,8 +872,9 @@ class Clase_Clientes(tk.Frame):
         ToolTip(self.entry_buscar_cliente, msg="Escriba el nombre o apellido del cliente buscado")
 
         # BOTON BUSCAR UN CLIENTE
-        img = Image.open("filtrar.png").resize((18, 18))
-        icono = ImageTk.PhotoImage(img)
+ #       img = Image.open("filtrar.png").resize((18, 18))
+        icono = self.cargar_icono("filtrar.png")
+#        icono = ImageTk.PhotoImage(img)
         self.btn_buscar_cliente = tk.Button(self.frame_buscar, text=" Buscar", command=self.fBuscar_en_tabla,
                                          bg="CadetBlue", fg="white", width=30, compound="left")
         self.btn_buscar_cliente.image = icono
@@ -885,8 +883,9 @@ class Clase_Clientes(tk.Frame):
         ToolTip(self.btn_buscar_cliente, msg="Presenta los clientes que coinciden con la busqueda")
 
         # BOTON MOSTRAR TODOS LOS CLIENTES
-        img = Image.open("ver_todo.png").resize((18, 18))
-        icono = ImageTk.PhotoImage(img)
+        # img = Image.open("ver_todo.png").resize((18, 18))
+        # icono = ImageTk.PhotoImage(img)
+        icono = self.cargar_icono("ver_todo.png")
         self.btn_mostrar_todo = tk.Button(self.frame_buscar, text=" Mostrar todo", command=self.fShowall, bg="CadetBlue",
                                        width=30, fg="white", compound="left")
         self.btn_mostrar_todo.image = icono
@@ -1059,3 +1058,4 @@ class Clase_Clientes(tk.Frame):
         # self.varClientes.buscar_entabla(self.filtro_activo)
         # #self.limpiar_Grid()
         # self.llena_grilla("")
+

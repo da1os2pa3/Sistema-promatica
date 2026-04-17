@@ -29,26 +29,14 @@ class datosArtic:
         cnn = self.get_connection()
         cur = cnn.cursor(buffered=True)
         try:
-            sql = "SELECT * FROM articulos"
+            sql = "SELECT * FROM articulos "
             if orden:
-                sql += " " + orden
+                sql += orden
             cur.execute(sql)
             return cur.fetchall()
         finally:
             cur.close()
             cnn.close()
-
-        # try:
-        #     cur.execute("SELECT * FROM " + tofil)
-        #     datos = cur.fetchall()
-        #     self.cnn.commit()
-        #     return datos
-        # except Exception:
-        #     raise
-        # finally:
-        #     cur.close()
-        #     self.cnn.close()
-        #
 
     def insertar_articulo(self, articulo):
 
@@ -198,31 +186,3 @@ class datosArtic:
         finally:
             cur.close()
             cnn.close()
-
-    # except Exception as e:
-    # messagebox.showerror("Error", str(e))
-
-    # def traer_ultimo(self, xparametro):
-    #
-    #     """ Devuelve el Id. del ultimo registro de la tabla (primer valor autocompletado por la tabla) """
-    #
-    #     cnn = self.get_connection()
-    #     cur = cnn.cursor(buffered=True)
-    #     try:
-    #         cur.execute("SELECT * FROM articulos ORDER BY Id")
-    #         datos = cur.fetchall()
-    #         aux = ""
-    #         for row in datos:
-    #             if xparametro == 1:
-    #                 aux = str(row[1]) + "\n"
-    #             else:
-    #                 aux = str(row[0]) + "\n"
-    #         cnn.commit()
-    #         if aux == "":
-    #             aux = 0
-    #         return aux
-    #     except Exception:
-    #         raise
-    #     finally:
-    #         cur.close()
-    #         cnn.close()
