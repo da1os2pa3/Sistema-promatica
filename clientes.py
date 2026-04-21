@@ -474,7 +474,7 @@ class Clase_Clientes(tk.Frame):
         #-----------------------------------------------------------------
 
         #-----------------------------------------------------------------
-        # PASO DICCIONARIO PARA INSERTAR
+        # PASO DICCIONARIO PARA INSERTAR O MODIFICAR
         clientes = {
             #"Id": self.var_Id,
             "Id": self.clave,

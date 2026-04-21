@@ -94,7 +94,7 @@ class V_PlaniCaja(tk.Frame):
         # -------------------------------------------------------------------------------
         # GPT ||||||||||||||||||||||||||||||||||||||||||||||||||||||||
         """ Es para los mensajes sobre eventos del sistema, reemplazaria a algunos messagebox
-        Ubicada ultima linea de la pantalla - barra de estado"""
+            Ubicada ultima linea de la pantalla - barra de estado"""
 
         self.status_var = tk.StringVar()
 
@@ -104,8 +104,7 @@ class V_PlaniCaja(tk.Frame):
             bd=1,
             relief="sunken",
             anchor="w",
-            bg="#f0f0f0"
-        )
+            bg="#f0f0f0")
         self.status_bar.pack(side="bottom", fill="x")
         # ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
         # ------------------------------------------------------------------------------
@@ -200,77 +199,8 @@ class V_PlaniCaja(tk.Frame):
         # ---------------------------------------------------------------------------------
         # TREEVIEW - GRID
         # ---------------------------------------------------------------------------------
-
-        self.frame_tvw_planilla=tk.LabelFrame(self.master, text="Planilla de caja: ", foreground="#CF09BD")
-
-        # STYLE TREEVIEW
-        style = ttk.Style(self.frame_tvw_planilla)
-        style.theme_use("clam")
-        style.configure("Treeview.Heading", background="black", foreground="white")
-
-        self.grid_planilla = ttk.Treeview(self.frame_tvw_planilla, height=6, columns=("col1", "col2", "col3", "col4",
-                                                    "col5", "col6", "col7", "col8", "col9", "col10", "col11", "col12",
-                                                    "col13", "col14", "col15", "col16", "col17", "col18", "col19"))
-
-        self.grid_planilla.bind("<Double-Button-1>", self.DobleClickGrid_pla)
-
-        self.grid_planilla.column("#0", width=30, anchor="center", minwidth=30)
-        self.grid_planilla.column("col1", width=80, anchor="center", minwidth=70)
-        self.grid_planilla.column("col2", width=100, anchor="center", minwidth=80)
-        self.grid_planilla.column("col3", width=350, anchor="center", minwidth=250)
-        self.grid_planilla.column("col4", width=30, anchor="center", minwidth=60)
-        self.grid_planilla.column("col5", width=100, anchor="center", minwidth=80)
-        self.grid_planilla.column("col6", width=100, anchor="center", minwidth=80)
-        self.grid_planilla.column("col7", width=100, anchor="center", minwidth=80)
-        self.grid_planilla.column("col8", width=100, anchor="center", minwidth=80)
-        self.grid_planilla.column("col9", width=100, anchor="center", minwidth=80)
-        self.grid_planilla.column("col10", width=100, anchor="center", minwidth=80)
-        self.grid_planilla.column("col11", width=170, anchor="center", minwidth=170)
-        self.grid_planilla.column("col12", width=150, anchor="center", minwidth=100)
-        self.grid_planilla.column("col13", width=150, anchor="center", minwidth=250)
-        self.grid_planilla.column("col14", width=100, anchor="center", minwidth=250)
-        self.grid_planilla.column("col15", width=100, anchor="center", minwidth=250)
-        self.grid_planilla.column("col16", width=100, anchor="center", minwidth=80)
-        self.grid_planilla.column("col17", width=100, anchor="center", minwidth=80)
-        self.grid_planilla.column("col18", width=100, anchor="center", minwidth=80)
-        self.grid_planilla.column("col10", width=100, anchor="center", minwidth=80)
-
-        self.grid_planilla.heading("#0", text="Id", anchor="center")
-        self.grid_planilla.heading("col1", text="Fecha", anchor="center")
-        self.grid_planilla.heading("col2", text="Tipo Mov.", anchor="center")
-        self.grid_planilla.heading("col3", text="Detalle", anchor="center")
-        self.grid_planilla.heading("col4", text="Cant.", anchor="center")
-        self.grid_planilla.heading("col5", text="Ingresos(I)", anchor="center")
-        self.grid_planilla.heading("col6", text="Total Ingresos", anchor="center")
-        self.grid_planilla.heading("col7", text="Egresos(E)", anchor="center")
-        self.grid_planilla.heading("col8", text="Costos", anchor="center")
-        self.grid_planilla.heading("col9", text="Pagos CtaCte(I)", anchor="center")
-        self.grid_planilla.heading("col10", text="Compras(E)", anchor="center")
-        self.grid_planilla.heading("col11", text="Cliente", anchor="center")
-        self.grid_planilla.heading("col12", text="Tipo pago", anchor="center")
-        self.grid_planilla.heading("col13", text="Detalle pago", anchor="center")
-        self.grid_planilla.heading("col14", text="Garantia", anchor="center")
-        self.grid_planilla.heading("col15", text="Observaciones", anchor="center")
-        self.grid_planilla.heading("col16", text="Proveedor", anchor="center")
-        self.grid_planilla.heading("col17", text="CtaCte", anchor="center")
-        self.grid_planilla.heading("col18", text="ClaveMov", anchor="center")
-        self.grid_planilla.heading("col19", text="Codigo Cliente", anchor="center")
-
-        self.grid_planilla.tag_configure('oddrow', background='light grey')
-        self.grid_planilla.tag_configure('evenrow', background='white')
-
-        # SCROLLBAR del Treeview
-        scroll_x = tk.Scrollbar(self.frame_tvw_planilla, orient="horizontal")
-        scroll_y = tk.Scrollbar(self.frame_tvw_planilla, orient="vertical")
-        self.grid_planilla.config(xscrollcommand=scroll_x.set)
-        self.grid_planilla.config(yscrollcommand=scroll_y.set)
-        scroll_x.config(command=self.grid_planilla.xview)
-        scroll_y.config(command=self.grid_planilla.yview)
-        scroll_y.pack(side="right", fill="y")
-        scroll_x.pack(side="bottom", fill="x")
-        self.grid_planilla['selectmode'] = 'browse'
-
-        self.grid_planilla.pack(side="top", fill="both", expand=1, padx=5, pady=2)
+        self.frame_tvw_planilla=tk.LabelFrame(self.master, text="Movimientos", foreground="#CF09BD")
+        self.cuadro_grid_planilla()
         self.frame_tvw_planilla.pack(side="top", fill="both", padx=5, pady=2)
         # ---------------------------------------------------------------------------------
 
@@ -465,51 +395,53 @@ class V_PlaniCaja(tk.Frame):
 
     def habilitar_text(self):
 
-        # 1 - "Entry busqueda" y botones "Buscar" y "Mostrar all" =>activos
-        self.entry_buscar_movim.configure(state="normal")
-        self.btn_buscar_movim.configure(state="normal")
-        self.btn_mostrar_todo.configure(state="normal")
+        # Widgets a habilitar
+        habilitar = [
+            self.entry_buscar_movim,
+            self.btn_buscar_movim,
+            self.btn_mostrar_todo,
+            self.btn_nuevoitem,
+            self.btn_editaitem,
+            self.btn_borraitem,
+            self.btn_Cancelar,
+            self.btn_Resumen,
+            self.btnToparch,
+            self.btnFinarch,
+            self.entry_fecha_planilla,
+            self.btnDerecha,
+            self.btnIzquierda
+        ]
 
-        # 2 - Botones "Nuevo" "Editar" "Eliminar" activos
-        self.btn_nuevoitem.configure(state="normal")
-        self.btn_editaitem.configure(state="normal")
-        self.btn_borraitem.configure(state="normal")
+        # Widgets a deshabilitar
+        deshabilitar = [
+            self.btn_guardaritem,
+            self.combo_tipomov,
+            self.entry_cliente,
+            self.entry_detalle_movim,
+            self.entry_ingresos,
+            self.entry_cantidad,
+            self.entry_costo,
+            self.entry_egreso,
+            self.entry_pagoscta,
+            self.entry_compras,
+            self.entry_proved,
+            self.combo_forma_pago,
+            self.entry_detalle_pago,
+            self.entry_garantia,
+            self.entry_observaciones,
+            self.btn_bus_art,
+            self.btn_bus_prov,
+            self.btn_bus_cli
+        ]
 
-        # 3 - Guardar  => disabled
-        self.btn_guardaritem.configure(state="disabled")
+        # Aplicar estados
+        for w in habilitar:
+            w.configure(state="normal")
 
-        # 4 - Cancelar - Reset - Resumen del mes - TOP - END
-        self.btn_Cancelar.configure(state="normal")
-        self.btn_Resumen.configure(state="normal")
-        self.btnToparch.configure(state="normal")
-        self.btnFinarch.configure(state="normal")
+        for w in deshabilitar:
+            w.configure(state="disabled")
 
-        # 5 - Entrys
-        self.entry_fecha_planilla.configure(state="normal")
-        self.combo_tipomov.configure(state="disabled")
-        self.entry_cliente.configure(state="disabled")
-        self.entry_detalle_movim.configure(state="disabled")
-        self.entry_ingresos.configure(state="disabled")
-        self.entry_cantidad.configure(state="disabled")
-        self.entry_costo.configure(state="disabled")
-
-        self.entry_egreso.configure(state="disabled")
-        self.entry_pagoscta.configure(state="disabled")
-        self.entry_compras.configure(state="disabled")
-        self.entry_proved.configure(state="disabled")
-        self.entry_ingresos.configure(state="disabled")
-        self.combo_forma_pago.configure(state="disabled")
-        self.entry_detalle_pago.configure(state="disabled")
-        self.entry_garantia.configure(state="disabled")
-        self.entry_observaciones.configure(state="disabled")
-
-        self.btnDerecha.configure(state="normal")
-        self.btnIzquierda.configure(state="normal")
-        self.btn_bus_art.configure(state="disabled")
-        self.btn_bus_prov.configure(state="disabled")
-        self.btn_bus_cli.configure(state="disabled")
-
-        # 0 - Activar Browse
+        # Configuración especial
         self.grid_planilla['selectmode'] = 'browse'
         self.grid_planilla.bind("<Double-Button-1>", self.DobleClickGrid_pla)
 
@@ -555,7 +487,10 @@ class V_PlaniCaja(tk.Frame):
 
         self.divido_tipomov()
 
-    # Grupo de funciones combinadas ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    # ---------------------------------------------------------
+    # Grupo de funciones combinadas
+    # ---------------------------------------------------------
+
     # Auxiliar usada por divido_tipomov
     def set_state(self, state, *widgets):
         for w in widgets:
@@ -567,17 +502,6 @@ class V_PlaniCaja(tk.Frame):
             var.set("0.00")
 
     def divido_tipomov(self):
-
-        # self.entry_egreso.configure(state="normal")
-        # self.entry_compras.configure(state="normal")
-        # self.entry_ingresos.configure(state="normal")
-        # self.entry_pagoscta.configure(state="normal")
-        # self.entry_costo.configure(state="normal")
-        # self.entry_cantidad.configure(state="normal")
-        # self.check_ctacte.configure(onvalue=1)
-        # self.check_ctacte.configure(state="normal")
-        # self.entry_proved.configure(state="normal")
-        # self.entry_cliente.configure(state="normal")
 
         # Habilito todo primero
         self.set_state("normal",
@@ -592,7 +516,7 @@ class V_PlaniCaja(tk.Frame):
         self.check_ctacte.configure(onvalue=1, state="normal")
 
         tipo = self.combo_tipomov.get()
-        # match self.combo_tipomov.get():
+
         match tipo:
 
             case "Venta_articulos" | "Venta_servicios" | "Ingresos_varios":
@@ -650,95 +574,9 @@ class V_PlaniCaja(tk.Frame):
                                self.entry_cantidad)
             case _:
                 pass
-
-            # case "Venta_articulos":
-            #
-            #     """ pongo en cero todos los camos numericos por si se cambio de tipo movimiento habiendo
-            #     cargado previamente otro tipo de movimiento """
-            #
-            #     self.strvar_egreso.set(value="0.00")
-            #     self.strvar_compras.set(value="0.00")
-            #     self.strvar_proved.set(value="")
-            #     # si es venta deshabilito : Egresos y compras
-            #     self.entry_egreso.configure(state="disabled")
-            #     self.entry_compras.configure(state="disabled")
-            #     self.entry_proved.configure(state="disabled")
-            #
-            # case "Venta_servicios":
-            #
-            #     """ pongo en cero todos los campos numericos por si se cambio de tipo movimiento habiendo
-            #     cargado previamente otro tipo de movimiento """
-            #
-            #     self.strvar_egreso.set(value="0.00")
-            #     self.strvar_compras.set(value="0.00")
-            #     self.strvar_proved.set(value="")
-            #     # si es venta servicios : Egresos y compras
-            #     self.entry_egreso.configure(state="disabled")
-            #     self.entry_compras.configure(state="disabled")
-            #     self.entry_proved.configure(state="disabled")
-            #
-            # case "Ingresos_varios":
-            #
-            #     """ Pongo en cero todos los camos numericos por si se cambio de tipo movimiento habiendo
-            #     # cargado previamente otro tipo de movimiento. """
-            #
-            #     self.strvar_egreso.set(value="0.00")
-            #     self.strvar_compras.set(value="0.00")
-            #     self.strvar_proved.set(value="")
-            #     # si es ingresos varios : Egresos y compras
-            #     self.entry_egreso.configure(state="disabled")
-            #     self.entry_compras.configure(state="disabled")
-            #     self.entry_proved.configure(state="disabled")
-            #
-            # case "Pagos_ctacte":
-            #
-            #     """ Pongo en cero todos los camos numericos por si se cambio de tipo movimiento habiendo
-            #     cargado previamente otro tipo de movimiento """
-            #
-            #     self.strvar_compras.set(value="0.00")
-            #     self.strvar_proved.set(value="")
-            #     self.strvar_totingresos.set(value="0.00")
-            #     # si es un pago a ctacte
-            #     self.entry_compras.configure(state="disabled")
-            #     self.entry_proved.configure(state="disabled")
-            #
-            # case "Compras":
-            #
-            #     """ Pongo en cero todos los camos numericos por si se cambio de tipo movimiento habiendo
-            #     cargado previamente otro tipo de movimiento. """
-            #
-            #     self.strvar_ingreso.set(value="0.00")
-            #     self.strvar_pagos_ctacte.set(value="0.00")
-            #     self.strvar_costo.set(value="0.00")
-            #     self.strvar_cantidad.set(value="1.00")
-            #     self.strvar_egreso.set(value="0.00")
-            #     self.strvar_totingresos.set(value="0.00")
-            #     self.check_ctacte.configure(onvalue=1)
-            #
-            #     self.entry_ingresos.configure(state="disabled")
-            #     self.entry_pagoscta.configure(state="disabled")
-            #     self.entry_costo.configure(state="disabled")
-            #     self.entry_cantidad.configure(state="disabled")
-            #     self.entry_egreso.configure(state="disabled")
-            #     self.check_ctacte.configure(state="disabled")
-            #     self.btn_bus_prov.configure(state="normal")
-            #
-            # case "Egresos_varios":
-            #
-            #     self.strvar_ingreso.set(value="0.00")
-            #     self.strvar_costo.set(value="0.00")
-            #     self.strvar_compras.set(value="0.00")
-            #     self.strvar_cantidad.set(value="1.00")
-            #     self.strvar_totingresos.set(value="0.00")
-            #
-            #     self.entry_ingresos.configure(state="disabled")
-            #     self.entry_costo.configure(state="disabled")
-            #     self.entry_compras.configure(state="disabled")
-            #     self.entry_cantidad.configure(state="disabled")
-            #
-            # case _:
-            #     pass
-    # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    # ---------------------------------------------------------
+    # FIN Grupo de funciones combinadas
+    # ---------------------------------------------------------
 
     def estado_resumen(self):
 
@@ -908,7 +746,6 @@ class V_PlaniCaja(tk.Frame):
         data = str(self.clave)+" "+valores[2]
 
         r = messagebox.askquestion("Eliminar", "Confirma eliminar item?\n " + data, parent=self)
-
         if r == messagebox.NO:
             messagebox.showinfo("Eliminar", "Eliminacion cancelada", parent=self)
             self.clavemov_ant = 0
@@ -947,7 +784,6 @@ class V_PlaniCaja(tk.Frame):
             self.strvar_fecha_planilla.set(value=self.fecha_blanco)
             self.entry_fecha_planilla.focus()
             return
-
         # DETALLE
         if self.strvar_detalle_movim.get() == "":
             self.set_status("⚠ Agregue un detalle", "warn")
@@ -997,7 +833,7 @@ class V_PlaniCaja(tk.Frame):
             if self.validar(ingreso != 0, "No puede haber ingreso", self.entry_ingresos): return
             # NO puede haber importe de compra
             if self.validar(compras != 0, "No puede haber compras", self.entry_compras): return
-        # -----------------------------------------------------------------------
+        # ----------------------------------------------------------------------------
 
         # ----------------------------------------------------------------------------
         # guardo el Id del Treeview en selected para ubicacion del foco a posteriori I001, IB003
@@ -1011,6 +847,7 @@ class V_PlaniCaja(tk.Frame):
 
         # ALTA ===============================================================================
         if self.alta_modif == 1:
+        # ====================================================================================
 
             # Si pagos a cuenta cte es "" le meto un "0" por las dudas
             if self.strvar_pagos_ctacte.get() == "":
@@ -1037,22 +874,25 @@ class V_PlaniCaja(tk.Frame):
                 self.strvar_clavemov.set(value=str(random.randint(1, 1000000)))
             # ----------------------------------------------------------------------------
 
-            # Preparo Diccionario --------------------------------------------------------
+            # Preparo Diccionarios -------------------------------------------------------
             fecha_aux = datetime.strptime(self.strvar_fecha_planilla.get(), '%d/%m/%Y')
             planilla = self.get_planilla_dict(fecha_aux)
+            data_ctacte = self.get_ctacte_dict(fecha_aux)
             # ----------------------------------------------------------------------------
 
+            # Inserto datos en Planilla --------------------------------------------------
             try:
                 self.id_nuevo = self.varPlanilla.insertar_planilla(planilla)
                 self.id_ref = self.id_nuevo
             except ValueError as e:
                 messagebox.showwarning("Datos inválidos - error al insertar/modificar articulo", str(e))
-                self.set_status("⚠ Error en los datos", "warn")
+                #self.set_status("⚠ Error en los datos", "warn")
                 return
             except Exception as e:
                 messagebox.showerror("Error del sistema - al insertar/modificar articulo", str(e))
-                self.set_status("❌ Error al guardar", "error")
+                #self.set_status("❌ Error al guardar", "error")
                 return
+            # ----------------------------------------------------------------------------
 
             # self.varPlanilla.insertar_planilla(fecha_aux, self.strvar_tipomov.get(),
             #                 self.strvar_detalle_movim.get(), self.strvar_cantidad.get(), self.strvar_ingreso.get(),
@@ -1062,25 +902,28 @@ class V_PlaniCaja(tk.Frame):
             #                 self.strvar_observaciones.get(), self.strvar_proved.get(), self.strvar_check1.get(),
             #                 self.strvar_clavemov.get(), self.strvar_codcli.get())
 
+
             # 3- Si se ha generado clave de movimiento a cta. y ademas la variable movimiento a cta esta en "S"
             # Corresponde guardar el movimiento en la tabla de ctacte
             if float(self.strvar_clavemov.get()) != 0 and self.movim_a_cta == 'S':
 
                 # guardo movimiento en tabla de ctacte
-                self.varPlanilla.insertar_ctacte(fecha_aux, self.strvar_detalle_movim.get(),
-                            (float(self.strvar_ingreso.get()) * float(self.strvar_cantidad.get())),
-                            self.strvar_pagos_ctacte.get(), self.strvar_codcli.get(),
-                            self.strvar_cliente.get(), self.strvar_clavemov.get())
+                # self.varPlanilla.insertar_ctacte(fecha_aux, self.strvar_detalle_movim.get(),
+                #             (float(self.strvar_ingreso.get()) * float(self.strvar_cantidad.get())),
+                #             self.strvar_pagos_ctacte.get(), self.strvar_codcli.get(),
+                #             self.strvar_cliente.get(), self.strvar_clavemov.get())
+
+                self.varPlanilla.insertar_ctacte(data_ctacte)
 
                 self.set_status("✔ Registracion correcta en Planillas y cuenta corriente", "ok")
 
             else:
 
                 self.set_status("✔ Registracion correcta solo Planillas", "ok")
-        # ================================================================================================
 
         # MODIFICACION ===================================================================================
         if self.alta_modif == 2:
+        # ================================================================================================
 
             # Si pagos a cuenta cte es "" le meto un "0" por las dudas
             if self.strvar_pagos_ctacte.get() == "":
@@ -1100,7 +943,6 @@ class V_PlaniCaja(tk.Frame):
                                          parent=self)
                     self.entry_cliente.focus()
                     return
-
                 # Requiero nombre de cliente
                 if not self.strvar_cliente.get():
                     messagebox.showerror("Error", "Es necesario nombre de clientee - falta nombre",
@@ -1111,9 +953,10 @@ class V_PlaniCaja(tk.Frame):
                 # genero nueva clave aleatoria
                 self.strvar_clavemov.set(value=str(random.randint(1, 1000000)))
 
-            # Preparo Diccionario ----------------------------------------------------------------
+            # Preparo Diccionarios --------------------------------------------------------------
             fecha_aux = datetime.strptime(self.strvar_fecha_planilla.get(), '%d/%m/%Y')
             planilla = self.get_planilla_dict(fecha_aux)
+            data_ctacte = self.get_ctacte_dict(fecha_aux)
 
             # ----------------------------------------------------------------------------------
             # Borrado previo de los movimientos de ctacte - Al ser modificacion, borrar todos los movimientos
@@ -1122,17 +965,19 @@ class V_PlaniCaja(tk.Frame):
                 self.varPlanilla.eliminar_item_ctacte_xmodif(self.strvar_clavemov_ant.get())
             # ----------------------------------------------------------------------------------
 
+            # Ingreso datos a tabla ------------------------------------------------------------
             try:
                 self.varPlanilla.modificar_planilla(planilla)
                 self.id_ref = self.clave
             except ValueError as e:
                 messagebox.showwarning("Datos inválidos - error al insertar/modificar articulo", str(e))
-                self.set_status("⚠ Error en los datos", "warn")
+                #self.set_status("⚠ Error en los datos", "warn")
                 return
             except Exception as e:
                 messagebox.showerror("Error del sistema - al insertar/modificar articulo", str(e))
-                self.set_status("❌ Error al guardar", "error")
+                #self.set_status("❌ Error al guardar", "error")
                 return
+            # ----------------------------------------------------------------------------------
 
             # # Modificacion en planillas --------------------------------------------------------
             # # Guardado del movimiento en Planilas de caja-guardo modificacion con clave nueva ( cero u otra )
@@ -1146,13 +991,16 @@ class V_PlaniCaja(tk.Frame):
 
             # Guardo de movimiento en cta cte si corresponde -----------------------------------
             if float(self.strvar_clavemov.get()) != 0 and self.movim_a_cta == 'S':
+
                 # guardo (como ALTA) movimiento modificado en ctacte con clave nueva, porque el que existia
                 # anteriormente fue borrado previamente.
-                fecha_aux = datetime.strptime(self.strvar_fecha_planilla.get(), '%d/%m/%Y')
-                self.varPlanilla.insertar_ctacte(fecha_aux, self.strvar_detalle_movim.get(),
-                        (float(self.strvar_ingreso.get())*float(self.strvar_cantidad.get())),
-                        self.strvar_pagos_ctacte.get(), self.strvar_codcli.get(),
-                        self.strvar_cliente.get(), self.strvar_clavemov.get())
+                # fecha_aux = datetime.strptime(self.strvar_fecha_planilla.get(), '%d/%m/%Y')
+                # self.varPlanilla.insertar_ctacte(fecha_aux, self.strvar_detalle_movim.get(),
+                #         (float(self.strvar_ingreso.get())*float(self.strvar_cantidad.get())),
+                #         self.strvar_pagos_ctacte.get(), self.strvar_codcli.get(),
+                #         self.strvar_cliente.get(), self.strvar_clavemov.get())
+
+                self.varPlanilla.insertar_ctacte(data_ctacte)
 
                 self.set_status("✔ Modificacion correcta en Planillas y cuenta corriente", "ok")
             else:
@@ -1166,7 +1014,6 @@ class V_PlaniCaja(tk.Frame):
         self.habilitar_text()
 
         if self.alta_modif == 1:
-            #id_ref = self.varPlanilla.traer_ultimo(0)
             self.llena_grilla(self.id_ref)
         elif self.alta_modif == 2:
             self.llena_grilla(self.id_ref)
@@ -1191,7 +1038,7 @@ class V_PlaniCaja(tk.Frame):
         """ Aqui dentro llamo a la funcion validar fechas para revisar todo sus valores posibles. le paso la fecha
         tipo string con barras o sin barras """
 
-        # FUNCION VALIDA FECCHAS en programa funcion
+        # FUNCION VALIDA FECHAS en programa funcion
         retorno_VerFal = valida_fechas(self, self.strvar_fecha_planilla.get())
 
         if retorno_VerFal == "":
@@ -1201,8 +1048,7 @@ class V_PlaniCaja(tk.Frame):
 
         elif retorno_VerFal == "S":
             # esto es control del año y decidio seguir
-            self.filtro_activo = ("WHERE CAST(pl_fecha AS date) = CAST('" + self.strvar_fecha_planilla.get()
-                        + "' AS date)")
+            self.filtro_activo = ("WHERE CAST(pl_fecha AS date) = CAST('" + self.strvar_fecha_planilla.get()+"' AS date)")
 
             self.llena_grilla("")
             self.entry_fecha_planilla.focus()
@@ -1240,6 +1086,7 @@ class V_PlaniCaja(tk.Frame):
 
     def obtener_fecha_inicial(self):
 
+        # El parametro 1 trae la primer columna de la tabla (fecha en este caso), ojo la columna 0 es el Id
         self.ultima_fecha = self.varPlanilla.traer_ultimo(1)
 
         if self.ultima_fecha != 0:
@@ -1322,7 +1169,7 @@ class V_PlaniCaja(tk.Frame):
             # Controla allsobre los "-" y "."
             self.control_valores()
 
-            # Evaluo segun el parametro de calculo que asigno en el Entry --------------------------------
+            # Evaluo segun el parametro de calculo que asigno en el Entry
             if que_campo == "general":
                 x_ingreso = float(self.strvar_ingreso.get())
                 x_costo = float(self.strvar_costo.get())
@@ -1391,7 +1238,7 @@ class V_PlaniCaja(tk.Frame):
             var.set(f"{float(var.get()):.2f}")
         except ValueError:
             var.set("0.00")
-    # -----------------------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------------
 
     # ---------------------------------------------------------------------------------
     # SEL
@@ -1413,9 +1260,17 @@ class V_PlaniCaja(tk.Frame):
         """ Llamo a la funcion ventana de seleccion de items. Paso parametros de Tabla-campos a mostrar en orden de 
         como quiero verlos-Titulos para cada columna de esos campos-String de busqueda definido arriba (que_busco) """
 
-        valores_new = self.varFuncion_new.ventana_selec("clientes", "apenombre", "codigo",
-                      "direccion", "Apellido y nombre", "Codigo", "Direccion", que_busco,
-                        "Orden: Alfabetico cliente", "N")
+        valores_new = self.varFuncion_new.ventana_selec(
+            "clientes",
+            "apenombre",
+            "codigo",
+            "direccion",
+            "Apellido y nombre",
+            "Codigo",
+            "Direccion",
+            que_busco,
+            "Orden: Alfabetico cliente", "N"
+        )
 
         """ Esto es ya iterar sobre lo que me devuelve la funcion de seleccion para asignar ya los valores a 
         los Entrys correspondientes. """
@@ -1442,10 +1297,18 @@ class V_PlaniCaja(tk.Frame):
                 + " ORDER BY rubro, marca, descripcion"
         )
 
-        valores_new = self.varFuncion_new.ventana_selec("articulos", "descripcion", "marca",
-                                                        "costodolar", "Descripcion", "Marca",
-                                                        "Precio dolar neto", que_busco,
-                                                        "Orden: Rubro+Marca+Descripcion", "S")
+        valores_new = self.varFuncion_new.ventana_selec(
+            "articulos",
+            "descripcion",
+            "marca",
+            "costodolar",
+            "Descripcion",
+            "Marca",
+            "Precio dolar neto",
+             que_busco,
+            "Orden: Rubro+Marca+Descripcion",
+            "S"
+        )
 
         masiva = 0
         masganancia = 0
@@ -1478,16 +1341,21 @@ class V_PlaniCaja(tk.Frame):
                 + " ORDER BY denominacion"
         )
 
-        # que_busco = "proved WHERE INSTR(denominacion, '" + self.strvar_proved.get() + "') > 0" \
-        #             + " OR INSTR(direccion, '" + self.strvar_proved.get() + "') > 0" \
-        #             + " ORDER BY denominacion"
-
         """  Llamo a la funcion ventana de seleccion de items. Paso parametros de Tabla-campos a mostrar en orden de 
         como quiero verlos-Titulos para cada columna de esos campos-String de busqueda definido arriba (que_busco) """
 
-        valores_new = self.varFuncion_new.ventana_selec("proved", "denominacion", "codigo",
-                      "direccion", "Nombre Empresa", "Codigo", "Direccion", que_busco,
-                                                        "Orden: Nombre de Proveedor", "N")
+        valores_new = self.varFuncion_new.ventana_selec(
+            "proved",
+            "denominacion",
+            "codigo",
+            "direccion",
+            "Nombre Empresa",
+            "Codigo",
+            "Direccion",
+            que_busco,
+            "Orden: Nombre de Proveedor",
+            "N"
+        )
 
         """ Esto es ya iterar sobre lo que me devuelve la funcion de seleccion para asignar ya los valores a 
         los Entrys correspondientes """
@@ -1690,8 +1558,6 @@ class V_PlaniCaja(tk.Frame):
                                           state='readonly', width=23)
         self.combo_tipomov['value'] = self.varPlanilla.combo_input("tm_descripcion","tipo_movim",
                                                                    "tm_ingegr")
-        # self.combo_tipomov['value'] = ["Ventas(I)", "Servicios MO(I)", "Pagos cuentas corrientes(I)",
-        # "Ingresos varios(I)", "Compras(E)", "Egresos varios(E)"]
         self.combo_tipomov.current(0)
         self.combo_tipomov.bind('<Tab>', lambda e: self.divido_tipomov())
         self.combo_tipomov.grid(row=0, column=5, padx=5, pady=2, sticky=tk.W)
@@ -1854,9 +1720,12 @@ class V_PlaniCaja(tk.Frame):
 
     def buscar_movimientos(self):
 
-        self.lbl_buscar_movim = tk.Label(self.frame_buscar_movimiento, text="Buscar: ")
+        for c in range(4):
+            self.frame_buscar_movimiento.grid_columnconfigure(c, weight=1, minsize=130)
+
+        self.lbl_buscar_movim = tk.Label(self.frame_buscar_movimiento, text="Buscar en todas las planillas: ")
         self.lbl_buscar_movim.grid(row=0, column=0, padx=5, pady=2)
-        self.entry_buscar_movim=tk.Entry(self.frame_buscar_movimiento, textvariable=self.strvar_buscostring, width=70)
+        self.entry_buscar_movim=tk.Entry(self.frame_buscar_movimiento, textvariable=self.strvar_buscostring, width=50)
         self.entry_buscar_movim.grid(row=0, column=1, padx=5, pady=2, sticky=tk.W)
         self.btn_buscar_movim = tk.Button(self.frame_buscar_movimiento, text="Buscar", command=self.fBuscar_en_tabla,
                                        bg="CadetBlue", fg="white", width=35)
@@ -1864,6 +1733,9 @@ class V_PlaniCaja(tk.Frame):
         self.btn_mostrar_todo = tk.Button(self.frame_buscar_movimiento, text="Mostrar todo", command=self.fShowall,
                                        bg="CadetBlue", fg="white", width=35)
         self.btn_mostrar_todo.grid(row=0, column=3, padx=5, pady=2, sticky=tk.W)
+
+        for widg in self.frame_buscar_movimiento.winfo_children():
+            widg.grid_configure(padx=5, pady=3, sticky='nsew')
 
     def calculo_totales(self):
 
@@ -1943,6 +1815,119 @@ class V_PlaniCaja(tk.Frame):
         for widg in self.frame_totales.winfo_children():
             widg.grid_configure(padx=4, pady=1, sticky='nsew')
 
+    def cuadro_grid_planilla(self):
+
+        # STYLE TREEVIEW
+        style = ttk.Style(self.frame_tvw_planilla)
+        style.theme_use("clam")
+        style.configure("Treeview.Heading", background="black", foreground="white")
+
+        self.grid_planilla = ttk.Treeview(self.frame_tvw_planilla, height=6, columns=("col1", "col2", "col3", "col4",
+                                                    "col5", "col6", "col7", "col8", "col9", "col10", "col11", "col12",
+                                                    "col13", "col14", "col15", "col16", "col17", "col18", "col19"))
+
+        self.grid_planilla.bind("<Double-Button-1>", self.DobleClickGrid_pla)
+
+        self.grid_planilla.column("#0", width=30, anchor="center", minwidth=30)
+        self.grid_planilla.column("col1", width=80, anchor="center", minwidth=70)
+        self.grid_planilla.column("col2", width=100, anchor="center", minwidth=80)
+        self.grid_planilla.column("col3", width=350, anchor="center", minwidth=250)
+        self.grid_planilla.column("col4", width=30, anchor="center", minwidth=60)
+        self.grid_planilla.column("col5", width=100, anchor="center", minwidth=80)
+        self.grid_planilla.column("col6", width=100, anchor="center", minwidth=80)
+        self.grid_planilla.column("col7", width=100, anchor="center", minwidth=80)
+        self.grid_planilla.column("col8", width=100, anchor="center", minwidth=80)
+        self.grid_planilla.column("col9", width=100, anchor="center", minwidth=80)
+        self.grid_planilla.column("col10", width=100, anchor="center", minwidth=80)
+        self.grid_planilla.column("col11", width=170, anchor="center", minwidth=170)
+        self.grid_planilla.column("col12", width=150, anchor="center", minwidth=100)
+        self.grid_planilla.column("col13", width=150, anchor="center", minwidth=250)
+        self.grid_planilla.column("col14", width=100, anchor="center", minwidth=250)
+        self.grid_planilla.column("col15", width=100, anchor="center", minwidth=250)
+        self.grid_planilla.column("col16", width=100, anchor="center", minwidth=80)
+        self.grid_planilla.column("col17", width=100, anchor="center", minwidth=80)
+        self.grid_planilla.column("col18", width=100, anchor="center", minwidth=80)
+        self.grid_planilla.column("col10", width=100, anchor="center", minwidth=80)
+
+        self.grid_planilla.heading("#0", text="Id", anchor="center")
+        self.grid_planilla.heading("col1", text="Fecha", anchor="center")
+        self.grid_planilla.heading("col2", text="Tipo Mov.", anchor="center")
+        self.grid_planilla.heading("col3", text="Detalle", anchor="center")
+        self.grid_planilla.heading("col4", text="Cant.", anchor="center")
+        self.grid_planilla.heading("col5", text="Ingresos(I)", anchor="center")
+        self.grid_planilla.heading("col6", text="Total Ingresos", anchor="center")
+        self.grid_planilla.heading("col7", text="Egresos(E)", anchor="center")
+        self.grid_planilla.heading("col8", text="Costos", anchor="center")
+        self.grid_planilla.heading("col9", text="Pagos CtaCte(I)", anchor="center")
+        self.grid_planilla.heading("col10", text="Compras(E)", anchor="center")
+        self.grid_planilla.heading("col11", text="Cliente", anchor="center")
+        self.grid_planilla.heading("col12", text="Tipo pago", anchor="center")
+        self.grid_planilla.heading("col13", text="Detalle pago", anchor="center")
+        self.grid_planilla.heading("col14", text="Garantia", anchor="center")
+        self.grid_planilla.heading("col15", text="Observaciones", anchor="center")
+        self.grid_planilla.heading("col16", text="Proveedor", anchor="center")
+        self.grid_planilla.heading("col17", text="CtaCte", anchor="center")
+        self.grid_planilla.heading("col18", text="ClaveMov", anchor="center")
+        self.grid_planilla.heading("col19", text="Codigo Cliente", anchor="center")
+
+        self.grid_planilla.tag_configure('oddrow', background='light grey')
+        self.grid_planilla.tag_configure('evenrow', background='white')
+
+        # SCROLLBAR del Treeview
+        scroll_x = tk.Scrollbar(self.frame_tvw_planilla, orient="horizontal")
+        scroll_y = tk.Scrollbar(self.frame_tvw_planilla, orient="vertical")
+        self.grid_planilla.config(xscrollcommand=scroll_x.set)
+        self.grid_planilla.config(yscrollcommand=scroll_y.set)
+        scroll_x.config(command=self.grid_planilla.xview)
+        scroll_y.config(command=self.grid_planilla.yview)
+        scroll_y.pack(side="right", fill="y")
+        scroll_x.pack(side="bottom", fill="x")
+        self.grid_planilla['selectmode'] = 'browse'
+
+        self.grid_planilla.pack(side="top", fill="both", expand=1, padx=5, pady=2)
+
+    # Trabajan con fGuardar
+    def validar(self, condicion, mensaje, widget_focus):
+        if condicion:
+            messagebox.showerror("Error", mensaje, parent=self)
+            widget_focus.focus()
+            return True
+        return False
+
+    def get_planilla_dict(self, fecha_aux):
+        return {
+            "Id": self.clave,
+            "pl_fecha": fecha_aux,
+            "pl_tipomov": self.strvar_tipomov.get(),
+            "pl_detalle": self.strvar_detalle_movim.get(),
+            "pl_cantidad": self.strvar_cantidad.get(),
+            "pl_ingresos": self.strvar_ingreso.get(),
+            "pl_egreso": self.strvar_egreso.get(),
+            "pl_costo": self.strvar_costo.get(),
+            "pl_pagoscta": self.strvar_pagos_ctacte.get(),
+            "pl_compras": self.strvar_compras.get(),
+            "pl_cliente": self.strvar_cliente.get(),
+            "pl_tipopago": self.strvar_forma_pago.get(),
+            "pl_detapago": self.strvar_detalle_pago.get(),
+            "pl_garantia": self.strvar_garantia.get(),
+            "pl_observacion": self.strvar_observaciones.get(),
+            "pl_proved": self.strvar_proved.get(),
+            "pl_ctacte": self.strvar_check1.get(),
+            "pl_clavemov": self.strvar_clavemov.get(),
+            "pl_codcli": self.strvar_codcli.get(),
+        }
+
+    def get_ctacte_dict(self, fecha_aux):
+        return {
+            "Id": self.clave,
+            "cc_fecha": fecha_aux,
+            "cc_detalle": self.strvar_detalle_movim.get(),
+            "cc_ingreso": (float(self.strvar_ingreso.get()) * float(self.strvar_cantidad.get())),
+            "cc_egreso": self.strvar_pagos_ctacte.get(),
+            "cc_codcli": self.strvar_codcli.get(),
+            "cc_nomcli": self.strvar_cliente.get(),
+            "cc_clavemov": self.strvar_clavemov.get(),
+        }
 
     # --------------------------------------------------------------------------------
     # Staus --------------------------------------------------------------------------
@@ -2020,36 +2005,3 @@ class V_PlaniCaja(tk.Frame):
         # ℹInfo
         # self.set_status("ℹ Buscando clientes...", "info")
 
-
-
-
-    # Trabajan con fGuardar
-    def validar(self, condicion, mensaje, widget_focus):
-        if condicion:
-            messagebox.showerror("Error", mensaje, parent=self)
-            widget_focus.focus()
-            return True
-        return False
-
-    def get_planilla_dict(self, fecha_aux):
-        return {
-            "Id": self.clave,
-            "pl_fecha": fecha_aux,
-            "pl_tipomov": self.strvar_tipomov.get(),
-            "pl_detalle": self.strvar_detalle_movim.get(),
-            "pl_cantidad": self.strvar_cantidad.get(),
-            "pl_ingresos": self.strvar_ingreso.get(),
-            "pl_egreso": self.strvar_egreso.get(),
-            "pl_costo": self.strvar_costo.get(),
-            "pl_pagoscta": self.strvar_pagos_ctacte.get(),
-            "pl_compras": self.strvar_compras.get(),
-            "pl_cliente": self.strvar_cliente.get(),
-            "pl_tipopago": self.strvar_forma_pago.get(),
-            "pl_detapago": self.strvar_detalle_pago.get(),
-            "pl_garantia": self.strvar_garantia.get(),
-            "pl_observacion": self.strvar_observaciones.get(),
-            "pl_proved": self.strvar_proved.get(),
-            "pl_ctacte": self.strvar_check1.get(),
-            "pl_clavemov": self.strvar_clavemov.get(),
-            "pl_codcli": self.strvar_codcli.get(),
-        }

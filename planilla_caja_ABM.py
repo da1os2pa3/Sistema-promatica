@@ -1,7 +1,4 @@
 import mysql.connector
-from mysql.connector import Error
-from datetime import datetime
-from tkinter import messagebox
 
 class datosPlanilla:
 
@@ -9,16 +6,7 @@ class datosPlanilla:
 
         self.master = pantalla
 
-        try:
-            self.cnn = mysql.connector.connect(host="localhost", user="root", passwd="", database="sist_prom")
-        except Error as ex:
-            print("Error de conexion: {0}".format(ex))
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Error conexion base de datos-",
-                                 parent=self.master)
-            exit()
-
     def get_connection(self):
-        print("OK= Escuchando.....")
         return mysql.connector.connect(
             host="localhost",
             user="root",
@@ -40,21 +28,6 @@ class datosPlanilla:
             cur.close()
             cnn.close()
 
-    def combo_input(self, xcampo, xtabla, xorden):
-
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
-        try:
-            # cur = self.cnn.cursor()
-            cur.execute("SELECT " + xcampo + " FROM " + xtabla + " ORDER BY " + xorden)
-            result = cur.fetchall()
-            return result
-        except Exception as e:
-            raise
-        finally:
-            cur.close()
-            cnn.close()
-
     def buscar_entabla(self, argumento):
 
         cnn = self.get_connection()
@@ -63,20 +36,6 @@ class datosPlanilla:
             cur.execute("SELECT * FROM planicaja " + argumento)
             datos = cur.fetchall()
             return datos
-        except Exception as e:
-            raise
-        finally:
-            cur.close()
-            cnn.close()
-
-    def consultar_informa(self):
-
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
-        try:
-            cur.execute("SELECT * FROM informa WHERE 1")
-            datos_inf = cur.fetchall()
-            return datos_inf
         except Exception as e:
             raise
         finally:
@@ -149,12 +108,8 @@ class datosPlanilla:
 
         cnn = self.get_connection()
         cur = cnn.cursor(buffered=True)
+
         try:
-
-            # # Convierto fecha nuevamente de String a Datetime para guardar en SQL  ------------------------
-            # algo = fechapla
-            # fechapla = datetime.strptime(algo, '%d/%m/%Y')
-
             sql = ('''UPDATE planicaja 
                 SET pl_fecha=%s, 
                     pl_tipomov=%s,
@@ -210,71 +165,169 @@ class datosPlanilla:
             cur.close()
             cnn.close()
 
-    def insertar_ctacte(self, fecha, detalle, ingreso, egreso, codcli, nomcli, clavemov):
+    def insertar_ctacte(self, data_ctacte):
 
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            cur = self.cnn.cursor()
-            sql = '''INSERT INTO ctacte (cc_fecha, cc_detalle, cc_ingreso, cc_egreso, cc_codcli, cc_nomcli, 
-                                         cc_clavemov) VALUES('{}','{}','{}','{}', '{}', '{}',
-                                         '{}')'''.format(fecha, detalle, ingreso, egreso, codcli,
-                                                         nomcli, clavemov)
-            cur.execute(sql)
-            n = cur.rowcount
-            self.cnn.commit()
+            sql = """
+                  INSERT INTO ctacte (cc_fecha, cc_detalle, cc_ingreso, cc_egreso, cc_codcli, cc_nomcli, 
+                                      cc_clavemov) \
+                  VALUES (%s, %s, %s, %s, %s, %s, %s) \
+                  """
+
+            valores = (
+                data_ctacte["cc_fecha"],
+                data_ctacte["cc_detalle"],
+                data_ctacte["cc_ingreso"],
+                data_ctacte["cc_egreso"],
+                data_ctacte["cc_codcli"],
+                data_ctacte["cc_nomcli"],
+                data_ctacte["cc_clavemov"],
+            )
+
+            cur.execute(sql, valores)
+            cnn.commit()
+            # devolvemos el Id generado del nuevo cliente
+            # id_nuevo = cur.lastrowid
+            return
+        except Exception as e:
+            cnn.rollback()
+            raise
+        finally:
             cur.close()
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo-Insertar ctacte-", parent=self.master)
-            exit()
+            cnn.close()
 
     def eliminar_item_ctacte_xmodif(self, clave_movimiento):
 
         """ Este metodo elimina el movimiento en cuenta corriente corresondiente a la clave de movimiento pasada
         como parametro, esto pasa cuando se modifica un item de planilla de caja con imputacion a cuenta corriente """
 
-        try:
-            cur = self.cnn.cursor()
-            sql = '''DELETE FROM ctacte WHERE cc_clavemov = ''' + clave_movimiento
-            cur.execute(sql)
-            n = cur.rowcount
-            self.cnn.commit()
-            cur.close()
-            return n
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo-Eliminar_item_ctacte_xmodif-", parent=self.master)
-            exit()
-
-    def eliminar_item_ctacte(self, Id):
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
 
         try:
-            cur = self.cnn.cursor()
-            sql = '''DELETE FROM planicaja WHERE Id = {}'''.format(Id)
-            cur.execute(sql)
+            # sql = '''DELETE FROM ctacte WHERE cc_clavemov = ''' + clave_movimiento
+            sql = "DELETE FROM ctacte WHERE cc_clavemov = %s"
+            # cur.execute(sql)
+            cur.execute(sql, (clave_movimiento,))
             n = cur.rowcount
-            self.cnn.commit()
-            cur.close()
+            cnn.commit()
             return n
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo-Eliminar item ctacte-", parent=self.master)
-            exit()
+        except Exception:
+            cnn.rollback()
+            raise
+        finally:
+            cur.close()
+            cnn.close()
+
+    # def eliminar_item_ctacte(self, Id):
+    #
+    #     cnn = self.get_connection()
+    #     cur = cnn.cursor(buffered=True)
+    #     try:
+    #         sql = '''DELETE FROM planicaja WHERE Id = {}'''.format(Id)
+    #         cur.execute(sql)
+    #         n = cur.rowcount
+    #         cnn.commit()
+    #         return n
+    #     except Exception:
+    #         cnn.rollback()
+    #         raise
+    #     finally:
+    #         cur.close()
+    #         cnn.close()
 
     def traer_ultimo(self, xparametro):
 
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            cur = self.cnn.cursor()
-            cur.execute("SELECT * FROM planicaja ORDER BY pl_fecha ASC")
-            datos = cur.fetchall()
-            aux = ""
-            for row in datos:
-                if xparametro == 1:
-                    aux = (str(row[1]))
-                           #+ "\n")
-                else:
-                    aux = (str(row[0]))
-                           #+ "\n")
+            cur.execute("SELECT * FROM planicaja ORDER BY pl_fecha DESC LIMIT 1")
+            row = cur.fetchone()
+
+            if row is None:
+                return 0
+
+            if xparametro == 1:
+                return str(row[1])
+            else:
+                return str(row[0])
+        except Exception:
+            raise
+        finally:
             cur.close()
-            if aux == "":
-                aux = 0
-            return aux
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo-Traer ultimo-", parent=self.master)
-            exit()
+            cnn.close()
+
+    # def traer_ultimo(self, xparametro):
+    #
+    #     cnn = self.get_connection()
+    #     cur = cnn.cursor(buffered=True)
+    #     try:
+    #         cur.execute("SELECT * FROM planicaja ORDER BY pl_fecha ASC")
+    #         datos = cur.fetchall()
+    #         aux = ""
+    #         for row in datos:
+    #             if xparametro == 1:
+    #                 aux = (str(row[1]))
+    #                        #+ "\n")
+    #             else:
+    #                 aux = (str(row[0]))
+    #                        #+ "\n")
+    #         if aux == "":
+    #             aux = 0
+    #         return aux
+    #     except Exception:
+    #         cnn.rollback()
+    #         raise
+    #     finally:
+    #         cur.close()
+    #         cnn.close()
+
+    def combo_input(self, xcampo, xtabla, xorden):
+
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
+        try:
+            cur.execute("SELECT " + xcampo + " FROM " + xtabla + " ORDER BY " + xorden)
+            result = cur.fetchall()
+            return result
+        except Exception as e:
+            raise
+        finally:
+            cur.close()
+            cnn.close()
+
+    def consultar_informa(self):
+
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
+        try:
+            cur.execute("SELECT * FROM informa WHERE 1")
+            datos_inf = cur.fetchall()
+            return datos_inf
+        except Exception as e:
+            raise
+        finally:
+            cur.close()
+            cnn.close()
+
+    # def insertar_ctacte(self, fecha, detalle, ingreso, egreso, codcli, nomcli, clavemov):
+    #
+    #     cnn = self.get_connection()
+    #     cur = cnn.cursor(buffered=True)
+    #
+    #     try:
+    #         cur = self.cnn.cursor()
+    #         sql = '''INSERT INTO ctacte (cc_fecha, cc_detalle, cc_ingreso, cc_egreso, cc_codcli, cc_nomcli,
+    #                                      cc_clavemov) VALUES('{}','{}','{}','{}', '{}', '{}', '{}')'''.format(fecha,
+    #                                                                 detalle, ingreso, egreso, codcli, nomcli, clavemov)
+    #         cur.execute(sql)
+    #         #n = cur.rowcount
+    #         self.cnn.commit()
+    #     except Exception as e:
+    #         cnn.rollback()
+    #         raise
+    #     finally:
+    #         cur.close()
+    #         cnn.close()
