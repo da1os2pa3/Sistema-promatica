@@ -2,8 +2,7 @@ from tkinter import messagebox
 # -----------------------------------
 import mysql.connector
 from mysql.connector import Error
-# -----------------------------------
-#from datetime import datetime
+
 
 class datosPresupuestos:
 
@@ -275,7 +274,7 @@ class datosPresupuestos:
 
         try:
             cur = self.cnn.cursor()
-            cur.execute("SELECT * FROM deta_presup WHERE dp_numero = " + nropresup)
+            cur.execute("SELECT * FROM deta_presup WHERE dp_numero = " + nropresup + " ORDER BY dp_numero, dp_orden")
             # para recuperar todas filas de una tabla de base de datos
             datos = cur.fetchall()
             self.cnn.commit()

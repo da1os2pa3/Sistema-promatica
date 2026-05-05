@@ -2422,15 +2422,16 @@ class Clase_Presupuestos(tk.Frame):
 
     def creopdfext(self, precios):
 
+        # ----------------------------------------------------------------------------------
         # traigo el registro que quiero imprimir de la base datos de ordenes reparacion
         self.selected = self.grid_tvw_presu_entregado.focus()
         # Asi obtengo la clave de la base de datos campo Id que no es lo mismo que el otro (numero secuencial
         # que pone la BD automaticamente al dar el alta
         self.clave = self.grid_tvw_presu_entregado.item(self.selected, 'text')
-
         if self.clave == "":
             messagebox.showwarning("Alerta", "No hay nada seleccionado", parent=self)
             return
+        # ----------------------------------------------------------------------------------
 
         # ----------------------------------------------------------------------------------
         # Definir parametros listado
@@ -2451,9 +2452,6 @@ class Clase_Presupuestos(tk.Frame):
 
         # Cargo la linea del treeview de resu_presu
         valores = self.grid_tvw_presu_entregado.item(self.selected, 'values')
-
-        # sdf = datetime.strptime(valores[1], '%Y-%m-%d')
-        # feac = sdf.strftime('%d-%m-%Y')
 
         # armado de encabezado
         fecha_presup = valores[1]

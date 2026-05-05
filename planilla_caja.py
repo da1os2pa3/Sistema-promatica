@@ -245,7 +245,7 @@ class V_PlaniCaja(tk.Frame):
 
         # ---------------------------------------------------------------------------------
         # TOTALES MOVIMIENTOS DE PLANILLA
-
+        # ---------------------------------------------------------------------------------
         self.frame_totales=tk.LabelFrame(self.master, text="", foreground="red")
         self.calculo_totales()
         self.frame_totales.pack(side="top", fill="both", expand=0, padx=5, pady=2)
@@ -337,7 +337,7 @@ class V_PlaniCaja(tk.Frame):
         # Posicionamiento del foco en el Grid, voy al Id valor del set_foco --------------
         for item in children:
             texto = self.grid_planilla.item(item, "text")
-            if texto == set_foco:  # suponiendo que el ID está en la columna 0
+            if str(texto).strip() == str(set_foco).strip(): # suponiendo que el ID está en la columna 0
                 # 👉 Fuerza a Tkinter a procesar actualizaciones pendientes de la UI. Sirve para asegurarse
                 # que el widget esté actualizado antes de hacer foco / scroll.
                 self.grid_planilla.update_idletasks()
@@ -366,7 +366,6 @@ class V_PlaniCaja(tk.Frame):
     # ---------------------------------------------------------------------------------
 
     def fCancelar(self):
-
         r = messagebox.askquestion("Cancelar", "Confirma cancelar operacion actual?", parent=self)
         if r == messagebox.NO:
             return
@@ -376,7 +375,6 @@ class V_PlaniCaja(tk.Frame):
         self.btn_nuevoitem.focus()
 
     def fReset(self):
-
         r = messagebox.askquestion("Reset", "Confirma -reset- operacion actual?", parent=self)
         if r == messagebox.YES:
             self.reset_stringvars()
@@ -769,8 +767,8 @@ class V_PlaniCaja(tk.Frame):
 
         else:   # nunca puede pasar, pero por las dudas pongo mensaje
 
-            messagebox.showinfo("Eliminar", "Hubo un error en [Eliminar item planilla de ABM] Revide el "
-                                            "mopvimiento por favor", parent=self)
+            messagebox.showinfo("Eliminar", "Hubo un error en [Eliminar item planilla de ABM] Revise el "
+                                            "movimiento por favor", parent=self)
 
         self.clavemov_ant = 0
 
@@ -789,7 +787,6 @@ class V_PlaniCaja(tk.Frame):
             self.set_status("⚠ Agregue un detalle", "warn")
             self.entry_detalle_movim.focus()
             return
-        # -----------------------------------------------------------------------
 
         # Defino variables para simplificar calculos ----------------------------
         ingreso = float(self.strvar_ingreso.get() or 0)
@@ -797,7 +794,6 @@ class V_PlaniCaja(tk.Frame):
         egreso = float(self.strvar_egreso.get() or 0)
         compras = float(self.strvar_compras.get() or 0)
         pagos = float(self.strvar_pagos_ctacte.get() or 0)
-        # -----------------------------------------------------------------------
 
         # Validaciones campos numericos segun el tipo de movimiento -------------
 
@@ -833,13 +829,13 @@ class V_PlaniCaja(tk.Frame):
             if self.validar(ingreso != 0, "No puede haber ingreso", self.entry_ingresos): return
             # NO puede haber importe de compra
             if self.validar(compras != 0, "No puede haber compras", self.entry_compras): return
-        # ----------------------------------------------------------------------------
 
         # ----------------------------------------------------------------------------
         # guardo el Id del Treeview en selected para ubicacion del foco a posteriori I001, IB003
         self.selected = self.grid_planilla.focus()
         # Guardo el Id del registro de la Tabla (no es el mismo que el otro, este puedo verlo en la base)
         self.clave = self.grid_planilla.item(self.selected, 'text')
+        # ----------------------------------------------------------------------------
 
         # Identifica movimiento a cuenta corriente - debe ser cero si es un alta de nuevo movimiento
         self.strvar_clavemov.set(value="0")
@@ -847,7 +843,6 @@ class V_PlaniCaja(tk.Frame):
 
         # ALTA ===============================================================================
         if self.alta_modif == 1:
-        # ====================================================================================
 
             # Si pagos a cuenta cte es "" le meto un "0" por las dudas
             if self.strvar_pagos_ctacte.get() == "":
@@ -872,7 +867,6 @@ class V_PlaniCaja(tk.Frame):
 
                 # Si la cosa es correcto, genero nueva clave aleatoria para identificar el movimiento en ctacte
                 self.strvar_clavemov.set(value=str(random.randint(1, 1000000)))
-            # ----------------------------------------------------------------------------
 
             # Preparo Diccionarios -------------------------------------------------------
             fecha_aux = datetime.strptime(self.strvar_fecha_planilla.get(), '%d/%m/%Y')
@@ -894,36 +888,16 @@ class V_PlaniCaja(tk.Frame):
                 return
             # ----------------------------------------------------------------------------
 
-            # self.varPlanilla.insertar_planilla(fecha_aux, self.strvar_tipomov.get(),
-            #                 self.strvar_detalle_movim.get(), self.strvar_cantidad.get(), self.strvar_ingreso.get(),
-            #                 self.strvar_egreso.get(), self.strvar_costo.get(), self.strvar_pagos_ctacte.get(),
-            #                 self.strvar_compras.get(), self.strvar_cliente.get(), self.strvar_forma_pago.get(),
-            #                 self.strvar_detalle_pago.get(), self.strvar_garantia.get(),
-            #                 self.strvar_observaciones.get(), self.strvar_proved.get(), self.strvar_check1.get(),
-            #                 self.strvar_clavemov.get(), self.strvar_codcli.get())
-
-
             # 3- Si se ha generado clave de movimiento a cta. y ademas la variable movimiento a cta esta en "S"
             # Corresponde guardar el movimiento en la tabla de ctacte
             if float(self.strvar_clavemov.get()) != 0 and self.movim_a_cta == 'S':
-
-                # guardo movimiento en tabla de ctacte
-                # self.varPlanilla.insertar_ctacte(fecha_aux, self.strvar_detalle_movim.get(),
-                #             (float(self.strvar_ingreso.get()) * float(self.strvar_cantidad.get())),
-                #             self.strvar_pagos_ctacte.get(), self.strvar_codcli.get(),
-                #             self.strvar_cliente.get(), self.strvar_clavemov.get())
-
                 self.varPlanilla.insertar_ctacte(data_ctacte)
-
                 self.set_status("✔ Registracion correcta en Planillas y cuenta corriente", "ok")
-
             else:
-
                 self.set_status("✔ Registracion correcta solo Planillas", "ok")
 
         # MODIFICACION ===================================================================================
         if self.alta_modif == 2:
-        # ================================================================================================
 
             # Si pagos a cuenta cte es "" le meto un "0" por las dudas
             if self.strvar_pagos_ctacte.get() == "":
@@ -950,10 +924,10 @@ class V_PlaniCaja(tk.Frame):
                     self.entry_cliente.focus()
                     return
 
-                # genero nueva clave aleatoria
+                # genero nueva clave aleatoria ------------------------------------------------
                 self.strvar_clavemov.set(value=str(random.randint(1, 1000000)))
 
-            # Preparo Diccionarios --------------------------------------------------------------
+            # Preparo Diccionarios -------------------------------------------------------------
             fecha_aux = datetime.strptime(self.strvar_fecha_planilla.get(), '%d/%m/%Y')
             planilla = self.get_planilla_dict(fecha_aux)
             data_ctacte = self.get_ctacte_dict(fecha_aux)
@@ -979,44 +953,28 @@ class V_PlaniCaja(tk.Frame):
                 return
             # ----------------------------------------------------------------------------------
 
-            # # Modificacion en planillas --------------------------------------------------------
-            # # Guardado del movimiento en Planilas de caja-guardo modificacion con clave nueva ( cero u otra )
-            # self.varPlanilla.modificar_planilla(self.var_Id, self.strvar_fecha_planilla.get(),
-            #             self.strvar_tipomov.get(), self.strvar_detalle_movim.get(), self.strvar_cantidad.get(),
-            #             self.strvar_ingreso.get(), self.strvar_egreso.get(), self.strvar_costo.get(),
-            #             self.strvar_pagos_ctacte.get(), self.strvar_compras.get(), self.strvar_cliente.get(),
-            #             self.strvar_forma_pago.get(), self.strvar_detalle_pago.get(), self.strvar_garantia.get(),
-            #             self.strvar_observaciones.get(), self.strvar_proved.get(), self.strvar_check1.get(),
-            #             self.strvar_clavemov.get(), self.strvar_codcli.get())
-
             # Guardo de movimiento en cta cte si corresponde -----------------------------------
             if float(self.strvar_clavemov.get()) != 0 and self.movim_a_cta == 'S':
 
                 # guardo (como ALTA) movimiento modificado en ctacte con clave nueva, porque el que existia
                 # anteriormente fue borrado previamente.
-                # fecha_aux = datetime.strptime(self.strvar_fecha_planilla.get(), '%d/%m/%Y')
-                # self.varPlanilla.insertar_ctacte(fecha_aux, self.strvar_detalle_movim.get(),
-                #         (float(self.strvar_ingreso.get())*float(self.strvar_cantidad.get())),
-                #         self.strvar_pagos_ctacte.get(), self.strvar_codcli.get(),
-                #         self.strvar_cliente.get(), self.strvar_clavemov.get())
-
                 self.varPlanilla.insertar_ctacte(data_ctacte)
-
                 self.set_status("✔ Modificacion correcta en Planillas y cuenta corriente", "ok")
             else:
                 self.set_status("✔ Modificacion correcta solo Planillas", "ok")
             # -----------------------------------------------------------------------------------
-
-            #self.var_Id == -1
 
         self.movim_a_cta = 'N'
         self.reset_stringvars()
         self.habilitar_text()
 
         if self.alta_modif == 1:
+            # el id nuevo
             self.llena_grilla(self.id_ref)
         elif self.alta_modif == 2:
-            self.llena_grilla(self.id_ref)
+            # el id existente
+            # self.llena_grilla(self.id_ref)
+            self.llena_grilla(self.clave)
 
         self.alta_modif = 0
         self.btn_nuevoitem.focus()
@@ -1136,7 +1094,6 @@ class V_PlaniCaja(tk.Frame):
             self.grid_planilla.focus(items[0])
 
     def fShowall(self):
-
         self.selected = self.grid_planilla.focus()
         self.clave = self.grid_planilla.item(self.selected, 'text')
         self.filtrar_grilla(self.strvar_fecha_planilla.get())
@@ -1930,7 +1887,7 @@ class V_PlaniCaja(tk.Frame):
         }
 
     # --------------------------------------------------------------------------------
-    # Staus --------------------------------------------------------------------------
+    # Status -------------------------------------------------------------------------
 
     # GPT |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
     """ Esta funcion muestra en una barra de estado al pie de la pantalla un mensaje indicando el 

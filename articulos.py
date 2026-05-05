@@ -289,7 +289,8 @@ class Clase_Articulos(tk.Frame):
 
             texto = self.grid_articulos.item(item, "text")
 
-            if str(texto) == str(set_foco):  # suponiendo que el ID está en la columna 0
+            # if str(texto) == str(set_foco):
+            if str(texto).strip() == str(set_foco).strip():  # suponiendo que el ID está en la columna 0
 
                 # 👉 Fuerza a Tkinter a procesar actualizaciones pendientes de la UI. Sirve para asegurarse
                 # que el widget esté actualizado antes de hacer foco / scroll.
@@ -752,10 +753,7 @@ class Clase_Articulos(tk.Frame):
 
         """ Este lo usa el metodo de modificacion para cargar la imgen al editarlo, Tambien la usa "limpiartext" """
 
-        aaa = 1
-        #try:
-        if aaa == 1:
-
+        try:
             # Borro u olvido el label anterior
             self.lbl_imagen_art.forget()
             # Regenero la imgaen del campo imgaen si existe nombre en la tabla, sino va default TAPIZ
@@ -769,8 +767,7 @@ class Clase_Articulos(tk.Frame):
             self.imagen_art = ImageTk.PhotoImage(self.photoa)
             self.lbl_imagen_art = tk.Label(self.sector_imagen, image=self.imagen_art, bg="white", relief="ridge", bd=5)
             self.lbl_imagen_art.bind("<Double-Button-1>", self.amplia_img)
-        #except:
-        else:
+        except:
             self.set_status("❌ Revise nombre de imagen JPG por favor", "error")
 
         self.lbl_imagen_art.pack(expand=1, side="top", fill="both", pady=2, padx=2)

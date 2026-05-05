@@ -58,7 +58,8 @@ class ClaseFuncion_new:
 
     """
     --------------------------------------------------------------------------
-    1 -  Toma una fecha en formato 2025-12-26 y la devuelve 26/12/2026
+    1 - Toma una fecha en formato 2025-12-26 (tabla) y la devuelve 26/12/2026 (string-uso en sistema)
+        Ya tanmbien la tengo hecha en funciones como 'fecha_str_reves_normal(self, par, con_hora=False):' 
     --------------------------------------------------------------------------
     """
     def fecha_es(self, fecha_mysql):
@@ -67,6 +68,15 @@ class ClaseFuncion_new:
     """
     ------------------------------------------------------------------------------
     """
+
+    def fecha_a_tabla(self, fecha_str):
+        try:
+            fecha = datetime.strptime(fecha_str, "%d/%m/%Y %H:%M:%S")
+            return fecha.strftime("%Y-%m-%d %H:%M:%S")
+        except ValueError:
+            return None  # o podés lanzar error si preferís
+
+
 
 
     """

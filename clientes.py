@@ -200,7 +200,8 @@ class Clase_Clientes(tk.Frame):
         # Voy al Id valor del set_foco
         for item in self.grid_clientes.get_children():
             texto = self.grid_clientes.item(item, "text")
-            if str(texto) == str(set_foco):  # suponiendo que el ID está en la columna 0
+            if str(texto).strip() == str(set_foco).strip(): # suponiendo que el ID está en la columna 0
+            # if str(texto) == str(set_foco):  # suponiendo que el ID está en la columna 0
                 self.grid_clientes.update_idletasks()
                 self.grid_clientes.focus_set()
                 self.grid_clientes.selection_set(item)

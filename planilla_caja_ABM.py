@@ -155,9 +155,8 @@ class datosPlanilla:
 
             cur.execute(sql, valores)
             cnn.commit()
-            # devolvemos el Id generado del nuevo cliente
-            id_nuevo = cur.lastrowid
-            return id_nuevo
+            # id_nuevo = cur.lastrowid
+            # return id_nuevo
         except Exception as e:
             cnn.rollback()
             raise
@@ -185,11 +184,8 @@ class datosPlanilla:
                 data_ctacte["cc_nomcli"],
                 data_ctacte["cc_clavemov"],
             )
-
             cur.execute(sql, valores)
             cnn.commit()
-            # devolvemos el Id generado del nuevo cliente
-            # id_nuevo = cur.lastrowid
             return
         except Exception as e:
             cnn.rollback()
@@ -221,23 +217,6 @@ class datosPlanilla:
             cur.close()
             cnn.close()
 
-    # def eliminar_item_ctacte(self, Id):
-    #
-    #     cnn = self.get_connection()
-    #     cur = cnn.cursor(buffered=True)
-    #     try:
-    #         sql = '''DELETE FROM planicaja WHERE Id = {}'''.format(Id)
-    #         cur.execute(sql)
-    #         n = cur.rowcount
-    #         cnn.commit()
-    #         return n
-    #     except Exception:
-    #         cnn.rollback()
-    #         raise
-    #     finally:
-    #         cur.close()
-    #         cnn.close()
-
     def traer_ultimo(self, xparametro):
 
         cnn = self.get_connection()
@@ -258,31 +237,6 @@ class datosPlanilla:
         finally:
             cur.close()
             cnn.close()
-
-    # def traer_ultimo(self, xparametro):
-    #
-    #     cnn = self.get_connection()
-    #     cur = cnn.cursor(buffered=True)
-    #     try:
-    #         cur.execute("SELECT * FROM planicaja ORDER BY pl_fecha ASC")
-    #         datos = cur.fetchall()
-    #         aux = ""
-    #         for row in datos:
-    #             if xparametro == 1:
-    #                 aux = (str(row[1]))
-    #                        #+ "\n")
-    #             else:
-    #                 aux = (str(row[0]))
-    #                        #+ "\n")
-    #         if aux == "":
-    #             aux = 0
-    #         return aux
-    #     except Exception:
-    #         cnn.rollback()
-    #         raise
-    #     finally:
-    #         cur.close()
-    #         cnn.close()
 
     def combo_input(self, xcampo, xtabla, xorden):
 
@@ -311,23 +265,3 @@ class datosPlanilla:
         finally:
             cur.close()
             cnn.close()
-
-    # def insertar_ctacte(self, fecha, detalle, ingreso, egreso, codcli, nomcli, clavemov):
-    #
-    #     cnn = self.get_connection()
-    #     cur = cnn.cursor(buffered=True)
-    #
-    #     try:
-    #         cur = self.cnn.cursor()
-    #         sql = '''INSERT INTO ctacte (cc_fecha, cc_detalle, cc_ingreso, cc_egreso, cc_codcli, cc_nomcli,
-    #                                      cc_clavemov) VALUES('{}','{}','{}','{}', '{}', '{}', '{}')'''.format(fecha,
-    #                                                                 detalle, ingreso, egreso, codcli, nomcli, clavemov)
-    #         cur.execute(sql)
-    #         #n = cur.rowcount
-    #         self.cnn.commit()
-    #     except Exception as e:
-    #         cnn.rollback()
-    #         raise
-    #     finally:
-    #         cur.close()
-    #         cnn.close()

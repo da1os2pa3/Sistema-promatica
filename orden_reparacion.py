@@ -1,20 +1,19 @@
 from funciones import *
-from ordenrepar_ABM import *
-from funcion_new import *
+#from ordenrepar_ABM import *
+from funcion_new import ClaseFuncion_new
 # ---------------------------------------------
 import os
-import tkinter.font as tkFont
 from datetime import date, datetime
 # ---------------------------------------------
-# from tkinter import *
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 from tkinter.scrolledtext import *
+import tkinter.font as tkFont
 # ---------------------------------------------
 from PIL import Image, ImageTk
 from PDF_clase import *
-from fpdf import FPDF
+#from fpdf import FPDF
 from tktooltip import ToolTip
 
 class Clase_OrdenesRepara(tk.Frame):
@@ -27,23 +26,22 @@ class Clase_OrdenesRepara(tk.Frame):
         self.master.grab_set()
         self.master.focus_set()
 
-        # -----------------------------------------------------------------------
-        # Instanciaciones
-
-        """ Creo una instancia de clientes_ABM de la clase datosClientes
-        -A varGarantia le paso la pantalla para poder usar los parent en los mensajes de messagebox
-        -A varFuncion_new, le paso tambien la pantalla por el mismo motivo."""
-
+        # Instanciaciones  ------------------------------------------------------
+        """ 
+           Creo una instancia de clientes_ABM de la clase datosClientes
+            -A varGarantia le paso la pantalla para poder usar los parent en los mensajes de messagebox
+            -A varFuncion_new, le paso tambien la pantalla por el mismo motivo.
+        """
         self.varOrdenes = DatosOrdenRepar(self.master)
         self.varFuncion_new = ClaseFuncion_new(self.master)
         # ------------------------------------------------------------------------
 
-        # ------------------------------------------------------------------------
-        # PANTALLA
-        # ------------------------------------------------------------------------
+        # PANTALLA  --------------------------------------------------------------
         self.master.resizable(0, 0)
-        # Actualizamos toddo el contenido de la ventana (la ventana pude crecer si se le agrega
-        # mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer.
+        """
+        Actualizamos toddo el contenido de la ventana (la ventana pude crecer si se le agrega
+        mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer.
+        """
         # Obtenemos el largo y  ancho de la pantalla
         wtotal = self.master.winfo_screenwidth()
         htotal = self.master.winfo_screenheight()
@@ -57,9 +55,7 @@ class Clase_OrdenesRepara(tk.Frame):
         self.master.geometry(str(wventana) + "x" + str(hventana) + "+" + str(pwidth) + "+" + str(pheight))
         # ---------------------------------------------------------------------
 
-        # ---------------------------------------------------------------------
-        # VARIABLES Y ORDEN INICIAL
-        # ---------------------------------------------------------------------
+        # VARIABLES Y ORDEN INICIAL -------------------------------------------
         self.create_widgets()
         self.estado_inicial()
         self.llena_grilla("")
@@ -74,13 +70,15 @@ class Clase_OrdenesRepara(tk.Frame):
         # ---------------------------------------------------------------------
 
         # ---------------------------------------------------------------------
-        """ La función Treeview.selection() retorna una tupla con los ID de los elementos seleccionados o una
-        tupla vacía en caso de no haber ninguno.
-        # Otras funciones para manejar los elementos seleccionados incluyen:
-        1- selection_add(): añade elementos a la selección.
-        2- selection_remove(): remueve elementos de la selección.
-        3- selection_set(): similar a selection_add(), pero remueve los elementos previamente seleccionados.
-        4- selection_toggle(): cambia la selección de un elemento. """
+        """ 
+            La función Treeview.selection() retorna una tupla con los ID de los elementos seleccionados o una
+            tupla vacía en caso de no haber ninguno.
+            # Otras funciones para manejar los elementos seleccionados incluyen:
+            1- selection_add(): añade elementos a la selección.
+            2- selection_remove(): remueve elementos de la selección.
+            3- selection_set(): similar a selection_add(), pero remueve los elementos previamente seleccionados.
+            4- selection_toggle(): cambia la selección de un elemento. 
+        """
         # ----------------------------------------------------------------------
 
     # ------------------------------------------------------------------
@@ -93,9 +91,8 @@ class Clase_OrdenesRepara(tk.Frame):
         self.vcmd = (self.register(self.varFuncion_new.validar), "%P")
 
         # ------------------------------------------------------------------
-        # STRINGVARS -*-
+        # STRINGVARS
         # ------------------------------------------------------------------
-
         self.strvar_buscar_orden = tk.StringVar(value="")
         self.strvar_nombre_cliente = tk.StringVar(value="")
         self.strvar_codigo_cliente = tk.StringVar(value="0")
@@ -132,10 +129,9 @@ class Clase_OrdenesRepara(tk.Frame):
         self.strvar_estad_mesact = tk.StringVar(value="0")
         self.strvar_estad_pespendi = tk.StringVar(value="0")
         self.strvar_estad_pesmesact = tk.StringVar(value="0")
-        # ------------------------------------------------------------------
 
         # ------------------------------------------------------------------
-        # TREEVIEW -*-
+        # TREEVIEW - GRID
         # ------------------------------------------------------------------
         self.frame_superior = tk.Frame(self.master)
         self.frame_tvw_ordenes = tk.LabelFrame(self.frame_superior, text="", foreground="#CF09BD")
@@ -206,47 +202,47 @@ class Clase_OrdenesRepara(tk.Frame):
     # --------------------------------------------------------------------------------
 
     def on_write(self, *args):
-
         # Transforma a mayuscula la S de equipo retirado
         texto = self.strvar_retirado.get()
         self.strvar_retirado.set(texto.upper())
 
     def estado_inicial(self):
-
-        self.filtro_activo = "orden_repara WHERE fin_retirada = 'N' ORDER BY fecha_ingreso ASC"
-        self.var_Id = -1
+        self.filtro_activo = "WHERE fin_retirada = 'N' ORDER BY fecha_ingreso ASC"
         self.alta_modif = 0
-
         self.limpiar_text()
         self.estado_botones("normal")
         self.habilitar_text("disabled")
 
     def habilitar_text(self, estado):
 
-        self.btn_guardar_orden.configure(state=estado)
-        self.btn_bus_cli.configure(state=estado)
-        self.entry_nombre_cliente.configure(state=estado)
-        self.entry_nro_orden.configure(state=estado)
-        self.entry_equ_ingresa.configure(state=estado)
-        self.grupo_tipo_equipo.configure(state=estado)
-        self.entry_equipo_procesador.configure(state=estado)
-        self.entry_equipo_ram.configure(state=estado)
-        self.entry_equipo_discos.configure(state=estado)
-        self.entry_equipo_sist_oper.configure(state=estado)
-        self.entry_equipo_ing_obser.configure(state=estado)
+        widgets = [
+            self.btn_guardar_orden,
+            self.btn_bus_cli,
+            self.entry_nombre_cliente,
+            self.entry_nro_orden,
+            self.entry_equ_ingresa,
+            self.grupo_tipo_equipo,
+            self.entry_equipo_procesador,
+            self.entry_equipo_ram,
+            self.entry_equipo_discos,
+            self.entry_equipo_sist_oper,
+            self.entry_equipo_ing_obser,
+            self.entry_equ_accesorios,
+            self.entry_equ_estado,
+            self.entry_cuentas,
+            self.entry_partes,
+            self.entry_requerido,
+            self.text_anotaciones,
+            self.text_trabajo_realizado,
+            self.text_diagnostico,
+            self.entry_presupuesto,
+            self.entry_total_partes,
+            self.entry_total_manodeobra,
+            self.entry_retirado
+        ]
 
-        self.entry_equ_accesorios.configure(state=estado)
-        self.entry_equ_estado.configure(state=estado)
-        self.entry_cuentas.configure(state=estado)
-        self.entry_partes.configure(state=estado)
-        self.entry_requerido.configure(state=estado)
-        self.text_anotaciones.configure(state=estado)
-        self.text_trabajo_realizado.configure(state=estado)
-        self.text_diagnostico.configure(state=estado)
-        self.entry_presupuesto.configure(state=estado)
-        self.entry_total_partes.configure(state=estado)
-        self.entry_total_manodeobra.configure(state=estado)
-        self.entry_retirado.configure(state=estado)
+        for widget in widgets:
+            widget.configure(state=estado)
 
         # Activar Browse
         self.grid_orden['selectmode'] = 'browse'
@@ -286,73 +282,89 @@ class Clase_OrdenesRepara(tk.Frame):
         self.strvar_total_partes.set(value="0.00")
         self.strvar_total_manodeobra.set(value="0.00")
         self.strvar_retirado.set(value="N")
-
         self.grupo_tipo_equipo.set("")
         self.grupo_tipo_equipo.current(0)
-
         self.strvar_cli_deuda.set(value="0")
 
     def estado_botones(self, estado):
 
-        self.btn_nueva_orden.configure(state=estado)
-        self.btn_editar_orden.configure(state=estado)
-        self.btn_borrar_orden.configure(state=estado)
-        self.btn_ver_orden.configure(state=estado)
-        self.btn_imprime_orden.configure(state=estado)
-        self.btn_buscar_orden.configure(state=estado)
-        self.btn_showall_orden.configure(state=estado)
-        self.btn_no_retiradas.configure(state=estado)
-        self.btn_estadistica.configure(state=estado)
-        self.btn_inf_tecnico.configure(state=estado)
-        self.entry_buscar_orden.configure(state=estado)
+        widgets_botones = [
+            self.btn_nueva_orden,
+            self.btn_editar_orden,
+            self.btn_borrar_orden,
+            self.btn_ver_orden,
+            self.btn_imprime_orden,
+            self.btn_buscar_orden,
+            self.btn_showall_orden,
+            self.btn_no_retiradas,
+            self.btn_estadistica,
+            self.btn_inf_tecnico,
+            self.entry_buscar_orden
+        ]
+
+        for widget in widgets_botones:
+            widget.configure(state=estado)
 
     def estado_botones_global(self):
 
-        self.entry_nombre_cliente.configure(state="normal")
+        # Widgets que se habilitan
+        widgets_normal = [
+            self.entry_nombre_cliente,
+            self.btn_cancelar_orden,
+            self.btn_guardar_orden,
+            self.btn_bus_cli,
+            self.entry_equ_ingresa,
+            self.entry_equipo_procesador,
+            self.entry_equipo_ram,
+            self.entry_equipo_discos,
+            self.entry_equipo_sist_oper,
+            self.entry_equipo_ing_obser,
+            self.entry_equ_accesorios,
+            self.entry_equ_estado,
+            self.entry_cuentas,
+            self.entry_partes,
+            self.entry_requerido,
+            self.text_anotaciones,
+            self.text_trabajo_realizado,
+            self.text_diagnostico,
+            self.entry_presupuesto,
+            self.entry_total_partes,
+            self.entry_total_manodeobra,
+            self.entry_retirado,
+            self.grupo_tipo_equipo
+        ]
 
-        self.btn_cancelar_orden.configure(state="normal")
-        self.btn_guardar_orden.configure(state="normal")
+        # Widgets que se deshabilitan
+        widgets_disabled = [
+            self.btn_nueva_orden,
+            self.btn_editar_orden,
+            self.btn_borrar_orden,
+            self.btn_ver_orden,
+            self.btn_imprime_orden,
+            self.btn_buscar_orden,
+            self.entry_buscar_orden,
+            self.btn_showall_orden,
+            self.btn_no_retiradas,
+            self.btn_estadistica,
+            self.btn_inf_tecnico
+        ]
 
-        self.btn_bus_cli.configure(state="normal")
+        # Aplicar estados
+        for w in widgets_normal:
+            w.configure(state="normal")
 
-        self.entry_equ_ingresa.configure(state="normal")
-        self.entry_equipo_procesador.configure(state="normal")
-        self.entry_equipo_ram.configure(state="normal")
-        self.entry_equipo_discos.configure(state="normal")
-        self.entry_equipo_sist_oper.configure(state="normal")
-        self.entry_equipo_ing_obser.configure(state="normal")
-
-        self.entry_equ_accesorios.configure(state="normal")
-        self.entry_equ_estado.configure(state="normal")
-        self.entry_cuentas.configure(state="normal")
-        self.entry_partes.configure(state="normal")
-        self.entry_requerido.configure(state="normal")
-        self.text_anotaciones.configure(state="normal")
-        self.text_trabajo_realizado.configure(state="normal")
-        self.text_diagnostico.configure(state="normal")
-        self.entry_presupuesto.configure(state="normal")
-        self.entry_total_partes.configure(state="normal")
-        self.entry_total_manodeobra.configure(state="normal")
-        self.entry_retirado.configure(state="normal")
-
-        self.grupo_tipo_equipo.configure(state="normal")
-        self.btn_nueva_orden.configure(state="disabled")
-        self.btn_editar_orden.configure(state="disabled")
-        self.btn_borrar_orden.configure(state="disabled")
-        self.btn_ver_orden.configure(state="disabled")
-        self.btn_imprime_orden.configure(state="disabled")
-        self.btn_buscar_orden.configure(state="disabled")
-        self.entry_buscar_orden.configure(state="disabled")
-        self.btn_showall_orden.configure(state="disabled")
-        self.btn_no_retiradas.configure(state="disabled")
-        self.btn_estadistica.configure(state="disabled")
-        self.btn_inf_tecnico.configure(state="disabled")
+        for w in widgets_disabled:
+            w.configure(state="disabled")
 
     # --------------------------------------------------------------------------------
     # GRILLA -*-
     # --------------------------------------------------------------------------------
 
-    def llena_grilla(self, ult_tabla_id):
+    def llena_grilla(self, set_foco):
+
+        # Limpio grilla
+        for item in self.grid_orden.get_children():
+            self.grid_orden.delete(item)
 
         datos = self.varOrdenes.consultar_ordenes(self.filtro_activo)
 
@@ -368,7 +380,7 @@ class Clase_OrdenesRepara(tk.Frame):
             forma_normal_egreso = None
 
             if row[3] != None:
-
+                # Cargo fecha egreso si no es vacia
                 forma_normal_egreso  = fecha_str_reves_normal(self, datetime.strftime(row[3], '%Y-%m-%d %H:%M'),
                                                               True)
 
@@ -383,68 +395,73 @@ class Clase_OrdenesRepara(tk.Frame):
 
         """ get_children() obtiene todos los datos hijos. El [0] indica que obtiene el elemento
         correspondiente a ese indice o sea el Id I001, si no le pongo nada, trae todos los Id)
-        Esto parece hacer que el treeview se posicione en el primero """
+        Esto hace que el treeview se posicione en el primero """
+        # if len(self.grid_orden.get_children()) > 0:
+        #     self.grid_orden.selection_set(self.grid_orden.get_children()[0])
 
-        if len(self.grid_orden.get_children()) > 0:
-            self.grid_orden.selection_set(self.grid_orden.get_children()[0])
+        # Controles-----------------------------------------------------------------------
+        # Devuelve una colección(tupla) con los IDs de todas las filas cargadas
+        children = self.grid_orden.get_children()
+        # Si no hay filas, salgo sin intentar seleccionar
+        if not children:
+            return
+        # Si hay filas y foco vacío, voy al ultimo de la grilla
+        if not set_foco and children:
+            # self.grid_orden.selection_set(children[0]) # asi tambien voy al ultimo
+            posicion = children[-1] # ultimo
+            #posicion = children[0] # primero
+            self.grid_orden.selection_set(posicion)
+            self.grid_orden.see(posicion)
+        # --------------------------------------------------------------------------------
 
-        # ----------------------------------------------------------------------------------
-        # Procedimiento para acomodar los punteros en caso de altas, modif. ....)
-        # ----------------------------------------------------------------------------------
+        """
+        # Para testeo de variables
+        # 👉 repr() a diferencia de print() normal, te muestra los caracteres invisibles.
+        # print("texto:", texto, "| largo:", len(str(texto)))
+        # print("repr texto:", repr(texto))
+        # print("repr foco:", repr(set_foco))
+        """
 
-        """ ult_tabla_id = Trae el Id de la tabla (21, 60, 61, ..) correspondiente identificando al registro 
-        en el cual yo quiero que se ponga el puntero del GRID.
-        Traera blanco ('') si la funcion llena_grilla es llamada desde cualquier lugar que no 
-        necesite acomodar puntero en un item en particular (caso altas, modificaciones ...)."""
-
-        if ult_tabla_id:
-
-            """ Si NO es blanco - 
-                regis = Guardo todos los Id del Grid (I001, IB003, ...)"""
-            regis = self.grid_orden.get_children()
-            rg = ""
-
-            for rg in regis:
-
-                """ buscado = guardo el 'text' correspondiente al Id del grid que esta en regis y muevo toda 
-                la linea de datos del treeview a la variable buscado), o sea, para el Id I0001 paso el Id de la 
-                tabla 57... y asi ira cambiando para cada rg
-                text = te da el valor de la primera columna del grid, que es donde veo el Id del registro 
-                asignado en la tabla"""
-
-                buscado = self.grid_orden.item(rg)['text']
-                if int(buscado) == int(ult_tabla_id):
-                    """ Si coinciden los Id quiere decir que encontre al registro que estoy buscando por Id de tabla."""
-                    break
-
-            """ Ahora ejecuto este procedimiento que se encarga de poner el puntero en el registro que acabamos 
-            de encontrar correspondiente al Id de tabla asignado en el parametro de la funcion llena_grilla. 
-            "rg" = es el Text o Index del registro en el Treeview I001, IB002.... y ahi posiciono el foco 
-            con las siguientes instrucciones. """
-
-            self.grid_orden.selection_set(rg)
-            # Para que no me diga que no hay nada seleccionado
-            self.grid_orden.focus(rg)
-            # para que la linea seleccionada no me quede fuera del area visible del treeview
-            self.grid_orden.yview(self.grid_orden.index(rg))
+        # Foco no vacio - Posicionamiento del foco en el Grid, voy al Id valor del set_foco
+        for item in children:
+            texto = self.grid_orden.item(item, "text")
+            if str(texto).strip() == str(set_foco).strip():
+                # 👉 Fuerza a Tkinter a procesar actualizaciones pendientes de la UI. Sirve para asegurarse
+                # que el widget esté actualizado antes de hacer foco / scroll.
+                self.grid_orden.update_idletasks()
+                # 👉 Le da el foco al Treeview(como si hicieras click sobre él).
+                self.grid_orden.focus_set()
+                # 👉 Selecciona la fila encontrada.
+                self.grid_orden.selection_set(item)
+                # 👉 Mueve el cursor interno del Treeview a esa fila(la deja como “activa”).
+                self.grid_orden.focus(item)
+                self.grid_orden.see(item)
+                break
         else:
-            # En caso de que el parametro sea "" muevo el puntero al final del GRID
-            self.muevo_puntero_topend("END")
+            # 👉 Esto se ejecuta SOLO si NO hubo break
+            if children:
+                ultimo = children[-1]
+                self.grid_orden.update_idletasks()
+                self.grid_orden.focus_set()
+                self.grid_orden.selection_set(ultimo)
+                self.grid_orden.focus(ultimo)
+                self.grid_orden.see(ultimo)
+        # --------------------------------------------------------------------------------
 
-    def llena_grilla2(self, argg2):
-
-        datos = self.varOrdenes.consultar_ordenes(argg2)
-
-        for row in datos:
-            self.grid_orden.insert("", "end", text=row[0], values=(row[1], row[2], row[3], row[4], row[5]))
-
-        if len(self.grid_orden.get_children()) > 0:
-            self.grid_orden.selection_set(self.grid_orden.get_children()[0])
-
-    def limpiar_Grid(self):
-
-        for item in self.grid_orden.get_children():
-            self.grid_orden.delete(item)
+    # # ojo revisar si hace falta
+    # def llena_grilla2(self, argg2):
+    #
+    #     # Limpio grilla
+    #     for item in self.grid_orden.get_children():
+    #         self.grid_orden.delete(item)
+    #
+    #     datos = self.varOrdenes.consultar_ordenes(argg2)
+    #
+    #     for row in datos:
+    #         self.grid_orden.insert("", "end", text=row[0], values=(row[1], row[2], row[3], row[4], row[5]))
+    #
+    #     if len(self.grid_orden.get_children()) > 0:
+    #         self.grid_orden.selection_set(self.grid_orden.get_children()[0])
 
     # --------------------------------------------------------------------------------
     # CRUD *
@@ -455,13 +472,10 @@ class Clase_OrdenesRepara(tk.Frame):
         # -------------------------------------------------------------
         self.selected = self.grid_orden.focus()
         self.clave = self.grid_orden.item(self.selected, 'text')
-
         if self.clave == "":
             messagebox.showwarning("Ver", "No hay nada seleccionado", parent=self)
             return
-
-        # self.alta_modif = 2
-        # self.var_Id = self.clave  #puede traer -1 , en ese caso seria un alta
+        # -------------------------------------------------------------
 
         self.habilitar_text('normal')
         self.limpiar_text()
@@ -487,9 +501,6 @@ class Clase_OrdenesRepara(tk.Frame):
             una_fecha = (datos_registro_selec[3])
             self.fecha_final = una_fecha.strftime("%d/%m/%Y %H:%M:%S")
             self.strvar_fecha_egreso.set(self.fecha_final)
-
-        #self.filtro_activo = "orden_repara WHERE Id = " + str(self.clave)
-        #valores = self.varOrdenes.consultar_ordenes(self.filtro_activo)
 
         # Aqui analizo que no me llegue desde la TABLA ninguna fecha en "none" dado que ese es un error
         # en el caso que venga, la convierto datetime con la fecha actual tanto para ingreso como para egreso.
@@ -566,26 +577,24 @@ class Clase_OrdenesRepara(tk.Frame):
 
     def fModificar_orden(self):
 
+        # -------------------------------------------------------------
         # Preparo claves de registros para puntero en el grid posterior
         # Asi obtengo el Id del Grid de donde esta el foco (I006...I002...)
         self.selected = self.grid_orden.focus()
         # Asi obtengo la clave de la base de datos campo Id que no es lo mismo que el otro (numero secuencial
         # que pone la Tabla automaticamente al dar el alta
-        self.clave = self.grid_orden.item(self.selected, 'text')
-
+        self.clave = self.grid_orden.item(self.selected, 'text')   # I001, IB02
         if self.clave == "":
             messagebox.showwarning("Alerta", "No hay nada seleccionado", parent=self)
             return
+        # -------------------------------------------------------------
 
-        # Preparo variables y estado pantalla
+        # Preparo variables y estado pantalla -------------------------
         self.alta_modif = 2
-
-        self.var_Id = self.clave  # puede traer -1 , en ese caso seria un alta
-
         self.estado_botones_global()
         self.limpiar_text()
 
-        # Trae un solo el registro solicitado mediante su ID. Metodo de ordenrepar_ABM.
+        # Trae solo el registro solicitado mediante su ID. Metodo de ordenrepar_ABM.
         datos_registro_selec = self.varOrdenes.traer_un_registro(self.clave)
 
         # Asigno el valor de la lista al campo desde la posicion 1
@@ -593,8 +602,7 @@ class Clase_OrdenesRepara(tk.Frame):
         self.entry_nro_orden.insert(0, datos_registro_selec[1])
         self.entry_nro_orden.configure(state="disabled")
 
-        # Aqui analizo que no me llegue desde la TABLA ninguna fecha en "none" dado que ese es un error
-        # en el caso que venga, la convierto datetime con la fecha actual tanto para ingreso como para egreso.
+        # Convierto fecha de ingreso a formato normal
         una_fecha = (datos_registro_selec[2])
         self.fecha_final = una_fecha.strftime("%d/%m/%Y %H:%M:%S")
         self.strvar_fecha_ingreso.set(self.fecha_final)
@@ -609,17 +617,15 @@ class Clase_OrdenesRepara(tk.Frame):
 
         self.strvar_codigo_cliente.set(datos_registro_selec[4])
         self.strvar_nombre_cliente.set(value=datos_registro_selec[5])
-
         self.strvar_equ_ingresa.set(value=datos_registro_selec[6])
         self.strvar_equ_grupo.set(value=datos_registro_selec[7])
         self.strvar_equipo_procesador.set(value=datos_registro_selec[8])
         self.strvar_equipo_ram.set(value=datos_registro_selec[9])
         self.strvar_equipo_discos.set(value=datos_registro_selec[10])
         self.strvar_equipo_sist_oper.set(value=datos_registro_selec[11])
-        self.strvar_equipo_ing_obser.set(value=datos_registro_selec[11])
+        self.strvar_equipo_ing_obser.set(value=datos_registro_selec[12])
         self.strvar_equ_accesorios.set(value=datos_registro_selec[13])
         self.strvar_equ_estado.set(value=datos_registro_selec[14])
-
         self.strvar_cuentas.set(value=datos_registro_selec[15])
         self.strvar_requerido.set(value=datos_registro_selec[16])
         self.text_diagnostico.insert("end", datos_registro_selec[17])
@@ -630,12 +636,10 @@ class Clase_OrdenesRepara(tk.Frame):
         self.strvar_total_manodeobra.set(value=datos_registro_selec[22])
         self.strvar_total_partes.set(value=datos_registro_selec[23])
         self.strvar_retirado.set(value=datos_registro_selec[24])
-
         self.strvar_cli_deuda.set(value=str(self.fTraedeuda(self.strvar_codigo_cliente.get())))
 
-        # traer los datos del cliente direccion y telefono - Datos mas -
+        # traer los datos del cliente direccion y telefono - Datos mas --------------
         retorno = self.varOrdenes.buscar_entabla("clientes WHERE codigo = '" + self.strvar_codigo_cliente.get() +"'")
-
         for item in retorno:
             self.strvar_cli_datosmas.set(value=str(item[4]+' - tel: '+item[8]+' / '+item[9]))
 
@@ -652,13 +656,12 @@ class Clase_OrdenesRepara(tk.Frame):
         # guardo en clave el Id pero de la Tabla (no es el mismo del Tv - 23, 12, 33, ....
         self.clave = self.grid_orden.item(self.selected, 'text')
         self.clave_ant = self.grid_orden.item(self.selected_ant, 'text')
-        # ---------------------------------------------------------------------------
-
         if self.clave == "":
             messagebox.showwarning("Alerta", "No hay nada seleccionado", parent=self)
             return
+        # ---------------------------------------------------------------------------
 
-        # guardo todos los valores en una lista desde el GRID
+        # guardo todos los valores en una lista desde el GRID -----------------------
         valores = self.grid_orden.item(self.selected, 'values')
 
         data = "Id: "+str(self.clave)+" Nº: "+valores[0]+" Cliente: " + valores[4]
@@ -671,14 +674,11 @@ class Clase_OrdenesRepara(tk.Frame):
         self.varOrdenes.eliminar_orden(self.clave)
 
         messagebox.showinfo("Aviso", "Registro eliminado correctamente", parent=self)
-        self.limpiar_Grid()
         self.llena_grilla(self.clave_ant)
 
     def fGuardar_orden(self):
 
-        # --------------------------------------------------------------------------------
-        # VALIDAR
-
+        # VALIDAR  ------------------------------------------------------------------------
         # no permito codigo ni nombre de cliente en blanco
         if int(self.strvar_codigo_cliente.get()) == 0 or self.strvar_nombre_cliente.get() == "":
             messagebox.showerror("Cuidado", "Faltan datos de cliente - verifique", parent=self)
@@ -695,8 +695,7 @@ class Clase_OrdenesRepara(tk.Frame):
         # --------------------------------------------------------------------------------
 
         # --------------------------------------------------------------------------------
-        # Guardo las claves para los punteros
-        # guardo el Id del Tv en selected para ubicacion del foco a posteriori - I001, IB10
+        # guardo el Id del Grid en selected para ubicacion del foco a posteriori - I001, IB10
         self.selected = self.grid_orden.focus()
         # Guardo el Id del registro de la Tabla (no es el mismo que el otro, este puedo verlo en la TABLA - 21, 12..)
         self.clave = self.grid_orden.item(self.selected, 'text')
@@ -704,57 +703,78 @@ class Clase_OrdenesRepara(tk.Frame):
 
         if self.alta_modif == 1:
 
-            self.varOrdenes.insertar_orden(self.strvar_nro_orden.get(), datetime.now(),
-                self.strvar_codigo_cliente.get(), self.strvar_nombre_cliente.get(), self.strvar_equ_ingresa.get(),
-                self.strvar_equ_grupo.get(), self.strvar_equipo_procesador.get(), self.strvar_equipo_ram.get(),
-                self.strvar_equipo_discos.get(), self.strvar_equipo_sist_oper.get(), self.strvar_equipo_ing_obser.get(),
-                self.strvar_equ_accesorios.get(), self.strvar_equ_estado.get(), self.strvar_cuentas.get(),
-                self.strvar_requerido.get(), self.text_diagnostico.get(1.0, 'end-1c'),
-                self.strvar_presupuesto.get(), self.text_trabajo_realizado.get(1.0, 'end-1c'),
-                self.strvar_partes.get(), self.text_anotaciones.get(1.0, 'end-1c'),
-                self.strvar_total_manodeobra.get(), self.strvar_total_partes.get(), self.strvar_retirado.get())
+            # ALTA ======================================================================
 
+            ordenes = self.get_ordenes_dict(datetime.now(), "")
+
+            # Ejecuto la insercion ala tabla ---------------------------------------------
+            try:
+                self.id_nuevo = self.varOrdenes.insertar_orden(ordenes)
+                self.id_ref = self.id_nuevo
+            except ValueError as e:
+                messagebox.showwarning("Datos inválidos - error al insertar/modificar", str(e))
+                #self.set_status("⚠ Error en los datos", "warn")
+                return
+            except Exception as e:
+                messagebox.showerror("Error del sistema - al insertar/modificar", str(e))
+                #self.set_status("❌ Error al guardar", "error")
+                return
             messagebox.showinfo("Aviso", "Nuevo registro creado correctamente", parent=self)
 
-        else:
+        if self.alta_modif == 2:
 
-            transformo_fecha_ingreso = datetime
-            transformo_fecha_ingreso = transformo_fecha_ingreso.strptime(self.strvar_fecha_ingreso.get(),
-                                                                         "%d/%m/%Y %H:%M:%S")
+            # MODIFICACION ==============================================================
 
-            if self.strvar_retirado.get() == "S":
-                transformo_fecha_egreso = datetime.now()
+            # ---------------------------------------------------------------------------
+            # Al modificar, debo conservar la misma fecha y hora de ingreso.
+            # Convierto la fecha a formato tabla(****/**/**)
+            transformo_fecha_ingreso = self.varFuncion_new.fecha_a_tabla(self.strvar_fecha_ingreso.get())
+            # Tambien debo contemplar que si es una modificacion sobre una orden "ya retiraqda", no debo modificar
+            # su fecha de agreso ni de ingreso.
+            retirado = self.strvar_retirado.get()
+            fecha_egreso = self.strvar_fecha_egreso.get()
+            if retirado == "S":
+                if not fecha_egreso:
+                    # modificacion : La retiran = dia y hora actual
+                    transformo_fecha_egreso = datetime.now()
+                else:
+                    # modificacion: ya retirada = conservar fecha y hora anterior de retiro
+                    transformo_fecha_egreso = self.varFuncion_new.fecha_a_tabla(fecha_egreso)
             else:
+                # modificacion: No retirada = fecha y  hora = en blanco
                 transformo_fecha_egreso = ""
+            # ----------------------------------------------------------------------------
 
-            self.varOrdenes.modificar_orden(self.var_Id, self.strvar_nro_orden.get(), transformo_fecha_ingreso,
-                transformo_fecha_egreso, self.strvar_codigo_cliente.get(), self.strvar_nombre_cliente.get(),
-                self.strvar_equ_ingresa.get(), self.strvar_equ_grupo.get(), self.strvar_equipo_procesador.get(),
-                self.strvar_equipo_ram.get(), self.strvar_equipo_discos.get(), self.strvar_equipo_sist_oper.get(),
-                self.strvar_equipo_ing_obser.get(), self.strvar_equ_accesorios.get(), self.strvar_equ_estado.get(),
-                self.strvar_cuentas.get(), self.strvar_requerido.get(),
-                self.text_diagnostico.get(1.0, 'end-1c'), self.strvar_presupuesto.get(),
-                self.text_trabajo_realizado.get(1.0, 'end-1c'), self.strvar_partes.get(),
-                self.text_anotaciones.get(1.0, 'end-1c'), self.strvar_total_manodeobra.get(),
-                self.strvar_total_partes.get(), self.strvar_retirado.get())
+            # cargo el diccionario -------------------------------------------------------
+            ordenes = self.get_ordenes_dict(transformo_fecha_ingreso, transformo_fecha_egreso)
 
+            # Ejecuto la modificacion ----------------------------------------------------
+            try:
+                self.varOrdenes.modificar_orden(ordenes)
+                self.id_ref = self.clave
+            except ValueError as e:
+                messagebox.showwarning("Datos inválidos - error al insertar/modificar", str(e))
+                #self.set_status("⚠ Error en los datos", "warn")
+                return
+            except Exception as e:
+                messagebox.showerror("Error del sistema - al insertar/modificar", str(e))
+                #self.set_status("❌ Error al guardar", "error")
+                return
             messagebox.showinfo("Aviso", "La modificacion del registro fue exitosa", parent=self)
 
-        # Ordenar estado de pantalla
-        self.limpiar_Grid()
+        # Ordenar estado de pantalla ----------------------------------------------------
         self.habilitar_text("normal")
         self.limpiar_text()
         self.habilitar_text("disabled")
         self.estado_botones("normal")
 
-        # Acomodar punteros en el GRID
+        # Acomodar punteros en el GRID --------------------------------------------------
         if self.alta_modif == 1:
-            ultimo_tabla_id = self.varOrdenes.traer_ultimo(0)
-            self.llena_grilla(ultimo_tabla_id)
+            self.llena_grilla(self.id_ref) # Id nuevo
         elif self.alta_modif == 2:
-            self.llena_grilla(self.clave)
+            self.llena_grilla(self.clave)  # Id existente
 
-        # Cierre
+        # Cierre ------------------------------------------------------------------------
         self.alta_modif = 0
         self.btn_nueva_orden.focus()
 
@@ -763,7 +783,6 @@ class Clase_OrdenesRepara(tk.Frame):
     # --------------------------------------------------------------------------------
 
     def fCancelar(self):
-
         r = messagebox.askquestion("Cancelar", "Confirma cancelar operacion actual?", parent=self)
         if r == messagebox.YES:
             self.habilitar_text("normal")
@@ -784,171 +803,126 @@ class Clase_OrdenesRepara(tk.Frame):
         self.creopdf()
 
     def fNoretiradas(self):
-
-        self.filtro_activo = "orden_repara WHERE fin_retirada = 'N' ORDER BY fecha_ingreso ASC"
-        self.limpiar_Grid()
+        self.filtro_activo = "WHERE fin_retirada = 'N' ORDER BY fecha_ingreso ASC"
         self.llena_grilla("")
 
-    def fEstadistica(self):
-
-        self.filtro_anterior = self.filtro_activo
-        self.filtro_activo = "orden_repara ORDER BY fecha_ingreso"
-
-        datos = self.varOrdenes.consultar_ordenes(self.filtro_activo)
-
-        total_ordenes = 0
-        total_orden_pendientes = 0
-        total_pesos_pendientes = 0
-        total_orden_mesactual = 0
-        total_pesos_mesactual = 0
-
-        for row in datos:
-
-            fecha_orden = datetime.date(row[2])
-            mes_orden = fecha_orden.month
-            ano_orden = fecha_orden.year
-            mes_comparacion = date.today().month
-            ano_comparacion = date.today().year
-
-            total_ordenes += 1
-
-            if row[24] == "N":
-                total_orden_pendientes += 1
-                total_pesos_pendientes += (float(row[23])+float(row[22]))
-
-            if mes_comparacion == mes_orden and ano_comparacion == ano_orden:
-                total_orden_mesactual += 1
-                total_pesos_mesactual += (float(row[23])+float(row[22]))
-
-         # if len(self.grid_orden.get_children()) > 0:
-         #    self.grid_orden.selection_set(self.grid_orden.get_children()[0])
-
-        total_pesos_mesactual = formatear_cifra(total_pesos_mesactual)
-        total_pesos_pendientes = formatear_cifra(total_pesos_pendientes)
-
-        self.strvar_estad_total.set(value=str(total_ordenes))
-        self.strvar_estad_pendi.set(value=str(total_orden_pendientes))
-        self.strvar_estad_mesact.set(value=str(total_orden_mesactual))
-        self.strvar_estad_pespendi.set(value=str(total_pesos_pendientes))
-        self.strvar_estad_pesmesact.set(value=str(total_pesos_mesactual))
-
-        self.pantalla_estad = tk.Toplevel()
-        self.pantalla_estad.geometry('220x180+1200+200')
-        self.pantalla_estad.transient(master=self.master)
-        self.pantalla_estad.config(bg='light green', padx=5, pady=5)
-        self.pantalla_estad.resizable(False, False)
-        self.pantalla_estad.title("Estadisticas")
-
-        # muestro la imagen en el frame
-        self.lbl_total_ordenes1 = tk.Label(self.pantalla_estad, text="Total ordenes: ", bg="light blue",
-                                        relief="ridge", bd=5)
-        self.lbl_total_ordenes2 = tk.Label(self.pantalla_estad, textvariable=self.strvar_estad_total, bg="plum1",
-                                        relief="ridge", bd=5)
-        self.lbl_pendi_ordenes1 = tk.Label(self.pantalla_estad, text="Ordenes pendientes: ", bg="light blue",
-                                        relief="ridge", bd=5)
-        self.lbl_pendi_ordenes2 = tk.Label(self.pantalla_estad, textvariable=self.strvar_estad_pendi, bg="plum1",
-                                        relief="ridge", bd=5)
-        self.lbl_pespendi_ordenes1 = tk.Label(self.pantalla_estad, text="Pesos pendientes: ", bg="light blue",
-                                           relief="ridge", bd=5)
-        self.lbl_pespendi_ordenes2 = tk.Label(self.pantalla_estad, textvariable=self.strvar_estad_pespendi, bg="plum1",
-                                           relief="ridge", bd=5)
-        self.lbl_mesact_ordenes1 = tk.Label(self.pantalla_estad, text="Ordenes mes actual: ", bg="light blue",
-                                         relief="ridge", bd=5)
-        self.lbl_mesact_ordenes2 = tk.Label(self.pantalla_estad, textvariable=self.strvar_estad_mesact, bg="plum1",
-                                         relief="ridge", bd=5)
-        self.lbl_pesmesact_ordenes1 = tk.Label(self.pantalla_estad, text="Pesos mes actual: ", bg="light blue",
-                                            relief="ridge", bd=5)
-        self.lbl_pesmesact_ordenes2 = tk.Label(self.pantalla_estad, textvariable=self.strvar_estad_pesmesact, bg="plum1",
-                                            relief="ridge", bd=5)
-
-        self.lbl_total_ordenes1.grid(row=0, column=0, padx=5, pady=3, sticky="nsew")
-        self.lbl_total_ordenes2.grid(row=0, column=1, padx=5, pady=3, sticky="nsew")
-        self.lbl_pendi_ordenes1.grid(row=1, column=0, padx=5, pady=3, sticky="nsew")
-        self.lbl_pendi_ordenes2.grid(row=1, column=1, padx=5, pady=3, sticky="nsew")
-        self.lbl_pespendi_ordenes1.grid(row=2, column=0, padx=5, pady=3, sticky="nsew")
-        self.lbl_pespendi_ordenes2.grid(row=2, column=1, padx=5, pady=3, sticky="nsew")
-        self.lbl_mesact_ordenes1.grid(row=3, column=0, padx=5, pady=3, sticky="nsew")
-        self.lbl_mesact_ordenes2.grid(row=3, column=1, padx=5, pady=3, sticky="nsew")
-        self.lbl_pesmesact_ordenes1.grid(row=4, column=0, padx=5, pady=3, sticky="nsew")
-        self.lbl_pesmesact_ordenes2.grid(row=4, column=1, padx=5, pady=3, sticky="nsew")
-
-        for widg in self.pantalla_estad.winfo_children():
-            widg.grid_configure(padx=5, pady=3, sticky='nsew')
-
-        self.pantalla_estad.grab_set()
-        self.pantalla_estad.focus_set()
-
-        tk.mainloop()
-
-        self.filtro_activo = self.filtro_anterior
+    # def fEstadistica(self):
+    #
+    #     self.filtro_anterior = self.filtro_activo
+    #     self.filtro_activo = "ORDER BY fecha_ingreso"
+    #
+    #     datos = self.varOrdenes.consultar_ordenes(self.filtro_activo)
+    #
+    #     total_ordenes = 0
+    #     total_orden_pendientes = 0
+    #     total_pesos_pendientes = 0
+    #     total_orden_mesactual = 0
+    #     total_pesos_mesactual = 0
+    #
+    #     for row in datos:
+    #
+    #         fecha_orden = datetime.date(row[2])
+    #         mes_orden = fecha_orden.month
+    #         ano_orden = fecha_orden.year
+    #         mes_comparacion = date.today().month
+    #         ano_comparacion = date.today().year
+    #
+    #         total_ordenes += 1
+    #
+    #         if row[24] == "N":
+    #             total_orden_pendientes += 1
+    #             total_pesos_pendientes += (float(row[23])+float(row[22]))
+    #
+    #         if mes_comparacion == mes_orden and ano_comparacion == ano_orden:
+    #             total_orden_mesactual += 1
+    #             total_pesos_mesactual += (float(row[23])+float(row[22]))
+    #
+    #      # if len(self.grid_orden.get_children()) > 0:
+    #      #    self.grid_orden.selection_set(self.grid_orden.get_children()[0])
+    #
+    #     total_pesos_mesactual = formatear_cifra(total_pesos_mesactual)
+    #     total_pesos_pendientes = formatear_cifra(total_pesos_pendientes)
+    #
+    #     self.strvar_estad_total.set(value=str(total_ordenes))
+    #     self.strvar_estad_pendi.set(value=str(total_orden_pendientes))
+    #     self.strvar_estad_mesact.set(value=str(total_orden_mesactual))
+    #     self.strvar_estad_pespendi.set(value=str(total_pesos_pendientes))
+    #     self.strvar_estad_pesmesact.set(value=str(total_pesos_mesactual))
+    #
+    #     self.pantalla_estad = tk.Toplevel()
+    #     self.pantalla_estad.geometry('220x180+1200+200')
+    #     self.pantalla_estad.transient(master=self.master)
+    #     self.pantalla_estad.config(bg='light green', padx=5, pady=5)
+    #     self.pantalla_estad.resizable(False, False)
+    #     self.pantalla_estad.title("Estadisticas")
+    #
+    #     # muestro la imagen en el frame
+    #     self.lbl_total_ordenes1 = tk.Label(self.pantalla_estad, text="Total ordenes: ", bg="light blue",
+    #                                     relief="ridge", bd=5)
+    #     self.lbl_total_ordenes2 = tk.Label(self.pantalla_estad, textvariable=self.strvar_estad_total, bg="plum1",
+    #                                     relief="ridge", bd=5)
+    #     self.lbl_pendi_ordenes1 = tk.Label(self.pantalla_estad, text="Ordenes pendientes: ", bg="light blue",
+    #                                     relief="ridge", bd=5)
+    #     self.lbl_pendi_ordenes2 = tk.Label(self.pantalla_estad, textvariable=self.strvar_estad_pendi, bg="plum1",
+    #                                     relief="ridge", bd=5)
+    #     self.lbl_pespendi_ordenes1 = tk.Label(self.pantalla_estad, text="Pesos pendientes: ", bg="light blue",
+    #                                        relief="ridge", bd=5)
+    #     self.lbl_pespendi_ordenes2 = tk.Label(self.pantalla_estad, textvariable=self.strvar_estad_pespendi, bg="plum1",
+    #                                        relief="ridge", bd=5)
+    #     self.lbl_mesact_ordenes1 = tk.Label(self.pantalla_estad, text="Ordenes mes actual: ", bg="light blue",
+    #                                      relief="ridge", bd=5)
+    #     self.lbl_mesact_ordenes2 = tk.Label(self.pantalla_estad, textvariable=self.strvar_estad_mesact, bg="plum1",
+    #                                      relief="ridge", bd=5)
+    #     self.lbl_pesmesact_ordenes1 = tk.Label(self.pantalla_estad, text="Pesos mes actual: ", bg="light blue",
+    #                                         relief="ridge", bd=5)
+    #     self.lbl_pesmesact_ordenes2 = tk.Label(self.pantalla_estad, textvariable=self.strvar_estad_pesmesact, bg="plum1",
+    #                                         relief="ridge", bd=5)
+    #
+    #     self.lbl_total_ordenes1.grid(row=0, column=0, padx=5, pady=3, sticky="nsew")
+    #     self.lbl_total_ordenes2.grid(row=0, column=1, padx=5, pady=3, sticky="nsew")
+    #     self.lbl_pendi_ordenes1.grid(row=1, column=0, padx=5, pady=3, sticky="nsew")
+    #     self.lbl_pendi_ordenes2.grid(row=1, column=1, padx=5, pady=3, sticky="nsew")
+    #     self.lbl_pespendi_ordenes1.grid(row=2, column=0, padx=5, pady=3, sticky="nsew")
+    #     self.lbl_pespendi_ordenes2.grid(row=2, column=1, padx=5, pady=3, sticky="nsew")
+    #     self.lbl_mesact_ordenes1.grid(row=3, column=0, padx=5, pady=3, sticky="nsew")
+    #     self.lbl_mesact_ordenes2.grid(row=3, column=1, padx=5, pady=3, sticky="nsew")
+    #     self.lbl_pesmesact_ordenes1.grid(row=4, column=0, padx=5, pady=3, sticky="nsew")
+    #     self.lbl_pesmesact_ordenes2.grid(row=4, column=1, padx=5, pady=3, sticky="nsew")
+    #
+    #     for widg in self.pantalla_estad.winfo_children():
+    #         widg.grid_configure(padx=5, pady=3, sticky='nsew')
+    #
+    #     self.pantalla_estad.grab_set()
+    #     self.pantalla_estad.focus_set()
+    #
+    #     #tk.mainloop()
+    #
+    #     self.filtro_activo = self.filtro_anterior
 
     def limitador(self, entry_text, caract):
-
         if len(entry_text.get()) > 0:
-            # donde esta CARACT va la cantidad de caracteres
             entry_text.set(entry_text.get()[:caract])
 
     # --------------------------------------------------------------------------------
     # PUNTEROS *
     # --------------------------------------------------------------------------------
 
-    def muevo_puntero_topend(self, param_topend):
-
-        if param_topend == 'TOP':
-
-            # obtengo una lista con todos los Id del treeview
-            regis = self.grid_orden.get_children()
-            # barro y salgo al primero, pero me quedo en el primero
-            rg = ""
-            for rg in regis:
-                break
-            if rg == "":
-                return
-            # selecciono el Id primero de la lista en este caso
-            self.grid_orden.selection_set(rg)
-            # pone el primero Id
-            self.grid_orden.focus(rg)
-            # lle principio del treeview con esta instruccion que encontre
-            self.grid_orden.yview(self.grid_orden.index(self.grid_orden.get_children()[0]))
-
-        elif param_topend == 'END':
-
-            # Obtengo una lista con todos los Id del treeview
-            regis = self.grid_orden.get_children()
-            # Barro la lista y ,me quedo conel ultimo Id
-            rg = ""
-            for rg in regis:
-                pass
-            if rg == "":
-                return
-            # Selecciono el ultimo Id en este caso
-            self.grid_orden.selection_set(rg)
-            # Pongo el foco alultimo elemento de la lista (al final)
-            self.grid_orden.focus(rg)
-            # lleva el foco al final del treeview
-            self.grid_orden.yview(self.grid_orden.index(self.grid_orden.get_children()[-1]))
-
     def fToparch(self):
-        self.muevo_puntero_topend('TOP')
+        self.varFuncion_new.mover_puntero_topend(self.grid_orden,'TOP')
 
     def fFinarch(self):
-        self.muevo_puntero_topend('END')
+        self.varFuncion_new.mover_puntero_topend(self.grid_orden, 'END')
 
     def fShowall(self):
-
-        self.filtro_activo = "orden_repara ORDER by fecha_ingreso ASC"
-        self.limpiar_Grid()
+        self.filtro_activo = "ORDER by fecha_ingreso ASC"
         self.llena_grilla("")
 
     def fTraedeuda(self, codigo_cli):
-
         # Trae la deuda del cliente que se selecciona
         datos = self.varOrdenes.suma_deuda(codigo_cli)
-
         sumasaldo = 0
         for row in datos:
             sumasaldo += row[3] - row[4]
-
         return(sumasaldo)
 
     # ----------------------------------------------------------------------------
@@ -1002,62 +976,94 @@ class Clase_OrdenesRepara(tk.Frame):
                              + " OR " + "INSTR(equ_grupo, '" + se_busca + "') > 0" \
                              + " OR " + "INSTR(equ_ingresa, '" + se_busca + "') > 0"
 
- #       + " OR " + "INSTR(equ_descripcion, '" + se_busca + "') > 0" \
-
         self.retorno = self.varOrdenes.buscar_entabla(self.filtro_activo)
-
-        self.limpiar_Grid()
-        self.llena_grilla2(self.filtro_activo)
+        #self.llena_grilla2(self.filtro_activo)
+        self.llena_grilla("")
 
     # ----------------------------------------------------------------------------
     # CALCULOS -*-
     # ----------------------------------------------------------------------------
 
+    # def sumar_totalfinal(self):
+    #
+    #     #try:
+    #     aaa = 0
+    #     if aaa == 0:
+    #
+    #         # Control de que no ingresen mas de una vez el '-' o el '.' - Funcion en funciones.py
+    #         if not control_forma(self.strvar_total_partes.get()):
+    #             self.strvar_total_partes.set(value="0")
+    #             self.entry_total_partes.focus()
+    #             return
+    #         if not control_forma(self.strvar_total_manodeobra.get()):
+    #             self.strvar_total_manodeobra.set(value="0")
+    #             self.entry_total_manodeobra.focus()
+    #             return
+    #
+    #         # Control de valor en blanco o solo un . o -
+    #         if (self.strvar_total_partes.get() == "" or self.strvar_total_partes.get() == "."
+    #                 or self.strvar_total_partes.get() == "-"):
+    #             self.strvar_total_partes.set(value="0")
+    #         if (self.strvar_total_manodeobra.get() == "" or self.strvar_total_manodeobra.get() == "."
+    #                 or self.strvar_total_manodeobra.get() == "-"):
+    #             self.strvar_total_manodeobra.set(value="0")
+    #
+    #         # control de valor en cero o si tiene mas de dos decimales lo trunco a dos
+    #         if float(self.strvar_total_partes.get()) == 0:
+    #             self.strvar_total_partes.set(value="0")
+    #         else:
+    #             self.strvar_total_partes.set(value=str(round(float(self.strvar_total_partes.get()), 2)))
+    #         if float(self.strvar_total_manodeobra.get()) == 0:
+    #             self.strvar_total_manodeobra.set(value="0")
+    #         else:
+    #             self.strvar_total_manodeobra.set(value=str(round(float(self.strvar_total_manodeobra.get()), 2)))
+    #
+    #         v1 = float(self.strvar_total_partes.get())
+    #         v2 = float(self.strvar_total_manodeobra.get())
+    #
+    #         self.strvar_tot_final.set(value=str(round((v1 + v2), 2)))
+    #
+    #     else:
+    #     #except:
+    #
+    #         messagebox.showerror("Error", "Revise datos ingresados", parent=self)
+    #         self.entry_total_partes.focus()
+    #         return
+
     def sumar_totalfinal(self):
 
-        #try:
-        aaa = 0
-        if aaa == 0:
+        def limpiar_valor(valor_str):
+            # Evaluo si se puede convertir a float el valor que paso, si no da valueerror
+            if not control_forma(valor_str):
+                return None
+            # Valores inválidos básicos
+            if valor_str in ("", ".", "-"):
+                return 0.0
+            try:
+                return round(float(valor_str), 2)
+            except:
+                return None
 
-            # Control de que no ingresen mas de una vez el '-' o el '.' - Funcion en funciones.py
-            if not control_forma(self.strvar_total_partes.get()):
-                self.strvar_total_partes.set(value="0")
-                self.entry_total_partes.focus()
-                return
-            if not control_forma(self.strvar_total_manodeobra.get()):
-                self.strvar_total_manodeobra.set(value="0")
-                self.entry_total_manodeobra.focus()
-                return
-
-            # Control de valor en blanco o solo un . o -
-            if (self.strvar_total_partes.get() == "" or self.strvar_total_partes.get() == "."
-                    or self.strvar_total_partes.get() == "-"):
-                self.strvar_total_partes.set(value="0")
-            if (self.strvar_total_manodeobra.get() == "" or self.strvar_total_manodeobra.get() == "."
-                    or self.strvar_total_manodeobra.get() == "-"):
-                self.strvar_total_manodeobra.set(value="0")
-
-            # control de valor en cero o si tiene mas de dos decimales lo trunco a dos
-            if float(self.strvar_total_partes.get()) == 0:
-                self.strvar_total_partes.set(value="0")
-            else:
-                self.strvar_total_partes.set(value=str(round(float(self.strvar_total_partes.get()), 2)))
-            if float(self.strvar_total_manodeobra.get()) == 0:
-                self.strvar_total_manodeobra.set(value="0")
-            else:
-                self.strvar_total_manodeobra.set(value=str(round(float(self.strvar_total_manodeobra.get()), 2)))
-
-            v1 = float(self.strvar_total_partes.get())
-            v2 = float(self.strvar_total_manodeobra.get())
-
-            self.strvar_tot_final.set(value=str(round((v1 + v2), 2)))
-
-        else:
-        #except:
-
-            messagebox.showerror("Error", "Revise datos ingresados", parent=self)
+        # Obtener valores
+        v_partes = limpiar_valor(self.strvar_total_partes.get())
+        if v_partes is None:
+            self.strvar_total_partes.set("0")
             self.entry_total_partes.focus()
             return
+
+        v_mano = limpiar_valor(self.strvar_total_manodeobra.get())
+        if v_mano is None:
+            self.strvar_total_manodeobra.set("0")
+            self.entry_total_manodeobra.focus()
+            return
+
+        # Normalizar valores en pantalla
+        self.strvar_total_partes.set(str(v_partes))
+        self.strvar_total_manodeobra.set(str(v_mano))
+
+        # Calcular total
+        total = round(v_partes + v_mano, 2)
+        self.strvar_tot_final.set(str(total))
 
     # ************************************************************************************
     # TREEVIEW
@@ -1074,7 +1080,6 @@ class Clase_OrdenesRepara(tk.Frame):
         self.grid_orden = ttk.Treeview(self.frame_tvw_ordenes, height=6, columns=("col1", "col2", "col3", "col4",
                                                                                   "col5", "col6", "col7", "col8"))
         self.grid_orden.bind("<Double-Button-1>", self.DobleClickGrid)
-        #self.grid_orden.bind("<ButtonRelease-3>", self.muestradatos)
 
         self.grid_orden.column("#0", width=40, anchor="center")
         self.grid_orden.column("col1", width=70, anchor="e")
@@ -1397,7 +1402,6 @@ class Clase_OrdenesRepara(tk.Frame):
         for widg in self.frame_entrys_dos.winfo_children():
             widg.grid_configure(padx=5, pady=3, sticky="nsew")
 
-
     def cuadro_entrys_equipo(self):
 
          # Descripcion de equipo que ingresa
@@ -1592,6 +1596,7 @@ class Clase_OrdenesRepara(tk.Frame):
         # Asi obtengo la clave de la base de datos campo Id que no es lo mismo que el otro (numero secuencial
         # que pone la BD automaticamente al dar el alta
         self.clave = self.grid_orden.item(self.selected, 'text')
+        # -------------------------------------------------------------------------------------
 
         if self.clave == "":
             messagebox.showwarning("Alerta", "No hay nada seleccionado", parent=self)
@@ -2008,3 +2013,125 @@ class Clase_OrdenesRepara(tk.Frame):
 
         # Espacio después
         pdf.cell(0, 3, txt='', ln=1)
+
+    def get_ordenes_dict(self, fecha_ing, fecha_egr):
+        return {
+            "Id": self.clave,
+            "or_num_orden": self.strvar_nro_orden.get(),
+            "fecha_ingreso": fecha_ing,
+            "fecha_egreso": fecha_egr,
+            "or_cod_cliente": self.strvar_codigo_cliente.get(),
+            "or_nombre_cliente": self.strvar_nombre_cliente.get(),
+            "equ_ingresa": self.strvar_equ_ingresa.get(),
+            "equ_grupo": self.strvar_equ_grupo.get(),
+            "equ_procesador": self.strvar_equipo_procesador.get(),
+            "equ_ram": self.strvar_equipo_ram.get(),
+            "equ_discos": self.strvar_equipo_discos.get(),
+            "equ_sist_oper": self.strvar_equipo_sist_oper.get(),
+            "equ_obser": self.strvar_equipo_ing_obser.get(),
+            "equ_accesorios": self.strvar_equ_accesorios.get(),
+            "equ_estado": self.strvar_equ_estado.get(),
+            "dat_ctaycontr": self.strvar_cuentas.get(),
+            "dat_requerido": self.strvar_requerido.get(),
+            "inf_diagnostico": self.text_diagnostico.get(1.0, 'end-1c'),
+            "inf_presupuesto": self.strvar_presupuesto.get(),
+            "trab_realizado": self.text_trabajo_realizado.get(1.0, 'end-1c'),
+            "trab_partes": self.strvar_partes.get(),
+            "trab_anotacion": self.text_anotaciones.get(1.0, 'end-1c'),
+            "tot_mano_obra": self.strvar_total_manodeobra.get(),
+            "tot_partes": self.strvar_total_partes.get(),
+            "fin_retirada": self.strvar_retirado.get(),
+        }
+
+    # ========================================================================================
+    # Grupo de funciones de estadisticas
+    # ========================================================================================
+
+    def fEstadistica(self):
+
+        # item sobre el que esta foco
+        item = self.grid_orden.focus()
+        if not item:
+            return
+
+        valores = self.grid_orden.item(item, "values")
+
+        from datetime import datetime
+        fecha_base = datetime.strptime(valores[1], "%d/%m/%Y %H:%M")
+
+        datos = self.varOrdenes.consultar_ordenes("ORDER BY fecha_ingreso")
+
+        stats = self.calcular_estadisticas(datos, fecha_base)
+
+        self.mostrar_estadisticas(stats)
+
+    def calcular_estadisticas(self, datos, fecha_base):
+
+        mes_base = fecha_base.month
+        anio_base = fecha_base.year
+
+        total = pendientes = 0
+        pesos_pend = pesos_mes = 0
+        mes_actual_count = 0
+
+        for row in datos:
+            fecha_raw = row[2]  # ⚠️ AJUSTAR según tu print real
+
+            if not fecha_raw:
+                continue
+
+            if isinstance(fecha_raw, (datetime, date)):
+                fecha = fecha_raw
+            else:
+                fecha = datetime.strptime(str(fecha_raw), "%Y-%m-%d")
+
+            total += 1
+
+            importe = float(row[23]) + float(row[22])
+
+            if row[24] == "N":
+                pendientes += 1
+                pesos_pend += importe
+
+            if fecha.month == mes_base and fecha.year == anio_base:
+                mes_actual_count += 1
+                pesos_mes += importe
+
+        return {
+            "total": total,
+            "pendientes": pendientes,
+            "pesos_pend": pesos_pend,
+            "mes_actual": mes_actual_count,
+            "pesos_mes": pesos_mes
+        }
+
+    def mostrar_estadisticas(self, stats):
+
+        win = tk.Toplevel(self.master)
+        win.geometry('220x180+1200+200')
+        win.transient(self.master)
+        win.config(bg='light green', padx=5, pady=5)
+        win.resizable(False, False)
+        win.title("Estadisticas")
+
+        # defino una lista de tuplas cuyo contenido es 1º elemento de la tupla el titulo y el 2º elemento
+        # de la tupla es el valor de la propiedad del diccionario que se me paso como parametro (stats de total)
+        datos = [
+            ("Total ordenes", stats["total"]),
+            ("Ordenes pendientes", stats["pendientes"]),
+            ("Pesos pendientes", formatear_cifra(stats["pesos_pend"])),
+            ("Ordenes mes selec.", stats["mes_actual"]),
+            ("Pesos mes selec.", formatear_cifra(stats["pesos_mes"]))
+        ]
+
+        # arma la presentacion en la pantalla: txt es l titulo y val el valor de la lista de tuplas "datos"
+        for i, (txt, val) in enumerate(datos):
+            tk.Label(win, text=txt, bg="light blue", relief="ridge", bd=5) \
+                .grid(row=i, column=0, sticky="nsew", padx=5, pady=3)
+
+            tk.Label(win, text=val, bg="plum1", relief="ridge", bd=5) \
+                .grid(row=i, column=1, sticky="nsew", padx=5, pady=3)
+
+        win.grab_set()
+        win.focus_set()
+    # ========================================================================================

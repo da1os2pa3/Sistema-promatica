@@ -85,8 +85,8 @@ def mensajes_error_fechas(self, tipo_error):
 
 """
 ------------------------------------------------------------------------------------------------------
-2 - Toma una fecha al reves y la pone normal de 2024-12-19 a 19/12/2024. La fecha debe venir como string 
-    en parametro -par- . Puedo retornar la fecha con la hora o sola
+2 - Toma una fecha al reves y la pone normal de 2024-12-19(tabla) a 19/12/2024(uso sistema). La fecha debe 
+    venir como string en parametro -par- . Puedo retornar la fecha con la hora o sola
 ------------------------------------------------------------------------------------------------------
 """
 def fecha_str_reves_normal(self, par, con_hora=False):
@@ -310,6 +310,10 @@ def control_numerico(value, quepongo):
     return round(abs(num), 2)
 
 def control_forma(value):
+    """
+    🧠 ¿Qué hace exactamente? Intenta convertir value a tipo float. Si puede hacerlo, devuelve True.
+        Si falla(porque no es un número válido), devuelve False.
+    """
     try:
         float(value)
         return True
