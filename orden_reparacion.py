@@ -397,7 +397,7 @@ class Clase_OrdenesRepara(tk.Frame):
         correspondiente a ese indice o sea el Id I001, si no le pongo nada, trae todos los Id)
         Esto hace que el treeview se posicione en el primero """
         # if len(self.grid_orden.get_children()) > 0:
-        #     self.grid_orden.selection_set(self.grid_orden.get_children()[0])
+        #     self.grid_orden.selection_set(self.grid_orden.get_children()[0]).
 
         # Controles-----------------------------------------------------------------------
         # Devuelve una colección(tupla) con los IDs de todas las filas cargadas

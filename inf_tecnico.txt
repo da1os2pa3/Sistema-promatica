@@ -1,0 +1,39 @@
+
+DATOS:
+
+- Cuida tus datos: Realiza backups periódicos, recuerda que backup significa (dos lugares) no importa cuales.
+
+NOTEBOOKS:
+
+Energía y batería:
+- Evita que la batería llegue siempre a 0%; lo ideal es mantenerla entre 20% y 80%.
+- Si lo usas mucho enchufado, cada tanto deja que la batería se descargue un poco.
+- Haz reinicios periódicos del equipo, no es bueno dejarlo mucho tiempo en suspensión
+
+Temperatura y ventilación:
+- No lo apoyes sobre camas, almohadas o sillones: tapan la ventilación, usalo sobre superficies firmes y planas.
+- Evita calor extremo y sol directo (el auto cerrado es letal).
+        
+Líquidos y comida:
+- Nada de líquidos cerca (mate, café, agua… todos peligrosos).
+- Comer arriba del teclado = migas + grasa ? problemas a mediano plazo.
+        
+Transporte:
+- Ciérralo antes de moverlo y no lo tomes del display ni lo lleves abierto.
+- Evita poner peso encima (libros, cargadores, etc.).
+        
+Pantalla y teclado:
+- Siempre cierra la tapa con cuidado tomándola desde el medio y sin movimientos bruscos, no presiones el centro de la tapa.
+- Nunca rocíes directamente con ningún producto pantalla ni teclado, humedece el paño y luego limpia suavemente. No utilices alcohol.
+        
+Conexiones:
+- No fuerces puertos USB, HDMI, cargador, etc., saca los cables agarrando el conector, no el cable.
+- En resumen: calor, golpes y líquidos son los tres grandes enemigos del notebook (evítalos).
+
+IMPRESORAS:
+
+Transporte:
+- Siempre Horizontal, en sistenmas continuos, cierra la llave para transporte. 
+Inyectores:
+- Chorro de tinta: No dejes pasar mucho tiempo sin hacer impresiones.
+- EPSON - Nunca las dejes sin cartuchos.
