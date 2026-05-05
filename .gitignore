@@ -1,0 +1,53 @@
+# ======================
+# BACKUPS / DATOS LOCALES
+# ======================
+Respaldos/
+backup/
+
+# ======================
+# ARCHIVOS PERSONALES / PESADOS
+# ======================
+tecnica/
+fotos/
+
+# ======================
+# BUILDS / EJECUTABLES
+# ======================
+output/
+_internal/
+*.exe
+
+# ======================
+# PYTHON
+# ======================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.dist-info/
+
+# ======================
+# ENTORNO VIRTUAL
+# ======================
+venv/
+
+# ======================
+# IDE / CONFIG
+# ======================
+.idea/
+
+# ======================
+# RECURSOS (IMÁGENES / MEDIA)
+# (⚠️ opcional: si querés subir algunas, sacá esto)
+# ======================
+*.png
+*.jpg
+*.jpeg
+*.mp4
+*.pdf
+*.docx
+
+# ======================
+# OTROS
+# ======================
+.gitignore_old
