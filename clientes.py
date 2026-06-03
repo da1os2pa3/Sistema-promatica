@@ -426,8 +426,7 @@ class Clase_Clientes(tk.Frame):
             self.varClientes.eliminar_clientes(self.clave)
             # ------------------------------------------
         except Exception as e:
-            messagebox.showerror("Error del sistema en Eliminar cliente", str(e))
-            #self.set_status("❌ Error al eliminar", "error")
+            messagebox.showerror("❌Error del sistema en Eliminar cliente", str(e))
             return
         else:
             self.set_status("🗑 Registro eliminado correctamente", "ok")

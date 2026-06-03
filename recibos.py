@@ -4,17 +4,14 @@ from recibos_ABM import *
 # ----------------------------------------
 import os
 # ----------------------------------------
-# from tkinter import *
 from tkinter import ttk
 import tkinter as tk
 import tkinter.font as tkFont
 from tkinter.scrolledtext import *
-
+# ----------------------------------------
 from datetime import date, datetime
 from PIL import Image, ImageTk
 from PDF_clase import *
-
-# ----------------------------------------
 
 class Clase_Recibos(tk.Frame):
 
@@ -26,11 +23,27 @@ class Clase_Recibos(tk.Frame):
         self.master.focus_set()
 
         # ---------------------------------------------------------------------------------
-        # Instanciaciones
-        # Objeto creado con la clase de ABM recibos
+        # Instanciaciones - Objetos creados con la clase de ABM recibos
         self.varRecibos = datosRecibos(self.master)
         self.varFuncion_new = ClaseFuncion_new(self.master)
         # ----------------------------------------------------------------------------------
+
+        # ---------------------------------------------------------------------------
+        # GPT ||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+        """ Es para los mensajes sobre eventos del sistema, rteemplazaria a algunos messagebox
+        Ubicada ultima linea de la pantalla"""
+        self.status_var = tk.StringVar()
+        self.status_bar = tk.Label(
+            self.master,
+            textvariable=self.status_var,
+            bd=1,
+            relief="sunken",
+            anchor="w",
+            bg="#f0f0f0"
+        )
+        self.status_bar.pack(side="bottom", fill="x")
+        # ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+        # --------------------------------------------------------------------------
 
         # ----------------------------------------------------------------------------------
         # TITULOS
@@ -138,12 +151,10 @@ class Clase_Recibos(tk.Frame):
     # GRID
     # -----------------------------------------------------------------------------
 
-    def limpiar_Grid(self):
+    def llena_grilla(self, ult_tabla_id):
 
         for item in self.grid_recibos.get_children():
             self.grid_recibos.delete(item)
-
-    def llena_grilla(self, ult_tabla_id):
 
         if len(self.filtro_activo) > 0:
             datos = self.varRecibos.consultar_recibos(self.filtro_activo)
@@ -151,7 +162,6 @@ class Clase_Recibos(tk.Frame):
             datos = self.varRecibos.consultar_recibos("recibos ORDER BY cc_fecha ASC")
 
         for row in datos:
-
             # convierto fecha de 2024-12-19 a 19/12/2024
             forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[2], '%Y-%m-%d'), False)
             self.grid_recibos.insert("", "end", text=row[0], values=(row[1], forma_normal, row[4], row[5], row[6]))
@@ -160,7 +170,7 @@ class Clase_Recibos(tk.Frame):
             self.grid_recibos.selection_set(self.grid_recibos.get_children()[0])
 
         # ----------------------------------------------------------------------------------
-        # Procedimiento para acomodar los punteros en caso de altas, modif. ....)
+        # Procedimiento para acomodar los punteros en caso de altas, modif.
         # ----------------------------------------------------------------------------------
 
         """ ult_tabla_id = Trae el Id de la tabla (21, 60, 61, ..) correspondiente identificando al registro 
@@ -206,11 +216,9 @@ class Clase_Recibos(tk.Frame):
 
     def estado_inicial(self):
 
-        self.filtro_activo = "recibos ORDER BY rc_fecha ASC"
+        self.filtro_activo = "ORDER BY rc_fecha ASC"
         self.dato_seleccion = ""
-        self.var_Id = -1
         self.alta_modif = 0
-
         self.limpiar_text()
         self.habilitar_text("disabled")
         self.habilitar_btn_inino("disabled")
@@ -286,15 +294,15 @@ class Clase_Recibos(tk.Frame):
             messagebox.showwarning("Modificar", "No hay nada seleccionado", parent=self)
             return
 
-        self.var_Id = self.clave  # puede traer -1 , en ese caso seria un alta
+        #self.var_Id = self.clave  # puede traer -1 , en ese caso seria un alta
         self.habilitar_text('normal')
         self.limpiar_text()
 
-        self.filtro_activo = "recibos WHERE Id = " + str(self.clave)
+        self.filtro_activo = "WHERE Id = " + str(self.clave)
 
         valores = self.varRecibos.consultar_recibos(self.filtro_activo)
 
-        self.filtro_activo = "recibos ORDER BY rc_fecha ASC"
+        self.filtro_activo = "ORDER BY rc_fecha ASC"
 
         for row in valores:
 
@@ -326,7 +334,7 @@ class Clase_Recibos(tk.Frame):
         # -----------------------------------------------------------
 
         if self.clave == "" or self.selected == "":
-            messagebox.showwarning("Eliminar", "No hay nada seleccionado", parent=self)
+            self.set_status("❌ No hay nada seleccionado", "error")
             return
 
         # -----------------------------------------------------------
@@ -340,10 +348,14 @@ class Clase_Recibos(tk.Frame):
         if r == messagebox.NO:
             return
 
-        self.varRecibos.eliminar_item_recibos(self.clave)
+        try:
+            self.varRecibos.eliminar_item_recibos(self.clave)
+        except Exception as e:
+            messagebox.showerror("❌Error del sistema en Eliminar item", str(e))
+            return
+        else:
+            self.set_status("🗑 Registro eliminado correctamente", "ok")
 
-        messagebox.showinfo("Eliminar", "Registro eliminado correctamente", parent=self)
-        self.limpiar_Grid()
         self.llena_grilla(self.clave_ant)
 
     def fGuardar(self):
@@ -369,62 +381,62 @@ class Clase_Recibos(tk.Frame):
             return
         # --------------------------------------------------------------------
 
+        # --------------------------------------------------------------------
+        # guardo el Id del Treeview (I001, IB00, ...) en selected para ubicacion del foco a posteriori
+        self.selected = self.grid_recibos.focus()
+        # Guardo el Id del registro de la Tabla (no es el mismo que el otro, este puedo verlo en la base (12, 20...)
+        self.clave = self.grid_recibos.item(self.selected, 'text')
+        # --------------------------------------------------------------------
+
+        # -----------------------------------------------------------------
+        # PASO DICCIONARIO PARA INSERTAR O MODIFICAR
+        """ Debo poner los nombres de los campos de la tabla y asignarles las variables """
+
+        dic_recibo = {
+            "Id": self.clave,
+            "rc_numero": self.strvar_numero_recibo.get(),
+            "rc_fecha": self.strvar_fecha_recibo.get(),
+            "rc_codcli": self.strvar_codigo_cliente.get(),
+            "rc_nomcli": self.strvar_nombre_cliente.get(),
+            "rc_importe": self.strvar_importe_recibo.get(),
+            "rc_concepto": self.text_detalle.get(1.0, 'end-1c')
+        }
+        # -----------------------------------------------------------------
+
+        # -----------------------------------------------------------------
         try:
-
-            # guardo el Id del Treeview (I001, IB00, ...) en selected para ubicacion del foco a posteriori
-            self.selected = self.grid_recibos.focus()
-            # Guardo el Id del registro de la Tabla (no es el mismo que el otro, este puedo verlo en la base (12, 20...)
-            self.clave = self.grid_recibos.item(self.selected, 'text')
-            # self.nuevo_itemrec = ""
-
             if self.alta_modif == 1:
-
-                # guardo movimiento
-                fecha_aux = datetime.strptime(self.strvar_fecha_recibo.get(), '%d/%m/%Y')
-                self.varRecibos.insertar_recibo(self.strvar_numero_recibo.get(), fecha_aux,
-                                self.strvar_codigo_cliente.get(), self.strvar_nombre_cliente.get(),
-                                self.strvar_importe_recibo.get(), self.text_detalle.get(1.0, 'end-1c'))
-
+                self.id_nuevo = self.varRecibos.insertar_recibo(dic_recibo)
+                id_ref = self.id_nuevo
                 messagebox.showinfo("Correcto", "Item ingresado correctamente", parent=self)
-
-            else:
-
-                fecha_aux = datetime.strptime(self.strvar_fecha_recibo.get(), '%d/%m/%Y')
-                self.varRecibos.modificar_recibos(self.var_Id, self.strvar_numero_recibo.get(), fecha_aux,
-                                                  self.strvar_codigo_cliente.get(), self.strvar_nombre_cliente.get(),
-                                                  self.strvar_importe_recibo.get(),
-                                                  self.text_detalle.get(1.0, 'end-1c'))
-
-                self.var_Id == -1
-
-                messagebox.showinfo("Modificacion", "La modificacion fue exitosa", parent=self)
-
-            # cierre de las novedades y reseteando pantalla para nuevo movimiento - actualizando grilla
-            self.limpiar_Grid()
-            self.limpiar_text()
-
-            if self.alta_modif == 1:
-                ultimo_tabla_id = self.varRecibos.traer_ultimo(0)
-                self.llena_grilla(ultimo_tabla_id)
             elif self.alta_modif == 2:
-                self.llena_grilla(self.clave)
-
-        except:
-
-            messagebox.showerror("Error", "Error inesperado - Funcion guardar", parent=self)
+                self.varRecibos.modificar_recibos(dic_recibo)
+                id_ref = self.clave
+                # self.var_Id == -1
+                messagebox.showinfo("Modificacion", "La modificacion fue exitosa", parent=self)
+        except ValueError as e:
+            messagebox.showwarning("Datos inválidos en Insertar/Modificar", str(e))
             return
+        except Exception as e:
+            messagebox.showerror("Error del sistema en Insertar/Modificar", str(e))
+            return
+        else:
+            self.set_status("✔ Registro guardado correctamente", "ok")
 
-        self.habilitar_text("disabled")
-        self.habilitar_btn_inino("disabled")
-        self.habilitar_btn_inisi("normal")
-        self.strvar_numero_recibo.set(value=(int(self.varRecibos.traer_ultimo(1)) + 1))
-        self.grid_recibos.focus()
+            # Terminacion y habilitaciones
+            self.limpiar_text()
+            self.habilitar_btn_inino("disabled")
+            self.habilitar_btn_inisi("normal")
+            self.strvar_numero_recibo.set(value=(int(self.varRecibos.traer_ultimo(1)) + 1))
+            self.grid_recibos.focus()
+            self.llena_grilla(id_ref)
+            self.alta_modif = 0
+            self.habilitar_text("disabled")
 
     def fCancelar(self):
 
         r = messagebox.askquestion("Cancelar", "Confirma cancelar operacion actual?", parent=self)
         if r == messagebox.YES:
-
             self.fShowall()
             self.limpiar_text()
             self.habilitar_text("disabled")
@@ -498,10 +510,9 @@ class Clase_Recibos(tk.Frame):
 
         self.filtro_anterior = self.filtro_activo
 
-        self.filtro_activo = ("recibos WHERE INSTR(rc_nomcli, '" + se_busca + "') > 0")
+        self.filtro_activo = ("WHERE INSTR(rc_nomcli, '" + se_busca + "') > 0")
 
         self.varRecibos.buscar_entabla(self.filtro_activo)
-        self.limpiar_Grid()
         self.llena_grilla("")
 
         """ Obtengo el Id del grid para que me tome la seleccion y el foco se coloque efectivamente en el 
@@ -511,10 +522,9 @@ class Clase_Recibos(tk.Frame):
 
     def fShowall(self):
 
-        self.filtro_activo = "recibos ORDER BY rc_fecha ASC"
+        self.filtro_activo = "ORDER BY rc_fecha ASC"
         self.selected = self.grid_recibos.focus()
         self.clave = self.grid_recibos.item(self.selected, 'text')
-        self.limpiar_Grid()
         self.llena_grilla(self.clave)
 
     def fReset_buscar(self):
@@ -585,7 +595,7 @@ class Clase_Recibos(tk.Frame):
     def controlar(self):
 
         # Control de que no ingresen mas de una vez el '-' o el '.' - Funcion en funciones.py
-        if not control_forma(list(self.strvar_importe_recibo.get())):
+        if not control_forma(self.strvar_importe_recibo.get()):
             self.strvar_importe_recibo.set(value="0")
             self.entry_importe_recibo.focus()
             return
@@ -899,9 +909,49 @@ class Clase_Recibos(tk.Frame):
         self.text_detalle.config(width=120, height=6, wrap="word", padx=4, pady=3)
         self.text_detalle.grid(row=1, column=1, padx=4, pady=5, sticky="nsew")
 
+    # GPT |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+    def set_status(self, mensaje, tipo="info", tiempo=3000):
 
-    # def limitador(self, entry_text, caract):
-    #
-    #     if len(entry_text.get()) > 0:
-    #         # donde esta CARACT va la cantidad de caracteres
-    #         entry_text.set(entry_text.get()[:caract])
+        # 🎨 colores según tipo
+        colores = {
+            "ok": ("#d4edda", "#155724"),  # verde claro / texto oscuro
+            "error": ("#f8d7da", "#721c24"),  # rojo
+            "warn": ("#fff3cd", "#856404"),  # amarillo
+            "info": ("#d1ecf1", "#0c5460")  # celeste
+        }
+
+        bg, fg = colores.get(tipo, ("#f0f0f0", "black"))
+
+        # seteo visual
+        self.status_var.set("  " + mensaje)
+        self.status_bar.config(bg=bg, fg=fg)
+
+        # 🔊 sonido
+        if tipo == "ok":
+            self.bell()
+        elif tipo == "error":
+            self.bell()
+            self.after(120, self.bell)
+        elif tipo == "warn":
+            self.bell()
+
+        # ⏳ limpiar después de X tiempo
+        self.after(tiempo, self.clear_status)
+
+    def clear_status(self):
+        self.status_var.set("")
+        self.status_bar.config(bg="#f0f0f0", fg="black")
+
+        # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+        # 🔥 CÓMO USARLO
+        # ✔ Guardar
+        # self.set_status("✔ Registro guardado correctamente", "ok")
+        # 🗑 Eliminar
+        # self.set_status("🗑 Cliente eliminado", "ok")
+        # ⚠ Validación
+        # self.set_status("⚠ CUIT incorrecto", "warn")
+        # ❌ Error
+        # self.set_status("❌ Error al guardar", "error")
+        # ℹInfo
+        # self.set_status("ℹ Buscando clientes...", "info")
+        # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||

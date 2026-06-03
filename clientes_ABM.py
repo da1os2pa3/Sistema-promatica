@@ -107,21 +107,9 @@ class datosClientes:
             # genero instruccion sql
             sql = """
                   UPDATE clientes \
-                  SET codigo=%s, \
-                      apellido=%s, \
-                      nombres=%s, \
-                      direccion=%s, \
-                      localidad=%s, \
-                      provincia=%s, \
-                      postal=%s, \
-                      telef_pers=%s, \
-                      telef_trab=%s, \
-                      mail=%s, \
-                      fecha_ingreso=%s, \
-                      sit_fis=%s, \
-                      cuit=%s, \
-                      observaciones=%s, \
-                      apenombre=%s
+                  SET codigo=%s, apellido=%s, nombres=%s, direccion=%s, localidad=%s, provincia=%s, postal=%s, \
+                      telef_pers=%s, telef_trab=%s, mail=%s, fecha_ingreso=%s, sit_fis=%s, cuit=%s, \
+                      observaciones=%s, apenombre=%s
                   WHERE Id = %s \
                   """
 

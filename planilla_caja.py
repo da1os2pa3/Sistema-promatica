@@ -831,10 +831,16 @@ class V_PlaniCaja(tk.Frame):
             if self.validar(compras != 0, "No puede haber compras", self.entry_compras): return
 
         # ----------------------------------------------------------------------------
-        # guardo el Id del Treeview en selected para ubicacion del foco a posteriori I001, IB003
+        # guardo el Id del Grid en selected para ubicacion del foco a posteriori I001, IB003
         self.selected = self.grid_planilla.focus()
         # Guardo el Id del registro de la Tabla (no es el mismo que el otro, este puedo verlo en la base)
         self.clave = self.grid_planilla.item(self.selected, 'text')
+
+        if self.clave == "":
+            # ver aca , porque sef.clave en el caso de que modifique la fecha (por una sin movimientos) y haga un Tab, el
+            # Grid se me pone en blanco porque pasa a filtrarse con una fecha sin movimientosy dejo de tener el valor "text"
+            print("la clave es blanco, seguro no entran las modificaciones o es un ALTA")
+
         # ----------------------------------------------------------------------------
 
         # Identifica movimiento a cuenta corriente - debe ser cero si es un alta de nuevo movimiento
@@ -931,7 +937,6 @@ class V_PlaniCaja(tk.Frame):
             fecha_aux = datetime.strptime(self.strvar_fecha_planilla.get(), '%d/%m/%Y')
             planilla = self.get_planilla_dict(fecha_aux)
             data_ctacte = self.get_ctacte_dict(fecha_aux)
-
             # ----------------------------------------------------------------------------------
             # Borrado previo de los movimientos de ctacte - Al ser modificacion, borrar todos los movimientos
             # en tabla de ctacte con clavemov  = strvar_clavemov_ant
@@ -996,7 +1001,7 @@ class V_PlaniCaja(tk.Frame):
         """ Aqui dentro llamo a la funcion validar fechas para revisar todo sus valores posibles. le paso la fecha
         tipo string con barras o sin barras """
 
-        # FUNCION VALIDA FECHAS en programa funcion
+        # FUNCION VALIDA FECHAS en modulo funciones
         retorno_VerFal = valida_fechas(self, self.strvar_fecha_planilla.get())
 
         if retorno_VerFal == "":
@@ -1021,6 +1026,7 @@ class V_PlaniCaja(tk.Frame):
         else:
             self.strvar_fecha_planilla.set(value=retorno_VerFal)
             # funcion que hace las transformaciones de fecha para volver a generar el filtro activo
+            # El grid se recarga con la fecha ingresada
             self.filtrar_grilla(self.strvar_fecha_planilla.get())
         return ("bien")
 
