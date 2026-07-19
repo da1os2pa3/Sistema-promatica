@@ -1,9 +1,7 @@
 import mysql.connector
-from mysql.connector import Error
-# ---------------------------------------
-# from datetime import datetime
-# ---------------------------------------
+from datetime import datetime
 from tkinter import messagebox
+
 
 class datosGarantias:
 
@@ -11,136 +9,205 @@ class datosGarantias:
 
         self.master = pantalla
 
+    def get_connection(self):
+        return mysql.connector.connect(
+            host="localhost",
+            user="root",
+            passwd="",
+            database="sist_prom")
+
+    def consultar_garantia(self, orden=""):
+
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            self.cnn = mysql.connector.connect(host="localhost", user="root", passwd="", database="sist_prom")
-        except Error as ex:
-            print("Error de conexion: {0}".format(ex))
-
-    # def __str__(self):
-    #     datos = self.consultar_garantia("")
-    #     aux = ""
-    #     for row in datos:
-    #         aux = aux + str(row) + "\n"
-    #     return aux
-
-    def consultar_garantia(self, tofil):
-
-#        try:
-        xx = 0
-        if xx == 0:
-            cur = self.cnn.cursor()
-            cur.execute("SELECT * FROM " + tofil)
-            # para recuperar todas filas de una tabla de base de datos
-            datos = cur.fetchall()
-            self.cnn.commit()
+            sql = "SELECT * FROM garantias"
+            if orden:
+                sql += " " + orden
+            cur.execute(sql)
+            return cur.fetchall()
+        finally:
             cur.close()
-            return datos
-        else:
-#        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo-Consultar garantia-", parent=self.master)
-            exit()
-
+            cnn.close()
     # 1 uso
     def consultar_informa(self):
 
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            cur = self.cnn.cursor()
             cur.execute("SELECT * FROM informa WHERE 1")
             datos_inf = cur.fetchall()
-            self.cnn.commit()
-            cur.close()
             return datos_inf
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo-Consultar informa-", parent=self.master)
-            exit()
-
-    def insertar_garantias(self, fechamovim, meses, fechavto, codcli, nomcli, nomart, totaloper, factura, obser,
-                           detalle):
-
-        try:
-            cur = self.cnn.cursor()
-            sql = '''INSERT INTO garantias (gt_fechaventa, gt_meses, gt_fechavto, gt_codcli, gt_nomcli, gt_articulo,
-                                            gt_impventa, gt_factura, gt_observaciones, gt_detalle) VALUES('{}','{}',
-                                            '{}','{}', '{}', '{}','{}','{}','{}','{}')'''.format(fechamovim,
-                                            meses, fechavto, codcli, nomcli, nomart, totaloper, factura, obser, detalle)
-            cur.execute(sql)
-            n = cur.rowcount
-            self.cnn.commit()
+        finally:
             cur.close()
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo-Insertar garantias-", parent=self.master)
-            exit()
+            cnn.close()
 
-    def modificar_garantias(self, Id, fechamovim, meses, fechavto, codcli, nomcli, nomart, totaloper, factura, obser,
-                            detalle):
+    def insertar_garantias(self, val_garantias):
 
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            cur = self.cnn.cursor()
-            sql = '''UPDATE garantias SET gt_fechaventa='{}', gt_meses='{}', gt_fechavto='{}', gt_codcli='{}', 
-            gt_nomcli='{}', gt_articulo='{}', gt_impventa='{}', gt_factura='{}', gt_observaciones='{}', gt_detalle='{}'
-            WHERE Id={}'''.format(fechamovim, meses, fechavto, codcli, nomcli, nomart, totaloper, factura, obser,
-                                  detalle, Id)
-            cur.execute(sql)
-            n = cur.rowcount
-            self.cnn.commit()
+            aux_fecha_venta = datetime.strptime(val_garantias["gt_fechaventa"], '%d/%m/%Y')
+            aux_fecha_vto = datetime.strptime(val_garantias["gt_fechavto"], '%d/%m/%Y')
+
+            sql = """
+                  INSERT INTO garantias (gt_fechaventa, gt_meses, gt_fechavto, gt_codcli, gt_nomcli, gt_articulo, 
+                                       gt_impventa, gt_factura, gt_observaciones, gt_detalle) 
+                  VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) 
+                  """
+
+            # Genero una tupla ("valores") con los valores que vienen en el parametro (diccionario)
+            valores = (
+                aux_fecha_venta,
+                val_garantias["gt_meses"],
+                aux_fecha_vto,
+                val_garantias["gt_codcli"],
+                val_garantias["gt_nomcli"],
+                val_garantias["gt_articulo"],
+                val_garantias["gt_impventa"],
+                val_garantias["gt_factura"],
+                val_garantias["gt_observaciones"],
+                val_garantias["gt_detalle"]
+            )
+
+            cur.execute(sql, valores)
+            cnn.commit()
+            # devolvemos el Id generado del nuevo cliente
+            id_nuevo = cur.lastrowid
+            return id_nuevo
+        except Exception as e:
+            cnn.rollback()
+            raise
+        finally:
             cur.close()
-            return n
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo-Modificar garantias-", parent=self.master)
-            exit()
+            cnn.close()
+
+    def modificar_garantias(self, val_garantias):
+
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
+        try:
+            aux_fecha_venta = datetime.strptime(val_garantias["gt_fechaventa"], '%d/%m/%Y')
+            aux_fecha_vto = datetime.strptime(val_garantias["gt_fechavto"], '%d/%m/%Y')
+
+            sql = """
+                  UPDATE garantias 
+                  SET gt_fechaventa=%s, gt_meses=%s, gt_fechavto=%s, gt_codcli=%s, gt_nomcli=%s, gt_articulo=%s, 
+                      gt_impventa=%s, gt_factura=%s, gt_observaciones=%s, gt_detalle=%s
+                  WHERE Id = %s 
+                  """
+
+            # Genero una tupla ("valores") con los valores que vienen en el parametro (diccionario)
+            valores = (
+                aux_fecha_venta,
+                val_garantias["gt_meses"],
+                aux_fecha_vto,
+                val_garantias["gt_codcli"],
+                val_garantias["gt_nomcli"],
+                val_garantias["gt_articulo"],
+                val_garantias["gt_impventa"],
+                val_garantias["gt_factura"],
+                val_garantias["gt_observaciones"],
+                val_garantias["gt_detalle"],
+                val_garantias["Id"]
+            )
+            cur.execute(sql, valores)
+            cnn.commit()
+            return
+        except Exception as e:
+            cnn.rollback()
+            raise
+        finally:
+            cur.close()
+            cnn.close()
 
     def eliminar_item_garantia(self, Id):
 
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            cur = self.cnn.cursor()
-            sql = '''DELETE FROM garantias WHERE Id = {}'''.format(Id)
-            cur.execute(sql)
+            sql = "DELETE FROM garantias WHERE Id = %s"
+            # 1 parámetro → (valor,)
+            # varios → (v1, v2, v3)
+            cur.execute(sql, (Id,))
             n = cur.rowcount
-            self.cnn.commit()
-            cur.close()
+            cnn.commit()
             return n
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo-Eliminar item garantia-",
-                                 parent=self.master)
-            exit()
+        except Exception as e:
+            cnn.rollback()
+            raise
+        finally:
+            cur.close()
+            cnn.close()
 
     # 1 uso
-    def buscar_entabla(self, argumento):
+    def buscar_entabla(self, texto):
 
-        """
-        Aqui nos llega un string de busqueda y en que campos debemos buscarlo. Devolvemos todos
-        los registros que cumplan con la condicion especificada
-        """
-
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            cur = self.cnn.cursor()
-            cur.execute("SELECT * FROM " + argumento)
+            sql = """
+                  SELECT * FROM garantias WHERE gt_nomcli LIKE %s OR gt_articulo LIKE %s ORDER BY gt_fechavto ASC 
+                  """
+
+            """ Como paso un solo parametro, debo colocar la coma al final para que se interprete como una tupla, sino, 
+            lo toma como un string. Si vinieran mas parametros separados por coma ya se da cuenta que es una tupla"""
+            param = f"%{texto}%"
+            #param = (f"%{texto}%",)
+
+            cur.execute(sql, (param, param))
             datos = cur.fetchall()
-            self.cnn.commit()
-            cur.close()
             return datos
-        except:
-
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Buscar en tabla-",
-                                 parent=self.master)
-            exit()
-
-    def traer_ultimo(self, xparametro):
-
-        try:
-            cur = self.cnn.cursor()
-            cur.execute("SELECT * FROM garantias ORDER BY Id ASC")
-            datos = cur.fetchall()
-            aux = ""
-            for row in datos:
-                if xparametro == 1:
-                    aux = str(row[1]) + "\n"
-                else:
-                    aux = str(row[0]) + "\n"
-            self.cnn.commit()
+        except Exception:
+            raise
+        finally:
             cur.close()
-            return aux
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=traer ultimo",
-                                 parent=self.master)
-            exit()
+            cnn.close()
+
+        # """
+        # Aqui nos llega un string de busqueda y en que campos debemos buscarlo. Devolvemos todos
+        # los registros que cumplan con la condicion especificada
+        # """
+        # try:
+        #     cur = self.cnn.cursor()
+        #     cur.execute("SELECT * FROM " + argumento)
+        #     datos = cur.fetchall()
+        #     self.cnn.commit()
+        #     cur.close()
+        #     return datos
+        # except:
+        #
+        #     messagebox.showerror("Error inesperado", "Contacte asistencia-Buscar en tabla-",
+        #                          parent=self.master)
+        #     exit()
+
+
+
+
+
+
+
+
+
+
+
+
+    # def traer_ultimo(self, xparametro):
+    #
+    #     try:
+    #         cur = self.cnn.cursor()
+    #         cur.execute("SELECT * FROM garantias ORDER BY Id ASC")
+    #         datos = cur.fetchall()
+    #         aux = ""
+    #         for row in datos:
+    #             if xparametro == 1:
+    #                 aux = str(row[1]) + "\n"
+    #             else:
+    #                 aux = str(row[0]) + "\n"
+    #         self.cnn.commit()
+    #         cur.close()
+    #         return aux
+    #     except:
+    #         messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=traer ultimo",
+    #                              parent=self.master)
+    #         exit()

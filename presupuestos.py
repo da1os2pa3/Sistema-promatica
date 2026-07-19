@@ -1,11 +1,8 @@
-import tkinter
-
-from funciones import *
-from funcion_new import *
-from presupuestos_ABM import *
+# from funciones import * ya las importa articulos
+# from funcion_new import * ya las importa articulos
+from presupuestos_ABM import datosPresupuestos
 from articulos import *
 #--------------------------------------
-#from tkinter import *
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
@@ -17,6 +14,7 @@ from PDF_clase import *
 from PIL import Image, ImageTk
 from datetime import date, datetime
 # -------------------------------------
+from status_bar import StatusBar
 
 class Clase_Presupuestos(tk.Frame):
 
@@ -24,6 +22,7 @@ class Clase_Presupuestos(tk.Frame):
 
         super().__init__(master, width=880, height=520)
         self.master = master
+        self.status = StatusBar(self.master)
 
         self.master.grab_set()
         self.master.focus_set()
@@ -37,20 +36,15 @@ class Clase_Presupuestos(tk.Frame):
         # ----------------------------------------------------------------------------------
         # PANTALLA
         # ----------------------------------------------------------------------------------
-
         self.master.resizable(0, 0)
-
         """ Actualizamos el contenido de la ventana (la ventana pude crecer si se le agrega
             mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer.
             Obtenemos el alto y  ancho de la pantalla """
-
         ancho = self.master.winfo_screenwidth()
         alto = self.master.winfo_screenheight()
-
         # Asigno fijo un ancho y un alto
         ancho_ventana = 1045
-        alto_ventana = 775
-
+        alto_ventana = 790
         # X e Y son las coordenadas para el posicionamiento del vertice superior izquierdo
         x = int((ancho - ancho_ventana) / 2)
         y = int((alto - alto_ventana) / 2)
@@ -91,7 +85,6 @@ class Clase_Presupuestos(tk.Frame):
         # self.grid_tvw_resupresup.selection_set(item)
         # # pone el foco en el item seleccionado
         # self.grid_tvw_resupresup.focus(item)
-
         # ----------------------------------------------------------------------
 
     # ----------------------------------------------------------------------
@@ -177,16 +170,13 @@ class Clase_Presupuestos(tk.Frame):
         # ----------------------------------------------------------------------
         # VARIABLES
         # ----------------------------------------------------------------------
-
         self.vcmd = (self.register(self.varFuncion_new.validar), "%P")
-
         # ----------------------------------------------------------------------
 
         # ----------------------------------------------------------------------
         # PREPARO TABLA AUXILIAR
-
         # Vacio la tabla auxiliar de componentes aux_presup donde van los items que se seleccionen
-        self.varPresupuestos.vaciar_auxpresup("aux_presup")
+        self.varPresupuestos.vaciar_auxpresup()
         # ----------------------------------------------------------------------
 
         # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -198,101 +188,92 @@ class Clase_Presupuestos(tk.Frame):
         self.frame_grid_botones=tk.LabelFrame(self.master, text="", foreground="#CD5C5C")
         # ----------------------------------------------------------------------
 
+
         # ----------------------------------------------------------------------
         # ABRO FRAME BARRA LATERAL BOTONES IZQUIERDA :::::::::::::::::::::::::::
-
         # Botones Nuevo-Edito-Borro-Guardar-Guardar como-Cancelar barra de la izquierda de arriba hacia abajo
         self.frame_botones_izquierda=tk.LabelFrame(self.frame_grid_botones, text="", foreground="#CD5C5C")
-
         # cuadro 1 menu de la izquierda ----------------------------------------
         self.frame_cuadro1 = tk.LabelFrame(self.frame_botones_izquierda, text="", bg="#CD5C5C")
         self.cuadro_botones_grid_entregados_1()
         self.frame_cuadro1.pack(side="top", fill="both", padx=5, pady=5)
         # ----------------------------------------------------------------------
-
         # cuadro 2 menu de la izquierda ----------------------------------------
         self.frame_cuadro2 = tk.LabelFrame(self.frame_botones_izquierda, text="", bg="#B727F5")
         self.cuadro_botones_grid_entregados_2()
         self.frame_cuadro2.pack(side="top", fill="both", padx=5, pady=5)
         # ---------------------------------------------------------------------
-
         # cuadro 3 menu de la izquierda ---------------------------------------
         self.frame_cuadro3 = tk.LabelFrame(self.frame_botones_izquierda, text="", bg="#27F5E4")
         self.cuadro_botones_grid_entregados_3()
         self.frame_cuadro3.pack(side="top", fill="both", padx=5, pady=5)
         # ---------------------------------------------------------------------
-
         # cuadro 4  menu de la izquierda --------------------------------------
         self.frame_cuadro4 = tk.LabelFrame(self.frame_botones_izquierda, text="")
         self.cuadro_botones_grid_entregados_4()
         self.frame_cuadro4.pack(side="top", fill="both", expand = 1, padx=5, pady=5)
         # ----------------------------------------------------------------------
-
         self.frame_botones_izquierda.pack(side="left", fill="both", padx=5, pady=2)
-
         # PACK FRAME BARRA BOTONES IZQUIERDA ::::::::::::::::::::::::::::::::::
         # ---------------------------------------------------------------------
 
+
         # ----------------------------------------------------------------------
         # ABRO FRAME_BUSQUEDA_PRESU_ENTREGADO ::::::::::::::::::::::::::::::::::
-
         # BUSCAR UN PRESUPUESTO - impresion TOPE Y FIN ARCHIVO - barra horizontal superior
-
         self.frame_busqueda_presu_entregado=tk.LabelFrame(self.frame_grid_botones, text="", border=5, foreground="black",
                                                   background="light blue")
         self.cuadro_buscar_presup_entregado()
         self.frame_busqueda_presu_entregado.pack(expand=0, side="top", fill="both", pady=2, padx=5)
-
         # PACK FRAME_BUSQUEDA_PRESU_ENTREGADO ::::::::::::::::::::::::::::::::::
         # ----------------------------------------------------------------------
+
 
         # ----------------------------------------------------------------------
         # GRID DE PRESUPUESTOS ENTREGADOS
         # ----------------------------------------------------------------------
         # ----------------------------------------------------------------------
         # ABRO frame_grid_presup_entregados ::::::::::::::::::::::::::::::::::::
-
         # Tv donde se ven los resumenes de los persupuestos entragados
         self.frame_grid_presup_entregados=tk.LabelFrame(self.frame_grid_botones, text="Presupuesto entregados",
                                                      foreground="#CD5C5C")
         self.cuadro_tv_presup_entregados()
         self.frame_grid_presup_entregados.pack(side="top", fill="both", padx=5, pady=2)
-
         # PACK FRAME_GRID_PRESUP_ENTREGADOS ::::::::::::::::::::::::::::::::::::
         # ----------------------------------------------------------------------
+
 
         # ----------------------------------------------------------------------
         # CAJA DE TEXTO PARA DETALLES EXTENSOS DE DESCRIPCION
         # ----------------------------------------------------------------------
         # ----------------------------------------------------------------------
         # ABRO FRAME_CAJADETEXTO :::::::::::::::::::::::::::::::::::::::::::::::
-
         self.frame_cajatexto = tk.LabelFrame(self.frame_grid_botones, text="Descripcion adicional", fg="red")
         self.cuadro_caja_texto_detalles_extensos()
         self.frame_cajatexto.pack(expand=0, side="top", fill="both", pady=3, padx=5)
-
         # PACK FRAME_CAJADETEXTO :::::::::::::::::::::::::::::::::::::::::::::::
         # ----------------------------------------------------------------------
+
 
         # ----------------------------------------------------------------------
         # GRID - TREEVIEW CARGA PRESUPUESTO ACTUAL
         # ----------------------------------------------------------------------
         # ----------------------------------------------------------------------
         # ABRO frame_grid_presup_actual ::::::::::::::::::::::::::::::::::::::::
-
         self.frame_grid_presup_actual=tk.LabelFrame(self.frame_grid_botones, text="Componentes presupuesto actual",
                                                  foreground="#CD5C5C")
         self.cuadro_tv_presup_actual()
         self.frame_grid_presup_actual.pack(side="top", fill="both", padx=5, pady=2)
-
         # PACK frame_grid_presup_actual ::::::::::::::::::::::::::::::::::::::::
         # ----------------------------------------------------------------------
+
 
         # ----------------------------------------------------------------------
         self.frame_grid_botones.pack(side="top", fill="both", padx=5, pady=2)
         # ----------------------------------------------------------------------
         # FIN CUADRO DE FRAME_GRID_BOTONES :::::::::::::::::::::::::::::::::::::
         # ----------------------------------------------------------------------
+
 
         # ----------------------------------------------------------------------
         # ENTRYS DATOS DEL CLIENTE
@@ -303,6 +284,7 @@ class Clase_Presupuestos(tk.Frame):
         self.frame_cliente.pack(side="top", fill="both", expand=0, padx=5, pady=3)
         # ----------------------------------------------------------------------
 
+
         # ----------------------------------------------------------------------
         # ENTRYS FORMA DE PAGO
         # ----------------------------------------------------------------------
@@ -311,6 +293,7 @@ class Clase_Presupuestos(tk.Frame):
         self.entrys_formas_pago()
         self.frame_forma_pago.pack(side="top", fill="both", expand=0, padx=5, pady=2)
         # ----------------------------------------------------------------------
+
 
         # ----------------------------------------------------------------------
         # ENTRYS DATOS ARTICULO/COMPONENTE A VENDER
@@ -321,6 +304,7 @@ class Clase_Presupuestos(tk.Frame):
         self.frame_componentes.pack(side="top", fill="both", expand=0, padx=5, pady=2)
         # ----------------------------------------------------------------------
 
+
         # ----------------------------------------------------------------------
         # ENTRYS IMPORTES DEL PRESUPUESTO - Linea de totales del item a cargar
         # ----------------------------------------------------------------------
@@ -329,6 +313,7 @@ class Clase_Presupuestos(tk.Frame):
         #self.frame_importes_articulo_uno.pack(side="left", fill=BOTH, expand=1, padx=5, pady=2)
         self.frame_importes_articulo.pack(side="top", fill="both", expand=0, padx=5, pady=2)
         # -----------------------------------------------------------------------
+
 
         # -----------------------------------------------------------------------
         # LABELS TOTALES GENERALES
@@ -343,8 +328,8 @@ class Clase_Presupuestos(tk.Frame):
 
     def estado_inicial(self):
 
-        self.filtro_activo_resu_presup = "resu_presup ORDER BY rp_fecha, rp_numero ASC"
-        self.filtro_activo_auxiliar = "aux_presup ORDER BY ax_orden ASC"
+        self.filtro_activo_resu_presup = "ORDER BY rp_fecha, rp_numero ASC"
+        self.filtro_activo_auxiliar = "ORDER BY ax_orden ASC"
         self.dato_seleccion = ""
         self.alta_modif_aux = 0         # tabla aux_presu
         self.alta_modif_presup = 0      # tabla resu_presu
@@ -362,8 +347,7 @@ class Clase_Presupuestos(tk.Frame):
         self.estado_botones_uno("normal")
 
         # Vacio el TVW auxpresup - donde cargo los componentes
-        self.varPresupuestos.vaciar_auxpresup("aux_presup")
-        self.limpiar_Grid_auxiliar()
+        self.varPresupuestos.vaciar_auxpresup()
 
         self.alta_modif_aux = 0
         self.alta_modif_presup = 0
@@ -469,7 +453,7 @@ class Clase_Presupuestos(tk.Frame):
 
     def limpiar_entrys_parcial(self):
 
-        """ Vacio los entrys relaionados con la carga del componente y totales """
+        """ Vacio los entrys relacionados con la carga del componente y totales """
 
         self.strvar_componente.set(value="")
         self.combo_tasa_iva.current(0)
@@ -530,16 +514,15 @@ class Clase_Presupuestos(tk.Frame):
     # GRIDS
     # -----------------------------------------------------------------
 
-    def limpiar_Grid_resu_presup(self):
+    def llena_grilla_resu_presup(self, ult_tabla_id):
 
+        # Limpio el grid
         for item in self.grid_tvw_presu_entregado.get_children():
             self.grid_tvw_presu_entregado.delete(item)
 
-    def llena_grilla_resu_presup(self, ult_tabla_id):
-
         try:
 
-            datos = self.varPresupuestos.consultar_presupuestos(self.filtro_activo_resu_presup)
+            datos = self.varPresupuestos.consultar_presupuestos("resu_presup", self.filtro_activo_resu_presup)
 
             cont = 0
             for row in datos:
@@ -547,18 +530,17 @@ class Clase_Presupuestos(tk.Frame):
                 cont += 1
                 color = ('evenrow',) if cont % 2 else ('oddrow',)
 
+                # Para cambiar el color si el presupuesto es aceptado
                 if row[14] == "1":
                     color = ("error",)
 
-                """ 
-                Este es el ejemplo por si quiero destacar alguna linea segun alguna condicion especial, por 
-                ejemplo 'presupuesto realizado - Si un columna coincide con un valor buscado, cambie el color' 
-                if row[1] == 2324:
-                    color = ("error",)
-                Va combinado con la siguiente linea, que hay que ponerla en el llena_grilla
-                self.grid_clientes.tag_configure('error', background='green')
-                va debajo de los otros dos configure de odorow y everrow
-                """
+                """ Este es el ejemplo por si quiero destacar alguna linea segun alguna condicion especial, por 
+                    ejemplo 'presupuesto realizado - Si un columna coincide con un valor buscado, cambie el color' 
+                    if row[1] == 2324:
+                        color = ("error",)
+                    Va combinado con la siguiente linea, que hay que ponerla en el llena_grilla
+                    self.grid_clientes.tag_configure('error', background='green')
+                    va debajo de los otros dos configure de odorow y everrow """
 
                 # convierto fecha de 2024-12-19 a 19/12/2024
                 forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[2], '%Y-%m-%d'), False)
@@ -568,11 +550,7 @@ class Clase_Presupuestos(tk.Frame):
 
             if len(self.grid_tvw_presu_entregado.get_children()) > 0:
                    self.grid_tvw_presu_entregado.selection_set(self.grid_tvw_presu_entregado.get_children()[0])
-
-            self.mover_puntero_topend('END')
-
         except:
-
             messagebox.showinfo("Error", "Fallo carga de grilla resu_presup", parent=self)
             return
 
@@ -597,7 +575,7 @@ class Clase_Presupuestos(tk.Frame):
                 la linea de datos del treeview a la variable buscado), o sea, para el Id I0001 paso el Id de la 
                 tabla 57... y asi ira cambiando para cada rg
                 text = te da el valor de la primera columna del grid, que es donde veo el Id del registro 
-                asignado en la tabla"""
+                asignado en la tabla """
 
                 buscado = self.grid_tvw_presu_entregado.item(rg)['text']
                 if int(buscado) == int(ult_tabla_id):
@@ -614,20 +592,20 @@ class Clase_Presupuestos(tk.Frame):
             self.grid_tvw_presu_entregado.focus(rg)
             # para que la linea seleccionada no me quede fuera del area visible del treeview
             self.grid_tvw_presu_entregado.yview(self.grid_tvw_presu_entregado.index(rg))
-        else:
-            self.mover_puntero_topend("END")
 
-    def limpiar_Grid_auxiliar(self):
-
-        for item in self.grid_tvw_auxcomp.get_children():
-            self.grid_tvw_auxcomp.delete(item)
+        self.fFinarch()
 
     def llena_grilla_auxiliar(self, ult_tabla_id):
 
+        # Limpio el Grid
+        for item in self.grid_tvw_auxcomp.get_children():
+            self.grid_tvw_auxcomp.delete(item)
+
         try:
 
-            datos = self.varPresupuestos.consultar_presupuestos(self.filtro_activo_auxiliar)
+            datos = self.varPresupuestos.consultar_presupuestos("aux_presup", self.filtro_activo_auxiliar)
             orden = 1
+
             for row in datos:
                 self.grid_tvw_auxcomp.insert("", "end", text=row[0], values=(orden, row[2], row[3], row[4],
                                                                                   row[5], row[6], row[7], row[8],
@@ -682,8 +660,8 @@ class Clase_Presupuestos(tk.Frame):
                 self.grid_tvw_auxcomp.focus(rg)
                 # para que la linea seleccionada no me quede fuera del area visible del treeview
                 self.grid_tvw_auxcomp.yview(self.grid_tvw_auxcomp.index(rg))
-            else:
-                self.mover_puntero_topend("END")
+
+            self.fToparch()
 
     # ----------------------------------------------------------------------
     # BOTONES Nuevo presupuesto - Editar - Eliminar - Cancelar
@@ -702,8 +680,10 @@ class Clase_Presupuestos(tk.Frame):
 
     def fEdito_presupuesto(self):
 
+        # -------------------------------------------------------------------
         self.selected = self.grid_tvw_presu_entregado.focus()
         self.clave = self.grid_tvw_presu_entregado.item(self.selected, 'text')
+        # -------------------------------------------------------------------
 
         if self.clave == "":
             messagebox.showwarning("Modificar", "No hay nada seleccionado", parent=self)
@@ -714,7 +694,9 @@ class Clase_Presupuestos(tk.Frame):
         self.estado_botones_dos("normal")
         self.limpiar_entrys_total()
 
-        self.varPresupuestos.vaciar_auxpresup("aux_presup")
+        # Vavio tabla auxilliar ---------------------------------------------
+        self.varPresupuestos.vaciar_auxpresup()
+        # -------------------------------------------------------------------
 
         self.alta_modif_presup = 2
 
@@ -722,9 +704,10 @@ class Clase_Presupuestos(tk.Frame):
         valores = self.grid_tvw_presu_entregado.item(self.selected, 'values')
         self.strvar_nro_presup.set(value=valores[0])
 
+        # -------------------------------------------------------------------
         # 2 - Cargar los datos encabezado de la venta (cliente, fecha....) de Resu_Venta
-
         datos_presu_entregado = self.varPresupuestos.traer_resu_presup(self.strvar_nro_presup.get())
+        # -------------------------------------------------------------------
 
         fechapaso = datos_presu_entregado[2].strftime('%d/%m/%Y')
         self.strvar_fecha_presup.set(fechapaso)
@@ -740,30 +723,45 @@ class Clase_Presupuestos(tk.Frame):
         self.text_especificaciones.configure(state="normal")
         self.text_especificaciones.insert("end", datos_presu_entregado[13])
 
+        # ---------------------------------------------------------------------
         # 3 - Cargar los componentes del presupuesto de deta_presup
-
         datos_detapresup = self.varPresupuestos.traer_deta_presup(self.strvar_nro_presup.get())
+        # ---------------------------------------------------------------------
 
         for row in datos_detapresup:
 
+            # -----------------------------------------------------------------
             dolar_a_pesos = float(row[8]) * float(self.strvar_valor_dolar_hoy.get())
             iva_a_cargar = dolar_a_pesos * (float(row[6]) / 100)
             ganancia_a_cargar = (dolar_a_pesos + iva_a_cargar) * (float(self.strvar_tasa_ganancia.get()) / 100)
             total_presupuesto = dolar_a_pesos + iva_a_cargar + ganancia_a_cargar
+            # -----------------------------------------------------------------
 
-            self.varPresupuestos.insertar_auxpresup(row[1], row[3], row[4], row[5], row[6], row[7], row[8],
-                                                    total_presupuesto, row[9], ganancia_a_cargar, dolar_a_pesos)
+            # -----------------------------------------------------------------
+            dic_deta_auxpresup = {
+                "Id": row[0],                              # Id
+                "ax_orden": row[1],                        # orden elemento
+                "ax_proved": row[3],                       # nombre del proveedor
+                "ax_codcomp": row[4],                      # codigo componente del proveedor
+                "ax_componente": row[5],                   # descripcion del componente
+                "ax_iva": row[6],                          # tasa iva del componente
+                "ax_cantidad": row[7],                     # cantidad del componente
+                "ax_neto_dolar": row[8],                   # costo neto componente en dolares
+                "ax_total_presup": total_presupuesto,      # total del presupuesto real
+                "ax_total_redondo": row[9],                # total en pesos redondeo
+                "ax_total_ganancia": ganancia_a_cargar,    # total ganancia
+                "ax_total_costos": dolar_a_pesos           # total costos
+            }
+            # -----------------------------------------------------------------
+
+            # -----------------------------------------------------------------
+            # Insertar registro en aux_presup
+            self.varPresupuestos.insertar_auxpresup(dic_deta_auxpresup)
+            # -----------------------------------------------------------------
 
         self.calcular("completo")
         self.calcular("totalpresupuesto")
-        self.limpiar_Grid_auxiliar()
         self.llena_grilla_auxiliar("")
-
-
-
-
-
-
 
     def fBorro_presupuesto(self):
 
@@ -782,20 +780,19 @@ class Clase_Presupuestos(tk.Frame):
 
         # guardo todos los valores en una lista desde el Tv
         valores = self.grid_tvw_presu_entregado.item(self.selected, 'values')
-        #        data = str(self.clave)+" "+valores[0]+" " + valores[2]
         data = " Presupuesto Nº " + valores[0] + " de " + valores[2]
 
         r = messagebox.askquestion("Eliminar", "Confirma eliminar presupuesto?\n " + data, parent=self)
         if r == messagebox.NO:
-            messagebox.showinfo("Eliminar", "Eliminacion Cancelada", parent=self)
+            self.status.set_status("🗑 operacion cancelada", "")
             return
 
-        # Elimino de resu_ventas y deta_ventas
+        # Elimino de resu_ventas y deta_ventas ----------------------------------------
         self.varPresupuestos.eliminar_presu_entregado1(self.clave)
         self.varPresupuestos.eliminar_detapresup(valores[0])  # por numero de venta
+        # -----------------------------------------------------------------------------
 
-        messagebox.showinfo("Eliminar", "Registro eliminado correctamente", parent=self)
-        self.limpiar_Grid_resu_presup()
+        self.status.set_status("✔ Registro eliminado correctamente", "ok")
         self.llena_grilla_resu_presup(self.clave_ant)
 
     def fCancela_presup(self):
@@ -807,17 +804,16 @@ class Clase_Presupuestos(tk.Frame):
         self.limpiar_entrys_total()
         self.limpiar_totales()
         self.estado_inicial()
-        self.varPresupuestos.vaciar_auxpresup("aux_presup")
+        self.varPresupuestos.vaciar_auxpresup()
+        self.llena_grilla_auxiliar("")
         self.entry_fecha_presup.focus()
 
     def DobleClickGrid(self, event):
-
         self.limpiar_entrys_parcial()
         self.estado_entrys_crud_2("disabled")
         self.fEdito_presupuesto()
 
     def fSalir(self):
-
         r = messagebox.askquestion("Salir", "Confirma Salir?", parent=self)
         if r == messagebox.NO:
             return
@@ -844,6 +840,7 @@ class Clase_Presupuestos(tk.Frame):
         # ---------------------------------------------------------------------------------
         """ Elimina un coponente previamente cargado del presupuesto """
 
+        # ---------------------------------------------------------------------------------
         self.selected = self.grid_tvw_auxcomp.focus()
         self.selected_ant = self.grid_tvw_auxcomp.prev(self.selected)
         self.clave = self.grid_tvw_auxcomp.item(self.selected, 'text')
@@ -861,15 +858,19 @@ class Clase_Presupuestos(tk.Frame):
         if r == messagebox.NO:
             return
 
+        # -------------------------------------------------------------------
+        # Elimino item de aux_presup (solo el item seleccionado
         self.varPresupuestos.eliminar_auxpresup(self.clave)
+        # -------------------------------------------------------------------
 
-        self.limpiar_Grid_auxiliar()
         self.llena_grilla_auxiliar(self.clave_ant)
 
+        # -------------------------------------------------------------------
         # reordenar numeros de orden para que se acomoden los numeros de orden
         self.reordenar(self.grid_tvw_auxcomp)
+        # -------------------------------------------------------------------
 
-        messagebox.showinfo("Eliminar", "Registro eliminado correctamente", parent=self)
+        self.status.set_status("🗑 Registro eliminado", "ok")
 
         self.calcular("totalventa")
         self.calcular("totalpresupuesto")
@@ -892,11 +893,13 @@ class Clase_Presupuestos(tk.Frame):
         # controlo que no sea una modificacion para borrar el componente anterior
         if self.alta_modif_aux == 1:
 
+            # ----------------------------------------------------------------
             # Asi obtengo el Id del Grid de donde esta el foco (I006...I002...)
             self.selected = self.grid_tvw_auxcomp.focus()
             # Asi obtengo la clave de la base de datos campo Id que no es lo mismo que el otro (numero secuencial
             # que pone la BD automaticamente al dar el alta
             self.clave = self.grid_tvw_auxcomp.item(self.selected, 'text')
+            # ----------------------------------------------------------------
 
             # ----------------------------------------------------------------
             # Si es una modificacion, guardo el numero de orden que tenia
@@ -909,7 +912,10 @@ class Clase_Presupuestos(tk.Frame):
             orden_item = valores[0]
             # ----------------------------------------------------------------
 
+            # ----------------------------------------------------------------
+            # Elimino el item anterior en la tabla aux_presup - en caso de modificacion
             self.varPresupuestos.eliminar_auxpresup(self.clave)
+            # ----------------------------------------------------------------
 
         else:
 
@@ -919,31 +925,44 @@ class Clase_Presupuestos(tk.Frame):
         # vuelvo a cero la bandera de modificacion
         self.alta_modif_aux = 0
 
-        # Insertamos el componente en el auxilliar de presupuesto (aux_presup)
+        # -----------------------------------------------------------------
+        dic_deta_auxpresup = {
+            "Id": "",                                                        # Id
+            "ax_orden": orden_item,                                          # orden elemento
+            "ax_proved": self.strvar_proveedor.get(),                        # nombre del proveedor
+            "ax_codcomp": self.strvar_codigo_componente.get(),               # codigo componente del proveedor
+            "ax_componente": self.strvar_componente.get(),                   # descripcion del componente
+            "ax_iva": self.strvar_combo_tasa_iva.get(),                      # tasa iva del componente
+            "ax_cantidad": self.strvar_cantidad_vendida.get(),               # cantidad del componente
+            "ax_neto_dolar": self.strvar_neto_dolar.get(),                   # costo neto componente en dolares
+            "ax_total_presup": self.strvar_precio_final_xcanti.get(),        # total del presupuesto real
+            "ax_total_redondo": self.strvar_total_item_redondo.get(),        # total en pesos redondeo
+            "ax_total_ganancia": self.strvar_importe_ganancia_xcanti.get(),  # total ganancia
+            "ax_total_costos": self.strvar_costo_bruto_pesos_xcanti.get()    # total costos
+        }
+        # -----------------------------------------------------------------
 
-        self.varPresupuestos.insertar_auxpresup(orden_item, self.strvar_proveedor.get(), self.strvar_codigo_componente.get(),
-                                                self.strvar_componente.get(), self.strvar_combo_tasa_iva.get(),
-                                                self.strvar_cantidad_vendida.get(), self.strvar_neto_dolar.get(),
-                                                self.strvar_precio_final_xcanti.get(),
-                                                self.strvar_total_item_redondo.get(),
-                                                self.strvar_importe_ganancia_xcanti.get(),
-                                                self.strvar_costo_bruto_pesos_xcanti.get())
+        # -----------------------------------------------------------------
+        # Insertamos el componente en el auxilliar de presupuesto (aux_presup)
+        self.varPresupuestos.insertar_auxpresup(dic_deta_auxpresup)
+        # -----------------------------------------------------------------
 
         self.calcular("totalpresupuesto")
 
-        self.limpiar_Grid_auxiliar()
-
         ultimo_tabla_id = self.varPresupuestos.traer_ultimo(0)
+
         self.llena_grilla_auxiliar(ultimo_tabla_id)
 
+        # -------------------------------------------------------------------
         # dejar en blanco todos los entrys del articulo
         self.limpiar_entrys_parcial()
         # desactivar los entrys de la parte dos (componentes)
         self.estado_entrys_crud_2("disabled")
         # limpiar los totales del componente
         self.limpiar_totales()
+        # -------------------------------------------------------------------
 
-        messagebox.showinfo("Correcto", "Item ingresado correctamente", parent=self)
+        self.status.set_status("✔ Item ingresado correctamente", "ok")
 
         # Botones de la parte componentes vuelven a estado inicial (+ compon... - compon...
         self.estado_botones_dos("normal")
@@ -951,11 +970,13 @@ class Clase_Presupuestos(tk.Frame):
 
     def fEditar_item_auxpresup(self):
 
+        # ---------------------------------------------------------------------------------
         # Asi obtengo el Id del Grid de donde esta el foco (I006...I002...)
         self.selected = self.grid_tvw_auxcomp.focus()
         # Asi obtengo la clave de la Tabla campo Id que no es lo mismo que el otro (numero secuencial
         # que pone la BD automaticamente al dar el alta
         self.clave = self.grid_tvw_auxcomp.item(self.selected, 'text')
+        # ---------------------------------------------------------------------------------
 
         if self.clave == "":
             messagebox.showwarning("Modificar", "No hay nada seleccionado", parent=self)
@@ -994,7 +1015,7 @@ class Clase_Presupuestos(tk.Frame):
 
     def fReset_articulo(self):
 
-        r = messagebox.askquestion("Resetr", "Confirma anular componente?", parent=self)
+        r = messagebox.askquestion("Reset", "Confirma resetear componente?", parent=self)
         if r == messagebox.NO:
             return
 
@@ -1018,9 +1039,7 @@ class Clase_Presupuestos(tk.Frame):
 
     def fCerrarPresupuesto(self, parametro):
 
-        # VALIDACIONES
-
-        # --------------------------------------------------------------------
+        # VALIDACIONES  ------------------------------------------------------------------
         # valido que haya items en venta - Grid vacio
         if len(self.grid_tvw_auxcomp.get_children()) <= 0:
             messagebox.showerror("Error", "No hay items cargados", parent=self)
@@ -1045,72 +1064,92 @@ class Clase_Presupuestos(tk.Frame):
             r = messagebox.askquestion("Cerrar presupuesto", "Guardamos el presupuesto? ", parent=self)
             if r == messagebox.NO:
                 return
+            # -------------------------------------------------------------------
+            # Borro el presupuesto en resu_presup - por las dudas sea modificacion
+            self.varPresupuestos.eliminar_detapresup(self.strvar_nro_presup.get())
+            # Borro en deta_presup - por las dudas sea modificacion
+            self.varPresupuestos.eliminar_presu_entregado2(self.strvar_nro_presup.get())
+            # -------------------------------------------------------------------
 
         if parametro == "como":
             # Es guardar como para generar un presupuesto igual pero con otro numero
             r = messagebox.askquestion("Presupuesto", "Duplicar presupuesto... asignando numero siguiente ", parent=self)
             if r == messagebox.NO:
                 return
-
-        if parametro == "normal":
-
-            # Borro el presupuesto en resu_presup - por las dudas sea modificacion
-            self.varPresupuestos.eliminar_detapresup(self.strvar_nro_presup.get())
-            # Borro en deta_presup - por las dudas sea modificacion
-            self.varPresupuestos.eliminar_presu_entregado2(self.strvar_nro_presup.get())
-
-        if parametro == "como":
-
             # Si es -guardar_como- busco solamente aignar un  numero mas de presupuesto como si fuera uno nuevo
             self.strvar_nro_presup.set(value=str(int(self.varPresupuestos.traer_ultimo(1)) + 1))
         # --------------------------------------------------------------------
 
         # --------------------------------------------------------------------
         # Antes de insertar los presupuestos en las tablas principales, debo actualizar desde
-        # el Grid a la tabla aux_presup - Elimino all y lo vuelvo a cargar desde el Grid
-
+        # el Grid a la tabla aux_presup -
+        # Elimino all y lo vuelvo a cargar desde el Grid
         self.varPresupuestos.actualizar_auxpresup(self.grid_tvw_auxcomp)
         # --------------------------------------------------------------------
 
+
         # --------------------------------------------------------------------
         # CARGA DE LAS TABLAS - CIERRE DE PRESUPUESTO
-        # Inserto en DETA_PRESUP
-        datos = self.varPresupuestos.consultar_detalle_auxpresup("aux_presup")
+        # --------------------------------------------------------------------
+
+        # Inserto en tabla DETA_PRESU-----------------------------------------
+        datos = self.varPresupuestos.consultar_detalle_auxpresup()
+        # -------------------------------------------------------------------
 
         for row in datos:
 
-            # inserto en tabla DETA_PRESUP
-            self.varPresupuestos.insertar_detapresup(row[1], self.strvar_nro_presup.get(),
-                                             row[2],  # nombre proveedor
-                                             row[3],  # codigo componente proveedor
-                                             row[4],  # descripcion del componente
-                                             row[5],  # tasa IVA del componente
-                                             row[6],  # cantidad presupuestada
-                                             row[7],  # costo neto componente en dolares
-                                             row[9])  # Total en pesos redondeado
-        # ---------------------------------------------------------------------------------
+            # -----------------------------------------------------------------
+            dic_deta_presup = {
+                "Id": row[0],                              # Id
+                "dp_orden": row[1],                        # orden elemento
+                "dp_numero": self.strvar_nro_presup.get(), # numero de presupuesto
+                "dp_proved": row[2],                       # nombre proveedor
+                "dp_codcomp": row[3],                      # codigo componente del proveedor
+                "dp_componente": row[4],                   # descripcion del componente
+                "dp_iva": row[5],                          # tasa iva del componente
+                "dp_cantidad": row[6],                     # cantidad del componente
+                "dp_neto_dolar": row[7],                   # costo neto componente en dolares
+                "dp_redondo": row[9]                       # total en pesos redondeo
+            }
+            # -----------------------------------------------------------------
 
-        # ---------------------------------------------------------------------------------
+            self.varPresupuestos.insertar_detapresup(dic_deta_presup)
+
+            # -----------------------------------------------------------------
+
+        # Insertar en tabla resu_presup ------------------------------------------------
         self.nuevo_presupuesto = self.strvar_nro_presup.get()
+        # ------------------------------------------------------------------------------
 
-        # Inserto en RESU_PRESUP
-        fecha_aux = datetime.strptime(self.strvar_fecha_presup.get(), '%d/%m/%Y')
-        self.varPresupuestos.insertar_presu_entregado(self.strvar_nro_presup.get(), fecha_aux,
-                                         self.strvar_codigo_cliente.get(), self.strvar_nombre_cliente.get(),
-                                         self.combo_sit_fiscal_cliente.get(), self.strvar_cuit.get(),
-                                         self.strvar_valor_dolar_hoy.get(), self.strvar_tasa_ganancia.get(),
-                                         self.strvar_total_presupuesto.get(), self.strvar_total_presup_redondo.get(),
-                                         self.combo_formapago.get(), self.strvar_detalle_pago.get(),
-                                         self.text_especificaciones.get(1.0, 'end-1c'))
-        # ---------------------------------------------------------------------------------
+        # ------------------------------------------------------------------------------
+        dic_resu_presup = {
+            "Id": "",                                                            # Id
+            "rp_numero": self.strvar_nro_presup.get(),                           # numero de presupuesto
+            "rp_fecha": self.strvar_fecha_presup.get(),                          # fecha de presupuesto
+            "rp_codcli": self.strvar_codigo_cliente.get(),                       # codigo de cliente
+            "rp_nomcli": self.strvar_nombre_cliente.get(),                       # nombre del cliente
+            "rp_sitfiscal": self.strvar_sit_fiscal.get(),                        # situacion fiscal del cliente
+            "rp_cuit": self.strvar_cuit.get(),                                   # cuit del cliente
+            "rp_valor_dolar": self.strvar_valor_dolar_hoy.get(),                 # valor asignado del dolar hoy
+            "rp_tasa_gan": self.strvar_tasa_ganancia.get(),                      # tasa de ganancia
+            "rp_total_real": self.strvar_total_presupuesto.get(),                # total en pesos redondeo
+            "rp_total_redondo": self.strvar_total_presup_redondo.get(),          # total en pesos redondeo
+            "rp_forma_pago": self.strvar_combo_formas_pago.get(),                # forma de pago
+            "rp_detalle_pago": self.strvar_detalle_pago.get(),                   # detalle del pago
+            "rp_detalle": self.text_especificaciones.get(1.0, 'end-1c')  # texto especificaciones
+            #"rp_aceptado": self.strvar_  # total en pesos redondeo
+        }
+        # --------------------------------------------------------------------------
 
-        messagebox.showinfo("Guardar", "Ingreso correcto detalle y resumen", parent=self)
+        self.varPresupuestos.insertar_presu_entregado(dic_resu_presup)
 
-        # refresco grid de presu_entregado para que se me actualie la grilla de resu_presup
-        self.limpiar_Grid_resu_presup()
+        # -----------------------------------------------------------------
+
+        self.status.set_status("🗑 Ingreso correcto detalle y resumen", "ok")
 
         # acomodo el puntero en el presupuesto recien ingresado
         ultimo_tabla_id = self.varPresupuestos.traer_ultimo(0)
+
         self.llena_grilla_resu_presup(ultimo_tabla_id)
 
         # pongo all en blanco como si recien iniciara para que se pueda pedir un nuevo presupuesto
@@ -1125,31 +1164,36 @@ class Clase_Presupuestos(tk.Frame):
         if len(self.strvar_buscostring.get()) > 0:
 
             se_busca = self.strvar_buscostring.get()
-            self.filtro_activo_resu_presup = "resu_presup WHERE INSTR(rp_nomcli, '" + se_busca + "') ORDER BY rp_fecha ASC"
 
-            self.varPresupuestos.buscar_entabla(self.filtro_activo_resu_presup)
+            datos = self.varPresupuestos.buscar_entabla(se_busca)
 
-            self.limpiar_Grid_resu_presup()
-            self.llena_grilla_resu_presup("")
+            # Limpio el grid
+            for item in self.grid_tvw_presu_entregado.get_children():
+                self.grid_tvw_presu_entregado.delete(item)
 
-            """ Obtengo el Id del grid para que me tome la seleccion y el foco se coloque efectivamente en el
-            item buscado y asi cuando le doy -show all- el puntero se sigue quedando en el registro buscado"""
-            item = self.grid_tvw_presu_entregado.selection()
-            self.grid_tvw_presu_entregado.focus(item)
+            # carga la grilla con los registros seleccionados
+            for row in datos:
+                self.grid_tvw_presu_entregado.insert("", "end", text=row[0], values=row[1:])
+                # 👉 row[1:] significa:desde el segundo elemento en adelante o sea: row[1], row[2], row[3]...
 
-        else:
+            items = self.grid_tvw_presu_entregado.get_children()
 
-            messagebox.showwarning("Buscar", "No ingreso busqueda", parent=self)
+            # selecciono el primero de la tabla y pongo foco y visibilidad
+            if items:
+                primero = items[0]
+                self.grid_tvw_presu_entregado.selection_set(primero)
+                self.grid_tvw_presu_entregado.focus(primero)
+                self.grid_tvw_presu_entregado.see(primero)
 
     # --------------------------------------------------------------------------
     # MOVIMIENTOS PUNTERO EN EL GRID
     # --------------------------------------------------------------------------
 
     def fToparch(self):
-        self.mover_puntero_topend('"top"')
+        self.varFuncion_new.mover_puntero_topend(self.grid_tvw_presu_entregado, 'TOP')
 
     def fFinarch(self):
-        self.mover_puntero_topend('END')
+        self.varFuncion_new.mover_puntero_topend(self.grid_tvw_presu_entregado, 'END')
 
     def fSubir_uno(self):
 
@@ -1163,7 +1207,8 @@ class Clase_Presupuestos(tk.Frame):
         #     orden de posicion o renglon
         index = self.grid_tvw_auxcomp.index(actual)
         if index == 0:
-            messagebox.showwarning("Aviso", "Llegamos al principio", parent=self)
+            self.status.set_status("ℹ Llegamos al principio...", "info")
+
             self.grid_tvw_auxcomp.focus(actual)
             self.grid_tvw_auxcomp.selection_set(actual)
             return
@@ -1194,7 +1239,7 @@ class Clase_Presupuestos(tk.Frame):
         total = len(self.grid_tvw_auxcomp.get_children())
 
         if index >= total - 1:
-            messagebox.showwarning("Aviso", "Llegamos al final", parent=self)
+            self.status.set_status("ℹ Llegamos al final", "info")
             self.grid_tvw_auxcomp.focus(actual)
             self.grid_tvw_auxcomp.selection_set(actual)
             return
@@ -1238,54 +1283,10 @@ class Clase_Presupuestos(tk.Frame):
             # item es el index del registro del treeview I001, I002...
             tree.item(item, values=valores)
 
-    def mover_puntero_topend(self, param_topend):
-
-        # Si es tope de archivo
-        if param_topend == '"top"':
-            # obtengo una lista con todos los Id del treeview
-            regis = self.grid_tvw_presu_entregado.get_children()
-            # barro y salgo al primero, pero me quedo en el primero
-            rg = ""
-            for rg in regis:
-                break
-            if rg == "":
-                return
-
-            # pone el primero Id
-            self.grid_tvw_presu_entregado.focus(rg)
-            # selecciono el Id primero de la lista en este caso
-            self.grid_tvw_presu_entregado.selection_set(rg)
-
-            # le principio del treeview con esta instruccion que encontre
-            self.grid_tvw_presu_entregado.yview(self.grid_tvw_presu_entregado.index(self.grid_tvw_presu_entregado.get_children()[0]))
-
-        # self.grid_tvw_auxcomp.focus(actual)
-        # self.grid_tvw_auxcomp.selection_set(actual)
-
-        elif param_topend == 'END':
-
-            # Obtengo una lista con todos los Id del treeview
-            regis = self.grid_tvw_presu_entregado.get_children()
-            # Barro la lista y ,me quedo conel ultimo Id
-            rg = ""
-            for rg in regis:
-                pass
-            if rg == "":
-                return
-
-            # Pongo el foco alultimo elemento de la lista (al final)
-            self.grid_tvw_presu_entregado.focus(rg)
-            # Selecciono el ultimo Id en este caso
-            self.grid_tvw_presu_entregado.selection_set(rg)
-            # lleva el foco al final del treeview
-            self.grid_tvw_presu_entregado.yview(self.grid_tvw_presu_entregado.index(self.grid_tvw_presu_entregado.get_children()[-1]))
-
     def fShowall(self):
-
         self.selected = self.grid_tvw_presu_entregado.focus()
         self.clave = self.grid_tvw_presu_entregado.item(self.selected, 'text')
-        self.filtro_activo_resu_presup = "resu_presup ORDER BY rp_fecha"
-        self.limpiar_Grid_resu_presup()
+        self.filtro_activo_resu_presup = "ORDER BY rp_fecha"
         self.llena_grilla_resu_presup(self.clave)
 
     # ----------------------------------------------------------
@@ -1369,7 +1370,7 @@ class Clase_Presupuestos(tk.Frame):
             if que_campo == "totalpresupuesto":
 
                 """ Guardo todos los items que compnen el presupuesto """
-                datos = self.varPresupuestos.consultar_presupuestos("aux_presup")
+                datos = self.varPresupuestos.consultar_presupuestos("aux_presup", "aux_presup")
                 sumatot_presu = 0
                 sumatot_redondo = 0
                 sumatot_costos = 0
@@ -1447,7 +1448,6 @@ class Clase_Presupuestos(tk.Frame):
     # -------------------------------------------------------------
 
     def traer_dolarhoy(self):
-
         dev_informa = self.varPresupuestos.consultar_informa()
         for row in dev_informa:
             self.strvar_valor_dolar_hoy.set(value=row[21])
@@ -1513,13 +1513,11 @@ class Clase_Presupuestos(tk.Frame):
         self.entry_componente.icursor(tk.END)
 
     def fCerrar5(self):
-
         self.pantalla_detalle.destroy()
         self.master.grab_set()
         self.master.focus_set()
 
     def fVerArticulos(self):
-
         vent = tk.Toplevel()
         vent.title("ABM Articulos")
         # Asigno la clase Ventart que esta en articulos.py a la variable app
@@ -1715,10 +1713,6 @@ class Clase_Presupuestos(tk.Frame):
     def cuadro_botones_grid_entregados_3(self):
 
         # Botones +componente -com ponente Ingresar componente al presupuesto
-
-        # for c in range(1):
-        #     self.frame_cuadro3.grid_columnconfigure(c, weight=1, minsize=140)
-
         for c in range(2):
             self.frame_cuadro3.grid_columnconfigure(c, weight=1, minsize=70)
 
@@ -1752,7 +1746,7 @@ class Clase_Presupuestos(tk.Frame):
         # INGRESAR COMPONENTE AL GRID DE PRESUPUESTO ACTUAL
         img = Image.open("agregar-producto.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_ingresar_componente=tk.Button(self.frame_cuadro3, text=" Actualizar\ncomponente",
+        self.btn_ingresar_componente=tk.Button(self.frame_cuadro3, text=" Ingresa componente",
                                            command=self.fInsertar_item_auxpresup, width=17, bg='blue',
                                            fg='white', compound="left")
         self.btn_ingresar_componente.image = icono
@@ -1762,7 +1756,7 @@ class Clase_Presupuestos(tk.Frame):
         # CANCELAR LA CARGA DEL COMPONENTE AL GRID DE PRESUPUESTO ACTUAL
         img = Image.open("cancelar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_reset_componente=tk.Button(self.frame_cuadro3, text=" Anular ingreso\nde componente",
+        self.btn_reset_componente=tk.Button(self.frame_cuadro3, text=" Cancela componente",
                                          command=self.fReset_articulo, width=17, bg='black', fg='white', compound="left")
         self.btn_reset_componente.image = icono
         self.btn_reset_componente.config(image=icono)
@@ -1791,8 +1785,8 @@ class Clase_Presupuestos(tk.Frame):
         self.photo3 = Image.open('salida.png')
         self.photo3 = self.photo3.resize((35, 35), Image.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo3 = ImageTk.PhotoImage(self.photo3)
-        self.btnSalir=tk.Button(self.frame_cuadro4, text="Salir", image=self.photo3, width=133, height=40, command=self.fSalir,
-                             bg="yellow", fg="white")
+        self.btnSalir=tk.Button(self.frame_cuadro4, text="Salir", image=self.photo3, width=133, height=58,
+                                command=self.fSalir, bg="yellow", fg="white")
         self.btnSalir.grid(row=0, column=0, padx=3, pady=3, sticky = 'nsew')
 
     def cuadro_buscar_presup_entregado(self):
@@ -1845,15 +1839,6 @@ class Clase_Presupuestos(tk.Frame):
         self.btn_imprime_presupuesto.image = icono
         self.btn_imprime_presupuesto.config(image=icono)
         self.btn_imprime_presupuesto.grid(row=0, column=4, padx=4, pady=2, sticky="nsew")
-
-        # # IMPRIMIR PRESUPUESTO INTERNO
-        # img = Image.open("impresora.png").resize((18, 18))
-        # icono = ImageTk.PhotoImage(img)
-        # self.btn_imprime_presup_ext=Button(self.frame_busqueda_presu_entregado, text=" Presup. externo",
-        #                                    command=self.creopdfext, width=105, bg='#5F9EF5', fg='white', compound="left")
-        # self.btn_imprime_presup_ext.image = icono
-        # self.btn_imprime_presup_ext.config(image=icono)
-        # self.btn_imprime_presup_ext.grid(row=0, column=5, padx=4, pady=2, sticky="nsew")
         # ----------------------------------------------------------------------
 
         # ----------------------------------------------------------------------
@@ -2271,7 +2256,7 @@ class Clase_Presupuestos(tk.Frame):
             return
 
         # consulto el registro en la tabla para saber e estado de la marca de aceptado (si esta ya aceptadoo o no)
-        datos = self.varPresupuestos.consultar_presupuestos(f"resu_presup WHERE id={self.clave}")
+        datos = self.varPresupuestos.consultar_presupuestos("resu_presup", f"resu_presup WHERE id={self.clave}")
 
         # si esta marcado como aceptado lo cambio a no aceptado y a la inversa
         marca_aceptado = "0"
@@ -2286,18 +2271,18 @@ class Clase_Presupuestos(tk.Frame):
 
         r = messagebox.askquestion("", "Confirma cambio de estado presupuesto?\n " + data, parent=self)
         if r == messagebox.NO:
-            messagebox.showinfo("", "Cancelado", parent=self)
+            self.status.set_status("🗑 Cancelado", "ok")
             return
 
         # paso self.clave que es el Id de la tabla y la marca para aceptar o des_aceptar
         self.varPresupuestos.marcar_presup_aceptado(self.clave, marca_aceptado)
 
         if marca_aceptado == "1":
-            messagebox.showinfo("", "Presupuesto aceptado", parent=self)
+            self.status.set_status("✔ Presupuesto aceptado", "ok")
         else:
-            messagebox.showinfo("", "Presupuesto NO aceptado", parent=self)
+            self.status.set_status("✔ Presupuesto NO aceptado", "ok")
 
-        self.limpiar_Grid_resu_presup()
+        #self.limpiar_Grid_resu_presup()
         self.llena_grilla_resu_presup(self.clave)
 
     # ------------------------------------------------------------------------
@@ -2716,3 +2701,15 @@ class Clase_Presupuestos(tk.Frame):
         # Abre el archivo PDF para luego, si quiero, poder imprimirlo
         path = 'hoja.pdf'
         os.system(path)
+
+    #     # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+    #     # self.set_status("✔ Registro guardado correctamente", "ok")
+    #     # self.set_status("🗑 Cliente eliminado", "ok")
+    #     # self.set_status("⚠ CUIT incorrecto", "warn")
+    #     # self.set_status("❌ Error al guardar", "error")
+    #     # self.set_status("ℹ Buscando clientes...", "info")
+
+
+
+
+

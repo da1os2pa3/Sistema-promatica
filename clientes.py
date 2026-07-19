@@ -1,3 +1,7 @@
+"""Ctrl + Alt + O → Optimize Imports (elimina imports no usados y ordena los que quedan).
+Ctrl + Alt + L → Reformat Code (reformatea el código según las reglas configuradas).
+Ctrl + Alt + Shift + L → abre el cuadro de diálogo para elegir opciones avanzadas de reformateo."""
+
 from funciones import *
 from funcion_new import ClaseFuncion_new
 from clientes_ABM import datosClientes
@@ -6,10 +10,11 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 import tkinter.font as tkFont
-
+#-------------------------------------------------
 from datetime import date, datetime
 from PIL import Image, ImageTk
 from tktooltip import ToolTip
+from status_bar import StatusBar
 
 class Clase_Clientes(tk.Frame):
 
@@ -17,6 +22,7 @@ class Clase_Clientes(tk.Frame):
 
         super().__init__(master)
         self.master = master
+        self.status = StatusBar(self.master)
 
         # Seteo pantalla master principal -------------------------------------------------
         self.master.grab_set()
@@ -33,18 +39,14 @@ class Clase_Clientes(tk.Frame):
         # PANTALLA -*-
         # ---------------------------------------------------------------------------------
         self.master.resizable(0, 0)
-
         """ Actualizamos el contenido de la ventana (la ventana pude crecer si se le agrega
             mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer.
             Obtenemos el alto y  ancho de la pantalla """
-
         ancho = self.master.winfo_screenwidth()
         alto = self.master.winfo_screenheight()
-
         # Asigno fijo un ancho y un alto
         ancho_ventana = 980
         alto_ventana = 630
-
         # X e Y son las coordenadas para el posicionamiento del vertice superior izquierdo
         x = int((ancho - ancho_ventana) / 2)
         y = int((alto - alto_ventana) / 2)
@@ -55,34 +57,7 @@ class Clase_Clientes(tk.Frame):
         self.estado_inicial()
         self.llena_grilla("")
 
-        # ---------------------------------------------------------------------------
-        # SETEO INICIAL DEL GRID
-        # ---------------------------------------------------------------------------------
-        # item = self.grid_clientes.identify_row(0) # I==001, I004..., primera fia "visible", ojo no siempre es la primera real
-        # self.grid_clientes.selection_set(item)
-        # self.grid_clientes.focus(item)
-        # ---------------------------------------------------------------------------
-
     def create_widgets(self):
-
-        # ---------------------------------------------------------------------------
-        # GPT ||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-        """ Es para los mensajes sobre eventos del sistema, rteemplazaria a algunos messagebox
-        Ubicada ultima linea de la pantalla"""
-
-        self.status_var = tk.StringVar()
-
-        self.status_bar = tk.Label(
-            self.master,
-            textvariable=self.status_var,
-            bd=1,
-            relief="sunken",
-            anchor="w",
-            bg="#f0f0f0"
-        )
-        self.status_bar.pack(side="bottom", fill="x")
-        # ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-        # --------------------------------------------------------------------------
 
         # --------------------------------------------------------------------------
         # TITULOS -*-
@@ -156,52 +131,46 @@ class Clase_Clientes(tk.Frame):
         """ En set_foco viene el Id de la tabla que identidica el registro donde quiero oner el foco - 2312, 23, 456..
         Puede llegar a venir en vacio """
 
-        # Si hay un error en insertar devuelve None la funcion insertar de ABM
-        if set_foco is None:
-            print("⚠️ set_foco = None (posible error al insertar)")
-            return
-
-        # Limpio el grid
+        # Limpio el grid --------------------------------------------------------
         for item in self.grid_clientes.get_children():
             self.grid_clientes.delete(item)
 
-        # Asigno orden
+        # Asigno orden -----------------------------------------------------------
         if self.filtro_activo:
             datos = self.varClientes.consultar_clientes(self.filtro_activo)
         else:
             datos = self.varClientes.consultar_clientes("ORDER BY apellido, nombres ASC")
 
-        # Tomo la cantidad de clientes
+        # Tomo la cantidad de clientes -------------------------------------------
         self.strvar_cant_clientes.set(value=str(len(datos)))
 
+        # Inserto items en el Grid -----------------------------------------------
         cont = 0
         for row in datos:
-
             cont += 1
             color = ('evenrow',) if cont % 2 else ('oddrow',)
-
             # convierto fecha de 2024-12-19 a 19/12/2024
             forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[13], '%Y-%m-%d'), False)
-
             self.grid_clientes.insert("", "end", tags=color, text=row[0], values=(row[1], row[2], row[3],
                                                                                   row[4], row[5], row[6], row[7],
                                                                                   row[8], row[9], row[10], row[11],
                                                                                   row[12], forma_normal, row[14]))
 
-        # Grid negativo
-        if not len(self.grid_clientes.get_children()) >= 0:
-            self.set_status("❌ Error inesperado, Grid negativo", "error")
-            return
+        # Controles ---------------------------------------------------------
 
+        # Grid negativo
+        if len(self.grid_clientes.get_children()) < 0:
+            self.status.set_status("❌ Error inesperado, Grid negativo", "error")
+            return
         # Foco vacio, voy al primero de la grilla
         if not set_foco:
             self.grid_clientes.selection_set(self.grid_clientes.get_children()[0])
+            return
 
         # Voy al Id valor del set_foco
         for item in self.grid_clientes.get_children():
             texto = self.grid_clientes.item(item, "text")
             if str(texto).strip() == str(set_foco).strip(): # suponiendo que el ID está en la columna 0
-            # if str(texto) == str(set_foco):  # suponiendo que el ID está en la columna 0
                 self.grid_clientes.update_idletasks()
                 self.grid_clientes.focus_set()
                 self.grid_clientes.selection_set(item)
@@ -242,12 +211,12 @@ class Clase_Clientes(tk.Frame):
         ]:
             entry.configure(state=estado)
 
-        if self.alta_modif == 1:
-            self.grid_clientes['selectmode'] = 'none'
-            self.grid_clientes.bind("<Double-Button-1>", self.fNo_modifique)
-        if self.alta_modif == 2 or self.alta_modif == 0:
-            self.grid_clientes['selectmode'] = 'browse'
-            self.grid_clientes.bind("<Double-Button-1>", self.DobleClickGrid)
+        # if self.alta_modif == 1:
+        #     self.grid_clientes['selectmode'] = 'none'
+        #     self.grid_clientes.bind("<Double-Button-1>", self.fNo_modifique)
+        # if self.alta_modif == 2 or self.alta_modif == 0:
+        #     self.grid_clientes['selectmode'] = 'browse'
+        #     self.grid_clientes.bind("<Double-Button-1>", self.DobleClickGrid)
 
     def limpiar_text(self):
 
@@ -354,7 +323,7 @@ class Clase_Clientes(tk.Frame):
         self.clave = self.grid_clientes.item(self.selected, 'text')
 
         if self.clave == "":
-            self.set_status("✔ No hay nada seleccionado", "ok")
+            self.status.set_status("✔ No hay nada seleccionado", "ok")
             return
 
         self.alta_modif = 2
@@ -409,7 +378,7 @@ class Clase_Clientes(tk.Frame):
         # ------------------------------------------------------------------------------
 
         if self.clave == "":
-            self.set_status("❌ No hay nada seleccionado", "error")
+            self.status.set_status("❌ No hay nada seleccionado", "error")
             return
 
         # guardo todos los valores en una lista desde el GRID
@@ -418,7 +387,7 @@ class Clase_Clientes(tk.Frame):
 
         r = messagebox.askquestion("Confirmar", "Confirma eliminar registro?\n " + data, parent=self)
         if r == messagebox.NO:
-            self.set_status("ℹ Eliminaion cancelada", "info")
+            self.status.set_status("ℹ Eliminaion cancelada", "info")
             return
 
         try:
@@ -429,7 +398,7 @@ class Clase_Clientes(tk.Frame):
             messagebox.showerror("❌Error del sistema en Eliminar cliente", str(e))
             return
         else:
-            self.set_status("🗑 Registro eliminado correctamente", "ok")
+            self.status.set_status("🗑 Registro eliminado correctamente", "ok")
 
         # recarga del Grid
         self.llena_grilla(self.clave_ant)
@@ -439,27 +408,25 @@ class Clase_Clientes(tk.Frame):
         # VALIDACIONES ---------------------------------------------------
 
         # CONTROLO CODIGO REPETIDO - control de codigo de cliente repetido (en funciones)
+        # si viene algun dato, es que el codigo ya existe
         codrep = codigo_repetido(self.strvar_codigo.get(), "clientes", "codigo")
+        if self.alta_modif == 1 and len(codrep) > 0:
+            self.status.set_status("❌ El Codigo ya existe, error al guardar", "error")
+            self.entry_apellido.focus()
+            return
 
-        if self.alta_modif == 1:
-            # si viene algun dato, es que el codigo ya existe
-            if len(codrep) > 0:
-                # messagebox.showerror("Error", "El codigo ya existe en la tabla - verifique", parent=self)
-                self.set_status("❌ El Codigo ya existe, error al guardar", "error")
-                self.entry_apellido.focus()
-                return
         # VALIDACION QUE EXISTA APELLIDO y NOMBRE
         if self.strvar_apellido.get() == "":
-            self.set_status("⚠ Ingrese apellido/s", "warn")
+            self.status.set_status("⚠ Ingrese apellido/s", "warn")
             self.entry_apellido.focus()
             return
         if self.strvar_nombres.get() == "":
-            self.set_status("⚠ Ingrese nombre/s", "warn")
+            self.status.set_status("⚠ Ingrese nombre/s", "warn")
             self.entry_nombres.focus()
             return
         # VALIDAR CUIT - en modulo funciones.py
         if not validar_cuit(self, self.strvar_cuit.get()):
-            self.set_status("⚠ CUIT incorrecto", "warn")
+            self.status.set_status("⚠ CUIT incorrecto", "warn")
             self.entry_cuit.focus()
             return
         # ----------------------------------------------------------------
@@ -476,7 +443,6 @@ class Clase_Clientes(tk.Frame):
         #-----------------------------------------------------------------
         # PASO DICCIONARIO PARA INSERTAR O MODIFICAR
         clientes = {
-            #"Id": self.var_Id,
             "Id": self.clave,
             "codigo": self.strvar_codigo.get(),
             "apellido": self.strvar_apellido.get(),
@@ -492,7 +458,8 @@ class Clase_Clientes(tk.Frame):
             "sit_fis": self.strvar_sit_fis.get(),
             "cuit": self.strvar_cuit.get(),
             "observaciones": self.strvar_observaciones.get(),
-            "apenombre": self.strvar_apellido.get() + ' ' + self.strvar_nombres.get()}
+            "apenombre": self.strvar_apellido.get() + ' ' + self.strvar_nombres.get()
+        }
         #-----------------------------------------------------------------
 
         #-----------------------------------------------------------------
@@ -502,32 +469,27 @@ class Clase_Clientes(tk.Frame):
             if self.alta_modif == 1:
                 self.id_nuevo = self.varClientes.insertar_clientes(clientes)
                 id_ref = self.id_nuevo
-
             elif self.alta_modif == 2:
                 self.varClientes.modificar_clientes(clientes)
                 id_ref = self.clave
         except ValueError as e:
             messagebox.showwarning("Datos inválidos en Insertar/Modificar clientes", str(e))
-            #self.set_status("⚠ Error en los datos", "warn")
             return
         except Exception as e:
             messagebox.showerror("Error del sistema en Insertar/Modificar clientes", str(e))
-            #self.set_status("❌ Error al guardar", "error")
             return
-
         else:
-            self.set_status("✔ Registro guardado correctamente", "ok")
+            self.status.set_status("✔ Registro guardado correctamente", "ok")
 
-            # Terminacion y habilitaciones
-            self.limpiar_text()
-            self.habilitar_btn_B("disabled")
-            self.habilitar_btn_A("normal")
-
-            self.filtro_activo = "ORDER BY apellido, nombres ASC"
-            self.llena_grilla(id_ref)
-
-            self.alta_modif = 0
-            self.habilitar_text("disabled")
+        # Terminacion y habilitaciones
+        self.filtro_activo = "ORDER BY apellido, nombres ASC"
+        self.limpiar_text()
+        self.habilitar_btn_B("disabled")
+        self.habilitar_btn_A("normal")
+        self.llena_grilla(id_ref)
+        self.grid_clientes.focus()
+        self.habilitar_text("disabled")
+        self.alta_modif = 0
 
     # --------------------------------------------------------------------------
     # VARIAS -*-
@@ -597,7 +559,7 @@ class Clase_Clientes(tk.Frame):
 
         # Buscar en el Grid
         if len(self.entry_buscar_cliente.get()) <= 0:
-            self.set_status("⚠ No ingreso busqueda", "warn")
+            self.status.set_status("⚠ No ingreso busqueda", "warn")
             return
 
         # Obtengo string a buscar
@@ -609,7 +571,6 @@ class Clase_Clientes(tk.Frame):
             datos = self.varClientes.buscar_clientes(se_busca)
         except Exception as e:
             messagebox.showerror("Error del sistema en Buscar cllientes", str(e))
-            #self.set_status("❌ Error al buscar un cliente", "error")
             return
 
         # Limpio el grid
@@ -1002,60 +963,16 @@ class Clase_Clientes(tk.Frame):
         return ImageTk.PhotoImage(img)
     # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 
-    # GPT |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-    def set_status(self, mensaje, tipo="info", tiempo=3000):
-
-        # 🎨 colores según tipo
-        colores = {
-            "ok": ("#d4edda", "#155724"),  # verde claro / texto oscuro
-            "error": ("#f8d7da", "#721c24"),  # rojo
-            "warn": ("#fff3cd", "#856404"),  # amarillo
-            "info": ("#d1ecf1", "#0c5460")  # celeste
-        }
-
-        bg, fg = colores.get(tipo, ("#f0f0f0", "black"))
-
-        # seteo visual
-        self.status_var.set("  " + mensaje)
-        self.status_bar.config(bg=bg, fg=fg)
-
-        # 🔊 sonido
-        if tipo == "ok":
-            self.bell()
-        elif tipo == "error":
-            self.bell()
-            self.after(120, self.bell)
-        elif tipo == "warn":
-            self.bell()
-
-        # ⏳ limpiar después de X tiempo
-        self.after(tiempo, self.clear_status)
-
-    def clear_status(self):
-        self.status_var.set("")
-        self.status_bar.config(bg="#f0f0f0", fg="black")
-
-
-        # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-        # 🔥 CÓMO USARLO
-        # ✔ Guardar
-        # self.set_status("✔ Registro guardado correctamente", "ok")
-        # 🗑 Eliminar
-        # self.set_status("🗑 Cliente eliminado", "ok")
-        # ⚠ Validación
-        # self.set_status("⚠ CUIT incorrecto", "warn")
-        # ❌ Error
-        # self.set_status("❌ Error al guardar", "error")
-        # ℹInfo
-        # self.set_status("ℹ Buscando clientes...", "info")
-
-
-        # self.filtro_activo = "clientes WHERE INSTR(apellido, '" + se_busca + "') > 0" \
-        #                      + " OR " + "INSTR(nombres, '" + se_busca + "') > 0" \
-        #                      + " OR " + "INSTR(apenombre, '" + se_busca + "') > 0" \
-        #                      + " ORDER BY apellido, nombres ASC"
-        #
-        # self.varClientes.buscar_entabla(self.filtro_activo)
-        # #self.limpiar_Grid()
-        # self.llena_grilla("")
-
+    # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+    # 🔥 CÓMO USAR SET_STATUS
+    # ✔ Guardar
+    # self.set_status("✔ Registro guardado correctamente", "ok")
+    # 🗑 Eliminar
+    # self.set_status("🗑 Cliente eliminado", "ok")
+    # ⚠ Validación
+    # self.set_status("⚠ CUIT incorrecto", "warn")
+    # ❌ Error
+    # self.set_status("❌ Error al guardar", "error")
+    # ℹInfo
+    # self.set_status("ℹ Buscando clientes...", "info")
+    # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||

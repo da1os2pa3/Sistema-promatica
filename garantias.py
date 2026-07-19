@@ -1,15 +1,15 @@
-from funciones import *
-from funcion_new import *
-from garantias_ABM import datosGarantias
-#------------------------------------------------
 import tkinter as tk
+from datetime import date
 from tkinter import ttk
-from tkinter import messagebox
+# from tkinter import messagebox
 from tkinter.scrolledtext import *
-#------------------------------------------------
-from datetime import date, datetime, timedelta
-from dateutil.relativedelta import relativedelta
+# ------------------------------------------------
 from PIL import Image, ImageTk
+from dateutil.relativedelta import relativedelta
+# ------------------------------------------------
+from funcion_new import ClaseFuncion_new
+from funciones import *
+from garantias_ABM import datosGarantias
 
 class Clase_Garantias(tk.Frame):
 
@@ -21,23 +21,40 @@ class Clase_Garantias(tk.Frame):
         self.master.grab_set()
         self.master.focus_set()
 
-        # Instanciaciones -----------------------------------------------------------------
+        # Instanciaciones -----------------------------------------------------------
 
         """ Creo una instancia de clase varGarantia. Le paso la pantalla para poder usar los parent 
             en los mensajes de messagebox. """
         self.varGarantia = datosGarantias(self.master)
         self.varFuncion_new = ClaseFuncion_new(self.master)
-        # ---------------------------------------------------------------------------------
+        # ---------------------------------------------------------------------------
 
-        # ---------------------------------------------------------------------------------
+        # ---------------------------------------------------------------------------
+        # GPT ||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+        """ Es para los mensajes sobre eventos del sistema, rteemplazaria a algunos messagebox
+        Ubicada ultima linea de la pantalla"""
+        self.status_var = tk.StringVar()
+        self.status_bar = tk.Label(
+            self.master,
+            textvariable=self.status_var,
+            bd=1,
+            relief="sunken",
+            anchor="w",
+            bg="#f0f0f0"
+        )
+        self.status_bar.pack(side="bottom", fill="x")
+        # ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+        # --------------------------------------------------------------------------
+
+        # --------------------------------------------------------------------------
         # PANTALLA
 
         # Esto esta agregado para centrar las ventanas en la pantalla
         self.master.resizable(0, 0)
 
+        # ------------------------------------------------------------------------------
         """ Actualizamos el contenido de la ventana (la ventana pude crecer si se le agrega
         mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer. """
-
         # Obtenemos el largo y  ancho de la pantalla
         wtotal = self.master.winfo_screenwidth()
         htotal = self.master.winfo_screenheight()
@@ -64,7 +81,6 @@ class Clase_Garantias(tk.Frame):
         # selection_remove(): remueve elementos de la selección.
         # selection_set(): similar a selection_add(), pero remueve los elementos previamente seleccionados.
         # selection_toggle(): cambia la selección de un elemento. """
-
         # ...................................................................
         # # guarda en item el Id del elemento fila en este caso fila 0      .
         # item = self.grid_garantias.identify_row(0)                        .
@@ -79,9 +95,9 @@ class Clase_Garantias(tk.Frame):
 
     def create_widgets(self):
 
-        # --------------------------------------------------------------
+        # ---------------------------------------------------------------------------
         # TITULOS - Encabezado logo y titulo con PACK
-        # --------------------------------------------------------------
+        # --------------------------------------------------------------------------
         self.frame_titulo_top = tk.Frame(self.master)
         self.cuadro_titulos()
         self.frame_titulo_top.pack(side="top", fill="x", padx=5, pady=2)
@@ -117,7 +133,6 @@ class Clase_Garantias(tk.Frame):
         self.frame_tvw_garantias=tk.LabelFrame(self.master, text="Garantias: ", foreground="#CF09BD")
         self.cuadro_grid()
         self.frame_tvw_garantias.pack(side="top", fill="both", padx=5, pady=2)
-        # --------------------------------------------------------------------------
 
         # --------------------------------------------------------------------------
         # BUSQUEDA DE UNA GARANTIA
@@ -125,7 +140,6 @@ class Clase_Garantias(tk.Frame):
         self.frame_busco_garantia=tk.LabelFrame(self.master, text="", background="light blue", foreground="red")
         self.cuadro_buscar()
         self.frame_busco_garantia.pack(side="top", fill="both", expand=0, padx=5, pady=3)
-        # --------------------------------------------------------------------------
 
         # --------------------------------------------------------------------------
         # BOTONES DEL TREEVIEW
@@ -133,7 +147,6 @@ class Clase_Garantias(tk.Frame):
         self.frame_primero=tk.LabelFrame(self.master, text="", foreground="red")
         self.cuadro_botones_crud()
         self.frame_primero.pack(side="top", fill="both", expand=0, padx=5, pady=2)
-        # --------------------------------------------------------------------------
 
         # --------------------------------------------------------------------------
         # ENTRYS - PEDIDO DE DATOS
@@ -141,7 +154,6 @@ class Clase_Garantias(tk.Frame):
         self.frame_segundo=tk.LabelFrame(self.master, text="", foreground="red")
         self.cuadro_entrys()
         self.frame_segundo.pack(side="top", fill="both",expand=0, padx=5, pady=3)
-        # --------------------------------------------------------------------------
 
         # --------------------------------------------------------------------------
         # ENTRYS - DETALLES
@@ -149,7 +161,6 @@ class Clase_Garantias(tk.Frame):
         self.frame_tercero=tk.LabelFrame(self.master, text="", foreground="red")
         self.cuadro_entrys_detalles()
         self.frame_tercero.pack(side="top", fill="both",expand=0, padx=5, pady=3)
-        # --------------------------------------------------------------------------
 
         # --------------------------------------------------------------------------
         # ENTRYS - DATOS FACTURA Y OBSERVACIONES
@@ -157,7 +168,6 @@ class Clase_Garantias(tk.Frame):
         self.frame_cuarto=tk.LabelFrame(self.master, text="", foreground="red")
         self.cuadro_entrys_factobs()
         self.frame_cuarto.pack(side="top", fill="both",expand=0, padx=5, pady=3)
-        # --------------------------------------------------------------------------
 
         # --------------------------------------------------------------------------
         # ENTRYS - TEXTO DETALLE
@@ -165,7 +175,6 @@ class Clase_Garantias(tk.Frame):
         self.frame_quinto=tk.LabelFrame(self.master, text="Observaciones", foreground="blue")
         self.cuadro_entrys_texto_detalles()
         self.frame_quinto.pack(side="top", fill="both", expand=0, padx=5, pady=3)
-        # --------------------------------------------------------------------------
 
     # ------------------------------------------------------------------------------
     # GRID
@@ -173,10 +182,14 @@ class Clase_Garantias(tk.Frame):
 
     def llena_grilla(self, ult_tabla_id):
 
+        # limpiar la grilla
+        for item in self.grid_garantias.get_children():
+            self.grid_garantias.delete(item)
+
         if len(self.filtro_activo) > 0:
             datos = self.varGarantia.consultar_garantia(self.filtro_activo)
         else:
-            datos = self.varGarantia.consultar_garantia("garantias ORDER BY gt_fechavto ASC")
+            datos = self.varGarantia.consultar_garantia("ORDER BY gt_fechavto ASC")
 
         cont = 0
         for row in datos:
@@ -184,13 +197,15 @@ class Clase_Garantias(tk.Frame):
             cont += 1
             color = ('evenrow',) if cont % 2 else ('oddrow',)
 
-            # convierto fecha de 2024-12-19 a 19/12/2024
+            # convierto fecha de 2024-12-19 a 19/12/2024 y le digo si va con la hora tambien o no
             forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[1], '%Y-%m-%d'), False)
             forma_normal2 = fecha_str_reves_normal(self, datetime.strftime(row[3], '%Y-%m-%d'), False)
 
             self.grid_garantias.insert("", "end", tags=color, text=row[0], values=(forma_normal, row[2],
                                                     forma_normal2, row[4], row[5], row[6], row[7], row[8], row[9]))
 
+        # Armo una tupla con todos los Id de la grilla, obtengo el primero de la tupla y hago que ese elemento
+        # quede marcado como seleccionado en el Treeview
         if len(self.grid_garantias.get_children()) > 0:
             self.grid_garantias.selection_set(self.grid_garantias.get_children()[0])
 
@@ -222,24 +237,21 @@ class Clase_Garantias(tk.Frame):
                     """ Si coinciden los Id quiere decir que encontre al registro que estoy buscando por Id de tabla."""
                     break
 
+            # -------------------------------------------------------------------------------------------
             """ Ahora ejecuto este procedimiento que se encarga de poner el puntero en el registro que acabamos 
-                de encontrar correspondiente al Id de tabla asignado en el parametro de la funcion llena_grilla. """
-            """ "rg" = es el Text o Index del registro en el Treeview I001, IB002.... y ahi posiciono el foco 
+                de encontrar correspondiente al Id de tabla asignado en el parametro de la funcion llena_grilla. 
+                "rg" = es el Text o Index del registro en el Treeview I001, IB002.... y ahi posiciono el foco 
                 con las siguientes instrucciones. """
-
             self.grid_garantias.selection_set(rg)
             # Para que no me diga que no hay nada seleccionado
             self.grid_garantias.focus(rg)
             # para que la linea seleccionada no me quede fuera del area visible del treeview
             self.grid_garantias.yview(self.grid_garantias.index(rg))
+            # --------------------------------------------------------------------------------------------
+
             return
         else:
-            self.mover_puntero_topend("END")
-
-    def limpiar_Grid(self):
-
-        for item in self.grid_garantias.get_children():
-            self.grid_garantias.delete(item)
+            self.fFinarch()
 
     # -----------------------------------------------------------------------------
     # ESTADOS
@@ -248,15 +260,12 @@ class Clase_Garantias(tk.Frame):
     def estado_inicial(self):
 
         # Variables
-        self.var_Id = -1
         self.alta_modif = 0
         self.dato_seleccion = ""
-        self.filtro_activo = "garantias ORDER BY gt_fechavto ASC"
-
+        self.filtro_activo = "ORDER BY gt_fechavto ASC"
         # Grilla
         self.selected = self.grid_garantias.focus()
         self.clave = self.grid_garantias.item(self.selected, 'text')
-
         # Estado inicial del Gui
         self.limpiar_text()
         self.habilitar_text("disabled")
@@ -267,7 +276,6 @@ class Clase_Garantias(tk.Frame):
     def limpiar_text(self):
 
         # Limpio los entrys y asigno valores iniciales en algunos campos necesarios
-
         if self.alta_modif == 1:
             una_fecha = datetime.strftime(date.today(), "%d/%m/%Y")
             self.strvar_fecha_movim.set(value=una_fecha)
@@ -305,7 +313,6 @@ class Clase_Garantias(tk.Frame):
             self.grid_garantias.bind("<Double-Button-1>", self.DobleClickGrid)
 
     def habilitar_btn_A(self, estado):
-
         self.btn_nuevoitem.configure(state=estado)
         self.btn_borraitem.configure(state=estado)
         self.btn_editaitem.configure(state=estado)
@@ -313,49 +320,12 @@ class Clase_Garantias(tk.Frame):
         self.btnFinarch.configure(state=estado)
 
     def habilitar_btn_B(self, estado):
-
         self.btn_guardaritem.configure(state=estado)
 
     def habilitar_Btn_busquedas(self, estado):
-
         self.btn_filtrar_movim.configure(state=estado)
         self.btn_showall_movim.configure(state=estado)
         self.entry_buscar_movim.configure(state=estado)
-
-    def fNo_modifique(self, event):
-        return
-
-    def fBuscar_en_tabla(self):
-
-        # verifico que el string de busqueda traiga algo o este vacio
-        if len(self.strvar_buscostring.get()) > 0:
-
-            se_busca = self.strvar_buscostring.get()
-
-            self.filtro_anterior = self.filtro_activo
-
-            self.filtro_activo = ("garantias WHERE INSTR(gt_nomcli, '" + se_busca + "') > 0")
-
-            self.varGarantia.buscar_entabla(self.filtro_activo)
-            self.limpiar_Grid()
-            self.llena_grilla("")
-
-            """ Obtengo el Id del grid para que me tome la seleccion y el foco se coloque efectivamente en el 
-                item buscado y asi cuando le doy -show all- el puntero se sigue quedando en el registro buscado"""
-            item = self.grid_garantias.selection()
-            self.grid_garantias.focus(item)
-
-        else:
-
-            messagebox.showwarning("Buscar", "No ingreso busqueda", parent=self)
-
-    def fShowall(self):
-
-        self.selected = self.grid_garantias.focus()
-        self.clave = self.grid_garantias.item(self.selected, 'text')
-        self.filtro_activo = "garantias ORDER BY gt_fechavto ASC"
-        self.limpiar_Grid()
-        self.llena_grilla(self.clave)
 
     # -------------------------------------------------------------------------
     # CRUD
@@ -364,7 +334,6 @@ class Clase_Garantias(tk.Frame):
     def fNuevo(self):
 
         self.alta_modif = 1
-
         self.habilitar_text("normal")
         self.limpiar_text()
         self.habilitar_Btn_busquedas("disabled")
@@ -381,16 +350,15 @@ class Clase_Garantias(tk.Frame):
         self.clave = self.grid_garantias.item(self.selected, 'text')
 
         if self.clave == "":
-            messagebox.showwarning("Editar", "No hay nada seleccionado", parent=self)
+            self.set_status("❌ No hay nada seleccionado", "error")
             return
 
         self.alta_modif = 2
-        self.var_Id = self.clave  # puede traer -1 , en ese caso seria un alta
 
         self.habilitar_text('normal')
         self.limpiar_text()
 
-        self.filtro_activo = "garantias WHERE Id = " + str(self.clave)
+        self.filtro_activo = "WHERE Id = " + str(self.clave)
 
         valores = self.varGarantia.consultar_garantia(self.filtro_activo)
 
@@ -433,8 +401,8 @@ class Clase_Garantias(tk.Frame):
         self.clave_ant = self.grid_garantias.item(self.selected_ant, 'text')
         # ------------------------------------------------------------------------------
 
-        if self.clave == "":
-            messagebox.showwarning("Eliminar", "No hay nada seleccionado", parent=self)
+        if self.clave == "" or self.selected == "":
+            self.set_status("❌ No hay nada seleccionado", "error")
             return
 
         valores = self.grid_garantias.item(self.selected, 'values')
@@ -442,13 +410,16 @@ class Clase_Garantias(tk.Frame):
 
         r = messagebox.askquestion("Eliminar", "Confirma eliminar item?\n " + data, parent=self)
         if r == messagebox.NO:
-            messagebox.showinfo("Eliminar", "Eliminacion Cancelada", parent=self)
             return
 
-        self.varGarantia.eliminar_item_garantia(self.clave)
+        try:
+            self.varGarantia.eliminar_item_garantia(self.clave)
+        except Exception as e:
+            messagebox.showerror("❌Error del sistema en Eliminar item", str(e))
+            return
+        else:
+            self.set_status("🗑 Registro eliminado correctamente", "ok")
 
-        messagebox.showinfo("Eliminar", "Registro eliminado correctamente", parent=self)
-        self.limpiar_Grid()
         self.llena_grilla(self.clave_ant)
 
     def fGuardar(self):
@@ -462,75 +433,62 @@ class Clase_Garantias(tk.Frame):
             messagebox.showerror("Error", "Fecha en blanco", parent=self)
             self.entry_fecha_movim.focus()
             return
-
         # DETALLE
         if not self.strvar_nombre_cliente.get():
             messagebox.showerror("Error", "Agregue un cliente", parent=self)
             self.entry_nombre_cliente.focus()
             return
 
-        # aaa = 0
-        # if aaa == 0:
+        # guardo el Id del Treeview en selected para ubicacion del foco a posterior (i001, i002....
+        self.selected = self.grid_garantias.focus()
+        # Guardo Id del registro de la base de datos (no es el mismo que el otro, este puedo verlo en TABLA 1,2,3)
+        self.clave = self.grid_garantias.item(self.selected, 'text')
+
+        # -----------------------------------------------------------------
+        # PASO DICCIONARIO PARA INSERTAR O MODIFICAR
+        """ Debo poner los nombres de los campos de la tabla y asignarles las variables """
+
+        dic_garantias = {
+            "Id": self.clave,
+            "gt_fechaventa": self.strvar_fecha_movim.get(),
+            "gt_meses": self.strvar_meses.get(),
+            "gt_fechavto": self.strvar_fecha_vto.get(),
+            "gt_codcli": self.strvar_codigo_cliente.get(),
+            "gt_nomcli": self.strvar_nombre_cliente.get(),
+            "gt_articulo": self.strvar_detalle_articulo.get(),
+            "gt_impventa": self.strvar_total_oper.get(),
+            "gt_factura": self.strvar_numero_factura.get(),
+            "gt_observaciones": self.strvar_observaciones.get(),
+            "gt_detalle": self.text_detalle.get(1.0, 'end-1c')
+        }
+        # -----------------------------------------------------------------
+
         try:
-
-            # guardo el Id del Treeview en selected para ubicacion del foco a posterior (i001, i002....
-            self.selected = self.grid_garantias.focus()
-            # Guardo Id del registro de la base de datos (no es el mismo que el otro, este puedo verlo en TABLA 1,2,3)
-            self.clave = self.grid_garantias.item(self.selected, 'text')
-
+        # a = 00
+        # if a == 00:
             if self.alta_modif == 1:
-
-                # Convierto fechas a yyyy-mmy-dd
-                fecha_aux = datetime.strptime(self.strvar_fecha_movim.get(), '%d/%m/%Y')
-                fecha_aux2 = datetime.strptime(self.strvar_fecha_vto.get(), '%d/%m/%Y')
-
-                self.varGarantia.insertar_garantias(fecha_aux, self.strvar_meses.get(), fecha_aux2,
-                                                    self.strvar_codigo_cliente.get(), self.strvar_nombre_cliente.get(),
-                                                    self.strvar_detalle_articulo.get(), self.strvar_total_oper.get(),
-                                                    self.strvar_numero_factura.get(), self.strvar_observaciones.get(),
-                                                    self.text_detalle.get(1.0, 'end-1c'))
-
-                messagebox.showinfo("Correcto", "Item ingresado correctamente", parent=self)
-
-            else:
-
-                # Convierto fechas a yyyy-mmy-dd
-                fecha_aux = datetime.strptime(self.strvar_fecha_movim.get(), '%d/%m/%Y')
-                fecha_aux2 = datetime.strptime(self.strvar_fecha_vto.get(), '%d/%m/%Y')
-
-                self.varGarantia.modificar_garantias(self.var_Id, fecha_aux, self.strvar_meses.get(), fecha_aux2,
-                            self.strvar_codigo_cliente.get(), self.strvar_nombre_cliente.get(),
-                            self.strvar_detalle_articulo.get(), self.strvar_total_oper.get(),
-                            self.strvar_numero_factura.get(), self.strvar_observaciones.get(),
-                            self.text_detalle.get(1.0, 'end-1c'))
-
-                self.var_Id == -1
-                messagebox.showinfo("Modificacion", "La modificacion fue exitosa", parent=self)
-
-            self.filtro_activo = "garantias ORDER BY gt_fechavto ASC"
-
-            # cierre de las novedades y reseteando pantalla para nuevo movimiento - actualizando grilla
-            self.limpiar_Grid()
-            self.limpiar_text()
-
-            # ordenamiento puntero en treeview
-            if self.alta_modif == 1:
-                ultimo_tabla_id = self.varGarantia.traer_ultimo(0)
-                self.llena_grilla(ultimo_tabla_id)
+                self.id_nuevo = self.varGarantia.insertar_garantias(dic_garantias)
+                id_ref = self.id_nuevo
             elif self.alta_modif == 2:
-                self.llena_grilla(self.clave)
+                self.varGarantia.modificar_garantias(dic_garantias)
+                id_ref = self.clave
 
-            self.estado_inicial()
-            self.btn_nuevoitem.focus()
-
-        except:
-
-            messagebox.showerror("Error", "Al guardar los datos - fGuardar", parent=self)
-            self.entry_fecha_planilla.focus()
+        except ValueError as e:
+            messagebox.showwarning("Datos inválidos en Insertar/Modificar", str(e))
             return
+        except Exception as e:
+            messagebox.showerror("Error del sistema en Insertar/Modificar", str(e))
+            return
+        else:
+            self.set_status("✔ Registro guardado correctamente", "ok")
+
+        self.filtro_activo = "garantias ORDER BY gt_fechavto ASC"
+        self.limpiar_text()
+        self.llena_grilla(id_ref)
+        self.estado_inicial()
+        self.grid_garantias.focus()
 
     def fCancelar(self):
-
         r = messagebox.askquestion("Cancelar", "Confirma cancelar operacion actual?", parent=self)
         if r == messagebox.YES:
             self.estado_inicial()
@@ -538,51 +496,41 @@ class Clase_Garantias(tk.Frame):
     def fSalir(self):
         self.master.destroy()
 
+    def fNo_modifique(self, event):
+        return
+
+    def fBuscar_en_tabla(self):
+
+        # verifico que el string de busqueda traiga algo o este vacio
+        if len(self.strvar_buscostring.get()) > 0:
+            se_busca = self.strvar_buscostring.get()
+            self.filtro_anterior = self.filtro_activo
+            self.filtro_activo = ("WHERE INSTR(gt_nomcli, '" + se_busca + "') > 0")
+            self.varGarantia.buscar_entabla(self.filtro_activo)
+            self.llena_grilla("")
+
+            """ Obtengo el Id del grid para que me tome la seleccion y el foco se coloque efectivamente en el 
+                item buscado y asi cuando le doy -show all- el puntero se sigue quedando en el registro buscado"""
+            item = self.grid_garantias.selection()
+            self.grid_garantias.focus(item)
+        else:
+            self.set_status("❌ No ingreso busqueda", "error")
+
+    def fShowall(self):
+        self.selected = self.grid_garantias.focus()
+        self.clave = self.grid_garantias.item(self.selected, 'text')
+        self.filtro_activo = "ORDER BY gt_fechavto ASC"
+        self.llena_grilla(self.clave)
+
     # -------------------------------------------------------------------------
     # PUNTEROS
     # -------------------------------------------------------------------------
 
     def fToparch(self):
-        self.mover_puntero_topend('TOP')
+        self.varFuncion_new.mover_puntero_topend(self.grid_garantias, 'TOP')
 
     def fFinarch(self):
-        self.mover_puntero_topend('END')
-
-    def mover_puntero_topend(self, param_topend):
-
-        if param_topend == 'TOP':
-
-            # obtengo una lista con todos los Id del treeview
-            regis = self.grid_garantias.get_children()
-            # barro y salgo al primero, pero me quedo en el primero
-            rg = ""
-            for rg in regis:
-                break
-            if rg == "":
-                return
-            # selecciono el Id primero de la lista en este caso
-            self.grid_garantias.selection_set(rg)
-            # pongo el foco sobre el primero Id
-            self.grid_garantias.focus(rg)
-            # lleva el foco al principio del treeview con esta instruccion que encontre
-            self.grid_garantias.yview(self.grid_garantias.index(self.grid_garantias.get_children()[0]))
-
-        elif param_topend == 'END':
-
-            # Obtengo una lista con todos los Id del treeview
-            regis = self.grid_garantias.get_children()
-            # Barro la lista y ,me quedo conel ultimo Id
-            rg = ""
-            for rg in regis:
-                pass
-            if rg == "":
-                return
-            # Selecciono el ultimo Id en este caso
-            self.grid_garantias.selection_set(rg)
-            # Pongo el foco alultimo elemento de la lista (al final)
-            self.grid_garantias.focus(rg)
-            # lleva el foco al final del treeview
-            self.grid_garantias.yview(self.grid_garantias.index(self.grid_garantias.get_children()[-1]))
+        self.varFuncion_new.mover_puntero_topend(self.grid_garantias, 'END')
 
     # ------------------------------------------------------------------------
     # VALIDACIONES
@@ -605,9 +553,8 @@ class Clase_Garantias(tk.Frame):
         elif retorno_VerFal == "S":
             # esto es control del año y decidio seguir
             # OJO REVISAR
-            self.filtro_activo = ("garantias WHERE CAST(gt_fechavto AS date) = CAST('" +
+            self.filtro_activo = ("WHERE CAST(gt_fechavto AS date) = CAST('" +
                                   self.strvar_fecha_movim.get() + "' AS date)")
-            self.limpiar_Grid()
             self.llena_grilla("")
             self.entry_fecha_movim.focus()
         elif retorno_VerFal == "N":
@@ -623,13 +570,11 @@ class Clase_Garantias(tk.Frame):
         return ("bien")
 
     def traer_dolarhoy(self):
-
         dev_informa = self.varGarantia.consultar_informa()
         for row in dev_informa:
             self.strvar_valor_dolar_hoy.set(value=row[21])
 
     def limitador(self, entry_text, caract):
-
         if len(entry_text.get()) > 0:
             # donde esta CARACT va la cantidad de caracteres
             entry_text.set(entry_text.get()[:caract])
@@ -638,7 +583,6 @@ class Clase_Garantias(tk.Frame):
         self.fEditar()
 
     def calcular_fechas(self):
-
         # paso a date
         fecha1 = (datetime.strptime(self.strvar_fecha_movim.get(), '%d/%m/%Y'))
         # sumo los meses a fecha 1 y obtengo fecha de vencimiento
@@ -817,8 +761,8 @@ class Clase_Garantias(tk.Frame):
         # BOTON NUEVO
         img = Image.open("archivo-nuevo.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_nuevoitem = tk.Button(self.frame_primero, text=" Nuevo Garantia", command=self.fNuevo, width=22, bg="blue",
-                                    fg="white", compound="left")
+        self.btn_nuevoitem = tk.Button(self.frame_primero, text=" Nuevo Garantia", command=self.fNuevo, width=22,
+                                       bg="blue", fg="white", compound="left")
         self.btn_nuevoitem.image = icono
         self.btn_nuevoitem.config(image=icono)
         self.btn_nuevoitem.grid(row=0, column=0, padx=5, pady=2)
@@ -893,8 +837,6 @@ class Clase_Garantias(tk.Frame):
         self.entry_fecha_movim = tk.Entry(self.frame_segundo, textvariable=self.strvar_fecha_movim, width=10,
                                        justify="right")
         self.entry_fecha_movim.grid(row=0, column=1, padx=5, pady=2, sticky="w")
-        #self.entry_fecha_movim.bind("<FocusOut>", self.formato_fecha)
-        #self.entry_fecha_movim.bind('<Tab>', lambda e: self.calcular())
 
         # Importe Debito
         self.lbl_meses = tk.Label(self.frame_segundo, text="Meses garantia: ", justify="left")
@@ -974,3 +916,45 @@ class Clase_Garantias(tk.Frame):
         self.text_detalle = ScrolledText(self.frame_quinto)
         self.text_detalle.config(width=120, height=6, wrap="word", padx=4, pady=3)
         self.text_detalle.grid(row=1, column=1, padx=4, pady=5, sticky="nsew")
+
+    # GPT |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+    def set_status(self, mensaje, tipo="info", tiempo=3000):
+        # 🎨 colores según tipo
+        colores = {
+            "ok": ("#d4edda", "#155724"),  # verde claro / texto oscuro
+            "error": ("#f8d7da", "#721c24"),  # rojo
+            "warn": ("#fff3cd", "#856404"),  # amarillo
+            "info": ("#d1ecf1", "#0c5460")  # celeste
+        }
+        bg, fg = colores.get(tipo, ("#f0f0f0", "black"))
+        # seteo visual
+        self.status_var.set("  " + mensaje)
+        self.status_bar.config(bg=bg, fg=fg)
+        # 🔊 sonido
+        if tipo == "ok":
+            self.bell()
+        elif tipo == "error":
+            self.bell()
+            self.after(120, self.bell)
+        elif tipo == "warn":
+            self.bell()
+        # ⏳ limpiar después de X tiempo
+        self.after(tiempo, self.clear_status)
+
+    def clear_status(self):
+        self.status_var.set("")
+        self.status_bar.config(bg="#f0f0f0", fg="black")
+
+        # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+        # 🔥 CÓMO USARLO
+        # ✔ Guardar
+        # self.set_status("✔ Registro guardado correctamente", "ok")
+        # 🗑 Eliminar
+        # self.set_status("🗑 Cliente eliminado", "ok")
+        # ⚠ Validación
+        # self.set_status("⚠ CUIT incorrecto", "warn")
+        # ❌ Error
+        # self.set_status("❌ Error al guardar", "error")
+        # ℹInfo
+        # self.set_status("ℹ Buscando clientes...", "info")
+        # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||

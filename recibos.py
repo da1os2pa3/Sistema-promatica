@@ -1,23 +1,47 @@
-from funcion_new import *
-from funciones import *
-from recibos_ABM import *
+"""Ctrl + Alt + O → Optimize Imports (elimina imports no usados y ordena los que quedan).
+Ctrl + Alt + L → Reformat Code (reformatea el código según las reglas configuradas).
+Ctrl + Alt + Shift + L → abre el cuadro de diálogo para elegir opciones avanzadas de reformateo."""
+
+# from funcion_new import *
+# from funciones import *
+# from recibos_ABM import *
+# # ----------------------------------------
+# import os
+# # ----------------------------------------
+# from tkinter import ttk
+# import tkinter as tk
+# import tkinter.font as tkFont
+# from tkinter.scrolledtext import *
+# # ----------------------------------------
+# from datetime import date, datetime
+# from PIL import Image, ImageTk
+# from PDF_clase import *
+
 # ----------------------------------------
 import os
-# ----------------------------------------
-from tkinter import ttk
 import tkinter as tk
 import tkinter.font as tkFont
-from tkinter.scrolledtext import *
 # ----------------------------------------
 from datetime import date, datetime
+# ----------------------------------------
+from tkinter import ttk
+from tkinter.scrolledtext import *
+# ----------------------------------------
 from PIL import Image, ImageTk
+# ----------------------------------------
 from PDF_clase import *
+from funcion_new import ClaseFuncion_new
+from funciones import *
+from recibos_ABM import datosRecibos
+# ----------------------------------------
+from status_bar import StatusBar
 
 class Clase_Recibos(tk.Frame):
 
     def __init__(self, master=None):
         super().__init__(master, width=880, height=510)
         self.master = master
+        self.status = StatusBar(self.master)
 
         self.master.grab_set()
         self.master.focus_set()
@@ -28,39 +52,35 @@ class Clase_Recibos(tk.Frame):
         self.varFuncion_new = ClaseFuncion_new(self.master)
         # ----------------------------------------------------------------------------------
 
-        # ---------------------------------------------------------------------------
-        # GPT ||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-        """ Es para los mensajes sobre eventos del sistema, rteemplazaria a algunos messagebox
-        Ubicada ultima linea de la pantalla"""
-        self.status_var = tk.StringVar()
-        self.status_bar = tk.Label(
-            self.master,
-            textvariable=self.status_var,
-            bd=1,
-            relief="sunken",
-            anchor="w",
-            bg="#f0f0f0"
-        )
-        self.status_bar.pack(side="bottom", fill="x")
-        # ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-        # --------------------------------------------------------------------------
+        # # -----------------------------------------------------------------------------------
+        # # GPT ||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+        # """ Es para los mensajes sobre eventos del sistema, rteemplazaria a algunos messagebox
+        # Ubicada ultima linea de la pantalla"""
+        # self.status_var = tk.StringVar()
+        # self.status_bar = tk.Label(
+        #     self.master,
+        #     textvariable=self.status_var,
+        #     bd=1,
+        #     relief="sunken",
+        #     anchor="w",
+        #     bg="#f0f0f0"
+        # )
+        # self.status_bar.pack(side="bottom", fill="x")
+        # # ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+        # # ----------------------------------------------------------------------------------
 
         # ----------------------------------------------------------------------------------
-        # TITULOS
+        # PANTALLA
         # ----------------------------------------------------------------------------------
         self.master.resizable(0, 0)
-
         """ Actualizamos el contenido de la ventana (la ventana pude crecer si se le agrega
             mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer.
             Obtenemos el alto y  ancho de la pantalla """
-
         ancho = self.master.winfo_screenwidth()
         alto = self.master.winfo_screenheight()
-
         # Asigno fijo un ancho y un alto
         ancho_ventana = 1035
         alto_ventana = 540
-
         # X e Y son las coordenadas para el posicionamiento del vertice superior izquierdo
         x = int((ancho - ancho_ventana) / 2)
         y = int((alto - alto_ventana) / 2)
@@ -92,7 +112,6 @@ class Clase_Recibos(tk.Frame):
         self.frame_titulo_top = tk.Frame(self.master)
         self.cuadro_titulos()
         self.frame_titulo_top.pack(side="top", fill="x", padx=5, pady=2)
-        # --------------------------------------------------------------------------
 
         # --------------------------------------------------------------------------
         # STRINGVARS
@@ -124,7 +143,6 @@ class Clase_Recibos(tk.Frame):
         self.frame_primero=tk.LabelFrame(self.master, text="", foreground="red")
         self.cuadro_botones_grid()
         self.frame_primero.pack(side="top", fill="both", expand=0, padx=5, pady=2)
-        # -------------------------------------------------------------------------------
 
         # -------------------------------------------------------------------------------
         # BUSQUEDA - TOP Y FIN DE ARCHIVOS
@@ -132,7 +150,6 @@ class Clase_Recibos(tk.Frame):
         self.frame_tercero=tk.LabelFrame(self.master, text="", foreground="red")
         self.cuadro_busquedas()
         self.frame_tercero.pack(side="top", fill="both", expand=0, padx=5, pady=2)
-        # -----------------------------------------------------------------------------
 
         # -----------------------------------------------------------------------------
         # ENTRYS
@@ -159,13 +176,20 @@ class Clase_Recibos(tk.Frame):
         if len(self.filtro_activo) > 0:
             datos = self.varRecibos.consultar_recibos(self.filtro_activo)
         else:
-            datos = self.varRecibos.consultar_recibos("recibos ORDER BY cc_fecha ASC")
+            datos = self.varRecibos.consultar_recibos("ORDER BY cc_fecha ASC")
 
+        cont = 0
         for row in datos:
+
+            cont += 1
+            color = ('evenrow',) if cont % 2 else ('oddrow',)
+
             # convierto fecha de 2024-12-19 a 19/12/2024
             forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[2], '%Y-%m-%d'), False)
-            self.grid_recibos.insert("", "end", text=row[0], values=(row[1], forma_normal, row[4], row[5], row[6]))
 
+            self.grid_recibos.insert("", "end", tags=color, text=row[0], values=(row[1], forma_normal,
+                                                                                 row[4], row[5], row[6]))
+        """ Tupla de Id del grid, selecciono el primero """
         if len(self.grid_recibos.get_children()) > 0:
             self.grid_recibos.selection_set(self.grid_recibos.get_children()[0])
 
@@ -208,14 +232,13 @@ class Clase_Recibos(tk.Frame):
             # para que la linea seleccionada no me quede fuera del area visible del treeview
             self.grid_recibos.yview(self.grid_recibos.index(rg))
         else:
-            self.mover_puntero_topend("END")
+            self.fFinarch()
 
     # -----------------------------------------------------------------------------
     # ESTADOS
     # -----------------------------------------------------------------------------
 
     def estado_inicial(self):
-
         self.filtro_activo = "ORDER BY rc_fecha ASC"
         self.dato_seleccion = ""
         self.alta_modif = 0
@@ -226,7 +249,6 @@ class Clase_Recibos(tk.Frame):
         self.habilitar_btn_busqueda("normal")
 
     def limpiar_text(self):
-
         self.strvar_fecha_recibo.set(value=datetime.strftime(date.today(), "%d/%m/%Y"))
         self.strvar_codigo_cliente.set(value="0")
         self.strvar_nombre_cliente.set(value="")
@@ -235,28 +257,25 @@ class Clase_Recibos(tk.Frame):
         self.strvar_buscostring.set(value="")
 
     def habilitar_text(self, estado):
-
         self.entry_fecha_recibo.configure(state=estado)
         self.entry_nombre_cliente.configure(state=estado)
         self.entry_importe_recibo.configure(state=estado)
         self.text_detalle.configure(state=estado)
 
     def habilitar_btn_inino(self, estado):
-
         self.btn_guardaritem.configure(state=estado)
         self.btn_cancelar.configure(state=estado)
         self.btn_bus_cli.configure(state=estado)
 
     def habilitar_btn_inisi(self, estado):
-
         self.btn_nuevoitem.configure(state=estado)
         self.btn_borraitem.configure(state=estado)
         self.btn_editaitem.configure(state=estado)
         self.btn_imprime.configure(state=estado)
+        self.btn_bus_cli.configure(state=estado)
         self.entry_buscar_recibo.configure(state=estado)
 
     def habilitar_btn_busqueda(self, estado):
-
         self.btn_buscar_movim.configure(state=estado)
         self.btn_showall.configure(state=estado)
         self.btn_reset_buscar.configure(state=estado)
@@ -282,8 +301,6 @@ class Clase_Recibos(tk.Frame):
 
     def fEditar(self):
 
-        self.alta_modif = 2
-
         # Asi obtengo el Id del Grid de donde esta el foco (I006...I002...)
         self.selected = self.grid_recibos.focus()
         # Asi obtengo la clave de la base de datos campo Id que no es lo mismo que el otro (numero secuencial
@@ -294,7 +311,8 @@ class Clase_Recibos(tk.Frame):
             messagebox.showwarning("Modificar", "No hay nada seleccionado", parent=self)
             return
 
-        #self.var_Id = self.clave  # puede traer -1 , en ese caso seria un alta
+        self.alta_modif = 2
+
         self.habilitar_text('normal')
         self.limpiar_text()
 
@@ -315,12 +333,12 @@ class Clase_Recibos(tk.Frame):
             self.strvar_importe_recibo.set(value=row[5])
             self.text_detalle.insert("end", row[6])
 
-            self.habilitar_text("normal")
-            self.habilitar_btn_inino("normal")
-            self.habilitar_btn_inisi("disabled")
-            self.habilitar_btn_busqueda("disabled")
+        self.habilitar_text("normal")
+        self.habilitar_btn_inino("normal")
+        self.habilitar_btn_inisi("disabled")
+        self.habilitar_btn_busqueda("disabled")
 
-            self.entry_fecha_recibo.focus()
+        self.entry_fecha_recibo.focus()
 
     def fBorrar(self):
 
@@ -334,7 +352,7 @@ class Clase_Recibos(tk.Frame):
         # -----------------------------------------------------------
 
         if self.clave == "" or self.selected == "":
-            self.set_status("❌ No hay nada seleccionado", "error")
+            self.status.set_status("❌ No hay nada seleccionado", "error")
             return
 
         # -----------------------------------------------------------
@@ -354,7 +372,7 @@ class Clase_Recibos(tk.Frame):
             messagebox.showerror("❌Error del sistema en Eliminar item", str(e))
             return
         else:
-            self.set_status("🗑 Registro eliminado correctamente", "ok")
+            self.status.set_status("🗑 Registro eliminado correctamente", "ok")
 
         self.llena_grilla(self.clave_ant)
 
@@ -386,7 +404,7 @@ class Clase_Recibos(tk.Frame):
         self.selected = self.grid_recibos.focus()
         # Guardo el Id del registro de la Tabla (no es el mismo que el otro, este puedo verlo en la base (12, 20...)
         self.clave = self.grid_recibos.item(self.selected, 'text')
-        # --------------------------------------------------------------------
+        # -----------------------------------------------------------------
 
         # -----------------------------------------------------------------
         # PASO DICCIONARIO PARA INSERTAR O MODIFICAR
@@ -408,12 +426,9 @@ class Clase_Recibos(tk.Frame):
             if self.alta_modif == 1:
                 self.id_nuevo = self.varRecibos.insertar_recibo(dic_recibo)
                 id_ref = self.id_nuevo
-                messagebox.showinfo("Correcto", "Item ingresado correctamente", parent=self)
             elif self.alta_modif == 2:
                 self.varRecibos.modificar_recibos(dic_recibo)
                 id_ref = self.clave
-                # self.var_Id == -1
-                messagebox.showinfo("Modificacion", "La modificacion fue exitosa", parent=self)
         except ValueError as e:
             messagebox.showwarning("Datos inválidos en Insertar/Modificar", str(e))
             return
@@ -421,17 +436,19 @@ class Clase_Recibos(tk.Frame):
             messagebox.showerror("Error del sistema en Insertar/Modificar", str(e))
             return
         else:
-            self.set_status("✔ Registro guardado correctamente", "ok")
+            self.status.set_status("✔ Registro guardado correctamente", "ok")
 
-            # Terminacion y habilitaciones
-            self.limpiar_text()
-            self.habilitar_btn_inino("disabled")
-            self.habilitar_btn_inisi("normal")
-            self.strvar_numero_recibo.set(value=(int(self.varRecibos.traer_ultimo(1)) + 1))
-            self.grid_recibos.focus()
-            self.llena_grilla(id_ref)
-            self.alta_modif = 0
-            self.habilitar_text("disabled")
+        # Terminacion y habilitaciones
+        self.filtro_activo = "ORDER BY rc_fecha ASC"
+        self.limpiar_text()
+        self.habilitar_btn_inino("disabled")
+        self.habilitar_btn_inisi("normal")
+        self.habilitar_btn_busqueda("normal")
+        self.strvar_numero_recibo.set(value=(int(self.varRecibos.traer_ultimo(1)) + 1))
+        self.llena_grilla(id_ref)
+        self.grid_recibos.focus()
+        self.habilitar_text("disabled")
+        self.alta_modif = 0
 
     def fCancelar(self):
 
@@ -454,46 +471,12 @@ class Clase_Recibos(tk.Frame):
     # -----------------------------------------------------------------------------
 
     def fToparch(self):
-        self.mover_puntero_topend('TOP')
+#        self.mover_puntero_topend('TOP')
+        self.varFuncion_new.mover_puntero_topend(self.grid_recibos, 'TOP')
 
     def fFinarch(self):
-        self.mover_puntero_topend('END')
-
-    def mover_puntero_topend(self, param_topend):
-
-        if param_topend == 'TOP':
-
-            # obtengo una lista con todos los Id del treeview
-            regis = self.grid_recibos.get_children()
-            # barro y salgo al primero, pero me quedo en el primero
-            rg = ""
-            for rg in regis:
-                break
-            if rg == "":
-                return
-            # selecciono el Id primero de la lista en este caso
-            self.grid_recibos.selection_set(rg)
-            # pongo el foco sobre el primero Id
-            self.grid_recibos.focus(rg)
-            # lleva el foco al principio del treeview con esta instruccion que encontre
-            self.grid_recibos.yview(self.grid_recibos.index(self.grid_recibos.get_children()[0]))
-
-        elif param_topend == 'END':
-
-            # Obtengo una lista con todos los Id del treeview
-            regis = self.grid_recibos.get_children()
-            # Barro la lista y ,me quedo conel ultimo Id
-            rg = ""
-            for rg in regis:
-                pass
-            if rg == "":
-                return
-            # Selecciono el ultimo Id en este caso
-            self.grid_recibos.selection_set(rg)
-            # Pongo el foco alultimo elemento de la lista (al final)
-            self.grid_recibos.focus(rg)
-            # lleva el foco al final del treeview
-            self.grid_recibos.yview(self.grid_recibos.index(self.grid_recibos.get_children()[-1]))
+#        self.mover_puntero_topend('END')
+        self.varFuncion_new.mover_puntero_topend(self.grid_recibos, 'END')
 
     # -----------------------------------------------------------------------------
     # BUSQUEDAS
@@ -508,27 +491,38 @@ class Clase_Recibos(tk.Frame):
 
         se_busca = self.strvar_buscostring.get()
 
-        self.filtro_anterior = self.filtro_activo
+        # Retorno las coincidencias
+        try:
+            datos = self.varRecibos.buscar_recibos(se_busca)
+        except Exception as e:
+            messagebox.showerror("Error del sistema", str(e))
+            return
 
-        self.filtro_activo = ("WHERE INSTR(rc_nomcli, '" + se_busca + "') > 0")
+        # Limpio el grid
+        for item in self.grid_recibos.get_children():
+            self.grid_recibos.delete(item)
 
-        self.varRecibos.buscar_entabla(self.filtro_activo)
-        self.llena_grilla("")
+        # carga la grilla con los registros seleccionados
+        for row in datos:
+            self.grid_recibos.insert("", "end", text=row[0], values=row[1:])
+            # 👉 row[1:] significa:desde el segundo elemento en adelante o sea: row[1], row[2], row[3]...
 
-        """ Obtengo el Id del grid para que me tome la seleccion y el foco se coloque efectivamente en el 
-        item buscado y asi cuando le doy -show all- el puntero se sigue quedando en el registro buscado"""
-        item = self.grid_recibos.selection()
-        self.grid_recibos.focus(item)
+        items = self.grid_recibos.get_children()
+
+        # selecciono el primero de la tabla y pongo foco y visibilidad
+        if items:
+            primero = items[0]
+            self.grid_recibos.selection_set(primero)
+            self.grid_recibos.focus(primero)
+            self.grid_recibos.see(primero)
 
     def fShowall(self):
-
         self.filtro_activo = "ORDER BY rc_fecha ASC"
         self.selected = self.grid_recibos.focus()
         self.clave = self.grid_recibos.item(self.selected, 'text')
         self.llena_grilla(self.clave)
 
     def fReset_buscar(self):
-
         self.strvar_buscostring.set(value="")
         self.fShowall()
 
@@ -716,6 +710,9 @@ class Clase_Recibos(tk.Frame):
         self.grid_recibos.heading("col4", text="Importe", anchor="center")
         self.grid_recibos.heading("col5", text="Detalle", anchor="center")
 
+        self.grid_recibos.tag_configure('oddrow', background='light grey')
+        self.grid_recibos.tag_configure('evenrow', background='white')
+
         # SCROLLBAR del Treeview
         scroll_x = tk.Scrollbar(self.frame_tvw_recibos, orient="horizontal")
         scroll_y = tk.Scrollbar(self.frame_tvw_recibos, orient="vertical")
@@ -764,8 +761,8 @@ class Clase_Recibos(tk.Frame):
         # Guardar
         img = Image.open("guardar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_guardaritem = tk.Button(self.frame_primero, text=" Guardar", command=self.fGuardar, width=24, bg="green",
-                                      fg="white", compound="left")
+        self.btn_guardaritem = tk.Button(self.frame_primero, text=" Guardar", command=self.fGuardar, width=24,
+                                         bg="green", fg="white", compound="left")
         self.btn_guardaritem.image = icono
         self.btn_guardaritem.config(image=icono)
         self.btn_guardaritem.grid(row=0, column=3, padx=5, pady=2)
@@ -773,8 +770,8 @@ class Clase_Recibos(tk.Frame):
         # Cancelar
         img = Image.open("cancelar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_cancelar = tk.Button(self.frame_primero, text=" Cancelar", command=self.fCancelar, width=24, bg="black",
-                                   fg="white", compound="left")
+        self.btn_cancelar = tk.Button(self.frame_primero, text=" Cancelar", command=self.fCancelar, width=24,
+                                      bg="black", fg="white", compound="left")
         self.btn_cancelar.image = icono
         self.btn_cancelar.config(image=icono)
         self.btn_cancelar.grid(row=0, column=4, padx=5, pady=2)
@@ -782,8 +779,8 @@ class Clase_Recibos(tk.Frame):
         # Salir
         img = Image.open("salida.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_salir=tk.Button(self.frame_primero, text="Salir", width=24, command=self.fSalir, bg="yellow", fg="black",
-                              compound="left")
+        self.btn_salir=tk.Button(self.frame_primero, text="Salir", width=24, command=self.fSalir, bg="yellow",
+                                 fg="black", compound="left")
         self.btn_salir.image = icono
         self.btn_salir.config(image=icono)
         self.btn_salir.grid(row=0, column=5, padx=5, pady=2, sticky="nsew")
@@ -909,49 +906,44 @@ class Clase_Recibos(tk.Frame):
         self.text_detalle.config(width=120, height=6, wrap="word", padx=4, pady=3)
         self.text_detalle.grid(row=1, column=1, padx=4, pady=5, sticky="nsew")
 
-    # GPT |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-    def set_status(self, mensaje, tipo="info", tiempo=3000):
-
-        # 🎨 colores según tipo
-        colores = {
-            "ok": ("#d4edda", "#155724"),  # verde claro / texto oscuro
-            "error": ("#f8d7da", "#721c24"),  # rojo
-            "warn": ("#fff3cd", "#856404"),  # amarillo
-            "info": ("#d1ecf1", "#0c5460")  # celeste
-        }
-
-        bg, fg = colores.get(tipo, ("#f0f0f0", "black"))
-
-        # seteo visual
-        self.status_var.set("  " + mensaje)
-        self.status_bar.config(bg=bg, fg=fg)
-
-        # 🔊 sonido
-        if tipo == "ok":
-            self.bell()
-        elif tipo == "error":
-            self.bell()
-            self.after(120, self.bell)
-        elif tipo == "warn":
-            self.bell()
-
-        # ⏳ limpiar después de X tiempo
-        self.after(tiempo, self.clear_status)
-
-    def clear_status(self):
-        self.status_var.set("")
-        self.status_bar.config(bg="#f0f0f0", fg="black")
-
-        # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-        # 🔥 CÓMO USARLO
-        # ✔ Guardar
-        # self.set_status("✔ Registro guardado correctamente", "ok")
-        # 🗑 Eliminar
-        # self.set_status("🗑 Cliente eliminado", "ok")
-        # ⚠ Validación
-        # self.set_status("⚠ CUIT incorrecto", "warn")
-        # ❌ Error
-        # self.set_status("❌ Error al guardar", "error")
-        # ℹInfo
-        # self.set_status("ℹ Buscando clientes...", "info")
-        # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+    # # GPT -------------------------------------------------------------------------
+    # def set_status(self, mensaje, tipo="info", tiempo=3000):
+    #     # 🎨 colores según tipo
+    #     colores = {
+    #         "ok": ("#d4edda", "#155724"),  # verde claro / texto oscuro
+    #     "error": ("#f8d7da", "#721c24"),  # rojo
+    #         "warn": ("#fff3cd", "#856404"),  # amarillo
+    #         "info": ("#d1ecf1", "#0c5460")  # celeste
+    #     }
+    #     bg, fg = colores.get(tipo, ("#f0f0f0", "black"))
+    #     # seteo visual
+    #     self.status_var.set("  " + mensaje)
+    #     self.status_bar.config(bg=bg, fg=fg)
+    #     # 🔊 sonido
+    #     if tipo == "ok":
+    #         self.bell()
+    #     elif tipo == "error":
+    #         self.bell()
+    #         self.after(120, self.bell)
+    #     elif tipo == "warn":
+    #         self.bell()
+    #     # ⏳ limpiar después de X tiempo
+    #     self.after(tiempo, self.clear_status)
+    #
+    # def clear_status(self):
+    #     self.status_var.set("")
+    #     self.status_bar.config(bg="#f0f0f0", fg="black")
+    #
+    #     # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+    #     # 🔥 CÓMO USARLO
+    #     # ✔ Guardar
+    #     # self.set_status("✔ Registro guardado correctamente", "ok")
+    #     # 🗑 Eliminar
+    #     # self.set_status("🗑 Cliente eliminado", "ok")
+    #     # ⚠ Validación
+    #     # self.set_status("⚠ CUIT incorrecto", "warn")
+    #     # ❌ Error
+    #     # self.set_status("❌ Error al guardar", "error")
+    #     # ℹInfo
+    #     # self.set_status("ℹ Buscando clientes...", "info")
+    #     # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||

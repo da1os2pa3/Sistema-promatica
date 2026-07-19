@@ -3,69 +3,52 @@ from mysql.connector import Error
 
 class datosCotiz:
 
-    def __init__(self):
+    def __init__(self, pantalla):
         try:
             self.cnn = mysql.connector.connect(host="localhost", user="root",
             passwd="", database="sist_prom")
+            self.master = pantalla
         except Error as ex:
             print("Error de conexion: {0}".format(ex))
 
-    # def __str__(self):
+    def get_connection(self):
+        # print("OK= Escuchando.....")
+        return mysql.connector.connect(
+            host="localhost",
+            user="root",
+            passwd="",
+            database="sist_prom")
+
+    def consultar_tablas(self, tabla, orden=""):
+
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
+        try:
+            if tabla == "aux":
+                sql = "SELECT * FROM aux_ventas"
+            if tabla == "resu":
+                sql = "SELECT * FROM resu_ventas"
+            if orden:
+                sql += " " + orden
+            cur.execute(sql)
+            return cur.fetchall()
+        finally:
+            cur.close()
+            cnn.close()
+
+    # def consultar_detalle_auxventas(self, tofil):
     #
-    #     datos = self.consultar_articulo()
-    #     aux = ""
-    #     for row in datos:
-    #         aux = aux + str(row) + "\n"
-    #     return aux
-
-    def consultar_articulo(self, tofil):
-        cur = self.cnn.cursor()
-
-        if tofil == "":
-            cur.execute("SELECT * FROM " + tofil)
-        else:
-            cur.execute("SELECT * FROM " + tofil)
-
-        # -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
-        """ cursor.fetchall()recupera todas las filas del resultado de una consulta. Devuelve todas
-        # las filas como una "lista". Se devuelve una lista vacía si no hay ningún registro para recuperar.
-        # cursor.fetchmany(size)devuelve el número de filas especificadas por size el argumento. Cuando
-        # se llama repetidamente, este método recupera el siguiente conjunto de filas del resultado de una
-        # consulta y devuelve una lista de tuplas. Si no hay más filas disponibles, devuelve una lista vacía.
-        # cursor.fetchone()El método devuelve un solo registro o Ninguno si no hay más filas disponibles. """
-        # -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
-        # para recuperar todas filas de una tabla de base de datos
-        datos = cur.fetchall()
-        self.cnn.commit()
-        cur.close()
-        return datos
-
-    def consultar_articulo_item_vta(self, tofil):
-        cur = self.cnn.cursor()
-
-        if tofil == "":
-            cur.execute("SELECT * FROM " + tofil)
-        else:
-            cur.execute("SELECT * FROM " + tofil)
-
-        datos = cur.fetchall()
-        self.cnn.commit()
-        cur.close()
-        return datos
-
-    def consultar_detalle_auxventas(self, tofil):
-
-        cur = self.cnn.cursor()
-
-        if tofil == "":
-            cur.execute("SELECT * FROM " + tofil)
-        else:
-            cur.execute("SELECT * FROM " + tofil)
-
-        datos = cur.fetchall()
-        self.cnn.commit()
-        cur.close()
-        return datos
+    #     cur = self.cnn.cursor()
+    #
+    #     if tofil == "":
+    #         cur.execute("SELECT * FROM " + tofil)
+    #     else:
+    #         cur.execute("SELECT * FROM " + tofil)
+    #
+    #     datos = cur.fetchall()
+    #     self.cnn.commit()
+    #     cur.close()
+    #     return datos
 
     def vaciar_auxventas(self, tofil):
 

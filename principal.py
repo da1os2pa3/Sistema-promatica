@@ -9,7 +9,8 @@ from articulos import Clase_Articulos
 from clientes import Clase_Clientes
 from compras import Clase_Compras
 from configuracion import Clase_Configuracion
-from cotiz_vta import Clase_CotizVenta
+#from cotiz_vta import Clase_Venta
+from cotiz_vta import VentasPrincipal
 from ctacte import Clase_CuentaCorriente
 from garantias import Clase_Garantias
 from guias_tecnicas import Clase_GuiasTecnicas
@@ -298,8 +299,11 @@ class Principal(Frame):
     #     app = PlaniCaja(vent)
     #     app.mainloop()
 
+    # def fCotVta(self):
+    #     self.abrir_ventana(Clase_CotizVenta, "Cotizaciones - Ventas")
+
     def fCotVta(self):
-        self.abrir_ventana(Clase_CotizVenta, "Cotizaciones - Ventas")
+        self.abrir_ventana(VentasPrincipal, "Cotizaciones - Ventas")
 
     def fOrdenRepara(self):
         self.abrir_ventana(Clase_OrdenesRepara, "Ordenes de reparacion")

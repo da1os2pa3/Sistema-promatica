@@ -243,55 +243,46 @@ class Clase_Articulos(tk.Frame):
 
         """ En set_foco viene el Id de la tabla que identidica el registro donde quiero oner el foco - 2312, 23, 456..
         Puede llegar a venir en vacio """
-        # Si hay un error en insertar devuelve None la funcion insertar de ABM
-        if set_foco is None:
-            print("⚠️ set_foco = None (posible error al insertar)")
-            return
 
-        # Limpio el Grid
+        # Limpio el Grid ---------------------------------------------------------
         for item in self.grid_articulos.get_children():
             self.grid_articulos.delete(item)
 
-        # Traigo los datos a insertar en el GRid
+        # Traigo los datos a insertar en el GRid y asigno orden ------------------
         if len(self.filtro_activo) > 0:
             datos = self.varArtic.consultar_articulo(self.filtro_activo)
         else:
             datos = self.varArtic.consultar_articulo("ORDER BY rubro, marca, descripcion ASC")
 
+        # Cargo el Grid -----------------------------------------------------------
         cont = 0
         for row in datos:
-
             cont += 1
             color = ('evenrow',) if cont % 2 else ('oddrow',)
-
             # convierto fecha de 2024-12-19 a 19/12/2024
             forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[11], '%Y-%m-%d'), False)
-
             precio_final_pesos = round(float((row[6]*(1+(row[7]/100))) *
                                              (1+(row[9]/100))) * float(self.strvar_dolar_actual.get()))
-
             self.grid_articulos.insert("", "end", tags=color, text=row[0], values=(row[1], row[2], row[3],
                                                     row[4], formatear_cifra(precio_final_pesos), row[6], row[5], row[7],
                                                     row[9], row[10], forma_normal, row[12], row[13]))
 
         # Controles-----------------------------------------------------------------------
         # Grid negativo
-        if not len(self.grid_articulos.get_children()) >= 0:
+        if len(self.grid_articulos.get_children()) < 0:
             self.set_status("❌ Error inesperado, Grid negativo", "error")
             return
         # Foco vacio, voy al primero de la grilla
         if not set_foco:
             self.grid_articulos.selection_set(self.grid_articulos.get_children()[0])
+            return
         # --------------------------------------------------------------------------------
 
         # Posicionamiento del foco en el Grid, voy al Id valor del set_foco --------------
         for item in self.grid_articulos.get_children():
-
             texto = self.grid_articulos.item(item, "text")
-
             # if str(texto) == str(set_foco):
             if str(texto).strip() == str(set_foco).strip():  # suponiendo que el ID está en la columna 0
-
                 # 👉 Fuerza a Tkinter a procesar actualizaciones pendientes de la UI. Sirve para asegurarse
                 # que el widget esté actualizado antes de hacer foco / scroll.
                 self.grid_articulos.update_idletasks()

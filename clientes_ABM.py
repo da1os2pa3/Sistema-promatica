@@ -8,7 +8,6 @@ class datosClientes:
         self.master = pantalla
 
     def get_connection(self):
-        print("OK= Escuchando.....")
         return mysql.connector.connect(
             host="localhost",
             user="root",

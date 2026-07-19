@@ -1,18 +1,12 @@
 import mysql.connector
-from mysql.connector import Error
 from datetime import datetime
-from tkinter import messagebox
+# -----------------------------------------------------
 
 class datosRecibos:
 
     def __init__(self, pantalla):
 
         self.master = pantalla
-
-        try:
-            self.cnn = mysql.connector.connect(host="localhost", user="root", passwd="", database="sist_prom")
-        except Error as ex:
-            print("Error de conexion: {0}".format(ex))
 
     def get_connection(self):
         return mysql.connector.connect(
@@ -135,10 +129,12 @@ class datosRecibos:
         cnn = self.get_connection()
         cur = cnn.cursor(buffered=True)
         try:
-            sql = '''DELETE FROM recibos WHERE Id = {}'''.format(Id)
-            cur.execute(sql)
+            sql = "DELETE FROM recibos WHERE Id = %s"
+            # 1 parámetro → (valor,)
+            # varios → (v1, v2, v3)
+            cur.execute(sql, (Id,))
             n = cur.rowcount
-            self.cnn.commit()
+            cnn.commit()
             return n
         except Exception as e:
             cnn.rollback()
@@ -147,21 +143,24 @@ class datosRecibos:
             cur.close()
             cnn.close()
 
-    def buscar_entabla(self, argumento):
+    def buscar_recibos(self, texto):
 
         cnn = self.get_connection()
         cur = cnn.cursor(buffered=True)
         try:
-            # Busca un string en los campos indicados en una tabla
-            if len(argumento) > 0:
-                cur.execute("SELECT * FROM " + argumento)
-            else:
-                return ""
+            sql = """
+                  SELECT * FROM recibos WHERE rc_nomcli LIKE %s ORDER BY rc_numero ASC 
+                  """
+
+            """ Como paso un solo parametro, debo colocar la coma al final para que se interprete como una tupla, sino, 
+            lo toma como un string. Si vinieran mas parametros separados por coma ya se da cuenta que es una tupla"""
+            #param = f"%{texto}%"
+            param = (f"%{texto}%",)
+
+            cur.execute(sql, param)
             datos = cur.fetchall()
-            self.cnn.commit()
             return datos
-        except Exception as e:
-            cnn.rollback()
+        except Exception:
             raise
         finally:
             cur.close()
