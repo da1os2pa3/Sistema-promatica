@@ -1,5 +1,5 @@
 import mysql.connector
-from datetime import datetime
+#from datetime import datetime
 
 class datosClientes:
 
@@ -40,8 +40,6 @@ class datosClientes:
             cur.execute("SELECT MAX(codigo) FROM clientes")
             resultado = cur.fetchone()[0]
             return resultado or 0  # 👈 clave
-        except Exception:
-            raise
         finally:
             cur.close()
             cnn.close()
@@ -56,7 +54,7 @@ class datosClientes:
         cnn = self.get_connection()
         cur = cnn.cursor(buffered=True)
         try:
-            fecha_ingreso = datetime.strptime(cliente["fecha_ingreso"], '%d/%m/%Y')
+            # fecha_ingreso = datetime.strptime(cliente["fecha_ingreso"], '%d/%m/%Y')
 
             sql = """
                   INSERT INTO clientes (codigo, apellido, nombres, direccion, localidad, provincia, postal, \
@@ -76,7 +74,8 @@ class datosClientes:
                 cliente["telef_pers"],
                 cliente["telef_trab"],
                 cliente["mail"],
-                fecha_ingreso,
+                cliente["fecha_ingreso"],
+                #fecha_ingreso,
                 cliente["sit_fis"],
                 cliente["cuit"],
                 cliente["observaciones"],
@@ -88,7 +87,7 @@ class datosClientes:
             # devolvemos el Id generado del nuevo cliente
             id_nuevo = cur.lastrowid
             return id_nuevo
-        except Exception as e:
+        except Exception:
             cnn.rollback()
             raise
         finally:
@@ -101,7 +100,7 @@ class datosClientes:
         cur = cnn.cursor(buffered=True)
         try:
             # Convierto fecha nuevamente de String a Datetime para guardar en SQL
-            fecha_ingreso = datetime.strptime(cliente["fecha_ingreso"], '%d/%m/%Y')
+            #fecha_ingreso = datetime.strptime(cliente["fecha_ingreso"], '%d/%m/%Y')
 
             # genero instruccion sql
             sql = """
@@ -125,7 +124,8 @@ class datosClientes:
                 cliente["telef_pers"],
                 cliente["telef_trab"],
                 cliente["mail"],
-                fecha_ingreso,
+                cliente["fecha_ingreso"],
+                #fecha_ingreso,
                 cliente["sit_fis"],
                 cliente["cuit"],
                 cliente["observaciones"],
@@ -135,7 +135,7 @@ class datosClientes:
             cur.execute(sql, valores)
             cnn.commit()
             return
-        except Exception as e:
+        except Exception:
             cnn.rollback()
             raise
         finally:
@@ -176,8 +176,6 @@ class datosClientes:
             cur.execute(sql, (param, param, param))
             datos = cur.fetchall()
             return datos
-        except Exception:
-            raise
         finally:
             cur.close()
             cnn.close()

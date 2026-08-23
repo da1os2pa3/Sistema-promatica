@@ -14,7 +14,7 @@ from funciones import formatear_cifra
 from saldosctacte_ABM import *
 
 
-class Clase_SaldosCuentaCorriente(Frame):
+class ClaseSaldosCuentaCorriente(Frame):
 
     # Creo la clase - clase definida en cotiz_ABM.py
     varSaldoscc = datosSaldosctacte()

@@ -6,7 +6,7 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 from PDF_clase import *
 from cotiz_ABM import datosCotiz
-from funcion_new import ClaseFuncion_new
+from funcion_new import ClaseFuncionNew
 from funciones import *
 
 
@@ -22,7 +22,7 @@ class Clase_Venta(tk.Frame):
 
         # Instanciaciones -------------------------------------------------------
         self.varCotiz = datosCotiz(self.master)
-        self.varFuncion_new = ClaseFuncion_new(self.master)
+        self.varFuncion_new = ClaseFuncionNew(self.master)
         # -----------------------------------------------------------------------
 
         # ------------------------------------------------------------------------

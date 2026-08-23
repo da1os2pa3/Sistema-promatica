@@ -15,7 +15,7 @@ from PDF_clase import *
 
 #from tkinter import messagebox
 
-class Clase_InformeTecnico(tk.Frame):
+class ClaseInformeTecnico(tk.Frame):
 
 
     def __init__(self, master=None):

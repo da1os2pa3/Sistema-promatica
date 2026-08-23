@@ -14,7 +14,7 @@ from PDF_clase import *
 from datetime import date, datetime
 from PIL import Image, ImageTk
 
-class Clase_Rma(tk.Frame):
+class ClaseRma(tk.Frame):
 
     # Creo la clase - clase definida en ABM
 
@@ -32,7 +32,7 @@ class Clase_Rma(tk.Frame):
         #-------------------------------------------------------------------
         # Instanciaciones
         self.varRma = datosRma()
-        self.varFuncion_new = ClaseFuncion_new(self.master)
+        self.varFuncion_new = ClaseFuncionNew(self.master)
         #-------------------------------------------------------------------
 
         # ------------------------------------------------------------------

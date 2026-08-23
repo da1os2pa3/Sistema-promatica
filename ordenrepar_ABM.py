@@ -80,7 +80,7 @@ class DatosOrdenRepar:
             # devolvemos el Id generado del nuevo cliente
             id_nuevo = cur.lastrowid
             return id_nuevo
-        except Exception as e:
+        except Exception:
             cnn.rollback()
             raise
         finally:
@@ -148,7 +148,7 @@ class DatosOrdenRepar:
             )
             cur.execute(sql, valores)
             cnn.commit()
-        except Exception as e:
+        except Exception:
             cnn.rollback()
             raise
         finally:
@@ -210,20 +210,6 @@ class DatosOrdenRepar:
         finally:
             cur.close()
             cnn.close()
-
-    # def buscar_entabla2(self, argumento):
-    #
-    #     cnn = self.get_connection()
-    #     cur = cnn.cursor(buffered=True)
-    #     try:
-    #         if len(argumento) <= 0:
-    #             return
-    #         cur.execute("SELECT * FROM clientes " + argumento)
-    #         datos = cur.fetchall()
-    #         return datos
-    #     finally:
-    #         cur.close()
-    #         cnn.close()
 
     def traer_ultimo(self, xparametro):
 

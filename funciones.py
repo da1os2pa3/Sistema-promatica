@@ -14,74 +14,75 @@ FUNCIONES DE FECHAS
     controlada y con barras puestas
 --------------------------------------------------------------------------------------------
 """
-def valida_fechas(self, fecha_string):
+# def valida_fechas(self, fecha_string):
+#
+#     if not fecha_string:
+#         mensajes_error_fechas(self, "A")
+#         return ""
+#
+#     fecha_string = fecha_string.strip()
+#
+#     # ✅ Caso 1: viene sin barras (ddmmaaaa)
+#     if len(fecha_string) == 8 and fecha_string.isdigit():
+#         fecha_string = f"{fecha_string[0:2]}/{fecha_string[2:4]}/{fecha_string[4:8]}"
+#
+#     # ✅ Caso 2: formato con barras
+#     elif len(fecha_string) == 10:
+#         if fecha_string[2] != "/" or fecha_string[5] != "/":
+#             mensajes_error_fechas(self, "C")
+#             return ""
+#     else:
+#         mensajes_error_fechas(self, "B")
+#         return ""
+#
+#     # ✅ Validación REAL de fecha (incluye bisiestos)
+#     try:
+#         fecha = datetime.strptime(fecha_string, "%d/%m/%Y")
+#     except ValueError:
+#         mensajes_error_fechas(self, "E")
+#         return ""
+#
+#     # ✅ Control de año
+#     ano_actual = datetime.today().year
+#
+#     if abs(fecha.year - ano_actual) > 5:
+#         sigue = mensajes_error_fechas(self, "F")
+#         if sigue != "S":
+#             return "N"
+#     return fecha.strftime("%d/%m/%Y")
+# """
+# --------------------------------------------------------------------------------------------
+# """
+#
+# """
+# --------------------------------------------------------------------------------------------
+# 2 BIS - Trabaja en conjuento con valida_fechas - da los mensajes de error
+# --------------------------------------------------------------------------------------------
+# """
+# def mensajes_error_fechas(self, tipo_error):
+#
+#     mensajes = {
+#         "A": "La fecha no puede ser vacía",
+#         "B": "Cantidad de caracteres de fecha erróneos",
+#         "C": "Separadores incorrectos - use (dd/mm/aaaa)",
+#         "D": "Caracteres inválidos - use solo números",
+#         "E": "Fecha inválida - verifique día/mes/año",
+#     }
+#
+#     if tipo_error in mensajes:
+#         messagebox.showerror("Error", mensajes[tipo_error], parent=self)
+#         return
+#
+#     if tipo_error == "F":
+#         return "S" if messagebox.askyesno(
+#             "Verifique",
+#             "Diferencia grande con el año actual. ¿Continuar?",
+#             parent=self
+#         ) else "N"
+# """
+# ------------------------------------------------------------------------------------------------------
+# """
 
-    if not fecha_string:
-        mensajes_error_fechas(self, "A")
-        return ""
-
-    fecha_string = fecha_string.strip()
-
-    # ✅ Caso 1: viene sin barras (ddmmaaaa)
-    if len(fecha_string) == 8 and fecha_string.isdigit():
-        fecha_string = f"{fecha_string[0:2]}/{fecha_string[2:4]}/{fecha_string[4:8]}"
-
-    # ✅ Caso 2: formato con barras
-    elif len(fecha_string) == 10:
-        if fecha_string[2] != "/" or fecha_string[5] != "/":
-            mensajes_error_fechas(self, "C")
-            return ""
-    else:
-        mensajes_error_fechas(self, "B")
-        return ""
-
-    # ✅ Validación REAL de fecha (incluye bisiestos)
-    try:
-        fecha = datetime.strptime(fecha_string, "%d/%m/%Y")
-    except ValueError:
-        mensajes_error_fechas(self, "E")
-        return ""
-
-    # ✅ Control de año
-    ano_actual = datetime.today().year
-
-    if abs(fecha.year - ano_actual) > 5:
-        sigue = mensajes_error_fechas(self, "F")
-        if sigue != "S":
-            return "N"
-    return fecha.strftime("%d/%m/%Y")
-"""
---------------------------------------------------------------------------------------------
-"""
-
-"""
---------------------------------------------------------------------------------------------
-2 BIS - Trabaja en conjuento con valida_fechas - da los mensajes de error
---------------------------------------------------------------------------------------------
-"""
-def mensajes_error_fechas(self, tipo_error):
-
-    mensajes = {
-        "A": "La fecha no puede ser vacía",
-        "B": "Cantidad de caracteres de fecha erróneos",
-        "C": "Separadores incorrectos - use (dd/mm/aaaa)",
-        "D": "Caracteres inválidos - use solo números",
-        "E": "Fecha inválida - verifique día/mes/año",
-    }
-
-    if tipo_error in mensajes:
-        messagebox.showerror("Error", mensajes[tipo_error], parent=self)
-        return
-
-    if tipo_error == "F":
-        return "S" if messagebox.askyesno(
-            "Verifique",
-            "Diferencia grande con el año actual. ¿Continuar?",
-            parent=self
-        ) else "N"
-"""
-------------------------------------------------------------------------------------------------------
-"""
 
 """
 ------------------------------------------------------------------------------------------------------
@@ -90,7 +91,6 @@ def mensajes_error_fechas(self, tipo_error):
 ------------------------------------------------------------------------------------------------------
 """
 def fecha_str_reves_normal(self, par, con_hora=False):
-
     try:
         if con_hora:
             formato_entrada = '%Y-%m-%d %H:%M'
@@ -98,7 +98,6 @@ def fecha_str_reves_normal(self, par, con_hora=False):
         else:
             formato_entrada = '%Y-%m-%d'
             formato_salida = '%d/%m/%Y'
-
         fecha_dt = datetime.strptime(par, formato_entrada)
         return fecha_dt.strftime(formato_salida)
     except ValueError:
@@ -294,34 +293,34 @@ def codigo_repetido(codcontrol, tabla, campo):
 """
 
 
-'''
--------------------------------------------------------------------------------------------
-3 - Esta controla los valores numericos en cuanto a inconsistencias - trabaja usando "control_forma" que esta arriba
-    value = Stringvar.get() a controlar 
-    quepongo = al valor que quiere que devolvamos ante una inconsistencia
--------------------------------------------------------------------------------------------
-'''
-def control_numerico(value, quepongo):
-    if not control_forma(value):
-        return quepongo
-    num = float(value)
-    if num == 0:
-        return quepongo
-    return round(abs(num), 2)
-
-def control_forma(value):
-    """
-    🧠 ¿Qué hace exactamente? Intenta convertir value a tipo float. Si puede hacerlo, devuelve True.
-        Si falla(porque no es un número válido), devuelve False.
-    """
-    try:
-        float(value)
-        return True
-    except ValueError:
-        return False
-"""
--------------------------------------------------------------------------------------------
-"""
+# '''
+# -------------------------------------------------------------------------------------------
+# 3 - Esta controla los valores numericos en cuanto a inconsistencias - trabaja usando "control_forma" que esta arriba
+#     value = Stringvar.get() a controlar
+#     quepongo = al valor que quiere que devolvamos ante una inconsistencia
+# -------------------------------------------------------------------------------------------
+# '''
+# def control_numerico(value, quepongo):
+#     if not control_forma(value):
+#         return quepongo
+#     num = float(value)
+#     if num == 0:
+#         return quepongo
+#     return round(abs(num), 2)
+#
+# def control_forma(value):
+#     """
+#     🧠 ¿Qué hace exactamente? Intenta convertir value a tipo float. Si puede hacerlo, devuelve True.
+#         Si falla(porque no es un número válido), devuelve False.
+#     """
+#     try:
+#         float(value)
+#         return True
+#     except ValueError:
+#         return False
+# """
+# -------------------------------------------------------------------------------------------
+# """
 
 
 

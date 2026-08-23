@@ -7,7 +7,7 @@ from tkinter import messagebox
 from PIL import Image, ImageTk
 # -----------------------------------------
 
-class Clase_Marcas(Frame):
+class ClaseMarcas(Frame):
 
     def __init__(self, master=None):
 

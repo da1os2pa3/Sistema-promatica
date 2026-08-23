@@ -7,7 +7,6 @@ class datosArtic:
         self.master = pantalla
 
     def get_connection(self):
-        print("OK= Escuchando.....")
         return mysql.connector.connect(
             host="localhost",
             user="root",
@@ -70,7 +69,7 @@ class datosArtic:
             # devolvemos el Id generado del nuevo cliente
             id_nuevo = cur.lastrowid
             return id_nuevo
-        except Exception as e:
+        except Exception:
             cnn.rollback()
             raise
         finally:
@@ -119,7 +118,7 @@ class datosArtic:
             #n = cur.rowcount
             cnn.commit()
             return
-        except Exception as e:
+        except Exception:
             cnn.rollback()
             raise
         finally:
@@ -136,7 +135,7 @@ class datosArtic:
             n = cur.rowcount
             cnn.commit()
             return n
-        except Exception as e:
+        except Exception:
             cnn.rollback()
             raise
         finally:
@@ -152,7 +151,7 @@ class datosArtic:
             cur.execute("SELECT * FROM informa WHERE 1")
             datos_inf = cur.fetchall()
             return datos_inf
-        except Exception as e:
+        except Exception:
             raise
         finally:
             cur.close()
@@ -166,7 +165,7 @@ class datosArtic:
             cur.execute("SELECT * FROM articulos " + argumento)
             datos = cur.fetchall()
             return datos
-        except Exception as e:
+        except Exception:
             raise
         finally:
             cur.close()
@@ -181,7 +180,7 @@ class datosArtic:
             cur.execute("SELECT " + xcampo + " FROM " + xtabla + " ORDER BY " + xorden)
             result = cur.fetchall()
             return result
-        except Exception as e:
+        except Exception:
             raise
         finally:
             cur.close()

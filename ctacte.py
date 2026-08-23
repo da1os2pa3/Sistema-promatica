@@ -13,7 +13,7 @@ from tkinter import ttk
 import tkinter.font as tkFont
 from tkinter import messagebox
 
-class Clase_CuentaCorriente(tk.Frame):
+class ClaseCuentaCorriente(tk.Frame):
 
     def __init__(self, master=None):
 
@@ -27,7 +27,7 @@ class Clase_CuentaCorriente(tk.Frame):
         # Instanciaciones
         # Creo una instancia de clientesABM y de funcion_new
         self.varCtacte = datosCtacte(self.master)
-        self.varFuncion_new = ClaseFuncion_new(self.master)
+        self.varFuncion_new = ClaseFuncionNew(self.master)
         # ----------------------------------------------------------------------------------
 
         # ----------------------------------------------------------------------------------

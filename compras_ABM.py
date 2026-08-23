@@ -1,9 +1,7 @@
 import mysql.connector
 from mysql.connector import Error
-from datetime import datetime
-from tkinter import messagebox
 
-class datosCompras:
+class DatosCompras:
 
     def __init__(self, pantalla):
 
@@ -14,100 +12,131 @@ class datosCompras:
         except Error as ex:
             print("Error de conexion: {0}".format(ex))
 
-    def consultar_compras(self, tofil):
+    def get_connection(self):
+        return mysql.connector.connect(
+            host="localhost",
+            user="root",
+            passwd="",
+            database="sist_prom")
 
+    def consultar_compras(self, orden=""):
+
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            cur = self.cnn.cursor()
-            if tofil == "":
-                cur.execute("SELECT * FROM " + tofil)
-            else:
-                cur.execute("SELECT * FROM " + tofil)
-            # para recuperar todas filas de una tabla de base de datos
-            datos = cur.fetchall()
-            self.cnn.commit()
+            sql = "SELECT * FROM faltantes"
+            if orden:
+                sql += " " + orden
+            cur.execute(sql)
+            return cur.fetchall()
+        finally:
             cur.close()
-            return datos
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo consultar compras", parent=self.master)
-            exit()
+            cnn.close()
 
     def traer_ultimo(self, xparametro):
 
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            cur = self.cnn.cursor()
-            cur.execute("SELECT * FROM faltantes ORDER BY fa_fecha")
-            datos = cur.fetchall()
-            aux = ""
-            for row in datos:
-                if xparametro == 1:
-                    aux = str(row[1]) + "\n"
-                else:
-                    aux = str(row[0]) + "\n"
-            self.cnn.commit()
+            cur.execute("SELECT MAX(codigo) FROM faltantes")
+            resultado = cur.fetchone()[0]
+            return resultado or 0  # 👈 clave
+        finally:
             cur.close()
-            return aux
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=traer ultimo", parent=self.master)
-            exit()
+            cnn.close()
 
     def buscar_entabla(self, argumento):
 
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            cur = self.cnn.cursor()
-            if len(argumento) > 0:
-                cur.execute("SELECT * FROM " + argumento)
+            cur.execute("SELECT * FROM faltantes " + argumento)
             datos = cur.fetchall()
-            self.cnn.commit()
-            cur.close()
             return datos
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo buscar en tabla", parent=self.master)
-            exit()
-
-    def insertar_registro(self, fecha, articulo, estado, observaciones):
-
-        try:
-            algo = fecha
-            fecha_ingreso = datetime.strptime(algo, '%d/%m/%Y')
-            cur = self.cnn.cursor()
-            sql = '''INSERT INTO faltantes (fa_fecha, fa_articulo, fa_estado, fa_observaciones) 
-                     VALUES('{}','{}','{}','{}')'''.format(fecha_ingreso, articulo, estado, observaciones)
-            cur.execute(sql)
-            #cur.rowcount
-            self.cnn.commit()
+        except Exception:
+            raise
+        finally:
             cur.close()
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo insertar registro", parent=self.master)
-            exit()
+            cnn.close()
 
-    def modificar_registro(self, Id, fecha, articulo, estado, observaciones):
+    def insertar_registro(self, articulos):
 
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
+        try:
+            sql = """
+                  INSERT INTO faltantes (fa_fecha, fa_articulo, fa_estado, fa_observaciones)
+                  VALUES (%s, %s, %s, %s) 
+                  """
+
+            valores = (
+                articulos["fa_fecha"],
+                articulos["fa_articulo"],
+                articulos["fa_estado"],
+                articulos["fa_observaciones"]
+            )
+
+            cur.execute(sql, valores)
+            cnn.commit()
+            # devolvemos el Id generado del nuevo registro
+            id_nuevo = cur.lastrowid
+            return id_nuevo
+        except Exception:
+            cnn.rollback()
+            raise
+        finally:
+            cur.close()
+            cnn.close()
+
+    def modificar_registro(self, articulos):
+
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
             # Convierto fecha nuevamente de String a Datetime para guardar en SQL
-            algo = fecha
-            fecha_ingreso = datetime.strptime(algo, '%d/%m/%Y')
-            cur = self.cnn.cursor()
-            sql = '''UPDATE faltantes SET fa_fecha='{}', fa_articulo='{}', fa_estado='{}', fa_observaciones='{}' 
-                     WHERE Id={}'''.format(fecha_ingreso, articulo, estado, observaciones, Id)
-            cur.execute(sql)
-            n = cur.rowcount
-            self.cnn.commit()
+            #fecha_ingreso = datetime.strptime(cliente["fecha_ingreso"], '%d/%m/%Y')
+
+            # genero instruccion sql
+            sql = """
+                  UPDATE faltantes 
+                  SET fa_fecha=%s, fa_articulo=%s, fa_estado=%s, fa_observaciones=%s
+                  WHERE Id = %s 
+                  """
+
+            # Creo tupla valores a partir del diccionario : dame el valor de la clave cliente[codigo]
+            # y asi se genera la tupla
+            valores = (
+                articulos["fa_fecha"],
+                articulos["fa_articulo"],
+                articulos["fa_estado"],
+                articulos["fa_observaciones"],
+                articulos["Id"]
+            )
+            cur.execute(sql, valores)
+            cnn.commit()
+            return
+        except Exception as e:
+            cnn.rollback()
+            raise
+        finally:
             cur.close()
-            return n
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo modificar registro", parent=self.master)
-            exit()
+            cnn.close()
 
     def eliminar_articulo(self, Id):
 
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            cur = self.cnn.cursor()
-            sql = '''DELETE FROM faltantes WHERE Id = {}'''.format(Id)
-            cur.execute(sql)
+            sql = "DELETE FROM faltantes WHERE Id = %s"
+            # 1 parámetro → (valor,)
+            # varios → (v1, v2, v3)
+            cur.execute(sql, (Id,))
             n = cur.rowcount
-            self.cnn.commit()
-            cur.close()
+            cnn.commit()
             return n
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo eliminar articulo", parent=self.master)
-            exit()
+        except Exception as e:
+            cnn.rollback()
+            raise
+        finally:
+            cur.close()
+            cnn.close()

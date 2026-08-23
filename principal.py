@@ -5,26 +5,26 @@ from PIL import Image, ImageTk
 #import locale
 import tkinter as tk
 
-from articulos import Clase_Articulos
-from clientes import Clase_Clientes
-from compras import Clase_Compras
-from configuracion import Clase_Configuracion
-#from cotiz_vta import Clase_Venta
+from articulos import ClaseArticulos
+from clientes import ClaseClientes
+from compras import ClaseCompras
+from configuracion import ClaseConfiguracion
 from cotiz_vta import VentasPrincipal
-from ctacte import Clase_CuentaCorriente
-from garantias import Clase_Garantias
+from ctacte import ClaseCuentaCorriente
+from garantias import ClaseGarantias
 from guias_tecnicas import Clase_GuiasTecnicas
-from inf_tecnicos import Clase_InformeTecnico
-from marcas import Clase_Marcas
-from orden_reparacion import Clase_OrdenesRepara
-from planilla_caja import V_PlaniCaja
+from inf_tecnicos import ClaseInformeTecnico
+from marcas import ClaseMarcas
+from orden_reparacion import ClaseOrdenesRepara
+from planilla_caja import ClasePlaniCaja
+from presup_nuevo import ClasePresupuestos
 from presupuestos import Clase_Presupuestos
-from proved import Clase_Proved
-from recibos import Clase_Recibos
-from respaldos import Clase_Backup
-from rma import Clase_Rma
-from rubros import Clase_Rubros
-from saldosctacte import Clase_SaldosCuentaCorriente
+from proved import ClaseProved
+from recibos import ClaseRecibos
+from respaldos import ClaseBackup
+from rma import ClaseRma
+from rubros import ClaseRubros
+from saldosctacte import ClaseSaldosCuentaCorriente
 
 """ esta clase Principal, hereda de la clase Frame"""
 
@@ -129,22 +129,9 @@ class Principal(Frame):
         self.cuadro_cinta_superior()
         self.frame2.pack(side="top", fill="x", pady=10, padx=5)
 
-    # def ajustar_fondo(self, event):
-    #
-    #     if event.width < 10 or event.height < 10:
-    #         return
-    #
-    #     imagen_redimensionada = self.imagen.resize(
-    #         (event.width, event.height),
-    #         Image.Resampling.LANCZOS
-    #     )
-    #
-    #     self.fondo = ImageTk.PhotoImage(imagen_redimensionada)
-    #     self.label_fondo.config(image=self.fondo)
-
     def cuadro_cinta_superior(self):
 
-        for c in range(7):
+        for c in range(8):
             self.frame2.grid_columnconfigure(c, weight=1, minsize=100)
 
         # CLIENTES
@@ -210,6 +197,18 @@ class Principal(Frame):
         self.btn_backup.config(image=icono)
         self.btn_backup.grid(row=0, column=6, padx=3, pady=3, sticky="nsew")
 
+        # PRESUPUESTOS nuevo
+        img = Image.open("presuequipo.png").resize((35, 35))
+        icono = ImageTk.PhotoImage(img)
+        self.btn_presupuestos = Button(self.frame2, text="Presupuestos dos", compound="top", pady=3,
+                                      command=self.fPresu_pest, height=53, border=3, bg="blue", fg="white")
+        self.btn_presupuestos.image = icono
+        self.btn_presupuestos.config(image=icono)
+        self.btn_presupuestos.grid(row=0, column=7, padx=3, pady=3, sticky="nsew")
+
+
+
+
         # reordenamiento de self.frame_botones_grid
         for widg in self.frame2.winfo_children():
             widg.grid_configure(padx=3, pady=3, sticky='nsew')
@@ -232,7 +231,7 @@ class Principal(Frame):
         img = Image.open("reparar.png").resize((35, 35))
         icono = ImageTk.PhotoImage(img)
         self.btn_orden_rep = Button(self.frame1, text="Orden Reparacion", compound="top", pady=3, border=3,
-                                   command=self.fOrdenRepara, bg="blue", fg="white")
+                                   command=self.forden_repara, bg="blue", fg="white")
         self.btn_orden_rep.image = icono
         self.btn_orden_rep.config(image=icono)
         self.btn_orden_rep.grid(row=0, column=1, padx=3, pady=3, sticky="nsew")
@@ -240,7 +239,7 @@ class Principal(Frame):
         # PRESUPUESTOS COTIZACIONES - INGRESO VENTAS
         img = Image.open("presupuesto.png").resize((35, 35))
         icono = ImageTk.PhotoImage(img)
-        self.btn_cotiz_vta = Button(self.frame1, text="Cotizar/Venta", compound="top", pady=3, command=self.fCotVta,
+        self.btn_cotiz_vta = Button(self.frame1, text="Cotizar/Venta", compound="top", pady=3, command=self.fcotVta,
                                 border=3, bg="blue", fg="white")
         self.btn_cotiz_vta.image = icono
         self.btn_cotiz_vta.config(image=icono)
@@ -288,7 +287,7 @@ class Principal(Frame):
         de master de principal entiendo ???ver eso de depender de principal """
 
     def fPlaniCaja(self):
-        self.abrir_ventana(V_PlaniCaja, "Planilla de caja")
+        self.abrir_ventana(ClasePlaniCaja, "Planilla de caja")
 
     # def fPlaniCaja(self):
     #     # PLANILLA DE CAJA
@@ -299,59 +298,62 @@ class Principal(Frame):
     #     app = PlaniCaja(vent)
     #     app.mainloop()
 
-    # def fCotVta(self):
+    # def fcotVta(self):
     #     self.abrir_ventana(Clase_CotizVenta, "Cotizaciones - Ventas")
 
-    def fCotVta(self):
+    def fcotVta(self):
         self.abrir_ventana(VentasPrincipal, "Cotizaciones - Ventas")
 
-    def fOrdenRepara(self):
-        self.abrir_ventana(Clase_OrdenesRepara, "Ordenes de reparacion")
+    def forden_repara(self):
+        self.abrir_ventana(ClaseOrdenesRepara, "Ordenes de reparacion")
 
     def fMarcas(self):
-        self.abrir_ventana(Clase_Marcas, "Marcas")
+        self.abrir_ventana(ClaseMarcas, "Marcas")
 
     def fRubros(self):
-        self.abrir_ventana(Clase_Rubros, "Rubros de Articulos")
+        self.abrir_ventana(ClaseRubros, "Rubros de Articulos")
 
     def fClientes(self):
-        self.abrir_ventana(Clase_Clientes, "ABM Clientes")
+        self.abrir_ventana(ClaseClientes, "ABM Clientes")
 
     def fProved(self):
-        self.abrir_ventana(Clase_Proved, "ABM Proveeores")
+        self.abrir_ventana(ClaseProved, "ABM Proveeores")
 
     def fArticulos(self):
-        self.abrir_ventana(Clase_Articulos, "ABM Articulos")
+        self.abrir_ventana(ClaseArticulos, "ABM Articulos")
 
     def fCtacte(self):
-        self.abrir_ventana(Clase_CuentaCorriente, "ABM Cuentas Corrientes")
+        self.abrir_ventana(ClaseCuentaCorriente, "ABM Cuentas Corrientes")
 
     def fGarantia(self):
-        self.abrir_ventana(Clase_Garantias, "Garantias")
+        self.abrir_ventana(ClaseGarantias, "Garantias")
 
     def fRecibos(self):
-        self.abrir_ventana(Clase_Recibos, "Recibos")
+        self.abrir_ventana(ClaseRecibos, "Recibos")
 
     def fPresupuestos(self):
         self.abrir_ventana(Clase_Presupuestos, "Presupuestos")
 
+    def fPresu_pest(self):
+        self.abrir_ventana(ClasePresupuestos, "Presupuestos")
+
     def fCompras(self):
-        self.abrir_ventana(Clase_Compras, "Articulos faltantes")
+        self.abrir_ventana(ClaseCompras, "Articulos faltantes")
 
     def fRma(self):
-        self.abrir_ventana(Clase_Rma, "RMA")
+        self.abrir_ventana(ClaseRma, "RMA")
 
     def fBackup(self):
-        self.abrir_ventana(Clase_Backup, "Backup")
+        self.abrir_ventana(ClaseBackup, "Backup")
 
     def fConfiguracion(self):
-        self.abrir_ventana(Clase_Configuracion, "Configuracion - Parametros")
+        self.abrir_ventana(ClaseConfiguracion, "Configuracion - Parametros")
 
     def fInf_ctacte(self):
-        self.abrir_ventana(Clase_SaldosCuentaCorriente, "Saldos en Cuentas Corrientes")
+        self.abrir_ventana(ClaseSaldosCuentaCorriente, "Saldos en Cuentas Corrientes")
 
     def fInf_tecnico(self):
-        self.abrir_ventana(Clase_InformeTecnico, "Informes tecnicos")
+        self.abrir_ventana(ClaseInformeTecnico, "Informes tecnicos")
 
     def fTecnicas(self):
         self.abrir_ventana(Clase_GuiasTecnicas, "Guias tecnicas")
@@ -360,9 +362,14 @@ class Principal(Frame):
     def fSalir(self):
         self.master.destroy()
 
+
+
     def abrir_ventana(self, clase, titulo):
-        vent = Toplevel(self.master)
-        vent.title(titulo)
-        vent.grab_set()
+
+        vent = Toplevel(self.master) #Crea una nueva ventana hija de la ventana principal (self.master).
+        vent.withdraw()              # Oculta la ventana
+        vent.title(titulo)           # asignás el título:
+        clase(vent)                  #
+        vent.deiconify()             # La muestra cuando ya está construida
+        vent.grab_set()              # Hace que esa ventana sea modal.
         vent.focus_set()
-        clase(vent)

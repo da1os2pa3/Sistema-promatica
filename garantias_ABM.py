@@ -1,9 +1,7 @@
 import mysql.connector
 from datetime import datetime
-from tkinter import messagebox
 
-
-class datosGarantias:
+class DatosGarantias:
 
     def __init__(self, pantalla):
 
@@ -75,7 +73,7 @@ class datosGarantias:
             # devolvemos el Id generado del nuevo cliente
             id_nuevo = cur.lastrowid
             return id_nuevo
-        except Exception as e:
+        except Exception:
             cnn.rollback()
             raise
         finally:
@@ -114,7 +112,7 @@ class datosGarantias:
             cur.execute(sql, valores)
             cnn.commit()
             return
-        except Exception as e:
+        except Exception:
             cnn.rollback()
             raise
         finally:
@@ -133,7 +131,7 @@ class datosGarantias:
             n = cur.rowcount
             cnn.commit()
             return n
-        except Exception as e:
+        except Exception:
             cnn.rollback()
             raise
         finally:
@@ -158,56 +156,6 @@ class datosGarantias:
             cur.execute(sql, (param, param))
             datos = cur.fetchall()
             return datos
-        except Exception:
-            raise
         finally:
             cur.close()
             cnn.close()
-
-        # """
-        # Aqui nos llega un string de busqueda y en que campos debemos buscarlo. Devolvemos todos
-        # los registros que cumplan con la condicion especificada
-        # """
-        # try:
-        #     cur = self.cnn.cursor()
-        #     cur.execute("SELECT * FROM " + argumento)
-        #     datos = cur.fetchall()
-        #     self.cnn.commit()
-        #     cur.close()
-        #     return datos
-        # except:
-        #
-        #     messagebox.showerror("Error inesperado", "Contacte asistencia-Buscar en tabla-",
-        #                          parent=self.master)
-        #     exit()
-
-
-
-
-
-
-
-
-
-
-
-
-    # def traer_ultimo(self, xparametro):
-    #
-    #     try:
-    #         cur = self.cnn.cursor()
-    #         cur.execute("SELECT * FROM garantias ORDER BY Id ASC")
-    #         datos = cur.fetchall()
-    #         aux = ""
-    #         for row in datos:
-    #             if xparametro == 1:
-    #                 aux = str(row[1]) + "\n"
-    #             else:
-    #                 aux = str(row[0]) + "\n"
-    #         self.cnn.commit()
-    #         cur.close()
-    #         return aux
-    #     except:
-    #         messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=traer ultimo",
-    #                              parent=self.master)
-    #         exit()

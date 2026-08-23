@@ -3,20 +3,20 @@ Ctrl + Alt + L → Reformat Code (reformatea el código según las reglas config
 Ctrl + Alt + Shift + L → abre el cuadro de diálogo para elegir opciones avanzadas de reformateo."""
 
 from funciones import *
-from funcion_new import ClaseFuncion_new
+from funcion_new import ClaseFuncionNew
 from clientes_ABM import datosClientes
 #-------------------------------------------------
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
-import tkinter.font as tkFont
+import tkinter.font as tkfont
 #-------------------------------------------------
 from datetime import date, datetime
 from PIL import Image, ImageTk
 from tktooltip import ToolTip
 from status_bar import StatusBar
 
-class Clase_Clientes(tk.Frame):
+class ClaseClientes(tk.Frame):
 
     def __init__(self, master=None):
 
@@ -32,7 +32,7 @@ class Clase_Clientes(tk.Frame):
         # Instanciaciones -----------------------------------------------------------------
         # Creo una instancia de clientesABM de la clase datosClientes
         self.varClientes = datosClientes(self.master)
-        self.varFuncion_new = ClaseFuncion_new(self.master)
+        self.varFuncion_new = ClaseFuncionNew(self.master)
         # ---------------------------------------------------------------------------------
 
         # ---------------------------------------------------------------------------------
@@ -71,21 +71,21 @@ class Clase_Clientes(tk.Frame):
         # --------------------------------------------------------------------------
         # STRINGVARS -*-
         # --------------------------------------------------------------------------
-        self.strvar_codigo = tk.StringVar(value="")
-        self.strvar_apellido = tk.StringVar(value="")
-        self.strvar_nombres = tk.StringVar(value="")
-        self.strvar_direccion = tk.StringVar(value="")
-        self.strvar_localidad = tk.StringVar(value="")
-        self.strvar_provincia = tk.StringVar(value="")
-        self.strvar_postal = tk.StringVar(value="")
-        self.strvar_telef_pers = tk.StringVar(value="")
-        self.strvar_telef_trab = tk.StringVar(value="")
-        self.strvar_mail = tk.StringVar(value="")
-        self.strvar_sit_fis = tk.StringVar(value="")
-        self.strvar_cuit = tk.StringVar(value="")
-        self.strvar_fecha_ingreso = tk.StringVar(value="")
-        self.strvar_observaciones = tk.StringVar(value="")
-        self.strvar_cant_clientes = tk.StringVar(value="0")
+        self.sv_codigo = tk.StringVar(value="")
+        self.sv_apellido = tk.StringVar(value="")
+        self.sv_nombres = tk.StringVar(value="")
+        self.sv_direccion = tk.StringVar(value="")
+        self.sv_localidad = tk.StringVar(value="")
+        self.sv_provincia = tk.StringVar(value="")
+        self.sv_postal = tk.StringVar(value="")
+        self.sv_telef_pers = tk.StringVar(value="")
+        self.sv_telef_trab = tk.StringVar(value="")
+        self.sv_mail = tk.StringVar(value="")
+        self.sv_sit_fis = tk.StringVar(value="")
+        self.sv_cuit = tk.StringVar(value="")
+        self.sv_fecha_ingreso = tk.StringVar(value="")
+        self.sv_observaciones = tk.StringVar(value="")
+        self.sv_cant_clientes = tk.StringVar(value="0")
 
         # --------------------------------------------------------------------------
         # BARRA LATERAL DE MENU
@@ -98,25 +98,20 @@ class Clase_Clientes(tk.Frame):
 
         # --------------------------------------------------------------------------
         # CUADRO PRINCIPAL CONTENEDOR DEL GRID Y BARRA DE BUSQUEDAS
-        self.frame_tv = tk.Frame(self.master)
-        # --------------------------------------------------------------------------
-        # BUSQUEDA DE CLIENTES -*-
-        # --------------------------------------------------------------------------
-        self.frame_buscar = tk.LabelFrame(self.frame_tv)
+        self.frame_principal = tk.Frame(self.master)
+
+        # BUSQUEDA DE CLIENTES -----------------------------------------------------
+        self.frame_buscar = tk.LabelFrame(self.frame_principal)
         self.cuadro_buscar()
         self.frame_buscar.pack(side="top", fill="both", expand=1, padx=1, pady=3)
         # -------------------------------------------------------------------------
-
-        # -------------------------------------------------------------------------
-        # TREEVIEW - GRID
-        # -------------------------------------------------------------------------
+        # GRID --------------------------------------------------------------------
         self.cuadro_grid_clientes()
-        self.frame_tv.pack(side="top", fill="both", padx=5, pady=5)
+
+        self.frame_principal.pack(side="top", fill="both", padx=5, pady=5)
         # --------------------------------------------------------------------------
 
-        # --------------------------------------------------------------------------
-        # ENTRYS
-        # --------------------------------------------------------------------------
+        # ENTRYS -------------------------------------------------------------------
         self.sector_entry = tk.LabelFrame(self.master)
         self.cuadro_entrys()
         self.sector_entry.pack(expand=1, fill="both", pady=5, padx=5)
@@ -142,41 +137,51 @@ class Clase_Clientes(tk.Frame):
             datos = self.varClientes.consultar_clientes("ORDER BY apellido, nombres ASC")
 
         # Tomo la cantidad de clientes -------------------------------------------
-        self.strvar_cant_clientes.set(value=str(len(datos)))
+        self.sv_cant_clientes.set(value=str(len(datos)))
 
         # Inserto items en el Grid -----------------------------------------------
         cont = 0
         for row in datos:
+
             cont += 1
             color = ('evenrow',) if cont % 2 else ('oddrow',)
             # convierto fecha de 2024-12-19 a 19/12/2024
-            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[13], '%Y-%m-%d'), False)
+#            forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[13], '%Y-%m-%d'), False)
+            forma_normal = self.varFuncion_new.fecha_es(datetime.strftime(row[13], '%Y-%m-%d'), False)
             self.grid_clientes.insert("", "end", tags=color, text=row[0], values=(row[1], row[2], row[3],
-                                                                                  row[4], row[5], row[6], row[7],
-                                                                                  row[8], row[9], row[10], row[11],
-                                                                                  row[12], forma_normal, row[14]))
+                                                               row[4], row[5], row[6], row[7], row[8], row[9], row[10],
+                                                               row[11], row[12], forma_normal, row[14]))
 
         # Controles ---------------------------------------------------------
 
-        # Grid negativo
-        if len(self.grid_clientes.get_children()) < 0:
-            self.status.set_status("❌ Error inesperado, Grid negativo", "error")
-            return
-        # Foco vacio, voy al primero de la grilla
-        if not set_foco:
-            self.grid_clientes.selection_set(self.grid_clientes.get_children()[0])
+        # Devuelve una colección(tupla) con los IDs de todas las filas cargadas
+        children = self.grid_clientes.get_children()
+        # Si no hay filas (grid vacio), salgo sin intentar seleccionar
+        if not children:
+            self.status.set_status("ℹ Grid vacio...", "info")
             return
 
-        # Voy al Id valor del set_foco
-        for item in self.grid_clientes.get_children():
-            texto = self.grid_clientes.item(item, "text")
-            if str(texto).strip() == str(set_foco).strip(): # suponiendo que el ID está en la columna 0
-                self.grid_clientes.update_idletasks()
-                self.grid_clientes.focus_set()
-                self.grid_clientes.selection_set(item)
-                self.grid_clientes.focus(item)
-                self.grid_clientes.see(item)
-                break
+        # Si el parametro set_foco esta vacío (no hay foco), voy al ultimo de la grilla,
+        # caso contrario, voy a la clave que se haya enviado en set_foco para dejar el puntero.
+        if not set_foco:
+            # self.grid_orden.selection_set(children[0]) # asi tambien voy al ultimo
+            # posicion = children[-1]                      # ultimo
+            posicion = children[0]                     # primero
+            self.grid_clientes.focus_set()
+            self.grid_clientes.focus(posicion)
+            self.grid_clientes.selection_set(posicion)
+            self.grid_clientes.see(posicion)
+        else:
+            for item in children:
+                texto = self.grid_clientes.item(item, "text")
+                # print(str(set_foco) + " " + str(texto))
+                if str(texto).strip() == str(set_foco).strip():  # suponiendo que el ID está en la columna 0
+                    self.grid_clientes.update_idletasks()
+                    self.grid_clientes.focus_set()
+                    self.grid_clientes.selection_set(item)
+                    self.grid_clientes.focus(item)
+                    self.grid_clientes.see(item)
+                    break
 
     # --------------------------------------------------------------------------
     # INICIALIZACION SISTEMA -*-
@@ -210,13 +215,6 @@ class Clase_Clientes(tk.Frame):
             self.entry_observaciones
         ]:
             entry.configure(state=estado)
-
-        # if self.alta_modif == 1:
-        #     self.grid_clientes['selectmode'] = 'none'
-        #     self.grid_clientes.bind("<Double-Button-1>", self.fNo_modifique)
-        # if self.alta_modif == 2 or self.alta_modif == 0:
-        #     self.grid_clientes['selectmode'] = 'browse'
-        #     self.grid_clientes.bind("<Double-Button-1>", self.DobleClickGrid)
 
     def limpiar_text(self):
 
@@ -265,27 +263,27 @@ class Clase_Clientes(tk.Frame):
     def habilitar_btn_B(self, estado):
         self.btn_guardar.configure(state=estado)
 
-    def fCancelar(self):
+    def fcancelar(self):
         r = messagebox.askquestion("Cancelar", "Confirma cancelar operacion actual?", parent=self)
         if r == messagebox.YES:
             self.estado_inicial()
 
-    def fReset(self):
+    def freset(self):
         self.estado_inicial()
         self.llena_grilla("")
         self.varFuncion_new.mover_puntero_topend(self.grid_clientes, 'TOP')
 
-    def fSalir(self):
+    def fsalir(self):
         self.master.destroy()
 
-    def fNo_modifique(self, event):
+    def fno_modifique(self, event):
         return
 
     # --------------------------------------------------------------------------
     # CRUD -*-
     # --------------------------------------------------------------------------
 
-    def fNuevo(self):
+    def fnuevo(self):
 
         self.alta_modif = 1
 
@@ -316,7 +314,7 @@ class Clase_Clientes(tk.Frame):
 
         self.entry_apellido.focus()
 
-    def fEditar(self):
+    def feditar(self):
 
         # claves del Grid
         self.selected = self.grid_clientes.focus()
@@ -357,7 +355,7 @@ class Clase_Clientes(tk.Frame):
             # convierto fecha de date a string y cambio a visualizacion español
             fecha_convertida = fecha_str_reves_normal(self, datetime.strftime(row[13], "%Y-%m-%d"), False)
             self.entry_fecha_ingreso.insert(0, fecha_convertida)
-            self.strvar_fecha_ingreso.set(value=fecha_convertida)
+            self.sv_fecha_ingreso.set(value=fecha_convertida)
             self.entry_observaciones.insert(0, row[14])
 
         # termino preparacion
@@ -365,7 +363,7 @@ class Clase_Clientes(tk.Frame):
         self.habilitar_btn_A("disabled")
         self.entry_apellido.focus()
 
-    def fEliminar(self):
+    def feliminar(self):
 
         # ------------------------------------------------------------------------------
         """ prev(self.selected) → intenta traer el item anterior Si no existe(por ejemplo, estás en el
@@ -385,47 +383,47 @@ class Clase_Clientes(tk.Frame):
         valores = self.grid_clientes.item(self.selected, 'values')
         data = " Nº: "+valores[0]+" Cliente: " + valores[1]+" "+valores[2]
 
-        r = messagebox.askquestion("Confirmar", "Confirma eliminar registro?\n " + data, parent=self)
+        r = messagebox.askquestion("Confirmar", "Confirma eliminar cliente?\n " + data, parent=self)
         if r == messagebox.NO:
-            self.status.set_status("ℹ Eliminaion cancelada", "info")
+            self.status.set_status("ℹ Eliminacion cancelada", "info")
             return
 
         try:
             # Elimino el cliente -----------------------
             self.varClientes.eliminar_clientes(self.clave)
             # ------------------------------------------
-        except Exception as e:
-            messagebox.showerror("❌Error del sistema en Eliminar cliente", str(e))
+        except Exception:
+            self.varFuncion_new.mostrar_error()
             return
         else:
-            self.status.set_status("🗑 Registro eliminado correctamente", "ok")
+            self.status.set_status("🗑 Cliente eliminado correctamente", "ok")
 
         # recarga del Grid
         self.llena_grilla(self.clave_ant)
 
-    def fGuardar(self):
+    def fguardar(self):
 
         # VALIDACIONES ---------------------------------------------------
 
         # CONTROLO CODIGO REPETIDO - control de codigo de cliente repetido (en funciones)
         # si viene algun dato, es que el codigo ya existe
-        codrep = codigo_repetido(self.strvar_codigo.get(), "clientes", "codigo")
+        codrep = codigo_repetido(self.sv_codigo.get(), "clientes", "codigo")
         if self.alta_modif == 1 and len(codrep) > 0:
             self.status.set_status("❌ El Codigo ya existe, error al guardar", "error")
             self.entry_apellido.focus()
             return
 
         # VALIDACION QUE EXISTA APELLIDO y NOMBRE
-        if self.strvar_apellido.get() == "":
+        if self.sv_apellido.get() == "":
             self.status.set_status("⚠ Ingrese apellido/s", "warn")
             self.entry_apellido.focus()
             return
-        if self.strvar_nombres.get() == "":
+        if self.sv_nombres.get() == "":
             self.status.set_status("⚠ Ingrese nombre/s", "warn")
             self.entry_nombres.focus()
             return
         # VALIDAR CUIT - en modulo funciones.py
-        if not validar_cuit(self, self.strvar_cuit.get()):
+        if not validar_cuit(self, self.sv_cuit.get()):
             self.status.set_status("⚠ CUIT incorrecto", "warn")
             self.entry_cuit.focus()
             return
@@ -440,43 +438,48 @@ class Clase_Clientes(tk.Frame):
         self.clave = self.grid_clientes.item(self.selected, 'text')
         #-----------------------------------------------------------------
 
-        #-----------------------------------------------------------------
-        # PASO DICCIONARIO PARA INSERTAR O MODIFICAR
-        clientes = {
-            "Id": self.clave,
-            "codigo": self.strvar_codigo.get(),
-            "apellido": self.strvar_apellido.get(),
-            "nombres": self.strvar_nombres.get(),
-            "direccion": self.strvar_direccion.get(),
-            "localidad": self.strvar_localidad.get(),
-            "provincia": self.strvar_provincia.get(),
-            "postal": self.strvar_postal.get(),
-            "telef_pers": self.strvar_telef_pers.get(),
-            "telef_trab": self.strvar_telef_trab.get(),
-            "mail": self.strvar_mail.get(),
-            "fecha_ingreso": self.strvar_fecha_ingreso.get(),
-            "sit_fis": self.strvar_sit_fis.get(),
-            "cuit": self.strvar_cuit.get(),
-            "observaciones": self.strvar_observaciones.get(),
-            "apenombre": self.strvar_apellido.get() + ' ' + self.strvar_nombres.get()
-        }
-        #-----------------------------------------------------------------
+        # Preparo la fecha y pongo en la variable "dic_clientes" el diccionario completo con todos
+        # los datos a ingresar a la tabla
+        fecha_aux = datetime.strptime(self.sv_fecha_ingreso.get(), '%d/%m/%Y')
+        dic_clientes = self.get_clientes_dic(fecha_aux)    # funcion que genera el diccionario
+
+        """
+        # clientes = {
+        #     "Id": self.clave,
+        #     "codigo": self.sv_codigo.get(),
+        #     "apellido": self.sv_apellido.get(),
+        #     "nombres": self.sv_nombres.get(),
+        #     "direccion": self.sv_direccion.get(),
+        #     "localidad": self.sv_localidad.get(),
+        #     "provincia": self.sv_provincia.get(),
+        #     "postal": self.sv_postal.get(),
+        #     "telef_pers": self.sv_telef_pers.get(),
+        #     "telef_trab": self.sv_telef_trab.get(),
+        #     "mail": self.sv_mail.get(),
+        #     "fecha_ingreso": self.sv_fecha_ingreso.get(),
+        #     "sit_fis": self.sv_sit_fis.get(),
+        #     "cuit": self.sv_cuit.get(),
+        #     "observaciones": self.sv_observaciones.get(),
+        #     "apenombre": self.sv_apellido.get() + ' ' + self.sv_nombres.get()
+        # }
+        """
 
         #-----------------------------------------------------------------
         # GUARDADO DATOS Y EVALUACION DEL PROCEDIMIENTO
         #-----------------------------------------------------------------
+        id_ref = ""
         try:
             if self.alta_modif == 1:
-                self.id_nuevo = self.varClientes.insertar_clientes(clientes)
+                self.id_nuevo = self.varClientes.insertar_clientes(dic_clientes)
                 id_ref = self.id_nuevo
             elif self.alta_modif == 2:
-                self.varClientes.modificar_clientes(clientes)
+                self.varClientes.modificar_clientes(dic_clientes)
                 id_ref = self.clave
         except ValueError as e:
             messagebox.showwarning("Datos inválidos en Insertar/Modificar clientes", str(e))
             return
-        except Exception as e:
-            messagebox.showerror("Error del sistema en Insertar/Modificar clientes", str(e))
+        except Exception:
+            self.varFuncion_new.mostrar_error()
             return
         else:
             self.status.set_status("✔ Registro guardado correctamente", "ok")
@@ -495,8 +498,8 @@ class Clase_Clientes(tk.Frame):
     # VARIAS -*-
     # --------------------------------------------------------------------------
 
-    def DobleClickGrid(self, event):
-        self.fEditar()
+    def doble_click_grid(self, event):
+        self.feditar()
 
     def limitador(self, entry_text, caract):
         entry_text.set(entry_text.get()[:caract])
@@ -506,30 +509,25 @@ class Clase_Clientes(tk.Frame):
         """Aqui dentro llamo a la funcion validar fechas para revisar todo sus valores posibles
         le paso la fecha tipo string con barras o sin barras """
 
-        # FUNCION VALIDA FECCHAS en modulo funcion
-        retorno_VerFal = valida_fechas(self, self.strvar_fecha_ingreso.get())
+        # Ejecuto funcion validar_fecha en funcion_new
+        retorno_validacion = self.varFuncion_new.validar_fecha(self.sv_fecha_ingreso, self.entry_fecha_ingreso)
 
         una_fecha = date.today()
 
-        if retorno_VerFal == "":
-            # Retorno con error
-            self.strvar_fecha_ingreso.set(value=una_fecha.strftime('%d/%m/%Y'))
-            self.entry_fecha_ingreso.focus()
-            return "error"
-        elif retorno_VerFal == "S":
-            # esto es control del año y decidio seguir
-            self.entry_fecha_ingreso.focus()
-            return "bien"
-        elif retorno_VerFal == "N":
-            # esto es error en el año y decidio no seguir
-            self.strvar_fecha_ingreso.set(value=una_fecha.strftime('%d/%m/%Y'))
-            self.entry_fecha_ingreso.focus()
-            return "error"
-        elif retorno_VerFal == "BLANCO":
-            return "bien"
-        else:
-            self.strvar_fecha_ingreso.set(retorno_VerFal)
-            return "bien"
+        match retorno_validacion:
+
+            case "break":
+                self.entry_fecha_ingreso.focus()
+                return
+            case "S":
+                self.entry_fecha_ingreso.focus()
+            case "N" | "BLANCO":
+                pass
+            case "":
+                self.sv_fecha_ingreso.set(una_fecha.strftime('%d/%m/%Y'))
+                self.entry_fecha_ingreso.focus()
+            case _:
+                return
 
     # --------------------------------------------------------------------------
     # PUNTEROS Y ORDEN -*-
@@ -549,13 +547,13 @@ class Clase_Clientes(tk.Frame):
         self.filtro_activo = "ORDER BY apellido, nombres ASC"
         self.llena_grilla(self.clave)
 
-    def fToparch(self):
+    def ftoparch(self):
         self.varFuncion_new.mover_puntero_topend(self.grid_clientes, 'TOP')
 
-    def fFinarch(self):
+    def ffinarch(self):
         self.varFuncion_new.mover_puntero_topend(self.grid_clientes, 'END')
 
-    def fBuscar_en_tabla(self):
+    def fbuscar_en_tabla(self):
 
         # Buscar en el Grid
         if len(self.entry_buscar_cliente.get()) <= 0:
@@ -569,8 +567,8 @@ class Clase_Clientes(tk.Frame):
         # Retorno las coincidencias
         try:
             datos = self.varClientes.buscar_clientes(se_busca)
-        except Exception as e:
-            messagebox.showerror("Error del sistema en Buscar cllientes", str(e))
+        except Exception:
+            self.varFuncion_new.mostrar_error()
             return
 
         # Limpio el grid
@@ -592,7 +590,7 @@ class Clase_Clientes(tk.Frame):
             self.grid_clientes.see(primero)
         # ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 
-    def fShowall(self):
+    def fshowall(self):
         self.selected = self.grid_clientes.focus()
         self.clave = self.grid_clientes.item(self.selected, 'text')
         self.filtro_activo = "ORDER BY apellido, nombres ASC"
@@ -605,7 +603,7 @@ class Clase_Clientes(tk.Frame):
 
         # Nuevo cliente
         icono = self.cargar_icono("archivo-nuevo.png")
-        self.btn_nuevo=tk.Button(self.botones1, text=" Nuevo", command=self.fNuevo, bg="blue", fg="white", compound="left")
+        self.btn_nuevo=tk.Button(self.botones1, text=" Nuevo", command=self.fnuevo, bg="blue", fg="white", compound="left")
         self.btn_nuevo.image = icono
         self.btn_nuevo.config(image=icono)
         self.btn_nuevo.grid(row=0, column=0, padx=5, pady=3, ipadx=10)
@@ -613,7 +611,7 @@ class Clase_Clientes(tk.Frame):
 
         # Modificar un cliente
         icono = self.cargar_icono("editar.png")
-        self.btn_editar=tk.Button(self.botones1, text=" Editar", command=self.fEditar, bg="blue", fg="white",
+        self.btn_editar=tk.Button(self.botones1, text=" Editar", command=self.feditar, bg="blue", fg="white",
                                compound="left")
         self.btn_editar.image = icono
         self.btn_editar.config(image=icono)
@@ -622,7 +620,7 @@ class Clase_Clientes(tk.Frame):
 
         # Eliminar un cliente
         icono = self.cargar_icono("eliminar.png")
-        self.btn_eliminar=tk.Button(self.botones1, text=" Eliminar", command=self.fEliminar, bg="red", fg="white",
+        self.btn_eliminar=tk.Button(self.botones1, text=" Eliminar", command=self.feliminar, bg="red", fg="white",
                                  compound="left")
         self.btn_eliminar.image = icono
         self.btn_eliminar.config(image=icono)
@@ -631,7 +629,7 @@ class Clase_Clientes(tk.Frame):
 
         # Guardar datos del cliente
         icono = self.cargar_icono("guardar.png")
-        self.btn_guardar=tk.Button(self.botones1, text=" Guardar", command=self.fGuardar, bg="green", fg="white",
+        self.btn_guardar=tk.Button(self.botones1, text=" Guardar", command=self.fguardar, bg="green", fg="white",
                                 compound="left")
         self.btn_guardar.image = icono
         self.btn_guardar.config(image=icono)
@@ -640,7 +638,7 @@ class Clase_Clientes(tk.Frame):
 
         # Guardar datos del cliente
         icono = self.cargar_icono("cancelar.png")
-        self.btn_cancelar=tk.Button(self.botones1, text=" Cancelar", command=self.fCancelar, bg="black", fg="white",
+        self.btn_cancelar=tk.Button(self.botones1, text=" Cancelar", command=self.fcancelar, bg="black", fg="white",
                                  compound="left")
         self.btn_cancelar.image = icono
         self.btn_cancelar.config(image=icono)
@@ -676,7 +674,7 @@ class Clase_Clientes(tk.Frame):
 
         # Guardar datos del cliente
         icono = self.cargar_icono("reset.png")
-        self.btn_reset = tk.Button(self.botones2, text=" Reset", command=self.fReset, bg="black", fg="white",
+        self.btn_reset = tk.Button(self.botones2, text=" Reset", command=self.freset, bg="black", fg="white",
                                 compound="left")
         self.btn_reset.image = icono
         self.btn_reset.config(image=icono)
@@ -685,16 +683,16 @@ class Clase_Clientes(tk.Frame):
 
         # botones para ir al tope y al fin del archivo
         self.photo4 = Image.open('toparch.png')
-        self.photo4 = self.photo4.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo4 = self.photo4.resize((25, 25), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo4 = ImageTk.PhotoImage(self.photo4)
-        self.btnToparch = tk.Button(self.botones2, text="", image=self.photo4, command=self.fToparch, bg="grey", fg="white")
+        self.btnToparch = tk.Button(self.botones2, text="", image=self.photo4, command=self.ftoparch, bg="grey", fg="white")
         self.btnToparch.grid(row=3, column=0, padx=5, sticky="nsew", pady=3)
 
         # ToolTip(self.btnToparch, msg="Ir a principio de archivo")
         self.photo5 = Image.open('finarch.png')
-        self.photo5 = self.photo5.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo5 = self.photo5.resize((25, 25), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo5 = ImageTk.PhotoImage(self.photo5)
-        self.btnFinarch = tk.Button(self.botones2, text="", image=self.photo5, command=self.fFinarch, bg="grey", fg="white")
+        self.btnFinarch = tk.Button(self.botones2, text="", image=self.photo5, command=self.ffinarch, bg="grey", fg="white")
         self.btnFinarch.grid(row=4, column=0, padx=5, sticky="nsew", pady=3)
         # ToolTip(self.btnFinarch, msg="Ir al final del archivo")
 
@@ -704,15 +702,15 @@ class Clase_Clientes(tk.Frame):
 
     def cuadro_boton_salida(self):
         self.photo3 = Image.open('salida.png')
-        self.photo3 = self.photo3.resize((50, 50), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo3 = self.photo3.resize((50, 50), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo3 = ImageTk.PhotoImage(self.photo3)
-        self.btnSalir=tk.Button(self.botones3, text="Salir", image=self.photo3, command=self.fSalir, bg="yellow", fg="white")
+        self.btnSalir=tk.Button(self.botones3, text="Salir", image=self.photo3, command=self.fsalir, bg="yellow", fg="white")
         self.btnSalir.grid(row=0, column=0, padx=5, pady=3, sticky="nsew")
 
     def cuadro_cartel_clientes(self):
-        fff = tkFont.Font(family="Arial", size=9, weight="bold")
+        fff = tkfont.Font(family="Arial", size=9, weight="bold")
         self.lbl_cant_clientes = tk.Label(self.botones4, text="Clientes", font=fff)
-        self.lbl_cant_clientes1= tk.Label(self.botones4, textvariable=self.strvar_cant_clientes, font=fff)
+        self.lbl_cant_clientes1= tk.Label(self.botones4, textvariable=self.sv_cant_clientes, font=fff)
         self.lbl_cant_clientes.grid(row=0, column=0, padx=5, pady=3, columnspan=2, sticky='nsew')
         self.lbl_cant_clientes1.grid(row=1, column=0, padx=5, pady=3, columnspan=2, sticky='nsew')
 
@@ -720,67 +718,67 @@ class Clase_Clientes(tk.Frame):
         # CODIGO
         self.lbl_codigo = tk.Label(self.sector_entry, text="Codigo: ")
         self.lbl_codigo.grid(row=0, column=0, padx=10, pady=3, sticky="w")
-        self.entry_codigo = tk.Entry(self.sector_entry, textvariable=self.strvar_codigo, justify="right", width=10)
-        self.strvar_codigo.trace_add("write", lambda *args: self.limitador(self.strvar_codigo, 10))
+        self.entry_codigo = tk.Entry(self.sector_entry, textvariable=self.sv_codigo, justify="right", width=10)
+        self.sv_codigo.trace_add("write", lambda _name, _index, _mode: self.limitador(self.sv_codigo, 10))
         self.entry_codigo.grid(row=0, column=1, padx=10, pady=3, sticky="w")
         # APELLIDO
         self.lbl_apellido = tk.Label(self.sector_entry, text="Apellido: ")
         self.lbl_apellido.grid(row=1, column=0, padx=10, pady=3, sticky="w")
-        self.entry_apellido=tk.Entry(self.sector_entry, textvariable=self.strvar_apellido, justify="left", width=40)
-        self.strvar_apellido.trace_add("write", lambda *args: self.limitador(self.strvar_apellido, 40))
+        self.entry_apellido=tk.Entry(self.sector_entry, textvariable=self.sv_apellido, justify="left", width=40)
+        self.sv_apellido.trace_add("write", lambda _name, _index, _mode: self.limitador(self.sv_apellido, 40))
         self.entry_apellido.grid(row=1, column=1, padx=10, pady=3, sticky="w")
         # NOMBRES
         self.lbl_nombres = tk.Label(self.sector_entry, text="Nombres: ")
         self.lbl_nombres.grid(row=2, column=0, padx=10, pady=3, sticky="w")
-        self.entry_nombres = tk.Entry(self.sector_entry, textvariable=self.strvar_nombres, justify="left", width=40)
-        self.strvar_nombres.trace_add("write", lambda *args: self.limitador(self.strvar_nombres, 40))
+        self.entry_nombres = tk.Entry(self.sector_entry, textvariable=self.sv_nombres, justify="left", width=40)
+        self.sv_nombres.trace_add("write", lambda _name, _index, _mode: self.limitador(self.sv_nombres, 40))
         self.entry_nombres.grid(row=2, column=1, padx=10, pady=3, sticky="w")
         # DIRECCION
         self.lbl_direccion = tk.Label(self.sector_entry, text="Direccion: ")
         self.lbl_direccion.grid(row=3, column=0, padx=10, pady=3, sticky="w")
-        self.entry_direccion=tk.Entry(self.sector_entry, textvariable=self.strvar_direccion, justify="left", width=40)
-        self.strvar_direccion.trace_add("write", lambda *args: self.limitador(self.strvar_direccion, 30))
+        self.entry_direccion=tk.Entry(self.sector_entry, textvariable=self.sv_direccion, justify="left", width=40)
+        self.sv_direccion.trace_add("write", lambda _name, _index, _mode: self.limitador(self.sv_direccion, 30))
         self.entry_direccion.grid(row=3, column=1, padx=10, pady=3, sticky="w")
         # LOCALIDAD
         self.lbl_localidad = tk.Label(self.sector_entry, text="Localidad: ")
         self.lbl_localidad.grid(row=4, column=0, padx=10, pady=3, sticky="w")
-        self.entry_localidad=tk.Entry(self.sector_entry, textvariable=self.strvar_localidad, justify="left", width=40)
-        self.strvar_localidad.trace_add("write", lambda *args: self.limitador(self.strvar_localidad, 30))
+        self.entry_localidad=tk.Entry(self.sector_entry, textvariable=self.sv_localidad, justify="left", width=40)
+        self.sv_localidad.trace_add("write", lambda _name, _index, _mode: self.limitador(self.sv_localidad, 30))
         self.entry_localidad.grid(row=4, column=1, padx=10, pady=3, sticky="w")
         # PROVINCIA
         self.lbl_provincia = tk.Label(self.sector_entry, text="Provincia: ")
         self.lbl_provincia.grid(row=5, column=0, padx=10, pady=3, sticky="w")
-        self.entry_provincia=tk.Entry(self.sector_entry, textvariable=self.strvar_provincia, justify="left", width=40)
-        self.strvar_provincia.trace_add("write", lambda *args: self.limitador(self.strvar_provincia, 30))
+        self.entry_provincia=tk.Entry(self.sector_entry, textvariable=self.sv_provincia, justify="left", width=40)
+        self.sv_provincia.trace_add("write", lambda _name, _index, _mode: self.limitador(self.sv_provincia, 30))
         self.entry_provincia.grid(row=5, column=1, padx=10, pady=3, sticky="w")
         # POSTAL
         self.lbl_postal = tk.Label(self.sector_entry, text="Cod. Postal: ")
         self.lbl_postal.grid(row=6, column=0, padx=10, pady=3, sticky="w")
-        self.entry_postal=tk.Entry(self.sector_entry, textvariable=self.strvar_postal, justify="left", width=40)
-        self.strvar_postal.trace_add("write", lambda *args: self.limitador(self.strvar_postal, 30))
+        self.entry_postal=tk.Entry(self.sector_entry, textvariable=self.sv_postal, justify="left", width=40)
+        self.sv_postal.trace_add("write", lambda _name, _index, _mode: self.limitador(self.sv_postal, 30))
         self.entry_postal.grid(row=6, column=1, padx=10, pady=3, sticky="w")
         # TELEFONO PERSONAL
         self.lbl_telefono_pers = tk.Label(self.sector_entry, text="Telefono Personal: ")
         self.lbl_telefono_pers.grid(row=0, column=2, padx=10, pady=3, sticky="w")
-        self.entry_telefono_pers=tk.Entry(self.sector_entry, textvariable=self.strvar_telef_pers, justify="left", width=40)
-        self.strvar_telef_pers.trace_add("write", lambda *args: self.limitador(self.strvar_telef_pers, 30))
+        self.entry_telefono_pers=tk.Entry(self.sector_entry, textvariable=self.sv_telef_pers, justify="left", width=40)
+        self.sv_telef_pers.trace_add("write", lambda _name, _index, _mode: self.limitador(self.sv_telef_pers, 30))
         self.entry_telefono_pers.grid(row=0, column=3, padx=10, pady=3, sticky="w")
         # TELEFONO TRABAJO
         self.lbl_telefono_trab = tk.Label(self.sector_entry, text="Telefono Trabajo: ")
         self.lbl_telefono_trab.grid(row=1, column=2, padx=10, pady=3, sticky="w")
-        self.entry_telefono_trab=tk.Entry(self.sector_entry, textvariable=self.strvar_telef_trab, justify="left", width=40)
-        self.strvar_telef_trab.trace_add("write", lambda *args: self.limitador(self.strvar_telef_trab, 30))
+        self.entry_telefono_trab=tk.Entry(self.sector_entry, textvariable=self.sv_telef_trab, justify="left", width=40)
+        self.sv_telef_trab.trace_add("write", lambda _name, _index, _mode: self.limitador(self.sv_telef_trab, 30))
         self.entry_telefono_trab.grid(row=1, column=3, padx=10, pady=3, sticky="w")
         # CORREO ELECTRONICO
         self.lbl_mail = tk.Label(self.sector_entry, text="Correo Electronico: ")
         self.lbl_mail.grid(row=2, column=2, padx=10, pady=3, sticky="w")
-        self.entry_mail=tk.Entry(self.sector_entry, textvariable=self.strvar_mail, justify="left", width=40)
-        self.strvar_mail.trace_add("write", lambda *args: self.limitador(self.strvar_mail, 30))
+        self.entry_mail=tk.Entry(self.sector_entry, textvariable=self.sv_mail, justify="left", width=40)
+        self.sv_mail.trace_add("write", lambda _name, _index, _mode: self.limitador(self.sv_mail, 30))
         self.entry_mail.grid(row=2, column=3, padx=10, pady=5, sticky="w")
         # SITUACION FISCAL - COMBOBOX
         self.lbl_sit_fiscal = tk.Label(self.sector_entry, text="Situacion Fiscal: ")
         self.lbl_sit_fiscal.grid(row=3, column=2, padx=10, pady=3, sticky="w")
-        self.combo_sit_fiscal = ttk.Combobox(self.sector_entry, textvariable=self.strvar_sit_fis, state='readonly',
+        self.combo_sit_fiscal = ttk.Combobox(self.sector_entry, textvariable=self.sv_sit_fis, state='readonly',
                                              width=40)
         # self.cargar_combo = self.varClientes.llenar_combo_rubro()
         self.combo_sit_fiscal["values"] = ["CF - Consumidor Final", "RI - Responsable Inscripto",
@@ -790,22 +788,22 @@ class Clase_Clientes(tk.Frame):
         # CUIT
         self.lbl_cuit = tk.Label(self.sector_entry, text="CUIT - CUIL: ")
         self.lbl_cuit.grid(row=4, column=2, padx=10, pady=3, sticky="w")
-        self.entry_cuit=tk.Entry(self.sector_entry, textvariable= self.strvar_cuit, justify="left", width=40)
-        self.strvar_cuit.trace_add("write", lambda *args: self.limitador(self.strvar_cuit, 11))
+        self.entry_cuit=tk.Entry(self.sector_entry, textvariable= self.sv_cuit, justify="left", width=40)
+        self.sv_cuit.trace_add("write", lambda _name, _index, _mode: self.limitador(self.sv_cuit, 11))
         self.entry_cuit.grid(row=4, column=3, padx=10, pady=3, sticky="w")
         # FECHA DE INGRESO
         self.lbl_fecha_ingreso = tk.Label(self.sector_entry, text="Fecha Ingreso: ")
         self.lbl_fecha_ingreso.grid(row=5, column=2, padx=10, pady=3, sticky="w")
-        self.entry_fecha_ingreso=tk.Entry(self.sector_entry, textvariable=self.strvar_fecha_ingreso, justify="left",
+        self.entry_fecha_ingreso=tk.Entry(self.sector_entry, textvariable=self.sv_fecha_ingreso, justify="left",
                                        width=40)
         self.entry_fecha_ingreso.bind("<FocusOut>", self.formato_fecha)
         self.entry_fecha_ingreso.grid(row=5, column=3, padx=10, pady=3, sticky="w")
         # Label y entry OBSERVACIONES
         self.lbl_observaciones = tk.Label(self.sector_entry, text="Observaciones: ")
         self.lbl_observaciones.grid(row=6, column=2, padx=10, pady=3, sticky="w")
-        self.entry_observaciones = tk.Entry(self.sector_entry, textvariable=self.strvar_observaciones, justify="left",
+        self.entry_observaciones = tk.Entry(self.sector_entry, textvariable=self.sv_observaciones, justify="left",
                                          width=40)
-        self.strvar_observaciones.trace_add("write", lambda *args: self.limitador(self.strvar_observaciones, 100))
+        self.sv_observaciones.trace_add("write", lambda _name, _index, _mode: self.limitador(self.sv_observaciones, 100))
         self.entry_observaciones.grid(row=6, column=3, padx=10, pady=3, sticky="w")
 
     def cuadro_buscar(self):
@@ -836,7 +834,7 @@ class Clase_Clientes(tk.Frame):
  #       img = Image.open("filtrar.png").resize((18, 18))
         icono = self.cargar_icono("filtrar.png")
 #        icono = ImageTk.PhotoImage(img)
-        self.btn_buscar_cliente = tk.Button(self.frame_buscar, text=" Buscar", command=self.fBuscar_en_tabla,
+        self.btn_buscar_cliente = tk.Button(self.frame_buscar, text=" Buscar", command=self.fbuscar_en_tabla,
                                          bg="CadetBlue", fg="white", width=30, compound="left")
         self.btn_buscar_cliente.image = icono
         self.btn_buscar_cliente.config(image=icono)
@@ -844,10 +842,8 @@ class Clase_Clientes(tk.Frame):
         ToolTip(self.btn_buscar_cliente, msg="Presenta los clientes que coinciden con la busqueda")
 
         # BOTON MOSTRAR TODOS LOS CLIENTES
-        # img = Image.open("ver_todo.png").resize((18, 18))
-        # icono = ImageTk.PhotoImage(img)
         icono = self.cargar_icono("ver_todo.png")
-        self.btn_mostrar_todo = tk.Button(self.frame_buscar, text=" Mostrar todo", command=self.fShowall, bg="CadetBlue",
+        self.btn_mostrar_todo = tk.Button(self.frame_buscar, text=" Mostrar todo", command=self.fshowall, bg="CadetBlue",
                                        width=30, fg="white", compound="left")
         self.btn_mostrar_todo.image = icono
         self.btn_mostrar_todo.config(image=icono)
@@ -861,15 +857,15 @@ class Clase_Clientes(tk.Frame):
     def cuadro_grid_clientes(self):
 
         # STYLE TREEVIEW - un chiche para formas y colores
-        style = ttk.Style(self.frame_tv)
+        style = ttk.Style(self.frame_principal)
         style.theme_use("clam")
         style.configure("Treeview.Heading", background="black", foreground="white")
 
-        self.grid_clientes = ttk.Treeview(self.frame_tv, height=10, columns=("col1", "col2", "col3", "col4", "col5",
+        self.grid_clientes = ttk.Treeview(self.frame_principal, height=10, columns=("col1", "col2", "col3", "col4", "col5",
                                                                              "col6", "col7", "col8", "col9", "col10",
                                                                              "col11", "col12", "col13", "col14"))
 
-        self.grid_clientes.bind("<Double-Button-1>", self.DobleClickGrid)
+        self.grid_clientes.bind("<Double-Button-1>", self.doble_click_grid)
 
         self.grid_clientes.column("#0", width=60, anchor="center")
         self.grid_clientes.column("col1", width=60, anchor="center")
@@ -907,8 +903,8 @@ class Clase_Clientes(tk.Frame):
         self.grid_clientes.tag_configure('evenrow', background='white')
 
         # SCROLLBAR del Treeview
-        scroll_x = tk.Scrollbar(self.frame_tv, orient="horizontal")
-        scroll_y = tk.Scrollbar(self.frame_tv, orient="vertical")
+        scroll_x = tk.Scrollbar(self.frame_principal, orient="horizontal")
+        scroll_y = tk.Scrollbar(self.frame_principal, orient="vertical")
         self.grid_clientes.config(xscrollcommand=scroll_x.set)
         self.grid_clientes.config(yscrollcommand=scroll_y.set)
         scroll_x.config(command=self.grid_clientes.xview)
@@ -924,7 +920,7 @@ class Clase_Clientes(tk.Frame):
 
         # LOGO<
         self.photo3 = Image.open('clientes4.png')
-        self.photo3 = self.photo3.resize((105, 75), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo3 = self.photo3.resize((105, 75), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         self.png_clientes = ImageTk.PhotoImage(self.photo3)
         self.lbl_png_clientes = tk.Label(self.frame_titulo_top, image=self.png_clientes, bg="red", relief="ridge", bd=5, padx=5)
         # TITULO
@@ -957,22 +953,42 @@ class Clase_Clientes(tk.Frame):
         self.cuadro_cartel_clientes()
         self.botones4.pack(side="top", padx=3, pady=3, fill="y")
 
-    # GPT |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
     def cargar_icono(self, path, size=(18,18)):
         img = Image.open(path).resize(size)
         return ImageTk.PhotoImage(img)
-    # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 
-    # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-    # 🔥 CÓMO USAR SET_STATUS
-    # ✔ Guardar
-    # self.set_status("✔ Registro guardado correctamente", "ok")
-    # 🗑 Eliminar
-    # self.set_status("🗑 Cliente eliminado", "ok")
-    # ⚠ Validación
-    # self.set_status("⚠ CUIT incorrecto", "warn")
-    # ❌ Error
-    # self.set_status("❌ Error al guardar", "error")
-    # ℹInfo
-    # self.set_status("ℹ Buscando clientes...", "info")
-    # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+    def get_clientes_dic(self, fecha_aux):
+
+        return {
+            "Id": self.clave,
+            "codigo": self.sv_codigo.get(),
+            "apellido": self.sv_apellido.get(),
+            "nombres": self.sv_nombres.get(),
+            "direccion": self.sv_direccion.get(),
+            "localidad": self.sv_localidad.get(),
+            "provincia": self.sv_provincia.get(),
+            "postal": self.sv_postal.get(),
+            "telef_pers": self.sv_telef_pers.get(),
+            "telef_trab": self.sv_telef_trab.get(),
+            "mail": self.sv_mail.get(),
+            "fecha_ingreso": fecha_aux,
+            "sit_fis": self.sv_sit_fis.get(),
+            "cuit": self.sv_cuit.get(),
+            "observaciones": self.sv_observaciones.get(),
+            "apenombre": self.sv_apellido.get() + ' ' + self.sv_nombres.get()
+        }
+
+
+"""
+🔥 CÓMO USAR SET_STATUS
+✔ Guardar
+self.set_status("✔ Registro guardado correctamente", "ok")
+🗑 Eliminar
+self.set_status("🗑 Cliente eliminado", "ok")
+⚠ Validación
+self.set_status("⚠ CUIT incorrecto", "warn")
+❌ Error
+self.set_status("❌ Error al guardar", "error")
+ℹInfo
+self.set_status("ℹ Buscando clientes...", "info")
+"""

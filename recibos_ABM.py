@@ -43,8 +43,6 @@ class datosRecibos:
                 return str(row[1])
             else:
                 return str(row[0])
-        except Exception:
-            raise
         finally:
             cur.close()
             cnn.close()
@@ -79,7 +77,7 @@ class datosRecibos:
             # devolvemos el Id generado del nuevo cliente
             id_nuevo = cur.lastrowid
             return id_nuevo
-        except Exception as e:
+        except Exception:
             cnn.rollback()
             raise
         finally:
@@ -117,7 +115,7 @@ class datosRecibos:
             cur.execute(sql, valores)
             cnn.commit()
             return
-        except Exception as e:
+        except Exception:
             cnn.rollback()
             raise
         finally:
@@ -136,7 +134,7 @@ class datosRecibos:
             n = cur.rowcount
             cnn.commit()
             return n
-        except Exception as e:
+        except Exception:
             cnn.rollback()
             raise
         finally:
@@ -160,8 +158,6 @@ class datosRecibos:
             cur.execute(sql, param)
             datos = cur.fetchall()
             return datos
-        except Exception:
-            raise
         finally:
             cur.close()
             cnn.close()

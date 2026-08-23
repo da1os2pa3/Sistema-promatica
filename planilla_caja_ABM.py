@@ -36,8 +36,6 @@ class datosPlanilla:
             cur.execute("SELECT * FROM planicaja " + argumento)
             datos = cur.fetchall()
             return datos
-        except Exception as e:
-            raise
         finally:
             cur.close()
             cnn.close()
@@ -232,8 +230,6 @@ class datosPlanilla:
                 return str(row[1])
             else:
                 return str(row[0])
-        except Exception:
-            raise
         finally:
             cur.close()
             cnn.close()
@@ -246,8 +242,6 @@ class datosPlanilla:
             cur.execute("SELECT " + xcampo + " FROM " + xtabla + " ORDER BY " + xorden)
             result = cur.fetchall()
             return result
-        except Exception as e:
-            raise
         finally:
             cur.close()
             cnn.close()
@@ -260,8 +254,6 @@ class datosPlanilla:
             cur.execute("SELECT * FROM informa WHERE 1")
             datos_inf = cur.fetchall()
             return datos_inf
-        except Exception as e:
-            raise
         finally:
             cur.close()
             cnn.close()

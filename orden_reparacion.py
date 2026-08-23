@@ -1,22 +1,20 @@
-from funciones import *
-#from ordenrepar_ABM import *
-from funcion_new import ClaseFuncion_new
-# ---------------------------------------------
 import os
-from datetime import date, datetime
-# ---------------------------------------------
 import tkinter as tk
-from tkinter import ttk
-from tkinter import messagebox
-from tkinter.scrolledtext import *
 import tkinter.font as tkFont
-# ---------------------------------------------
+from datetime import date, datetime
+from tkinter import messagebox
+from tkinter import ttk
+from tkinter.scrolledtext import *
 from PIL import Image, ImageTk
-from PDF_clase import *
-#from fpdf import FPDF
+# from fpdf import FPDF
 from tktooltip import ToolTip
+from PDF_clase import *
+from ordenrepar_ABM import *
+from funcion_new import ClaseFuncionNew
+from funciones import *
 
-class Clase_OrdenesRepara(tk.Frame):
+
+class ClaseOrdenesRepara(tk.Frame):
 
     def __init__(self, master=None):
 
@@ -33,7 +31,7 @@ class Clase_OrdenesRepara(tk.Frame):
             -A varFuncion_new, le paso tambien la pantalla por el mismo motivo.
         """
         self.varOrdenes = DatosOrdenRepar(self.master)
-        self.varFuncion_new = ClaseFuncion_new(self.master)
+        self.varFuncion_new = ClaseFuncionNew(self.master)
         # ------------------------------------------------------------------------
 
         # PANTALLA  --------------------------------------------------------------
@@ -93,42 +91,42 @@ class Clase_OrdenesRepara(tk.Frame):
         # ------------------------------------------------------------------
         # STRINGVARS
         # ------------------------------------------------------------------
-        self.strvar_buscar_orden = tk.StringVar(value="")
-        self.strvar_nombre_cliente = tk.StringVar(value="")
-        self.strvar_codigo_cliente = tk.StringVar(value="0")
-        self.strvar_cli_datosmas = tk.StringVar(value="")
-        self.strvar_cli_deuda = tk.StringVar(value="0")
-        self.strvar_nro_orden = tk.StringVar(value="0")
-        self.strvar_fecha_ingreso = tk.StringVar(value="")
-        self.strvar_fecha_egreso = tk.StringVar(value="")
+        self.sv_buscar_orden = tk.StringVar(value="")
+        self.sv_nombre_cliente = tk.StringVar(value="")
+        self.sv_codigo_cliente = tk.StringVar(value="0")
+        self.sv_cli_datosmas = tk.StringVar(value="")
+        self.sv_cli_deuda = tk.StringVar(value="0")
+        self.sv_nro_orden = tk.StringVar(value="0")
+        self.sv_fecha_ingreso = tk.StringVar(value="")
+        self.sv_fecha_egreso = tk.StringVar(value="")
 
-        self.strvar_equ_ingresa = tk.StringVar(value="")
-        self.strvar_equ_grupo = tk.StringVar(value="")
-        self.strvar_equipo_procesador = tk.StringVar(value="")
-        self.strvar_equipo_ram = tk.StringVar(value="")
-        self.strvar_equipo_discos = tk.StringVar(value="")
-        self.strvar_equipo_sist_oper = tk.StringVar(value="")
-        self.strvar_equipo_ing_obser = tk.StringVar(value="")
-        self.strvar_equ_accesorios = tk.StringVar(value="")
-        self.strvar_equ_estado = tk.StringVar(value="")
+        self.sv_equ_ingresa = tk.StringVar(value="")
+        self.sv_equ_grupo = tk.StringVar(value="")
+        self.sv_equipo_procesador = tk.StringVar(value="")
+        self.sv_equipo_ram = tk.StringVar(value="")
+        self.sv_equipo_discos = tk.StringVar(value="")
+        self.sv_equipo_sist_oper = tk.StringVar(value="")
+        self.sv_equipo_ing_obser = tk.StringVar(value="")
+        self.sv_equ_accesorios = tk.StringVar(value="")
+        self.sv_equ_estado = tk.StringVar(value="")
 
-        self.strvar_cuentas = tk.StringVar(value="")
-        self.strvar_requerido = tk.StringVar(value="")
-        self.strvar_presupuesto = tk.StringVar(value="")
-        self.strvar_partes = tk.StringVar(value="")
-        self.strvar_total_partes = tk.StringVar(value="0")
-        self.strvar_total_manodeobra = tk.StringVar(value="0")
-        self.strvar_tot_final = tk.StringVar(value="0.00")
-        self.strvar_retirado = tk.StringVar(value="N")
+        self.sv_cuentas = tk.StringVar(value="")
+        self.sv_requerido = tk.StringVar(value="")
+        self.sv_presupuesto = tk.StringVar(value="")
+        self.sv_partes = tk.StringVar(value="")
+        self.sv_total_partes = tk.StringVar(value="0")
+        self.sv_total_manodeobra = tk.StringVar(value="0")
+        self.sv_tot_final = tk.StringVar(value="0.00")
+        self.sv_retirado = tk.StringVar(value="N")
 
-        self.strvar_buscostring = tk.StringVar(value="")
+        self.sv_buscostring = tk.StringVar(value="")
 
         # Estadisticas
-        self.strvar_estad_total = tk.StringVar(value="0")
-        self.strvar_estad_pendi = tk.StringVar(value="0")
-        self.strvar_estad_mesact = tk.StringVar(value="0")
-        self.strvar_estad_pespendi = tk.StringVar(value="0")
-        self.strvar_estad_pesmesact = tk.StringVar(value="0")
+        self.sv_estad_total = tk.StringVar(value="0")
+        self.sv_estad_pendi = tk.StringVar(value="0")
+        self.sv_estad_mesact = tk.StringVar(value="0")
+        self.sv_estad_pespendi = tk.StringVar(value="0")
+        self.sv_estad_pesmesact = tk.StringVar(value="0")
 
         # ------------------------------------------------------------------
         # TREEVIEW - GRID
@@ -203,8 +201,8 @@ class Clase_OrdenesRepara(tk.Frame):
 
     def on_write(self, *args):
         # Transforma a mayuscula la S de equipo retirado
-        texto = self.strvar_retirado.get()
-        self.strvar_retirado.set(texto.upper())
+        texto = self.sv_retirado.get()
+        self.sv_retirado.set(texto.upper())
 
     def estado_inicial(self):
         self.filtro_activo = "WHERE fin_retirada = 'N' ORDER BY fecha_ingreso ASC"
@@ -252,39 +250,39 @@ class Clase_OrdenesRepara(tk.Frame):
 
         self.entry_nombre_cliente.delete(0, "end")
 
-        self.strvar_codigo_cliente.set(value="0")
-        self.strvar_cli_datosmas.set(value="")
+        self.sv_codigo_cliente.set(value="0")
+        self.sv_cli_datosmas.set(value="")
 
         # tratamiento de nro de orden
         self.entry_nro_orden.configure(state="normal")
         self.entry_nro_orden.delete(0, "end")
         self.entry_nro_orden.configure(state="disabled")
-        self.strvar_fecha_ingreso.set(value="")
-        self.strvar_fecha_egreso.set(value="")
+        self.sv_fecha_ingreso.set(value="")
+        self.sv_fecha_egreso.set(value="")
 
-        self.strvar_equ_ingresa.set(value="")
-        self.strvar_equipo_procesador.set(value="")
-        self.strvar_equipo_ram.set(value="")
-        self.strvar_equipo_discos.set(value="")
-        self.strvar_equipo_sist_oper.set(value="")
-        self.strvar_equipo_ing_obser.set(value="")
+        self.sv_equ_ingresa.set(value="")
+        self.sv_equipo_procesador.set(value="")
+        self.sv_equipo_ram.set(value="")
+        self.sv_equipo_discos.set(value="")
+        self.sv_equipo_sist_oper.set(value="")
+        self.sv_equipo_ing_obser.set(value="")
 
-        self.strvar_equ_accesorios.set(value="")
-        self.strvar_equ_estado.set(value="")
-        self.strvar_cuentas.set(value="")
-        self.strvar_requerido.set(value="")
-        self.strvar_partes.set(value="")
+        self.sv_equ_accesorios.set(value="")
+        self.sv_equ_estado.set(value="")
+        self.sv_cuentas.set(value="")
+        self.sv_requerido.set(value="")
+        self.sv_partes.set(value="")
         self.text_anotaciones.delete('1.0', 'end')
         self.text_trabajo_realizado.delete('1.0', 'end')
         self.text_diagnostico.delete('1.0', 'end')
-        self.strvar_presupuesto.set(value="")
-        self.strvar_partes.set(value="")
-        self.strvar_total_partes.set(value="0.00")
-        self.strvar_total_manodeobra.set(value="0.00")
-        self.strvar_retirado.set(value="N")
+        self.sv_presupuesto.set(value="")
+        self.sv_partes.set(value="")
+        self.sv_total_partes.set(value="0.00")
+        self.sv_total_manodeobra.set(value="0.00")
+        self.sv_retirado.set(value="N")
         self.grupo_tipo_equipo.set("")
         self.grupo_tipo_equipo.current(0)
-        self.strvar_cli_deuda.set(value="0")
+        self.sv_cli_deuda.set(value="0")
 
     def estado_botones(self, estado):
 
@@ -492,61 +490,61 @@ class Clase_OrdenesRepara(tk.Frame):
         # en el caso que venga, la convierto datetime con la fecha actual tanto para ingreso como para egreso.
         una_fecha = (datos_registro_selec[2])
         self.fecha_final = una_fecha.strftime("%d/%m/%Y %H:%M:%S")
-        self.strvar_fecha_ingreso.set(self.fecha_final)
+        self.sv_fecha_ingreso.set(self.fecha_final)
 
         # Tratamiento de fecha de egreso porque aca puede venir None
         if (datos_registro_selec[3]) == None:
-            self.strvar_fecha_egreso.set(value="")
+            self.sv_fecha_egreso.set(value="")
         else:
             una_fecha = (datos_registro_selec[3])
             self.fecha_final = una_fecha.strftime("%d/%m/%Y %H:%M:%S")
-            self.strvar_fecha_egreso.set(self.fecha_final)
+            self.sv_fecha_egreso.set(self.fecha_final)
 
         # Aqui analizo que no me llegue desde la TABLA ninguna fecha en "none" dado que ese es un error
         # en el caso que venga, la convierto datetime con la fecha actual tanto para ingreso como para egreso.
         una_fecha = (datos_registro_selec[2])
         self.fecha_final = una_fecha.strftime("%d/%m/%Y %H:%M:%S")
-        self.strvar_fecha_ingreso.set(self.fecha_final)
+        self.sv_fecha_ingreso.set(self.fecha_final)
 
         # Tratamiento de fecha de egreso porque aca puede venir None
         if (datos_registro_selec[3]) == None:
-            self.strvar_fecha_egreso.set(value="")
+            self.sv_fecha_egreso.set(value="")
         else:
             una_fecha = (datos_registro_selec[3])
             self.fecha_final = una_fecha.strftime("%d/%m/%Y %H:%M:%S")
-            self.strvar_fecha_egreso.set(self.fecha_final)
+            self.sv_fecha_egreso.set(self.fecha_final)
 
-        self.strvar_codigo_cliente.set(datos_registro_selec[4])
-        self.strvar_nombre_cliente.set(value=datos_registro_selec[5])
+        self.sv_codigo_cliente.set(datos_registro_selec[4])
+        self.sv_nombre_cliente.set(value=datos_registro_selec[5])
 
-        self.strvar_equ_ingresa.set(value=datos_registro_selec[6])
-        self.strvar_equ_grupo.set(value=datos_registro_selec[7])
-        self.strvar_equipo_procesador.set(value=datos_registro_selec[8])
-        self.strvar_equipo_ram.set(value=datos_registro_selec[9])
-        self.strvar_equipo_discos.set(value=datos_registro_selec[10])
-        self.strvar_equipo_sist_oper.set(value=datos_registro_selec[11])
-        self.strvar_equipo_ing_obser.set(value=datos_registro_selec[11])
-        self.strvar_equ_accesorios.set(value=datos_registro_selec[13])
-        self.strvar_equ_estado.set(value=datos_registro_selec[14])
+        self.sv_equ_ingresa.set(value=datos_registro_selec[6])
+        self.sv_equ_grupo.set(value=datos_registro_selec[7])
+        self.sv_equipo_procesador.set(value=datos_registro_selec[8])
+        self.sv_equipo_ram.set(value=datos_registro_selec[9])
+        self.sv_equipo_discos.set(value=datos_registro_selec[10])
+        self.sv_equipo_sist_oper.set(value=datos_registro_selec[11])
+        self.sv_equipo_ing_obser.set(value=datos_registro_selec[11])
+        self.sv_equ_accesorios.set(value=datos_registro_selec[13])
+        self.sv_equ_estado.set(value=datos_registro_selec[14])
 
-        self.strvar_cuentas.set(value=datos_registro_selec[15])
-        self.strvar_requerido.set(value=datos_registro_selec[16])
+        self.sv_cuentas.set(value=datos_registro_selec[15])
+        self.sv_requerido.set(value=datos_registro_selec[16])
         self.text_diagnostico.insert("end", datos_registro_selec[17])
-        self.strvar_presupuesto.set(value=datos_registro_selec[18])
+        self.sv_presupuesto.set(value=datos_registro_selec[18])
         self.text_trabajo_realizado.insert("end", datos_registro_selec[19])
-        self.strvar_partes.set(value=datos_registro_selec[20])
+        self.sv_partes.set(value=datos_registro_selec[20])
         self.text_anotaciones.insert("end", datos_registro_selec[21])
-        self.strvar_total_manodeobra.set(value=datos_registro_selec[22])
-        self.strvar_total_partes.set(value=datos_registro_selec[23])
-        self.strvar_retirado.set(value=datos_registro_selec[24])
+        self.sv_total_manodeobra.set(value=datos_registro_selec[22])
+        self.sv_total_partes.set(value=datos_registro_selec[23])
+        self.sv_retirado.set(value=datos_registro_selec[24])
 
-        self.strvar_cli_deuda.set(value=str(self.fTraedeuda(self.strvar_codigo_cliente.get())))
+        self.sv_cli_deuda.set(value=str(self.fTraedeuda(self.sv_codigo_cliente.get())))
 
         # traer los datos del cliente direccion y telefono - Datos mas -
-        retorno = self.varOrdenes.buscar_entabla("clientes WHERE codigo = '" + self.strvar_codigo_cliente.get() + "'")
+        retorno = self.varOrdenes.buscar_entabla("clientes WHERE codigo = '" + self.sv_codigo_cliente.get() + "'")
 
         for item in retorno:
-            self.strvar_cli_datosmas.set(value=str(item[4] + ' - tel: ' + item[8] + ' / ' + item[9]))
+            self.sv_cli_datosmas.set(value=str(item[4] + ' - tel: ' + item[8] + ' / ' + item[9]))
 
         self.sumar_totalfinal()
         self.habilitar_text('disabled')
@@ -572,7 +570,7 @@ class Clase_OrdenesRepara(tk.Frame):
         # Fecha y hora de ingreso
         una_fecha = datetime.now()
         self.fecha_final = una_fecha.strftime("%d/%m/%Y %H:%M:%S")
-        self.strvar_fecha_ingreso.set(self.fecha_final)
+        self.sv_fecha_ingreso.set(self.fecha_final)
         self.entry_retirado.insert(0, "N")
 
     def fModificar_orden(self):
@@ -605,43 +603,43 @@ class Clase_OrdenesRepara(tk.Frame):
         # Convierto fecha de ingreso a formato normal
         una_fecha = (datos_registro_selec[2])
         self.fecha_final = una_fecha.strftime("%d/%m/%Y %H:%M:%S")
-        self.strvar_fecha_ingreso.set(self.fecha_final)
+        self.sv_fecha_ingreso.set(self.fecha_final)
 
         # Tratamiento de fecha de egreso porque aca puede venir None
         if (datos_registro_selec[3]) == None:
-            self.strvar_fecha_egreso.set(value="")
+            self.sv_fecha_egreso.set(value="")
         else:
             una_fecha = (datos_registro_selec[3])
             self.fecha_final = una_fecha.strftime("%d/%m/%Y %H:%M:%S")
-            self.strvar_fecha_egreso.set(self.fecha_final)
+            self.sv_fecha_egreso.set(self.fecha_final)
 
-        self.strvar_codigo_cliente.set(datos_registro_selec[4])
-        self.strvar_nombre_cliente.set(value=datos_registro_selec[5])
-        self.strvar_equ_ingresa.set(value=datos_registro_selec[6])
-        self.strvar_equ_grupo.set(value=datos_registro_selec[7])
-        self.strvar_equipo_procesador.set(value=datos_registro_selec[8])
-        self.strvar_equipo_ram.set(value=datos_registro_selec[9])
-        self.strvar_equipo_discos.set(value=datos_registro_selec[10])
-        self.strvar_equipo_sist_oper.set(value=datos_registro_selec[11])
-        self.strvar_equipo_ing_obser.set(value=datos_registro_selec[12])
-        self.strvar_equ_accesorios.set(value=datos_registro_selec[13])
-        self.strvar_equ_estado.set(value=datos_registro_selec[14])
-        self.strvar_cuentas.set(value=datos_registro_selec[15])
-        self.strvar_requerido.set(value=datos_registro_selec[16])
+        self.sv_codigo_cliente.set(datos_registro_selec[4])
+        self.sv_nombre_cliente.set(value=datos_registro_selec[5])
+        self.sv_equ_ingresa.set(value=datos_registro_selec[6])
+        self.sv_equ_grupo.set(value=datos_registro_selec[7])
+        self.sv_equipo_procesador.set(value=datos_registro_selec[8])
+        self.sv_equipo_ram.set(value=datos_registro_selec[9])
+        self.sv_equipo_discos.set(value=datos_registro_selec[10])
+        self.sv_equipo_sist_oper.set(value=datos_registro_selec[11])
+        self.sv_equipo_ing_obser.set(value=datos_registro_selec[12])
+        self.sv_equ_accesorios.set(value=datos_registro_selec[13])
+        self.sv_equ_estado.set(value=datos_registro_selec[14])
+        self.sv_cuentas.set(value=datos_registro_selec[15])
+        self.sv_requerido.set(value=datos_registro_selec[16])
         self.text_diagnostico.insert("end", datos_registro_selec[17])
-        self.strvar_presupuesto.set(value=datos_registro_selec[18])
+        self.sv_presupuesto.set(value=datos_registro_selec[18])
         self.text_trabajo_realizado.insert("end", datos_registro_selec[19])
-        self.strvar_partes.set(value=datos_registro_selec[20])
+        self.sv_partes.set(value=datos_registro_selec[20])
         self.text_anotaciones.insert("end", datos_registro_selec[21])
-        self.strvar_total_manodeobra.set(value=datos_registro_selec[22])
-        self.strvar_total_partes.set(value=datos_registro_selec[23])
-        self.strvar_retirado.set(value=datos_registro_selec[24])
-        self.strvar_cli_deuda.set(value=str(self.fTraedeuda(self.strvar_codigo_cliente.get())))
+        self.sv_total_manodeobra.set(value=datos_registro_selec[22])
+        self.sv_total_partes.set(value=datos_registro_selec[23])
+        self.sv_retirado.set(value=datos_registro_selec[24])
+        self.sv_cli_deuda.set(value=str(self.fTraedeuda(self.sv_codigo_cliente.get())))
 
         # traer los datos del cliente direccion y telefono - Datos mas --------------
-        retorno = self.varOrdenes.buscar_entabla("clientes WHERE codigo = '" + self.strvar_codigo_cliente.get() +"'")
+        retorno = self.varOrdenes.buscar_entabla("clientes WHERE codigo = '" + self.sv_codigo_cliente.get() +"'")
         for item in retorno:
-            self.strvar_cli_datosmas.set(value=str(item[4]+' - tel: '+item[8]+' / '+item[9]))
+            self.sv_cli_datosmas.set(value=str(item[4]+' - tel: '+item[8]+' / '+item[9]))
 
         self.sumar_totalfinal()
         self.entry_nombre_cliente.focus()
@@ -680,15 +678,15 @@ class Clase_OrdenesRepara(tk.Frame):
 
         # VALIDAR  ------------------------------------------------------------------------
         # no permito codigo ni nombre de cliente en blanco
-        if int(self.strvar_codigo_cliente.get()) == 0 or self.strvar_nombre_cliente.get() == "":
+        if int(self.sv_codigo_cliente.get()) == 0 or self.sv_nombre_cliente.get() == "":
             messagebox.showerror("Cuidado", "Faltan datos de cliente - verifique", parent=self)
             return
         # el numero de orden no puede ser vacio
-        if self.strvar_nro_orden.get() == 0:
+        if self.sv_nro_orden.get() == 0:
             messagebox.showerror("Cuidado", "Faltan numero de orden - verifique", parent=self)
             return
         # el -retirada- debe ser S o N
-        if self.strvar_retirado.get() != "S" and self.strvar_retirado.get() != "N":
+        if self.sv_retirado.get() != "S" and self.sv_retirado.get() != "N":
             messagebox.showerror("Cuidado", "El informe de retirada valor no aceptado, solo S o N - "
                                             "verifique", parent = self)
             return
@@ -716,9 +714,9 @@ class Clase_OrdenesRepara(tk.Frame):
                 #self.set_status("⚠ Error en los datos", "warn")
                 return
             except Exception as e:
-                messagebox.showerror("Error del sistema - al insertar/modificar", str(e))
-                #self.set_status("❌ Error al guardar", "error")
+                self.varFuncion_new.mostrar_error()
                 return
+
             messagebox.showinfo("Aviso", "Nuevo registro creado correctamente", parent=self)
 
         if self.alta_modif == 2:
@@ -728,11 +726,11 @@ class Clase_OrdenesRepara(tk.Frame):
             # ---------------------------------------------------------------------------
             # Al modificar, debo conservar la misma fecha y hora de ingreso.
             # Convierto la fecha a formato tabla(****/**/**)
-            transformo_fecha_ingreso = self.varFuncion_new.fecha_a_tabla(self.strvar_fecha_ingreso.get())
+            transformo_fecha_ingreso = self.varFuncion_new.fecha_a_tabla(self.sv_fecha_ingreso.get())
             # Tambien debo contemplar que si es una modificacion sobre una orden "ya retiraqda", no debo modificar
             # su fecha de agreso ni de ingreso.
-            retirado = self.strvar_retirado.get()
-            fecha_egreso = self.strvar_fecha_egreso.get()
+            retirado = self.sv_retirado.get()
+            fecha_egreso = self.sv_fecha_egreso.get()
             if retirado == "S":
                 if not fecha_egreso:
                     # modificacion : La retiran = dia y hora actual
@@ -754,12 +752,11 @@ class Clase_OrdenesRepara(tk.Frame):
                 self.id_ref = self.clave
             except ValueError as e:
                 messagebox.showwarning("Datos inválidos - error al insertar/modificar", str(e))
-                #self.set_status("⚠ Error en los datos", "warn")
                 return
-            except Exception as e:
-                messagebox.showerror("Error del sistema - al insertar/modificar", str(e))
-                #self.set_status("❌ Error al guardar", "error")
+            except Exception:
+                self.varFuncion_new.mostrar_error()
                 return
+
             messagebox.showinfo("Aviso", "La modificacion del registro fue exitosa", parent=self)
 
         # Ordenar estado de pantalla ----------------------------------------------------
@@ -843,11 +840,11 @@ class Clase_OrdenesRepara(tk.Frame):
     #     total_pesos_mesactual = formatear_cifra(total_pesos_mesactual)
     #     total_pesos_pendientes = formatear_cifra(total_pesos_pendientes)
     #
-    #     self.strvar_estad_total.set(value=str(total_ordenes))
-    #     self.strvar_estad_pendi.set(value=str(total_orden_pendientes))
-    #     self.strvar_estad_mesact.set(value=str(total_orden_mesactual))
-    #     self.strvar_estad_pespendi.set(value=str(total_pesos_pendientes))
-    #     self.strvar_estad_pesmesact.set(value=str(total_pesos_mesactual))
+    #     self.sv_estad_total.set(value=str(total_ordenes))
+    #     self.sv_estad_pendi.set(value=str(total_orden_pendientes))
+    #     self.sv_estad_mesact.set(value=str(total_orden_mesactual))
+    #     self.sv_estad_pespendi.set(value=str(total_pesos_pendientes))
+    #     self.sv_estad_pesmesact.set(value=str(total_pesos_mesactual))
     #
     #     self.pantalla_estad = tk.Toplevel()
     #     self.pantalla_estad.geometry('220x180+1200+200')
@@ -859,23 +856,23 @@ class Clase_OrdenesRepara(tk.Frame):
     #     # muestro la imagen en el frame
     #     self.lbl_total_ordenes1 = tk.Label(self.pantalla_estad, text="Total ordenes: ", bg="light blue",
     #                                     relief="ridge", bd=5)
-    #     self.lbl_total_ordenes2 = tk.Label(self.pantalla_estad, textvariable=self.strvar_estad_total, bg="plum1",
+    #     self.lbl_total_ordenes2 = tk.Label(self.pantalla_estad, textvariable=self.sv_estad_total, bg="plum1",
     #                                     relief="ridge", bd=5)
     #     self.lbl_pendi_ordenes1 = tk.Label(self.pantalla_estad, text="Ordenes pendientes: ", bg="light blue",
     #                                     relief="ridge", bd=5)
-    #     self.lbl_pendi_ordenes2 = tk.Label(self.pantalla_estad, textvariable=self.strvar_estad_pendi, bg="plum1",
+    #     self.lbl_pendi_ordenes2 = tk.Label(self.pantalla_estad, textvariable=self.sv_estad_pendi, bg="plum1",
     #                                     relief="ridge", bd=5)
     #     self.lbl_pespendi_ordenes1 = tk.Label(self.pantalla_estad, text="Pesos pendientes: ", bg="light blue",
     #                                        relief="ridge", bd=5)
-    #     self.lbl_pespendi_ordenes2 = tk.Label(self.pantalla_estad, textvariable=self.strvar_estad_pespendi, bg="plum1",
+    #     self.lbl_pespendi_ordenes2 = tk.Label(self.pantalla_estad, textvariable=self.sv_estad_pespendi, bg="plum1",
     #                                        relief="ridge", bd=5)
     #     self.lbl_mesact_ordenes1 = tk.Label(self.pantalla_estad, text="Ordenes mes actual: ", bg="light blue",
     #                                      relief="ridge", bd=5)
-    #     self.lbl_mesact_ordenes2 = tk.Label(self.pantalla_estad, textvariable=self.strvar_estad_mesact, bg="plum1",
+    #     self.lbl_mesact_ordenes2 = tk.Label(self.pantalla_estad, textvariable=self.sv_estad_mesact, bg="plum1",
     #                                      relief="ridge", bd=5)
     #     self.lbl_pesmesact_ordenes1 = tk.Label(self.pantalla_estad, text="Pesos mes actual: ", bg="light blue",
     #                                         relief="ridge", bd=5)
-    #     self.lbl_pesmesact_ordenes2 = tk.Label(self.pantalla_estad, textvariable=self.strvar_estad_pesmesact, bg="plum1",
+    #     self.lbl_pesmesact_ordenes2 = tk.Label(self.pantalla_estad, textvariable=self.sv_estad_pesmesact, bg="plum1",
     #                                         relief="ridge", bd=5)
     #
     #     self.lbl_total_ordenes1.grid(row=0, column=0, padx=5, pady=3, sticky="nsew")
@@ -934,9 +931,9 @@ class Clase_OrdenesRepara(tk.Frame):
         """ Creo una variable (que_busco) que contiene los parametros de busqueda - Tabla, el string de busqueda y
             en que campos debe hacerse """
 
-        que_busco = "clientes WHERE INSTR(apellido, '" + self.strvar_nombre_cliente.get() + "') > 0" \
-                    + " OR INSTR(nombres, '" + self.strvar_nombre_cliente.get() + "') > 0" \
-                    + " OR INSTR(apenombre, '" + self.strvar_nombre_cliente.get() + "') > 0" \
+        que_busco = "clientes WHERE INSTR(apellido, '" + self.sv_nombre_cliente.get() + "') > 0" \
+                    + " OR INSTR(nombres, '" + self.sv_nombre_cliente.get() + "') > 0" \
+                    + " OR INSTR(apenombre, '" + self.sv_nombre_cliente.get() + "') > 0" \
                     + " ORDER BY apenombre"
 
         """ Llamo a Funcion ventana de seleccion de items. Paso parametros de Tabla-campos a mostrar en orden de como 
@@ -950,11 +947,11 @@ class Clase_OrdenesRepara(tk.Frame):
             los Entrys correspondientes """
 
         for item in valores_new:
-            self.strvar_nombre_cliente.set(value=item[15])
-            self.strvar_codigo_cliente.set(value=item[1])
-            self.strvar_cli_datosmas.set(value=str(item[4] + ' - tel: ' + item[8] + ' / ' + item[9]))
+            self.sv_nombre_cliente.set(value=item[15])
+            self.sv_codigo_cliente.set(value=item[1])
+            self.sv_cli_datosmas.set(value=str(item[4] + ' - tel: ' + item[8] + ' / ' + item[9]))
 
-        self.strvar_cli_deuda.set(value=str(self.fTraedeuda(self.strvar_codigo_cliente.get())))
+        self.sv_cli_deuda.set(value=str(self.fTraedeuda(self.sv_codigo_cliente.get())))
         self.entry_nombre_cliente.focus()
         self.entry_nombre_cliente.icursor(tk.END)
 
@@ -964,12 +961,12 @@ class Clase_OrdenesRepara(tk.Frame):
 
     def fFiltrar_orden(self):
 
-        if len(self.strvar_buscar_orden.get()) <= 0:
+        if len(self.sv_buscar_orden.get()) <= 0:
             messagebox.showwarning("Alerta", "No ingreso busqueda", parent=self)
             self.entry_buscar_orden.focus()
             return
 
-        se_busca = self.strvar_buscar_orden.get()
+        se_busca = self.sv_buscar_orden.get()
 
         self.filtro_activo = "orden_repara WHERE INSTR(or_nombre_cliente, '" + se_busca + "') > 0" \
                              + " OR " + "INSTR(or_num_orden, '" + se_busca + "') > 0" \
@@ -991,37 +988,37 @@ class Clase_OrdenesRepara(tk.Frame):
     #     if aaa == 0:
     #
     #         # Control de que no ingresen mas de una vez el '-' o el '.' - Funcion en funciones.py
-    #         if not control_forma(self.strvar_total_partes.get()):
-    #             self.strvar_total_partes.set(value="0")
+    #         if not control_forma(self.sv_total_partes.get()):
+    #             self.sv_total_partes.set(value="0")
     #             self.entry_total_partes.focus()
     #             return
-    #         if not control_forma(self.strvar_total_manodeobra.get()):
-    #             self.strvar_total_manodeobra.set(value="0")
+    #         if not control_forma(self.sv_total_manodeobra.get()):
+    #             self.sv_total_manodeobra.set(value="0")
     #             self.entry_total_manodeobra.focus()
     #             return
     #
     #         # Control de valor en blanco o solo un . o -
-    #         if (self.strvar_total_partes.get() == "" or self.strvar_total_partes.get() == "."
-    #                 or self.strvar_total_partes.get() == "-"):
-    #             self.strvar_total_partes.set(value="0")
-    #         if (self.strvar_total_manodeobra.get() == "" or self.strvar_total_manodeobra.get() == "."
-    #                 or self.strvar_total_manodeobra.get() == "-"):
-    #             self.strvar_total_manodeobra.set(value="0")
+    #         if (self.sv_total_partes.get() == "" or self.sv_total_partes.get() == "."
+    #                 or self.sv_total_partes.get() == "-"):
+    #             self.sv_total_partes.set(value="0")
+    #         if (self.sv_total_manodeobra.get() == "" or self.sv_total_manodeobra.get() == "."
+    #                 or self.sv_total_manodeobra.get() == "-"):
+    #             self.sv_total_manodeobra.set(value="0")
     #
     #         # control de valor en cero o si tiene mas de dos decimales lo trunco a dos
-    #         if float(self.strvar_total_partes.get()) == 0:
-    #             self.strvar_total_partes.set(value="0")
+    #         if float(self.sv_total_partes.get()) == 0:
+    #             self.sv_total_partes.set(value="0")
     #         else:
-    #             self.strvar_total_partes.set(value=str(round(float(self.strvar_total_partes.get()), 2)))
-    #         if float(self.strvar_total_manodeobra.get()) == 0:
-    #             self.strvar_total_manodeobra.set(value="0")
+    #             self.sv_total_partes.set(value=str(round(float(self.sv_total_partes.get()), 2)))
+    #         if float(self.sv_total_manodeobra.get()) == 0:
+    #             self.sv_total_manodeobra.set(value="0")
     #         else:
-    #             self.strvar_total_manodeobra.set(value=str(round(float(self.strvar_total_manodeobra.get()), 2)))
+    #             self.sv_total_manodeobra.set(value=str(round(float(self.sv_total_manodeobra.get()), 2)))
     #
-    #         v1 = float(self.strvar_total_partes.get())
-    #         v2 = float(self.strvar_total_manodeobra.get())
+    #         v1 = float(self.sv_total_partes.get())
+    #         v2 = float(self.sv_total_manodeobra.get())
     #
-    #         self.strvar_tot_final.set(value=str(round((v1 + v2), 2)))
+    #         self.sv_tot_final.set(value=str(round((v1 + v2), 2)))
     #
     #     else:
     #     #except:
@@ -1032,38 +1029,38 @@ class Clase_OrdenesRepara(tk.Frame):
 
     def sumar_totalfinal(self):
 
-        def limpiar_valor(valor_str):
-            # Evaluo si se puede convertir a float el valor que paso, si no da valueerror
-            if not control_forma(valor_str):
-                return None
-            # Valores inválidos básicos
-            if valor_str in ("", ".", "-"):
-                return 0.0
-            try:
-                return round(float(valor_str), 2)
-            except:
-                return None
+        # def limpiar_valor(valor_str):
+        #     # Evaluo si se puede convertir a float el valor que paso, si no da valueerror
+        #     if not control_forma(valor_str):
+        #         return None
+        #     # Valores inválidos básicos
+        #     if valor_str in ("", ".", "-"):
+        #         return 0.0
+        #     try:
+        #         return round(float(valor_str), 2)
+        #     except:
+        #         return None
 
-        # Obtener valores
-        v_partes = limpiar_valor(self.strvar_total_partes.get())
-        if v_partes is None:
-            self.strvar_total_partes.set("0")
+        # Obtener valores controlados y corregidos
+        v_total_partes = self.varFuncion_new.corregir_valor(self.sv_total_partes.get())
+        if v_total_partes is None:
+            self.sv_total_partes.set("0")
             self.entry_total_partes.focus()
             return
 
-        v_mano = limpiar_valor(self.strvar_total_manodeobra.get())
-        if v_mano is None:
-            self.strvar_total_manodeobra.set("0")
+        v_total_mano_obra = self.varFuncion_new.corregir_valor(self.sv_total_manodeobra.get())
+        if v_total_mano_obra is None:
+            self.sv_total_manodeobra.set("0")
             self.entry_total_manodeobra.focus()
             return
 
         # Normalizar valores en pantalla
-        self.strvar_total_partes.set(str(v_partes))
-        self.strvar_total_manodeobra.set(str(v_mano))
+        self.sv_total_partes.set(v_total_partes)
+        self.sv_total_manodeobra.set(v_total_mano_obra)
 
         # Calcular total
-        total = round(v_partes + v_mano, 2)
-        self.strvar_tot_final.set(str(total))
+        total = round((float(v_total_partes) + float(v_total_mano_obra)), 2)
+        self.sv_tot_final.set(str(total))
 
     # ************************************************************************************
     # TREEVIEW
@@ -1149,7 +1146,7 @@ class Clase_OrdenesRepara(tk.Frame):
         lbl_buscar_orden.image = icono
         lbl_buscar_orden.config(image=icono)
         lbl_buscar_orden.grid(row=0, column=0, padx=4, pady=2, sticky="nsew")
-        self.entry_buscar_orden = tk.Entry(self.frame_botones_grid, textvariable=self.strvar_buscar_orden, width=19)
+        self.entry_buscar_orden = tk.Entry(self.frame_botones_grid, textvariable=self.sv_buscar_orden, width=19)
         self.entry_buscar_orden.grid(row=0, column=1, padx=4, pady=3, sticky="nsew")
         ToolTip(self.entry_buscar_orden, msg="Ingrese un nombre a buscar")
 
@@ -1320,25 +1317,25 @@ class Clase_OrdenesRepara(tk.Frame):
         # nombre de cliente
         lbl_nombre_cliente = tk.Label(self.frame_entrys_uno, text="Cliente:")
         lbl_nombre_cliente.grid(row=0, column=0)
-        self.entry_nombre_cliente = tk.Entry(self.frame_entrys_uno, textvariable=self.strvar_nombre_cliente, width=70,
+        self.entry_nombre_cliente = tk.Entry(self.frame_entrys_uno, textvariable=self.sv_nombre_cliente, width=70,
                                           justify="left")
         self.entry_nombre_cliente.grid(row=0, column=1, padx=5, pady=2, sticky="nsew")
 
         # codigo cliente
-        self.lbl_codigo_cliente = tk.Label(self.frame_entrys_uno, textvariable=self.strvar_codigo_cliente, width=6,
+        self.lbl_codigo_cliente = tk.Label(self.frame_entrys_uno, textvariable=self.sv_codigo_cliente, width=6,
                                         anchor='e')
         self.lbl_codigo_cliente.grid(row=0, column=2, padx=5, pady=2, sticky="nsew")
 
         # cliente datos mas
-        self.strvar_cli_datosmas.set(value="")
+        self.sv_cli_datosmas.set(value="")
         lbl_cli_datosmas = tk.Label(self.frame_entrys_uno, text="Datos: ")
         lbl_cli_datosmas.grid(row=0, column=7, padx=5, pady=2, sticky="nsew")
-        lbl_cli_direccion = tk.Label(self.frame_entrys_uno, textvariable=self.strvar_cli_datosmas)
+        lbl_cli_direccion = tk.Label(self.frame_entrys_uno, textvariable=self.sv_cli_datosmas)
         lbl_cli_direccion.grid(row=0, column=8, padx=5, pady=2, sticky="nsew")
         lbl_cli_deuda1 = tk.Label(self.frame_entrys_uno, text="Deuda: ")
         lbl_cli_deuda1.grid(row=0, column=9, padx=5, pady=2, sticky="nsew")
         fff = tkFont.Font(family="Arial", size=10, weight="bold")
-        lbl_cli_deuda2 = tk.Label(self.frame_entrys_uno, textvariable=self.strvar_cli_deuda, fg="red", font=fff)
+        lbl_cli_deuda2 = tk.Label(self.frame_entrys_uno, textvariable=self.sv_cli_deuda, fg="red", font=fff)
         lbl_cli_deuda2.grid(row=0, column=10, padx=5, pady=2, sticky="nsew")
 
         # boton para buscar cliente
@@ -1365,7 +1362,7 @@ class Clase_OrdenesRepara(tk.Frame):
         # nro. de orden
         lbl_nro_orden = tk.Label(self.frame_entrys_dos, text="Nº Orden:")
         lbl_nro_orden.grid(row=0, column=1, padx=5, pady=2, sticky="nsew")
-        self.entry_nro_orden = tk.Entry(self.frame_entrys_dos, textvariable=self.strvar_nro_orden, width=8,
+        self.entry_nro_orden = tk.Entry(self.frame_entrys_dos, textvariable=self.sv_nro_orden, width=8,
                                      justify="right")
         self.entry_nro_orden.grid(row=0, column=2, padx=5, pady=2, sticky="nsew")
         self.lbl_codigo_cliente.grid(row=0, column=3, padx=5, pady=2, sticky="nsew")
@@ -1373,14 +1370,14 @@ class Clase_OrdenesRepara(tk.Frame):
         # Fecha y hora de ingreso
         lbl_fecha_ingreso = tk.Label(self.frame_entrys_dos, text="Fecha y hora de ingreso: ")
         lbl_fecha_ingreso.grid(row=0, column=4, padx=5, pady=2, sticky="nsew")
-        self.lbl_valor_fecha_ingreso = tk.Label(self.frame_entrys_dos, textvariable=self.strvar_fecha_ingreso, width=20,
+        self.lbl_valor_fecha_ingreso = tk.Label(self.frame_entrys_dos, textvariable=self.sv_fecha_ingreso, width=20,
                                              justify="right")
         self.lbl_valor_fecha_ingreso.grid(row=0, column=5, padx=5, pady=2, sticky="nsew")
 
         # Fecha y hora de egreso
         lbl_fecha_egreso = tk.Label(self.frame_entrys_dos, text="Fecha y hora de egreso: ")
         lbl_fecha_egreso.grid(row=0, column=6, padx=5, pady=2, sticky="nsew")
-        self.lbl_valor_fecha_egreso = tk.Label(self.frame_entrys_dos, textvariable=self.strvar_fecha_egreso, width=15,
+        self.lbl_valor_fecha_egreso = tk.Label(self.frame_entrys_dos, textvariable=self.sv_fecha_egreso, width=15,
                                             justify="right")
         self.lbl_valor_fecha_egreso.grid(row=0, column=7, padx=5, pady=2, sticky="nsew")
 
@@ -1390,7 +1387,7 @@ class Clase_OrdenesRepara(tk.Frame):
         self.lbl_combo_tipos_equipo = tk.Label(self.frame_entrys_dos, text="Grupo de equipo: ")
         self.lbl_combo_tipos_equipo.grid(row=0, column=8, padx=5, pady=2, sticky="nsew")
         # lbl_combo_tipos_equipo.place(x=2, y=55)
-        self.grupo_tipo_equipo = ttk.Combobox(self.frame_entrys_dos, textvariable=self.strvar_equ_grupo,
+        self.grupo_tipo_equipo = ttk.Combobox(self.frame_entrys_dos, textvariable=self.sv_equ_grupo,
                                               state="readonly", width=14)
         # self.grupo_tipo_equipo['value'] = self.varArtic.combo_input("ma_nombre", "marcas", "ma_nombre")
         self.grupo_tipo_equipo["values"] = ("Notebooks", "PC", "Impresoras", "All in Ones", "Fuentes UPS", "Monitores",
@@ -1407,78 +1404,78 @@ class Clase_OrdenesRepara(tk.Frame):
          # Descripcion de equipo que ingresa
         lbl_equ_ingresa = tk.Label(self.frame_entrys_uno_bis, text="Equipo a Ingresar:")
         lbl_equ_ingresa.grid(row=0, column=0, padx=5, pady=2, sticky="nsew")
-        self.entry_equ_ingresa = tk.Entry(self.frame_entrys_uno_bis, textvariable=self.strvar_equ_ingresa, width=50)
-        self.strvar_equ_ingresa.trace("w", lambda *args: self.limitador(self.strvar_equ_ingresa, 60))
+        self.entry_equ_ingresa = tk.Entry(self.frame_entrys_uno_bis, textvariable=self.sv_equ_ingresa, width=50)
+        self.sv_equ_ingresa.trace("w", lambda *args: self.limitador(self.sv_equ_ingresa, 60))
         self.entry_equ_ingresa.grid(row=0, column=1, padx=5, pady=2, sticky="nsew")
 
         # Procesador
         lbl_equipo_procesador = tk.Label(self.frame_entrys_uno_bis, text="Procesador:")
         lbl_equipo_procesador.grid(row=0, column=2, padx=5, pady=2, sticky="nsew")
-        self.entry_equipo_procesador = tk.Entry(self.frame_entrys_uno_bis, textvariable=self.strvar_equipo_procesador,
+        self.entry_equipo_procesador = tk.Entry(self.frame_entrys_uno_bis, textvariable=self.sv_equipo_procesador,
                                              width=30, justify="left")
         self.entry_equipo_procesador.grid(row=0, column=3, padx=5, pady=2, sticky="nsew")
-        self.strvar_equipo_procesador.trace("w", lambda *args: self.limitador(self.strvar_equipo_procesador, 30))
+        self.sv_equipo_procesador.trace("w", lambda *args: self.limitador(self.sv_equipo_procesador, 30))
 
         # Memoria RAM
         lbl_equipo_ram = tk.Label(self.frame_entrys_uno_bis, text="RAM Gb.:")
         lbl_equipo_ram.grid(row=0, column=4, padx=5, pady=2, sticky="nsew")
-        self.entry_equipo_ram = tk.Entry(self.frame_entrys_uno_bis, textvariable=self.strvar_equipo_ram, width=50,
+        self.entry_equipo_ram = tk.Entry(self.frame_entrys_uno_bis, textvariable=self.sv_equipo_ram, width=50,
                                       justify="left")
         self.entry_equipo_ram.grid(row=0, column=5, padx=5, pady=2, sticky="nsew")
-        self.strvar_equipo_ram.trace("w", lambda *args: self.limitador(self.strvar_equipo_ram, 50))
+        self.sv_equipo_ram.trace("w", lambda *args: self.limitador(self.sv_equipo_ram, 50))
 
         # Discos
         lbl_equipo_discos = tk.Label(self.frame_entrys_uno_bis, text="Disco/s Gb.:")
         lbl_equipo_discos.grid(row=1, column=0, padx=5, pady=2, sticky="nsew")
-        self.entry_equipo_discos = tk.Entry(self.frame_entrys_uno_bis, textvariable=self.strvar_equipo_discos, width=50,
+        self.entry_equipo_discos = tk.Entry(self.frame_entrys_uno_bis, textvariable=self.sv_equipo_discos, width=50,
                                          justify="left")
         self.entry_equipo_discos.grid(row=1, column=1, padx=5, pady=2, sticky="nsew")
-        self.strvar_equipo_discos.trace("w", lambda *args: self.limitador(self.strvar_equipo_discos, 50))
+        self.sv_equipo_discos.trace("w", lambda *args: self.limitador(self.sv_equipo_discos, 50))
 
         # Sistema Operativo
         lbl_equipo_sist_oper = tk.Label(self.frame_entrys_uno_bis, text="S.O.:")
         lbl_equipo_sist_oper.grid(row=1, column=2, padx=5, pady=2, sticky="nsew")
-        self.entry_equipo_sist_oper = tk.Entry(self.frame_entrys_uno_bis, textvariable=self.strvar_equipo_sist_oper,
+        self.entry_equipo_sist_oper = tk.Entry(self.frame_entrys_uno_bis, textvariable=self.sv_equipo_sist_oper,
                                             width=30, justify="left")
         self.entry_equipo_sist_oper.grid(row=1, column=3, padx=5, pady=2, sticky="nsew")
-        self.strvar_equipo_sist_oper.trace("w", lambda *args: self.limitador(self.strvar_equipo_sist_oper, 30))
+        self.sv_equipo_sist_oper.trace("w", lambda *args: self.limitador(self.sv_equipo_sist_oper, 30))
 
         # Accesorios que acompañan al equipo
         lbl_equ_accesorios = tk.Label(self.frame_entrys_uno_bis, text="Accesorios:")
         lbl_equ_accesorios.grid(row=1, column=4, padx=5, pady=2, sticky="nsew")
-        self.entry_equ_accesorios = tk.Entry(self.frame_entrys_uno_bis, textvariable=self.strvar_equ_accesorios, width=50)
-        self.strvar_equ_accesorios.trace("w", lambda *args: self.limitador(self.strvar_equ_accesorios, 50))
+        self.entry_equ_accesorios = tk.Entry(self.frame_entrys_uno_bis, textvariable=self.sv_equ_accesorios, width=50)
+        self.sv_equ_accesorios.trace("w", lambda *args: self.limitador(self.sv_equ_accesorios, 50))
         self.entry_equ_accesorios.grid(row=1, column=5, padx=5, pady=2, sticky="nsew")
 
         # Observaciones
         lbl_equipo_ing_obser = tk.Label(self.frame_entrys_uno_bis, text="Observaciones:")
         lbl_equipo_ing_obser.grid(row=2, column=0, padx=5, pady=2, sticky="nsew")
-        self.entry_equipo_ing_obser = tk.Entry(self.frame_entrys_uno_bis, textvariable=self.strvar_equipo_ing_obser,
+        self.entry_equipo_ing_obser = tk.Entry(self.frame_entrys_uno_bis, textvariable=self.sv_equipo_ing_obser,
                                             width=160, justify="left")
         self.entry_equipo_ing_obser.grid(row=2, column=1, columnspan=5, padx=5, pady=2, sticky="nsew")
-        self.strvar_equipo_ing_obser.trace("w", lambda *args: self.limitador(self.strvar_equipo_ing_obser, 160))
+        self.sv_equipo_ing_obser.trace("w", lambda *args: self.limitador(self.sv_equipo_ing_obser, 160))
 
     def cuadro_entrys_equipo_dos(self):
 
         # Estado del equipo
         lbl_equ_estado = tk.Label(self.frame_entrys_tres, text="Estado:")
         lbl_equ_estado.grid(row=1, column=0, padx=5, pady=2, sticky="nsew")
-        self.entry_equ_estado = tk.Entry(self.frame_entrys_tres, textvariable=self.strvar_equ_estado, width=80)
-        self.strvar_equ_estado.trace("w", lambda *args: self.limitador(self.strvar_equ_estado, 100))
+        self.entry_equ_estado = tk.Entry(self.frame_entrys_tres, textvariable=self.sv_equ_estado, width=80)
+        self.sv_equ_estado.trace("w", lambda *args: self.limitador(self.sv_equ_estado, 100))
         self.entry_equ_estado.grid(row=1, column=1, padx=5, pady=2, sticky="nsew")
 
         # Contraseñas y cuentas
         lbl_equ_cuentas = tk.Label(self.frame_entrys_tres, text="Ctas/Cont.: ")
         lbl_equ_cuentas.grid(row=1, column=2)
-        self.entry_cuentas = tk.Entry(self.frame_entrys_tres, textvariable=self.strvar_cuentas, width=70)
-        self.strvar_cuentas.trace("w", lambda *args: self.limitador(self.strvar_cuentas, 100))
+        self.entry_cuentas = tk.Entry(self.frame_entrys_tres, textvariable=self.sv_cuentas, width=70)
+        self.sv_cuentas.trace("w", lambda *args: self.limitador(self.sv_cuentas, 100))
         self.entry_cuentas.grid(row=1, column=3, padx=5, pady=2, sticky="nsew")
 
         # Requerimientos
         lbl_equ_requerido = tk.Label(self.frame_entrys_tres, text="Requerido: ")
         lbl_equ_requerido.grid(row=2, column=0, padx=5, pady=2, sticky="nsew")
-        self.entry_requerido = tk.Entry(self.frame_entrys_tres, textvariable=self.strvar_requerido, width=166)
-        self.strvar_requerido.trace("w", lambda *args: self.limitador(self.strvar_requerido, 170))
+        self.entry_requerido = tk.Entry(self.frame_entrys_tres, textvariable=self.sv_requerido, width=166)
+        self.sv_requerido.trace("w", lambda *args: self.limitador(self.sv_requerido, 170))
         self.entry_requerido.grid(row=2, column=1, columnspan=5, padx=5, pady=2, sticky="nsew")
 
         # reordenamiento de self.frame_entrys_tres
@@ -1517,15 +1514,15 @@ class Clase_OrdenesRepara(tk.Frame):
         # Presupuesto
         lbl_presupuesto = tk.Label(self.frame_entrys_cinco, text="Detalle Presupuesto:")
         lbl_presupuesto.grid(row=0, column=0, padx=4, pady=1, sticky="nsew")
-        self.entry_presupuesto = tk.Entry(self.frame_entrys_cinco, textvariable=self.strvar_presupuesto, width=157)
-        self.strvar_presupuesto.trace("w", lambda *args: self.limitador(self.strvar_presupuesto, 200))
+        self.entry_presupuesto = tk.Entry(self.frame_entrys_cinco, textvariable=self.sv_presupuesto, width=157)
+        self.sv_presupuesto.trace("w", lambda *args: self.limitador(self.sv_presupuesto, 200))
         self.entry_presupuesto.grid(row=0, column=1, padx=4, pady=1, sticky="nsew")
 
         # Partes reemplazadas
         lbl_partes = tk.Label(self.frame_entrys_cinco, text="Partes reemplazadas:")
         lbl_partes.grid(row=1, column=0, padx=4, pady=1, sticky="nsew")
-        self.entry_partes = tk.Entry(self.frame_entrys_cinco, textvariable=self.strvar_partes, width=157)
-        self.strvar_partes.trace("w", lambda *args: self.limitador(self.strvar_partes, 200))
+        self.entry_partes = tk.Entry(self.frame_entrys_cinco, textvariable=self.sv_partes, width=157)
+        self.sv_partes.trace("w", lambda *args: self.limitador(self.sv_partes, 200))
         self.entry_partes.grid(row=1, column=1, padx=4, pady=1, sticky="nsew")
 
         # reordenamiento de self.frame_entrys_cinco
@@ -1537,39 +1534,39 @@ class Clase_OrdenesRepara(tk.Frame):
         # Total pesos partes
         lbl_total_partes = tk.Label(self.frame_entrys_seis, text="Total partes:", justify="left")
         lbl_total_partes.grid(row=0, column=0, padx=5, pady=2, sticky='nsew')
-        self.entry_total_partes = tk.Entry(self.frame_entrys_seis, textvariable=self.strvar_total_partes, width=15,
+        self.entry_total_partes = tk.Entry(self.frame_entrys_seis, textvariable=self.sv_total_partes, width=15,
                                         justify="right")
         self.entry_total_partes.grid(row=0, column=1, padx=5, pady=2, sticky="nsew")
         self.entry_total_partes.config(validate="key", validatecommand=self.vcmd)
-        self.strvar_total_partes.trace("w", lambda *args: self.limitador(self.strvar_total_partes, 14))
+        self.sv_total_partes.trace("w", lambda *args: self.limitador(self.sv_total_partes, 14))
         # mando a la funcion que suma el total final
         self.entry_total_partes.bind('<FocusOut>', lambda e: self.sumar_totalfinal())
 
         # Total pesos mano de obra
         lbl_total_manodeobra = tk.Label(self.frame_entrys_seis, text="Total Mano de Obra:")
         lbl_total_manodeobra.grid(row=0, column=2, padx=5, pady=1, sticky='nsew')
-        self.entry_total_manodeobra = tk.Entry(self.frame_entrys_seis, textvariable=self.strvar_total_manodeobra, width=15,
+        self.entry_total_manodeobra = tk.Entry(self.frame_entrys_seis, textvariable=self.sv_total_manodeobra, width=15,
                                             justify="right")
         self.entry_total_manodeobra.grid(row=0, column=3, padx=5, pady=1, sticky="nsew")
         self.entry_total_manodeobra.config(validate="key", validatecommand=self.vcmd)
-        self.strvar_total_manodeobra.trace("w",
-                                           lambda *args: self.limitador(self.strvar_total_manodeobra, 14))
+        self.sv_total_manodeobra.trace("w",
+                                           lambda *args: self.limitador(self.sv_total_manodeobra, 14))
         # mando a la funcion que suma el total final
         self.entry_total_manodeobra.bind('<FocusOut>', lambda e: self.sumar_totalfinal())
 
         # Total global pesos
         lbl_total_global = tk.Label(self.frame_entrys_seis, text="Total a pagar:")
         lbl_total_global.grid(row=0, column=4, padx=4, pady=1, sticky="w")
-        self.lbl_importe_global = tk.Label(self.frame_entrys_seis, textvariable=self.strvar_tot_final, width=6, anchor='e')
+        self.lbl_importe_global = tk.Label(self.frame_entrys_seis, textvariable=self.sv_tot_final, width=6, anchor='e')
         self.lbl_importe_global.grid(row=0, column=5, padx=5, pady=1, sticky="nsew")
 
         # Equipo retirado ???
         lbl_equipo_retirado = tk.Label(self.frame_entrys_seis, text="Retirado? [S/N]:")
         lbl_equipo_retirado.grid(row=0, column=6, padx=4, pady=1, sticky="w")
-        self.entry_retirado = tk.Entry(self.frame_entrys_seis, textvariable=self.strvar_retirado, width=2)
-        self.strvar_retirado.trace("w", lambda *args: self.limitador(self.strvar_retirado, 1))
+        self.entry_retirado = tk.Entry(self.frame_entrys_seis, textvariable=self.sv_retirado, width=2)
+        self.sv_retirado.trace("w", lambda *args: self.limitador(self.sv_retirado, 1))
         # Esta llamada, convierte la letra que pongo a mayuscula
-        self.strvar_retirado.trace_add("write", self.on_write)
+        self.sv_retirado.trace_add("write", self.on_write)
         self.entry_retirado.grid(row=0, column=7, padx=5, pady=1, sticky="nsew")
 
         self.photo3 = Image.open('salida.png')
@@ -2017,30 +2014,30 @@ class Clase_OrdenesRepara(tk.Frame):
     def get_ordenes_dict(self, fecha_ing, fecha_egr):
         return {
             "Id": self.clave,
-            "or_num_orden": self.strvar_nro_orden.get(),
+            "or_num_orden": self.sv_nro_orden.get(),
             "fecha_ingreso": fecha_ing,
             "fecha_egreso": fecha_egr,
-            "or_cod_cliente": self.strvar_codigo_cliente.get(),
-            "or_nombre_cliente": self.strvar_nombre_cliente.get(),
-            "equ_ingresa": self.strvar_equ_ingresa.get(),
-            "equ_grupo": self.strvar_equ_grupo.get(),
-            "equ_procesador": self.strvar_equipo_procesador.get(),
-            "equ_ram": self.strvar_equipo_ram.get(),
-            "equ_discos": self.strvar_equipo_discos.get(),
-            "equ_sist_oper": self.strvar_equipo_sist_oper.get(),
-            "equ_obser": self.strvar_equipo_ing_obser.get(),
-            "equ_accesorios": self.strvar_equ_accesorios.get(),
-            "equ_estado": self.strvar_equ_estado.get(),
-            "dat_ctaycontr": self.strvar_cuentas.get(),
-            "dat_requerido": self.strvar_requerido.get(),
+            "or_cod_cliente": self.sv_codigo_cliente.get(),
+            "or_nombre_cliente": self.sv_nombre_cliente.get(),
+            "equ_ingresa": self.sv_equ_ingresa.get(),
+            "equ_grupo": self.sv_equ_grupo.get(),
+            "equ_procesador": self.sv_equipo_procesador.get(),
+            "equ_ram": self.sv_equipo_ram.get(),
+            "equ_discos": self.sv_equipo_discos.get(),
+            "equ_sist_oper": self.sv_equipo_sist_oper.get(),
+            "equ_obser": self.sv_equipo_ing_obser.get(),
+            "equ_accesorios": self.sv_equ_accesorios.get(),
+            "equ_estado": self.sv_equ_estado.get(),
+            "dat_ctaycontr": self.sv_cuentas.get(),
+            "dat_requerido": self.sv_requerido.get(),
             "inf_diagnostico": self.text_diagnostico.get(1.0, 'end-1c'),
-            "inf_presupuesto": self.strvar_presupuesto.get(),
+            "inf_presupuesto": self.sv_presupuesto.get(),
             "trab_realizado": self.text_trabajo_realizado.get(1.0, 'end-1c'),
-            "trab_partes": self.strvar_partes.get(),
+            "trab_partes": self.sv_partes.get(),
             "trab_anotacion": self.text_anotaciones.get(1.0, 'end-1c'),
-            "tot_mano_obra": self.strvar_total_manodeobra.get(),
-            "tot_partes": self.strvar_total_partes.get(),
-            "fin_retirada": self.strvar_retirado.get(),
+            "tot_mano_obra": self.sv_total_manodeobra.get(),
+            "tot_partes": self.sv_total_partes.get(),
+            "fin_retirada": self.sv_retirado.get(),
         }
 
     # ========================================================================================

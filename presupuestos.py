@@ -30,7 +30,7 @@ class Clase_Presupuestos(tk.Frame):
         # ---------------------------------------------------------------------------------
         # Instanciaciones
         self.varPresupuestos = datosPresupuestos(self.master)
-        self.varFuncion_new = ClaseFuncion_new(self.master)
+        self.varFuncion_new = ClaseFuncionNew(self.master)
         # ----------------------------------------------------------------------------------
 
         # ----------------------------------------------------------------------------------
@@ -759,7 +759,7 @@ class Clase_Presupuestos(tk.Frame):
             self.varPresupuestos.insertar_auxpresup(dic_deta_auxpresup)
             # -----------------------------------------------------------------
 
-        self.calcular("completo")
+        #self.calcular("completo")
         self.calcular("totalpresupuesto")
         self.llena_grilla_auxiliar("")
 
@@ -1305,7 +1305,7 @@ class Clase_Presupuestos(tk.Frame):
             if que_campo == "completo":
 
                 # -------------------------------------------------------------
-                # 1 - Costo neto unidad pesos y cantidad
+                # 1 - Costo neto unidad pesos y x cantidad
 
                 self.strvar_costo_neto_pesos_unidad.set(value=str(round(float(self.strvar_neto_dolar.get()) *
                                                                     float(self.strvar_valor_dolar_hoy.get()), 2)))
@@ -1317,6 +1317,10 @@ class Clase_Presupuestos(tk.Frame):
 
                 # -------------------------------------------------------------
                 # 2 - Importe IVA unidad y cantidad
+
+                print(self.strvar_combo_tasa_iva.get())
+                print(self.strvar_neto_dolar.get())
+                print(self.strvar_valor_dolar_hoy.get())
 
                 importe_iva = (((float(self.strvar_neto_dolar.get()) * float(self.strvar_valor_dolar_hoy.get())) *
                               float(self.strvar_combo_tasa_iva.get())) / 100)
@@ -1425,8 +1429,8 @@ class Clase_Presupuestos(tk.Frame):
 
         estado_antes = self.strvar_fecha_presup.get()
 
-        # FUNCION VALIDA FECCHAS en programa funcion
-        retorno_VerFal = valida_fechas(self, self.strvar_fecha_presup.get())
+        # FUNCION VALIDA FECCHAS en programa funcion_new
+        retorno_VerFal = self.varFuncion_new.validar_fecha(self.strvar_fecha_presup.get(), self.entry_fecha_presup)
 
         if retorno_VerFal == "":
             self.strvar_fecha_presup.set(value=estado_antes)
@@ -1521,7 +1525,7 @@ class Clase_Presupuestos(tk.Frame):
         vent = tk.Toplevel()
         vent.title("ABM Articulos")
         # Asigno la clase Ventart que esta en articulos.py a la variable app
-        app = Clase_Articulos(vent)
+        app = ClaseArticulos(vent)
         app.mainloop()
 
     def fDetalle_precio_articulo(self):
@@ -1620,21 +1624,21 @@ class Clase_Presupuestos(tk.Frame):
 
         self.pantalla_detalle.mainloop()
 
-    def puntero_busqueda(self,registro):
-
-        """ # registro = Viene en blanco
-            # regis = Indice del registro en el treeview tabla "I00E1", "I00F".......
-            # (rg) = Es el iterante dentro de regis, esta el "Index" del Treeview (I00E, I00F...) """
-
-        regis = self.grid_tvw_presu_entregado.get_children()
-        rg = ""
-
-        if regis != ():
-            for rg in regis:
-                break
-            if rg == "":
-                self.btn_buscar.configure(state="disabled")
-                return
+    # def puntero_busqueda(self,registro):
+    #
+    #     """ # registro = Viene en blanco
+    #         # regis = Indice del registro en el treeview tabla "I00E1", "I00F".......
+    #         # (rg) = Es el iterante dentro de regis, esta el "Index" del Treeview (I00E, I00F...) """
+    #
+    #     regis = self.grid_tvw_presu_entregado.get_children()
+    #     rg = ""
+    #
+    #     if regis != ():
+    #         for rg in regis:
+    #             break
+    #         if rg == "":
+    #             self.btn_buscar.configure(state="disabled")
+    #             return
 
     def cuadro_botones_grid_entregados_1(self):
 

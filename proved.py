@@ -15,7 +15,7 @@ from datetime import date
 from datetime import datetime
 from PIL import Image, ImageTk
 
-class Clase_Proved(tk.Frame):
+class ClaseProved(tk.Frame):
 
     def __init__(self, master=None):
         super().__init__(master)
