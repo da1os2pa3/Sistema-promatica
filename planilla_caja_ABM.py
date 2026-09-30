@@ -1,6 +1,6 @@
 import mysql.connector
 
-class datosPlanilla:
+class DatosPlanilla:
 
     def __init__(self, pantalla):
 
@@ -50,7 +50,7 @@ class datosPlanilla:
             n = cur.rowcount
             cnn.commit()
             return n
-        except Exception as e:
+        except Exception:
             cnn.rollback()
             raise
         finally:
@@ -95,7 +95,7 @@ class datosPlanilla:
             # devolvemos el Id generado del nuevo cliente
             id_nuevo = cur.lastrowid
             return id_nuevo
-        except Exception as e:
+        except Exception:
             cnn.rollback()
             raise
         finally:
@@ -155,7 +155,7 @@ class datosPlanilla:
             cnn.commit()
             # id_nuevo = cur.lastrowid
             # return id_nuevo
-        except Exception as e:
+        except Exception:
             cnn.rollback()
             raise
         finally:
@@ -185,7 +185,7 @@ class datosPlanilla:
             cur.execute(sql, valores)
             cnn.commit()
             return
-        except Exception as e:
+        except Exception:
             cnn.rollback()
             raise
         finally:

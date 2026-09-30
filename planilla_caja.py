@@ -2,11 +2,13 @@ import random
 import tkinter as tk
 from datetime import date, timedelta
 from tkinter import ttk
+
 from PIL import Image, ImageTk
 from tktooltip import ToolTip
+
 from funcion_new import ClaseFuncionNew
 from funciones import *
-from planilla_caja_ABM import datosPlanilla
+from planilla_caja_ABM import DatosPlanilla
 from status_bar import StatusBar
 
 
@@ -28,7 +30,7 @@ class ClasePlaniCaja(tk.Frame):
         _ABM y asi puede usar los metods que estan en el _ABM """
 
         # Instanciaciones
-        self.varPlanilla = datosPlanilla(self.master)
+        self.varPlanilla = DatosPlanilla(self.master)
         self.varFuncion_new = ClaseFuncionNew(self.master)
         # ---------------------------------------------------------------------------------
 
@@ -471,12 +473,14 @@ class ClasePlaniCaja(tk.Frame):
     # ---------------------------------------------------------
 
     # Auxiliar usada por divido_tipomov
-    def set_state(self, state, *widgets):
+    @staticmethod
+    def set_state(state, *widgets):
         for w in widgets:
             w.configure(state=state)
 
     # Auxiliar usada por divido_tipomov
-    def reset_vars(self, *vars):
+    @staticmethod
+    def reset_vars(*vars):
         for var in vars:
             var.set("0.00")
 
@@ -608,7 +612,8 @@ class ClasePlaniCaja(tk.Frame):
         self.btn_bus_prov.configure(state="disabled")
         self.btn_bus_cli.configure(state="disabled")
 
-    def fno_modifique(self, event):
+    @staticmethod
+    def fno_modifique(_event):
         return "break"
 
     def reset_stringvars(self):
@@ -1110,7 +1115,8 @@ class ClasePlaniCaja(tk.Frame):
         for var in variables:
             self.formatear_sv(var)
 
-    def formatear_sv(self, var):
+    @staticmethod
+    def formatear_sv(var):
         try:
             var.set(f"{float(var.get()):.2f}")
         except ValueError:
@@ -1243,10 +1249,11 @@ class ClasePlaniCaja(tk.Frame):
         self.entry_proved.focus()
         self.entry_proved.icursor(tk.END)
 
-    def doble_click_grid_pla(self, event):
+    def doble_click_grid_pla(self, _event):
         self.feditaitem()
 
-    def fver_blanco(self, pollo):
+    def fver_blanco(self):
+        print("popopoppopo")
         self.sv_fecha_error.set(value=self.sv_fecha_planilla.get())
 
     def fantes(self):
@@ -1398,7 +1405,8 @@ class ClasePlaniCaja(tk.Frame):
         self.lbl_fecha_planilla.grid(row=0, column=0, padx=3, pady=2, sticky=tk.W)
         self.entry_fecha_planilla = tk.Entry(self.frame_entrys_planilla, textvariable=self.sv_fecha_planilla,
                                              width=10, justify="right")
-        self.entry_fecha_planilla.bind("<FocusIn>", self.fver_blanco)
+        # self.entry_fecha_planilla.bind("<FocusIn>", self.fver_blanco)
+        self.entry_fecha_planilla.bind("<FocusIn>", lambda event: self.fver_blanco())
         self.entry_fecha_planilla.bind("<FocusOut>",
                                        lambda event: self.varFuncion_new.validar_fecha(self.sv_fecha_planilla,
                                                                                        self.entry_fecha_planilla))
@@ -1799,7 +1807,8 @@ class ClasePlaniCaja(tk.Frame):
             "cc_clavemov": self.sv_clavemov.get(),
         }
 
-    def cargar_icono(self, path, size=(18,18)):
+    @staticmethod
+    def cargar_icono(path, size=(18,18)):
         img = Image.open(path).resize(size)
         return ImageTk.PhotoImage(img)
 

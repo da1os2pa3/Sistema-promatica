@@ -4,10 +4,11 @@ from datetime import datetime
 class DatosGarantias:
 
     def __init__(self, pantalla):
-
         self.master = pantalla
 
-    def get_connection(self):
+    @staticmethod
+    def get_connection():
+
         return mysql.connector.connect(
             host="localhost",
             user="root",

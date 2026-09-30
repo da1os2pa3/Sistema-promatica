@@ -1,178 +1,188 @@
 import mysql.connector
-from mysql.connector import Error
-#from datetime import datetime
-# --------------------------------------------------
-from tkinter import messagebox
+#from mysql.connector import Error
 
-class datosMarcas:
+class DatosMarcas:
 
     def __init__(self, pantalla):
 
         self.master = pantalla
 
+    @staticmethod
+    def get_connection():
+        return mysql.connector.connect(
+            host="localhost",
+            user="root",
+            passwd="",
+            database="sist_prom")
+
+    def consultar_marcas(self, orden=None):
+
+        """👉 buffered=True = MySQL:manda TODO el resultado de una, el cursor lo guarda en memoria.
+        ✔ Después podés hacer lo que quieras: otro execute, cerrar cursor, no consumir todo
+        SIN errores"""
+
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            self.cnn = mysql.connector.connect(host="localhost", user="root", passwd="", database="sist_prom")
-        except Error as ex:
-            print("Error de conexion: {0}".format(ex))
+            sql = "SELECT * FROM marcas"
+            if orden:
+                sql += " " + orden
+            cur.execute(sql)
+            return cur.fetchall()
+        finally:
+            cur.close()
+            cnn.close()
 
-    def __str__(self):
+    def traer_ultimo(self):
 
-        datos = self.consultar_marcas()
-        aux = ""
-        for row in datos:
-            aux = aux + str(row) + "\n"
-        return aux
-
-    def consultar_marcas(self, tofil):
-
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            cur = self.cnn.cursor()
-            cur.execute("SELECT * FROM " + tofil)
+            cur.execute("SELECT MAX(codigo) FROM marcas")
+            resultado = cur.fetchone()[0]
+            return resultado or 0  # 👈 clave
+        finally:
+            cur.close()
+            cnn.close()
+
+    def buscar_entabla(self, argumento):
+
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
+        try:
+            cur.execute("SELECT * FROM marcas " + argumento)
             datos = cur.fetchall()
-            self.cnn.commit()
-            cur.close()
             return datos
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=Consultar marcas",
-                                 parent=self.master)
-            exit()
-
-    def insertar_marcas(self, ma_nombre):
-
-        try:
-            cur = self.cnn.cursor()
-            sql = '''INSERT INTO marcas (ma_nombre)
-            VALUES('{}')'''.format(ma_nombre)
-            cur.execute(sql)
-            n = cur.rowcount
-            self.cnn.commit()
+        finally:
             cur.close()
-            return n
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=insertar_marcas",
-                                 parent=self.master)
-            exit()
+            cnn.close()
 
-    def modificar_marcas(self, Id, ma_nombre):
+    def insertar_marcas(self, datos_marcas):
 
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            cur = self.cnn.cursor()
-            sql = '''UPDATE marcas SET ma_nombre='{}'
-            WHERE Id={}'''.format(ma_nombre, Id)
-            cur.execute(sql)
-            n = cur.rowcount
-            self.cnn.commit()
+            sql = """
+                  INSERT INTO marcas (ma_nombre)
+                  VALUES (%s) 
+                  """
+            valores = (
+                datos_marcas["ma_nombre"],
+            )
+            cur.execute(sql, valores)
+            cnn.commit()
+            # devolvemos el Id generado del nuevo cliente
+            id_nuevo = cur.lastrowid
+            return id_nuevo
+        except Exception:
+            cnn.rollback()
+            raise
+        finally:
             cur.close()
-            return n
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=Modificar_marcas",
-                                 parent=self.master)
-            exit()
+            cnn.close()
+
+    def modificar_marcas(self, datos_marcas):
+
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
+        try:
+
+            sql = """
+                  UPDATE marcas 
+                  SET ma_nombre=%s 
+                  WHERE Id = %s 
+                  """
+
+            # Creo tupla valores a partir del diccionario : dame el valor de la clave cliente[codigo]
+            # y asi se genera la tupla
+            valores = (
+                datos_marcas["ma_nombre"],
+                datos_marcas["Id"]
+            )
+            cur.execute(sql, valores)
+            cnn.commit()
+            return
+        except Exception:
+            cnn.rollback()
+            raise
+        finally:
+            cur.close()
+            cnn.close()
 
     def modi_marca_enart(self, tofil, anterior):
         # modifica las marcas en tabla articulos al modificarla en tabla marcas
 
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            cur = self.cnn.cursor()
-            # print(tofil)
-            # print(anterior)
             sql =  "UPDATE articulos SET marca = '" + tofil +"' WHERE marca = '" + anterior + "'"
             cur.execute(sql)
-            datos = cur.fetchone()
+            # datos = cur.fetchone()
             n = cur.rowcount
-            self.cnn.commit()
-            cur.close()
+            cnn.commit()
             return n
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=modi_marca_enart",
-                                 parent=self.master)
-            exit()
+        except Exception:
+            cnn.rollback()
+            raise
+        finally:
+            cur.close()
+            cnn.close()
 
     def eliminar_marcas(self, Id):
 
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            cur = self.cnn.cursor()
-            sql = '''DELETE FROM marcas WHERE Id = {}'''.format(Id)
-            cur.execute(sql)
+            sql = "DELETE FROM marcas WHERE Id = %s"
+            # 1 parámetro → (valor,)
+            # varios → (v1, v2, v3)
+            cur.execute(sql, (Id,))
             n = cur.rowcount
-            self.cnn.commit()
-            cur.close()
+            cnn.commit()
             return n
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=eliminar_marcas",
-                                 parent=self.master)
-            exit()
+        except Exception:
+            cnn.rollback()
+            raise
+        finally:
+            cur.close()
+            cnn.close()
 
     def quitamarca(self, tofil):
-
         # quita las marcas asignadas en tabla articulos al ser eliminada de la tabla marcas
 
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
+
         try:
-            cur = self.cnn.cursor()
             sql =  "UPDATE articulos SET marca = '' WHERE marca = '" + tofil + "'"
             cur.execute(sql)
-            datos = cur.fetchone()
+            # datos = cur.fetchone()
             n = cur.rowcount
-            self.cnn.commit()
-            cur.close()
+            cnn.commit()
             return n
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=quitamarca",
-                                 parent=self.master)
-            exit()
+        except Exception:
+            cnn.rollback()
+            raise
+        finally:
+            cur.close()
+            cnn.close()
 
     def verifica_articulos(self, tofil):
-
         # verifica si hay articulos con el rubro a eliminar o modificar
 
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
+
         try:
-            cur = self.cnn.cursor()
             sql =  "SELECT * FROM articulos WHERE marca = '" + tofil + "'"
             cur.execute(sql)
-            datos = cur.fetchall()
+            # datos = cur.fetchall()
             n = cur.rowcount
-            self.cnn.commit()
             cur.close()
             return n
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=verifica_articulos",
-                                 parent=self.master)
-            exit()
-
-    def buscar_entabla(self, argumento):
-
-        try:
-            cur = self.cnn.cursor()
-            if len(argumento) > 0:
-                cur.execute("SELECT * FROM " + argumento)
-            else:
-                cur.execute("SELECT * FROM " + argumento)
-
-            datos = cur.fetchall()
-            self.cnn.commit()
+        except Exception:
+            cnn.rollback()
+            raise
+        finally:
             cur.close()
-            return datos
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=buscar_entabla",
-                                 parent=self.master)
-            exit()
-
-    def traer_ultimo(self, xparametro):
-
-        try:
-            cur = self.cnn.cursor()
-            cur.execute("SELECT * FROM marcas ORDER BY Id")
-            datos = cur.fetchall()
-            aux = ""
-            for row in datos:
-                if xparametro == 1:
-                    aux = str(row[1]) + "\n"
-                else:
-                    aux = str(row[0]) + "\n"
-            self.cnn.commit()
-            cur.close()
-            return aux
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=traer ultimo",
-                                 parent=self.master)
-            exit()
+            cnn.close()

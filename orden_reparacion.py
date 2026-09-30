@@ -1,17 +1,27 @@
+"""
+# Para testeo de variables
+# 👉 repr() a diferencia de print() normal, te muestra los caracteres invisibles.
+# print("texto:", texto, "| largo:", len(str(texto)))
+# print("repr texto:", repr(texto))
+# print("repr foco:", repr(set_foco))
+"""
+
 import os
 import tkinter as tk
-import tkinter.font as tkFont
-from datetime import date, datetime
-from tkinter import messagebox
+import tkinter.font as tkfont
+from datetime import date
 from tkinter import ttk
 from tkinter.scrolledtext import *
+
 from PIL import Image, ImageTk
 # from fpdf import FPDF
 from tktooltip import ToolTip
+
 from PDF_clase import *
-from ordenrepar_ABM import *
 from funcion_new import ClaseFuncionNew
 from funciones import *
+from ordenrepar_ABM import *
+from status_bar import StatusBar
 
 
 class ClaseOrdenesRepara(tk.Frame):
@@ -20,15 +30,16 @@ class ClaseOrdenesRepara(tk.Frame):
 
         super().__init__(master, width=1100, height=730)
         self.master = master
+        self.status = StatusBar(self.master)
 
         self.master.grab_set()
         self.master.focus_set()
 
         # Instanciaciones  ------------------------------------------------------
-        """ 
-           Creo una instancia de clientes_ABM de la clase datosClientes
-            -A varGarantia le paso la pantalla para poder usar los parent en los mensajes de messagebox
-            -A varFuncion_new, le paso tambien la pantalla por el mismo motivo.
+        """  
+             Creo una instancia de clientes_ABM de la clase datosClientes
+             -A varGarantia le paso la pantalla para poder usar los parent en los mensajes de messagebox
+             -A varFuncion_new, le paso tambien la pantalla por el mismo motivo. 
         """
         self.varOrdenes = DatosOrdenRepar(self.master)
         self.varFuncion_new = ClaseFuncionNew(self.master)
@@ -45,7 +56,7 @@ class ClaseOrdenesRepara(tk.Frame):
         htotal = self.master.winfo_screenheight()
         # Asignamos medidas a la ventana
         wventana = 1100
-        hventana = 740
+        hventana = 760
         # Aplicamos la siguiente formula para ubicarla en el centro
         pwidth = round(wtotal / 2 - wventana / 2) + 0
         pheight = round(htotal / 2 - hventana / 2) + 0
@@ -133,7 +144,7 @@ class ClaseOrdenesRepara(tk.Frame):
         # ------------------------------------------------------------------
         self.frame_superior = tk.Frame(self.master)
         self.frame_tvw_ordenes = tk.LabelFrame(self.frame_superior, text="", foreground="#CF09BD")
-        self.frame_treeview()
+        self.frame_grid()
         self.grid_orden.pack(side="top", fill="both", expand=0, padx=3, pady=2)
         self.frame_tvw_ordenes.pack(side="left", fill="both", expand=1, padx=3, pady=2)
         self.frame_superior.pack(side="top", fill="both", expand=0, padx=5, pady=2)
@@ -244,7 +255,7 @@ class ClaseOrdenesRepara(tk.Frame):
 
         # Activar Browse
         self.grid_orden['selectmode'] = 'browse'
-        self.grid_orden.bind("<Double-Button-1>", self.DobleClickGrid)
+        self.grid_orden.bind("<Double-Button-1>", self.doble_click_grid)
 
     def limpiar_text(self):
 
@@ -377,7 +388,7 @@ class ClaseOrdenesRepara(tk.Frame):
                                                           True)
             forma_normal_egreso = None
 
-            if row[3] != None:
+            if row[3] is not None:
                 # Cargo fecha egreso si no es vacia
                 forma_normal_egreso  = fecha_str_reves_normal(self, datetime.strftime(row[3], '%Y-%m-%d %H:%M'),
                                                               True)
@@ -412,14 +423,6 @@ class ClaseOrdenesRepara(tk.Frame):
             self.grid_orden.see(posicion)
         # --------------------------------------------------------------------------------
 
-        """
-        # Para testeo de variables
-        # 👉 repr() a diferencia de print() normal, te muestra los caracteres invisibles.
-        # print("texto:", texto, "| largo:", len(str(texto)))
-        # print("repr texto:", repr(texto))
-        # print("repr foco:", repr(set_foco))
-        """
-
         # Foco no vacio - Posicionamiento del foco en el Grid, voy al Id valor del set_foco
         for item in children:
             texto = self.grid_orden.item(item, "text")
@@ -446,26 +449,12 @@ class ClaseOrdenesRepara(tk.Frame):
                 self.grid_orden.see(ultimo)
         # --------------------------------------------------------------------------------
 
-    # # ojo revisar si hace falta
-    # def llena_grilla2(self, argg2):
-    #
-    #     # Limpio grilla
-    #     for item in self.grid_orden.get_children():
-    #         self.grid_orden.delete(item)
-    #
-    #     datos = self.varOrdenes.consultar_ordenes(argg2)
-    #
-    #     for row in datos:
-    #         self.grid_orden.insert("", "end", text=row[0], values=(row[1], row[2], row[3], row[4], row[5]))
-    #
-    #     if len(self.grid_orden.get_children()) > 0:
-    #         self.grid_orden.selection_set(self.grid_orden.get_children()[0])
 
     # --------------------------------------------------------------------------------
     # CRUD *
     # --------------------------------------------------------------------------------
 
-    def fVer_orden(self):
+    def fver_orden(self):
 
         # -------------------------------------------------------------
         self.selected = self.grid_orden.focus()
@@ -493,7 +482,7 @@ class ClaseOrdenesRepara(tk.Frame):
         self.sv_fecha_ingreso.set(self.fecha_final)
 
         # Tratamiento de fecha de egreso porque aca puede venir None
-        if (datos_registro_selec[3]) == None:
+        if (datos_registro_selec[3]) is None:
             self.sv_fecha_egreso.set(value="")
         else:
             una_fecha = (datos_registro_selec[3])
@@ -507,7 +496,7 @@ class ClaseOrdenesRepara(tk.Frame):
         self.sv_fecha_ingreso.set(self.fecha_final)
 
         # Tratamiento de fecha de egreso porque aca puede venir None
-        if (datos_registro_selec[3]) == None:
+        if (datos_registro_selec[3]) is None:
             self.sv_fecha_egreso.set(value="")
         else:
             una_fecha = (datos_registro_selec[3])
@@ -538,7 +527,7 @@ class ClaseOrdenesRepara(tk.Frame):
         self.sv_total_partes.set(value=datos_registro_selec[23])
         self.sv_retirado.set(value=datos_registro_selec[24])
 
-        self.sv_cli_deuda.set(value=str(self.fTraedeuda(self.sv_codigo_cliente.get())))
+        self.sv_cli_deuda.set(value=str(self.ftraedeuda(self.sv_codigo_cliente.get())))
 
         # traer los datos del cliente direccion y telefono - Datos mas -
         retorno = self.varOrdenes.buscar_entabla("clientes WHERE codigo = '" + self.sv_codigo_cliente.get() + "'")
@@ -549,13 +538,13 @@ class ClaseOrdenesRepara(tk.Frame):
         self.sumar_totalfinal()
         self.habilitar_text('disabled')
 
-    def fNueva(self):
+    def fnueva(self):
 
         self.alta_modif = 1
 
         #  Desactivar Browse
         self.grid_orden['selectmode'] = 'none'
-        self.grid_orden.bind("<Double-Button-1>", self.fNo_modifique)
+        self.grid_orden.bind("<Double-Button-1>", self.fno_modifique)
 
         # Preparo estado de pantalla
         self.estado_botones_global()
@@ -564,7 +553,7 @@ class ClaseOrdenesRepara(tk.Frame):
 
         # traer ultimo numero de orden mas uno para ingresar
         self.entry_nro_orden.configure(state="normal")
-        self.entry_nro_orden.insert(0, (int(self.varOrdenes.traer_ultimo(1)) + 1))
+        self.entry_nro_orden.insert(0, str((int(self.varOrdenes.traer_ultimo(1)) + 1)))
         self.entry_nro_orden.configure(state="disabled")
 
         # Fecha y hora de ingreso
@@ -573,7 +562,7 @@ class ClaseOrdenesRepara(tk.Frame):
         self.sv_fecha_ingreso.set(self.fecha_final)
         self.entry_retirado.insert(0, "N")
 
-    def fModificar_orden(self):
+    def fmodificar_orden(self):
 
         # -------------------------------------------------------------
         # Preparo claves de registros para puntero en el grid posterior
@@ -606,7 +595,7 @@ class ClaseOrdenesRepara(tk.Frame):
         self.sv_fecha_ingreso.set(self.fecha_final)
 
         # Tratamiento de fecha de egreso porque aca puede venir None
-        if (datos_registro_selec[3]) == None:
+        if (datos_registro_selec[3]) is None:
             self.sv_fecha_egreso.set(value="")
         else:
             una_fecha = (datos_registro_selec[3])
@@ -634,7 +623,7 @@ class ClaseOrdenesRepara(tk.Frame):
         self.sv_total_manodeobra.set(value=datos_registro_selec[22])
         self.sv_total_partes.set(value=datos_registro_selec[23])
         self.sv_retirado.set(value=datos_registro_selec[24])
-        self.sv_cli_deuda.set(value=str(self.fTraedeuda(self.sv_codigo_cliente.get())))
+        self.sv_cli_deuda.set(value=str(self.ftraedeuda(self.sv_codigo_cliente.get())))
 
         # traer los datos del cliente direccion y telefono - Datos mas --------------
         retorno = self.varOrdenes.buscar_entabla("clientes WHERE codigo = '" + self.sv_codigo_cliente.get() +"'")
@@ -644,7 +633,7 @@ class ClaseOrdenesRepara(tk.Frame):
         self.sumar_totalfinal()
         self.entry_nombre_cliente.focus()
 
-    def fEliminar_orden(self):
+    def feliminar_orden(self):
 
         # ---------------------------------------------------------------------------
         # Preparo claves para puntero en el GRid
@@ -674,7 +663,7 @@ class ClaseOrdenesRepara(tk.Frame):
         messagebox.showinfo("Aviso", "Registro eliminado correctamente", parent=self)
         self.llena_grilla(self.clave_ant)
 
-    def fGuardar_orden(self):
+    def fguardar_orden(self):
 
         # VALIDAR  ------------------------------------------------------------------------
         # no permito codigo ni nombre de cliente en blanco
@@ -713,7 +702,7 @@ class ClaseOrdenesRepara(tk.Frame):
                 messagebox.showwarning("Datos inválidos - error al insertar/modificar", str(e))
                 #self.set_status("⚠ Error en los datos", "warn")
                 return
-            except Exception as e:
+            except Exception:
                 self.varFuncion_new.mostrar_error()
                 return
 
@@ -779,7 +768,7 @@ class ClaseOrdenesRepara(tk.Frame):
     # VARIAS *
     # --------------------------------------------------------------------------------
 
-    def fCancelar(self):
+    def fcancelar(self):
         r = messagebox.askquestion("Cancelar", "Confirma cancelar operacion actual?", parent=self)
         if r == messagebox.YES:
             self.habilitar_text("normal")
@@ -787,116 +776,25 @@ class ClaseOrdenesRepara(tk.Frame):
             self.habilitar_text("disabled")
             self.estado_botones("normal")
 
-    def fSalir(self):
+    def fsalir(self):
         self.master.destroy()
 
-    def DobleClickGrid(self, event):
-        self.fModificar_orden()
+    def doble_click_grid(self, _event):
+        self.fmodificar_orden()
 
-    def fNo_modifique(self, event):
+    @staticmethod
+    def fno_modifique(_event):
         return "break"
 
-    def fImprimir(self):
+    def fimprimir(self):
         self.creopdf()
 
-    def fNoretiradas(self):
+    def fno_retiradas(self):
         self.filtro_activo = "WHERE fin_retirada = 'N' ORDER BY fecha_ingreso ASC"
         self.llena_grilla("")
 
-    # def fEstadistica(self):
-    #
-    #     self.filtro_anterior = self.filtro_activo
-    #     self.filtro_activo = "ORDER BY fecha_ingreso"
-    #
-    #     datos = self.varOrdenes.consultar_ordenes(self.filtro_activo)
-    #
-    #     total_ordenes = 0
-    #     total_orden_pendientes = 0
-    #     total_pesos_pendientes = 0
-    #     total_orden_mesactual = 0
-    #     total_pesos_mesactual = 0
-    #
-    #     for row in datos:
-    #
-    #         fecha_orden = datetime.date(row[2])
-    #         mes_orden = fecha_orden.month
-    #         ano_orden = fecha_orden.year
-    #         mes_comparacion = date.today().month
-    #         ano_comparacion = date.today().year
-    #
-    #         total_ordenes += 1
-    #
-    #         if row[24] == "N":
-    #             total_orden_pendientes += 1
-    #             total_pesos_pendientes += (float(row[23])+float(row[22]))
-    #
-    #         if mes_comparacion == mes_orden and ano_comparacion == ano_orden:
-    #             total_orden_mesactual += 1
-    #             total_pesos_mesactual += (float(row[23])+float(row[22]))
-    #
-    #      # if len(self.grid_orden.get_children()) > 0:
-    #      #    self.grid_orden.selection_set(self.grid_orden.get_children()[0])
-    #
-    #     total_pesos_mesactual = formatear_cifra(total_pesos_mesactual)
-    #     total_pesos_pendientes = formatear_cifra(total_pesos_pendientes)
-    #
-    #     self.sv_estad_total.set(value=str(total_ordenes))
-    #     self.sv_estad_pendi.set(value=str(total_orden_pendientes))
-    #     self.sv_estad_mesact.set(value=str(total_orden_mesactual))
-    #     self.sv_estad_pespendi.set(value=str(total_pesos_pendientes))
-    #     self.sv_estad_pesmesact.set(value=str(total_pesos_mesactual))
-    #
-    #     self.pantalla_estad = tk.Toplevel()
-    #     self.pantalla_estad.geometry('220x180+1200+200')
-    #     self.pantalla_estad.transient(master=self.master)
-    #     self.pantalla_estad.config(bg='light green', padx=5, pady=5)
-    #     self.pantalla_estad.resizable(False, False)
-    #     self.pantalla_estad.title("Estadisticas")
-    #
-    #     # muestro la imagen en el frame
-    #     self.lbl_total_ordenes1 = tk.Label(self.pantalla_estad, text="Total ordenes: ", bg="light blue",
-    #                                     relief="ridge", bd=5)
-    #     self.lbl_total_ordenes2 = tk.Label(self.pantalla_estad, textvariable=self.sv_estad_total, bg="plum1",
-    #                                     relief="ridge", bd=5)
-    #     self.lbl_pendi_ordenes1 = tk.Label(self.pantalla_estad, text="Ordenes pendientes: ", bg="light blue",
-    #                                     relief="ridge", bd=5)
-    #     self.lbl_pendi_ordenes2 = tk.Label(self.pantalla_estad, textvariable=self.sv_estad_pendi, bg="plum1",
-    #                                     relief="ridge", bd=5)
-    #     self.lbl_pespendi_ordenes1 = tk.Label(self.pantalla_estad, text="Pesos pendientes: ", bg="light blue",
-    #                                        relief="ridge", bd=5)
-    #     self.lbl_pespendi_ordenes2 = tk.Label(self.pantalla_estad, textvariable=self.sv_estad_pespendi, bg="plum1",
-    #                                        relief="ridge", bd=5)
-    #     self.lbl_mesact_ordenes1 = tk.Label(self.pantalla_estad, text="Ordenes mes actual: ", bg="light blue",
-    #                                      relief="ridge", bd=5)
-    #     self.lbl_mesact_ordenes2 = tk.Label(self.pantalla_estad, textvariable=self.sv_estad_mesact, bg="plum1",
-    #                                      relief="ridge", bd=5)
-    #     self.lbl_pesmesact_ordenes1 = tk.Label(self.pantalla_estad, text="Pesos mes actual: ", bg="light blue",
-    #                                         relief="ridge", bd=5)
-    #     self.lbl_pesmesact_ordenes2 = tk.Label(self.pantalla_estad, textvariable=self.sv_estad_pesmesact, bg="plum1",
-    #                                         relief="ridge", bd=5)
-    #
-    #     self.lbl_total_ordenes1.grid(row=0, column=0, padx=5, pady=3, sticky="nsew")
-    #     self.lbl_total_ordenes2.grid(row=0, column=1, padx=5, pady=3, sticky="nsew")
-    #     self.lbl_pendi_ordenes1.grid(row=1, column=0, padx=5, pady=3, sticky="nsew")
-    #     self.lbl_pendi_ordenes2.grid(row=1, column=1, padx=5, pady=3, sticky="nsew")
-    #     self.lbl_pespendi_ordenes1.grid(row=2, column=0, padx=5, pady=3, sticky="nsew")
-    #     self.lbl_pespendi_ordenes2.grid(row=2, column=1, padx=5, pady=3, sticky="nsew")
-    #     self.lbl_mesact_ordenes1.grid(row=3, column=0, padx=5, pady=3, sticky="nsew")
-    #     self.lbl_mesact_ordenes2.grid(row=3, column=1, padx=5, pady=3, sticky="nsew")
-    #     self.lbl_pesmesact_ordenes1.grid(row=4, column=0, padx=5, pady=3, sticky="nsew")
-    #     self.lbl_pesmesact_ordenes2.grid(row=4, column=1, padx=5, pady=3, sticky="nsew")
-    #
-    #     for widg in self.pantalla_estad.winfo_children():
-    #         widg.grid_configure(padx=5, pady=3, sticky='nsew')
-    #
-    #     self.pantalla_estad.grab_set()
-    #     self.pantalla_estad.focus_set()
-    #
-    #     #tk.mainloop()
-    #
-    #     self.filtro_activo = self.filtro_anterior
-
-    def limitador(self, entry_text, caract):
+    @staticmethod
+    def limitador(entry_text, caract):
         if len(entry_text.get()) > 0:
             entry_text.set(entry_text.get()[:caract])
 
@@ -904,29 +802,29 @@ class ClaseOrdenesRepara(tk.Frame):
     # PUNTEROS *
     # --------------------------------------------------------------------------------
 
-    def fToparch(self):
+    def ftoparch(self):
         self.varFuncion_new.mover_puntero_topend(self.grid_orden,'TOP')
 
-    def fFinarch(self):
+    def ffinarch(self):
         self.varFuncion_new.mover_puntero_topend(self.grid_orden, 'END')
 
-    def fShowall(self):
+    def fshowall(self):
         self.filtro_activo = "ORDER by fecha_ingreso ASC"
         self.llena_grilla("")
 
-    def fTraedeuda(self, codigo_cli):
+    def ftraedeuda(self, codigo_cli):
         # Trae la deuda del cliente que se selecciona
         datos = self.varOrdenes.suma_deuda(codigo_cli)
         sumasaldo = 0
         for row in datos:
             sumasaldo += row[3] - row[4]
-        return(sumasaldo)
+        return sumasaldo
 
     # ----------------------------------------------------------------------------
     # SEL -*-
     # ----------------------------------------------------------------------------
 
-    def fBuscli(self):
+    def fbuscli(self):
 
         """ Creo una variable (que_busco) que contiene los parametros de busqueda - Tabla, el string de busqueda y
             en que campos debe hacerse """
@@ -951,7 +849,7 @@ class ClaseOrdenesRepara(tk.Frame):
             self.sv_codigo_cliente.set(value=item[1])
             self.sv_cli_datosmas.set(value=str(item[4] + ' - tel: ' + item[8] + ' / ' + item[9]))
 
-        self.sv_cli_deuda.set(value=str(self.fTraedeuda(self.sv_codigo_cliente.get())))
+        self.sv_cli_deuda.set(value=str(self.ftraedeuda(self.sv_codigo_cliente.get())))
         self.entry_nombre_cliente.focus()
         self.entry_nombre_cliente.icursor(tk.END)
 
@@ -959,7 +857,7 @@ class ClaseOrdenesRepara(tk.Frame):
     # BUSQUEDAS -*-
     # ----------------------------------------------------------------------------
 
-    def fFiltrar_orden(self):
+    def ffiltrar_orden(self):
 
         if len(self.sv_buscar_orden.get()) <= 0:
             messagebox.showwarning("Alerta", "No ingreso busqueda", parent=self)
@@ -1066,7 +964,7 @@ class ClaseOrdenesRepara(tk.Frame):
     # TREEVIEW
     # ************************************************************************************
 
-    def frame_treeview(self):
+    def frame_grid(self):
 
         # STYLE TREEVIEW
         style = ttk.Style(self.frame_tvw_ordenes)
@@ -1076,7 +974,7 @@ class ClaseOrdenesRepara(tk.Frame):
         # Este es el TV donde aparecen las ordenes de reparacion
         self.grid_orden = ttk.Treeview(self.frame_tvw_ordenes, height=6, columns=("col1", "col2", "col3", "col4",
                                                                                   "col5", "col6", "col7", "col8"))
-        self.grid_orden.bind("<Double-Button-1>", self.DobleClickGrid)
+        self.grid_orden.bind("<Double-Button-1>", self.doble_click_grid)
 
         self.grid_orden.column("#0", width=40, anchor="center")
         self.grid_orden.column("col1", width=70, anchor="e")
@@ -1112,6 +1010,7 @@ class ClaseOrdenesRepara(tk.Frame):
         scroll_x.pack(side="bottom", fill="x")
         self.grid_orden['selectmode'] = 'browse'
 
+
     # ************************************************************************************
     # METODOS PARA BOTONES Y ENTRYS
     # ************************************************************************************
@@ -1122,7 +1021,7 @@ class ClaseOrdenesRepara(tk.Frame):
         for c in range(7):
             self.frame_botones_grid.grid_columnconfigure(c, weight=1, minsize=140)
 
-        Muy bueno, es como que formatea e grid de antemano y ya no necesito width, solo mle pongo la cantidad de
+        Muy bueno, es como que formatea e grid de antemano y ya no necesito width, solo le pongo la cantidad de
         columnas.
 
        🔹 ¿Qué significa weight en grid_columnconfigure?
@@ -1154,7 +1053,7 @@ class ClaseOrdenesRepara(tk.Frame):
         # FILTRAR
         img = Image.open("filtrar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_buscar_orden = tk.Button(self.frame_botones_grid, text=" Filtrar", width=19, command=self.fFiltrar_orden,
+        self.btn_buscar_orden = tk.Button(self.frame_botones_grid, text=" Filtrar", width=19, command=self.ffiltrar_orden,
                                        bg="CadetBlue", fg="black", compound="left")
         self.btn_buscar_orden.image = icono
         self.btn_buscar_orden.config(image=icono)
@@ -1166,7 +1065,7 @@ class ClaseOrdenesRepara(tk.Frame):
         img = Image.open("no_retirada.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
         self.btn_no_retiradas = tk.Button(self.frame_botones_grid, text="No retiradas", width=19,
-                                       command=self.fNoretiradas, bg="CadetBlue", fg="black", compound="left")
+                                       command=self.fno_retiradas, bg="CadetBlue", fg="black", compound="left")
         self.btn_no_retiradas.image = icono
         self.btn_no_retiradas.config(image=icono)
         self.btn_no_retiradas.grid(row=0, column=3, padx=4, pady=3, sticky="nsew")
@@ -1176,7 +1075,7 @@ class ClaseOrdenesRepara(tk.Frame):
         # SHOW ALL
         img = Image.open("ver_todo.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_showall_orden = tk.Button(self.frame_botones_grid, text="Mostrar todo", width=19, command=self.fShowall,
+        self.btn_showall_orden = tk.Button(self.frame_botones_grid, text="Mostrar todo", width=19, command=self.fshowall,
                                         bg="CadetBlue", fg="black", compound="left")
         self.btn_showall_orden.image = icono
         self.btn_showall_orden.config(image=icono)
@@ -1187,7 +1086,7 @@ class ClaseOrdenesRepara(tk.Frame):
         # ESTADISTICAS
         img = Image.open("estadisticas.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_estadistica = tk.Button(self.frame_botones_grid, text=" Estadistica", width=19, command=self.fEstadistica,
+        self.btn_estadistica = tk.Button(self.frame_botones_grid, text=" Estadistica", width=19, command=self.festadistica,
                                       bg="CadetBlue", fg="black", compound="left")
         self.btn_estadistica.image = icono
         self.btn_estadistica.config(image=icono)
@@ -1199,7 +1098,7 @@ class ClaseOrdenesRepara(tk.Frame):
         img = Image.open("impresora.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
         self.btn_inf_tecnico = tk.Button(self.frame_botones_grid, text=" Informe Tècnico", width=18,
-                                      command=self.fInfTecnico, bg="CadetBlue", fg="black", compound="left")
+                                      command=self.finf_tecnico, bg="CadetBlue", fg="black", compound="left")
         self.btn_inf_tecnico.image = icono
         self.btn_inf_tecnico.config(image=icono)
         self.btn_inf_tecnico.grid(row=0, column=6, padx=4, pady=3, sticky="nsew")
@@ -1209,16 +1108,16 @@ class ClaseOrdenesRepara(tk.Frame):
         # ------------------------------------------------------
         # TOPE Y FIN DE ARCHIVO
         self.photo_top_arch = Image.open('toparch.png')
-        self.photo_top_arch = self.photo_top_arch.resize((25, 20), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo_top_arch = self.photo_top_arch.resize((25, 20), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo_top_arch = ImageTk.PhotoImage(self.photo_top_arch)
-        self.btn_top_arch = tk.Button(self.frame_botones_grid, text="", image=self.photo_top_arch, command=self.fToparch,
+        self.btn_top_arch = tk.Button(self.frame_botones_grid, text="", image=self.photo_top_arch, command=self.ftoparch,
                                    bg="grey", fg="white")
         self.btn_top_arch.grid(row=0, column=7, padx=4, pady=3, sticky="nsew")
         ToolTip(self.btn_top_arch, msg="Ir a principio de archivo")
         self.photo_fin_arch = Image.open('finarch.png')
-        self.photo_fin_arch = self.photo_fin_arch.resize((25, 20), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo_fin_arch = self.photo_fin_arch.resize((25, 20), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo_fin_arch = ImageTk.PhotoImage(self.photo_fin_arch)
-        self.btn_fin_arch = tk.Button(self.frame_botones_grid, text="", image=self.photo_fin_arch, command=self.fFinarch,
+        self.btn_fin_arch = tk.Button(self.frame_botones_grid, text="", image=self.photo_fin_arch, command=self.ffinarch,
                                    bg="grey", fg="white")
         self.btn_fin_arch.grid(row=1, column=7, padx=4, pady=3, sticky="nsew")
         ToolTip(self.btn_fin_arch, msg="Ir al final del archivo")
@@ -1228,7 +1127,7 @@ class ClaseOrdenesRepara(tk.Frame):
         # NUEVA ORDEN
         img = Image.open("archivo-nuevo.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_nueva_orden = tk.Button(self.frame_botones_grid, text="Nueva", width=18, command=self.fNueva, bg="blue",
+        self.btn_nueva_orden = tk.Button(self.frame_botones_grid, text="Nueva", width=18, command=self.fnueva, bg="blue",
                                       fg="white", compound="left")
         self.btn_nueva_orden.image = icono
         self.btn_nueva_orden.config(image=icono)
@@ -1239,7 +1138,7 @@ class ClaseOrdenesRepara(tk.Frame):
         # EDITAR ORDEN
         img = Image.open("editar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_editar_orden = tk.Button(self.frame_botones_grid, text="Editar", width=18, command=self.fModificar_orden,
+        self.btn_editar_orden = tk.Button(self.frame_botones_grid, text="Editar", width=18, command=self.fmodificar_orden,
                                        bg="blue", fg="white", compound="left")
         self.btn_editar_orden.image = icono
         self.btn_editar_orden.config(image=icono)
@@ -1250,7 +1149,7 @@ class ClaseOrdenesRepara(tk.Frame):
         # VER ORDEN
         img = Image.open("ver.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_ver_orden = tk.Button(self.frame_botones_grid, text=" Ver", width=18, command=self.fVer_orden,
+        self.btn_ver_orden = tk.Button(self.frame_botones_grid, text=" Ver", width=18, command=self.fver_orden,
                                     bg="blue", fg="white", compound="left")
         self.btn_ver_orden.image = icono
         self.btn_ver_orden.config(image=icono)
@@ -1261,7 +1160,7 @@ class ClaseOrdenesRepara(tk.Frame):
         # ELIMINAR ORDEN
         img = Image.open("eliminar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_borrar_orden = tk.Button(self.frame_botones_grid, text=" Eliminar", width=18, command=self.fEliminar_orden,
+        self.btn_borrar_orden = tk.Button(self.frame_botones_grid, text=" Eliminar", width=18, command=self.feliminar_orden,
                                        bg="red", fg="white", compound="left")
         self.btn_borrar_orden.image = icono
         self.btn_borrar_orden.config(image=icono)
@@ -1272,7 +1171,7 @@ class ClaseOrdenesRepara(tk.Frame):
         # GUARDAR ORDEN
         img = Image.open("guardar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_guardar_orden = tk.Button(self.frame_botones_grid, text=" Guardar", width=18, command=self.fGuardar_orden,
+        self.btn_guardar_orden = tk.Button(self.frame_botones_grid, text=" Guardar", width=18, command=self.fguardar_orden,
                                         bg="green", fg="white", compound="left")
         self.btn_guardar_orden.image = icono
         self.btn_guardar_orden.config(image=icono)
@@ -1283,7 +1182,7 @@ class ClaseOrdenesRepara(tk.Frame):
         # CANCELAR ORDEN
         img = Image.open("cancelar.png").resize((18, 18))
         icono = ImageTk.PhotoImage(img)
-        self.btn_cancelar_orden = tk.Button(self.frame_botones_grid, text=" Cancelar", width=18, command=self.fCancelar,
+        self.btn_cancelar_orden = tk.Button(self.frame_botones_grid, text=" Cancelar", width=18, command=self.fcancelar,
                                          bg="black", fg="white", compound="left")
         self.btn_cancelar_orden.image = icono
         self.btn_cancelar_orden.config(image=icono)
@@ -1301,7 +1200,7 @@ class ClaseOrdenesRepara(tk.Frame):
         self.img2 = Image.open("impresora.png").resize((18, 18))
         self.icono2 = ImageTk.PhotoImage(self.img2)
         self.btn_imprime_orden = tk.Button(self.frame_botones_grid, text=" Imprimir Orden", compound="left",
-                                        command=self.fImprimir, bg='#5F9EF5', fg="white")
+                                        command=self.fimprimir, bg='#5F9EF5', fg="white")
         self.btn_imprime_orden.image = self.icono2
         self.btn_imprime_orden.config(image=self.icono2)
         self.btn_imprime_orden.grid(row=1, column=6, padx=4, pady=3, sticky="nsew")
@@ -1334,15 +1233,15 @@ class ClaseOrdenesRepara(tk.Frame):
         lbl_cli_direccion.grid(row=0, column=8, padx=5, pady=2, sticky="nsew")
         lbl_cli_deuda1 = tk.Label(self.frame_entrys_uno, text="Deuda: ")
         lbl_cli_deuda1.grid(row=0, column=9, padx=5, pady=2, sticky="nsew")
-        fff = tkFont.Font(family="Arial", size=10, weight="bold")
+        fff = tkfont.Font(family="Arial", size=10, weight="bold")
         lbl_cli_deuda2 = tk.Label(self.frame_entrys_uno, textvariable=self.sv_cli_deuda, fg="red", font=fff)
         lbl_cli_deuda2.grid(row=0, column=10, padx=5, pady=2, sticky="nsew")
 
         # boton para buscar cliente
         self.photo_bus_cli = Image.open('buscar.png')
-        self.photo_bus_cli = self.photo_bus_cli.resize((20, 20), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo_bus_cli = self.photo_bus_cli.resize((20, 20), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo_bus_cli = ImageTk.PhotoImage(self.photo_bus_cli)
-        self.btn_bus_cli = tk.Button(self.frame_entrys_uno, text="", image=self.photo_bus_cli, command=self.fBuscli,
+        self.btn_bus_cli = tk.Button(self.frame_entrys_uno, text="", image=self.photo_bus_cli, command=self.fbuscli,
                                   bg="grey", fg="white")
         self.btn_bus_cli.grid(row=0, column=4, padx=5, pady=2, sticky="nsew")
         # ToolTip(self.btnToparch, msg="Ir a principio de archivo")
@@ -1570,22 +1469,23 @@ class ClaseOrdenesRepara(tk.Frame):
         self.entry_retirado.grid(row=0, column=7, padx=5, pady=1, sticky="nsew")
 
         self.photo3 = Image.open('salida.png')
-        self.photo3 = self.photo3.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo3 = self.photo3.resize((25, 25), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo3 = ImageTk.PhotoImage(self.photo3)
-        self.btn_salir_orden = tk.Button(self.frame_entrys_seis, text="Salir", image=self.photo3, width=65, command=self.fSalir,
+        self.btn_salir_orden = tk.Button(self.frame_entrys_seis, text="Salir", image=self.photo3, width=65, command=self.fsalir,
                                       bg="yellow", fg="white")
         self.btn_salir_orden.grid(row=0, column=8, padx=10, pady=1, sticky="nsew")
 
         for widg in self.frame_entrys_seis.winfo_children():
             widg.grid_configure(padx=24, pady=3, sticky="nsew")
 
+
+
     # ----------------------------------------------------------------------------
     # INFORMES -*-
     # ----------------------------------------------------------------------------
 
-    # ORDEN DE REPARACION
-
     def creopdf(self):
+        # ORDEN DE REPARACION - Generacion PDF
 
         # -------------------------------------------------------------------------------------
         # traigo el registro que quiero imprimir de la base datos de ordenes reparacion
@@ -1806,7 +1706,7 @@ class ClaseOrdenesRepara(tk.Frame):
         path = 'hoja.pdf'
         os.startfile(path)
 
-    def fInfTecnico(self):
+    def finf_tecnico(self):
 
         # traigo el registro que quiero imprimir de la base datos de ordenes reparacion
         self.selected = self.grid_orden.focus()
@@ -1822,7 +1722,7 @@ class ClaseOrdenesRepara(tk.Frame):
         # registro requerido con Id que esta en self.clave
         datos_registro_selec = self.varOrdenes.traer_un_registro(self.clave)
         # Cargo datos extra del cliente
-        datos_cliente = self.varOrdenes.traer_un_cliente(datos_registro_selec[4])
+        #datos_cliente = self.varOrdenes.traer_un_cliente(datos_registro_selec[4])
         # telef_cliente = datos_cliente[8]+' - '+datos_cliente[9]
 
         # Definir parametros listado
@@ -1852,9 +1752,9 @@ class ClaseOrdenesRepara(tk.Frame):
         feactual = datetime.now()
         feac = feactual.strftime("%d-%m-%Y %H:%M:%S")
         pdf_numero_orden = str(datos_registro_selec[1])
-        pdf_codigo_cliente = str(datos_registro_selec[4])
+        #pdf_codigo_cliente = str(datos_registro_selec[4])
         pdf_nombre_cliente = datos_registro_selec[5]
-        pdf_datos_encabezado_orden = (pdf_numero_orden)
+        pdf_datos_encabezado_orden = pdf_numero_orden
         # ----------------------------------------------------------------------------------
 
         # # Imprimo el encabezado de pagina con el numero de orden
@@ -1889,7 +1789,7 @@ class ClaseOrdenesRepara(tk.Frame):
         pdf_presupuesto = datos_registro_selec[18]
         pdf_realizado = datos_registro_selec[19]
         pdf_partes = datos_registro_selec[20]
-        pdf_anotaciones = datos_registro_selec[21]
+        #pdf_anotaciones = datos_registro_selec[21]
         # -----------------------------------------------------------------------------------
 
         # -----------------------------------------------------------------------------------
@@ -1907,7 +1807,7 @@ class ClaseOrdenesRepara(tk.Frame):
         cuerpo_3 = 'Requerimiento: '+pdf_requerido
         cuerpo_4 = 'Diagnostico: '+pdf_diagnostico
         cuerpo_5 = 'Trabajo realizado: '+pdf_realizado
-        cuerpo_6 = 'Anotaciones: '+pdf_anotaciones
+        #cuerpo_6 = 'Anotaciones: '+pdf_anotaciones
         cuerpo_7 = 'Partes reemplazadas: '+pdf_partes
         cuerpo_8 = 'Presupuesto: '+pdf_presupuesto
         cuerpo_10 = 'Total partes $ : '+pdf_totpartes+\
@@ -1999,7 +1899,8 @@ class ClaseOrdenesRepara(tk.Frame):
         path = 'hoja.pdf'
         os.startfile(path)
 
-    def seccion(self, pdf, titulo, contenido):
+    @staticmethod
+    def seccion(pdf, titulo, contenido):
         # Título
         pdf.set_font('Courier', 'B', 10)
         pdf.cell(0, 4, txt=f'* {titulo}: ', ln=1)
@@ -2012,6 +1913,7 @@ class ClaseOrdenesRepara(tk.Frame):
         pdf.cell(0, 3, txt='', ln=1)
 
     def get_ordenes_dict(self, fecha_ing, fecha_egr):
+        # Carga el diccionario para los procesos del CRUD
         return {
             "Id": self.clave,
             "or_num_orden": self.sv_nro_orden.get(),
@@ -2040,11 +1942,12 @@ class ClaseOrdenesRepara(tk.Frame):
             "fin_retirada": self.sv_retirado.get(),
         }
 
+
     # ========================================================================================
     # Grupo de funciones de estadisticas
     # ========================================================================================
 
-    def fEstadistica(self):
+    def festadistica(self):
 
         # item sobre el que esta foco
         item = self.grid_orden.focus()
@@ -2062,7 +1965,8 @@ class ClaseOrdenesRepara(tk.Frame):
 
         self.mostrar_estadisticas(stats)
 
-    def calcular_estadisticas(self, datos, fecha_base):
+    @staticmethod
+    def calcular_estadisticas(datos, fecha_base):
 
         mes_base = fecha_base.month
         anio_base = fecha_base.year
@@ -2131,4 +2035,6 @@ class ClaseOrdenesRepara(tk.Frame):
 
         win.grab_set()
         win.focus_set()
+    # ========================================================================================
+    # FIN Grupo de funciones de estadisticas
     # ========================================================================================

@@ -1,11 +1,12 @@
 import mysql.connector
 from mysql.connector import Error
-from datetime import datetime
-from tkinter import messagebox
 
-class datosRma:
 
-    def __init__(self):
+class DatosRma:
+
+    def __init__(self, pantalla):
+
+        self.master = pantalla
 
         try:
             self.cnn = mysql.connector.connect(host="localhost", user="root",
@@ -13,102 +14,142 @@ class datosRma:
         except Error as ex:
             print("Error de conexion: {0}".format(ex))
 
-    # def __str__(self):
-    #
-    #     datos = self.consultar_rma()
-    #     aux = ""
-    #     for row in datos:
-    #         aux = aux + str(row) + "\n"
-    #     return aux
+    def get_connection(self):
+        return mysql.connector.connect(
+            host="localhost",
+            user="root",
+            passwd="",
+            database="sist_prom")
 
-    def consultar_rma(self, tofil):
+    def consultar_rma(self, orden = ""):
 
-        cur = self.cnn.cursor()
-        if tofil == "":
-            cur.execute("SELECT * FROM " + tofil)
-        else:
-            cur.execute("SELECT * FROM " + tofil)
-        # para recuperar todas filas de una tabla de base de datos
-        datos = cur.fetchall()
-        self.cnn.commit()
-        cur.close()
-        return datos
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
+        try:
+            sql = "SELECT * FROM rma"
+            if orden:
+                sql += " " + orden
+            cur.execute(sql)
+            return cur.fetchall()
+        finally:
+            cur.close()
+            cnn.close()
 
     def buscar_entabla(self, argumento):
 
-        # Busca un strin en los campos indicados en una tabla
-        cur = self.cnn.cursor()
-        if len(argumento) > 0:
-            cur.execute("SELECT * FROM " + argumento)
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
+        try:
+            cur.execute("SELECT * FROM rma " + argumento)
+            datos = cur.fetchall()
+            return datos
+        except Exception:
+            raise
+        finally:
+            cur.close()
+            cnn.close()
 
-        datos = cur.fetchall()
-        self.cnn.commit()
-        cur.close()
-        return datos
+    def insertar_registro(self, rma):
 
-    def insertar_registro(self, fecha, articulo, proceso, estado, proved, cliente, falla_motivo, costo_venta, observ):
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
+        try:
 
-        algo = fecha
-        fecha_ingreso = datetime.strptime(algo, '%d/%m/%Y')
+            sql = """
+                  INSERT INTO rma (rm_fecha, rm_articulo, rm_proceso, rm_estado, rm_proveedor, rm_cliente, 
+                                   rm_falla_motivo, rm_costo_venta, rm_observaciones)
+                  VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                  """
 
-        cur = self.cnn.cursor()
+            valores = (
+                rma["rm_fecha"],
+                rma["rm_articulo"],
+                rma["rm_proceso"],
+                rma["rm_estado"],
+                rma["rm_proveedor"],
+                rma["rm_cliente"],
+                rma["rm_falla_motivo"],
+                rma["rm_costo_venta"],
+                rma["rm_observaciones"]
+            )
 
-        sql = '''INSERT INTO rma (rm_fecha, rm_articulo, rm_proceso, rm_estado, rm_proveedor, rm_cliente, 
-                                  rm_falla_motivo, rm_costo_venta, rm_observaciones) VALUES('{}','{}','{}','{}','{}',
-                                  '{}','{}','{}','{}')'''.format(fecha_ingreso, articulo, proceso, estado, proved,
-                                                             cliente, falla_motivo, costo_venta, observ)
+            cur.execute(sql, valores)
+            cnn.commit()
+            # devolvemos el Id generado del nuevo cliente
+            id_nuevo = cur.lastrowid
+            return id_nuevo
+        except Exception:
+            cnn.rollback()
+            raise
+        finally:
+            cur.close()
+            cnn.close()
 
-        cur.execute(sql)
-        n = cur.rowcount
-        self.cnn.commit()
-        cur.close()
+    def modificar_registro(self, rma):
 
-    def modificar_registro(self, Id, fecha, articulo, proceso, estado, proved, cliente, falla_motivo, costo_venta, observ):
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
+        try:
 
-        # Convierto fecha nuevamente de String a Datetime para guardar en SQL  ------------------------
-        algo = fecha
-        fecha_ingreso = datetime.strptime(algo, '%d/%m/%Y')
+            # genero instruccion sql
+            sql = """
+                  UPDATE rma 
+                  SET rm_fecha=%s, rm_articulo=%s, rm_proceso=%s, rm_estado=%s, rm_proveedor=%s, rm_cliente=%s, 
+                      rm_falla_motivo=%s, rm_costo_venta=%s, rm_observaciones=%s
+                  WHERE Id = %s 
+                  """
 
-        cur = self.cnn.cursor()
-        sql = '''UPDATE rma SET rm_fecha='{}', rm_articulo='{}', rm_proceso='{}', rm_estado='{}', rm_proveedor='{}', 
-                                rm_cliente='{}', rm_falla_motivo='{}', rm_costo_venta='{}', rm_observaciones='{}'
-                                 WHERE Id={}'''.format(fecha_ingreso, articulo, proceso, estado, proved, cliente,
-                                                       falla_motivo, costo_venta, observ, Id)
-
-        cur.execute(sql)
-        n = cur.rowcount
-        self.cnn.commit()
-        cur.close()
-        return n
+            # Creo tupla valores a partir del diccionario : dame el valor de la
+            # clave rma[codigo] y asi se genera la tupla
+            valores = (
+                rma["rm_fecha"],
+                rma["rm_articulo"],
+                rma["rm_proceso"],
+                rma["rm_estado"],
+                rma["rm_proveedor"],
+                rma["rm_cliente"],
+                rma["rm_falla_motivo"],
+                rma["rm_costo_venta"],
+                rma["rm_observaciones"],
+                rma["Id"]
+            )
+            cur.execute(sql, valores)
+            cnn.commit()
+            return
+        except Exception:
+            cnn.rollback()
+            raise
+        finally:
+            cur.close()
+            cnn.close()
 
     def eliminar_rma(self, Id):
 
-        cur = self.cnn.cursor()
-        sql = '''DELETE FROM rma WHERE Id = {}'''.format(Id)
-        cur.execute(sql)
-        n = cur.rowcount
-        self.cnn.commit()
-        cur.close()
-        return n
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
+        try:
+            sql = "DELETE FROM rma WHERE Id = %s"
+            # 1 parámetro → (valor,)
+            # varios → (v1, v2, v3)
+            cur.execute(sql, (Id,))
+            n = cur.rowcount
+            cnn.commit()
+            return n
+        except Exception as e:
+            cnn.rollback()
+            raise
+        finally:
+            cur.close()
+            cnn.close()
 
     def traer_ultimo(self, xparametro):
 
-        # Trae el último código de cliente en la tabla para proponer el nuevo número en alta
-
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            cur = self.cnn.cursor()
-            cur.execute("SELECT * FROM rma ORDER BY Id")
-            datos = cur.fetchall()
-            aux = ""
-            for row in datos:
-                if xparametro == 1:
-                    aux = str(row[1]) + "\n"
-                else:
-                    aux = str(row[0]) + "\n"
-            self.cnn.commit()
+            cur.execute("SELECT MAX(codigo) FROM rma")
+            resultado = cur.fetchone()[0]
+            return resultado or 0  # 👈 clave
+        finally:
             cur.close()
-            return aux
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=traer ultimo",
-                                 parent=self.master)
-            exit()
+            cnn.close()

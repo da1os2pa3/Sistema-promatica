@@ -2,19 +2,19 @@
 Ctrl + Alt + L → Reformat Code (reformatea el código según las reglas configuradas).
 Ctrl + Alt + Shift + L → abre el cuadro de diálogo para elegir opciones avanzadas de reformateo."""
 
-from funciones import *
-from funcion_new import ClaseFuncionNew
-from clientes_ABM import datosClientes
-#-------------------------------------------------
 import tkinter as tk
-from tkinter import ttk
-from tkinter import messagebox
 import tkinter.font as tkfont
-#-------------------------------------------------
-from datetime import date, datetime
+from datetime import date
+from tkinter import ttk
+
 from PIL import Image, ImageTk
 from tktooltip import ToolTip
+
+from clientes_ABM import DatosClientes
+from funcion_new import ClaseFuncionNew
+from funciones import *
 from status_bar import StatusBar
+
 
 class ClaseClientes(tk.Frame):
 
@@ -31,7 +31,7 @@ class ClaseClientes(tk.Frame):
 
         # Instanciaciones -----------------------------------------------------------------
         # Creo una instancia de clientesABM de la clase datosClientes
-        self.varClientes = datosClientes(self.master)
+        self.varClientes = DatosClientes(self.master)
         self.varFuncion_new = ClaseFuncionNew(self.master)
         # ---------------------------------------------------------------------------------
 
@@ -296,7 +296,7 @@ class ClaseClientes(tk.Frame):
 
         # Obtengo el ultimo codigo + 1 y pongo el entry en readonly para no modificar
         self.entry_codigo.configure(state="normal")
-        self.entry_codigo.insert(0, (int(self.varClientes.traer_ultimo())) + 1)
+        self.entry_codigo.insert(0, str((int(self.varClientes.traer_ultimo())) + 1))
         self.entry_codigo.configure(state="readonly")
 
         # readonly combo de situacion fiscal
@@ -498,13 +498,14 @@ class ClaseClientes(tk.Frame):
     # VARIAS -*-
     # --------------------------------------------------------------------------
 
-    def doble_click_grid(self, event):
+    def doble_click_grid(self, _event):
         self.feditar()
 
-    def limitador(self, entry_text, caract):
+    @staticmethod
+    def limitador(entry_text, caract):
         entry_text.set(entry_text.get()[:caract])
 
-    def formato_fecha(self, pollo):
+    def formato_fecha(self, _pollo):
 
         """Aqui dentro llamo a la funcion validar fechas para revisar todo sus valores posibles
         le paso la fecha tipo string con barras o sin barras """
@@ -563,7 +564,6 @@ class ClaseClientes(tk.Frame):
         # Obtengo string a buscar
         se_busca = self.entry_buscar_cliente.get()
 
-        # con GPT ||||||||||||||||||||||||||||||||||||||||||||||||||
         # Retorno las coincidencias
         try:
             datos = self.varClientes.buscar_clientes(se_busca)
@@ -588,7 +588,6 @@ class ClaseClientes(tk.Frame):
             self.grid_clientes.selection_set(primero)
             self.grid_clientes.focus(primero)
             self.grid_clientes.see(primero)
-        # ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 
     def fshowall(self):
         self.selected = self.grid_clientes.focus()
@@ -953,7 +952,8 @@ class ClaseClientes(tk.Frame):
         self.cuadro_cartel_clientes()
         self.botones4.pack(side="top", padx=3, pady=3, fill="y")
 
-    def cargar_icono(self, path, size=(18,18)):
+    @staticmethod
+    def cargar_icono(path, size=(18,18)):
         img = Image.open(path).resize(size)
         return ImageTk.PhotoImage(img)
 

@@ -1,153 +1,186 @@
 import mysql.connector
-from mysql.connector import Error
-# -----------------------------------------------
-#from datetime import datetime
-from tkinter import messagebox
+# from mysql.connector import Error
 
-class datosRubros:
+class DatosRubros:
 
     def __init__(self, pantalla):
 
         self.master = pantalla
 
-        try:
-            self.cnn = mysql.connector.connect(host="localhost", user="root", passwd="", database="sist_prom")
-        except Error as ex:
-            print("Error de conexion: {0}".format(ex))
+    @staticmethod
+    def get_connection():
+        return mysql.connector.connect(
+            host="localhost",
+            user="root",
+            passwd="",
+            database="sist_prom")
 
-    # def __str__(self):
-    #     datos = self.consultar_rubros("")
-    #     aux = ""
-    #     for row in datos:
-    #         aux = aux + str(row) + "\n"
-    #     return aux
+    def consultar_rubros(self, orden=None):
 
-    def consultar_rubros(self, tofil):
+        """👉 buffered=True = MySQL:manda TODO el resultado de una, el cursor lo guarda en memoria.
+        ✔ Después podés hacer lo que quieras: otro execute, cerrar cursor, no consumir todo
+        SIN errores"""
+
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            cur = self.cnn.cursor()
-            cur.execute("SELECT * FROM " + tofil)
+            sql = "SELECT * FROM rubros"
+            if orden:
+                sql += " " + orden
+            cur.execute(sql)
+            return cur.fetchall()
+        finally:
+            cur.close()
+            cnn.close()
+
+    def traer_ultimo(self):
+
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
+        try:
+            cur.execute("SELECT MAX(codigo) FROM rubros")
+            resultado = cur.fetchone()[0]
+            return resultado or 0  # 👈 clave
+        finally:
+            cur.close()
+            cnn.close()
+
+    def buscar_entabla(self, argumento):
+
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
+        try:
+            cur.execute("SELECT * FROM rubros " + argumento)
             datos = cur.fetchall()
-            self.cnn.commit()
-            cur.close()
             return datos
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=Consultar_rubros", parent=self.master)
-            exit()
-
-    def insertar_rubros(self, ru_nombre):
-
-        try:
-            cur = self.cnn.cursor()
-            sql = '''INSERT INTO rubros (ru_nombre) VALUES('{}')'''.format(ru_nombre)
-            cur.execute(sql)
-            n = cur.rowcount
-            self.cnn.commit()
+        finally:
             cur.close()
-            return n
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=Insertar_rubros", parent=self.master)
-            exit()
+            cnn.close()
 
-    def modificar_rubros(self, Id, ru_nombre):
+    def insertar_rubros(self, datos_rubros):
 
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            cur = self.cnn.cursor()
-            sql = '''UPDATE rubros SET ru_nombre='{}' WHERE Id={}'''.format(ru_nombre, Id)
-            cur.execute(sql)
-            n = cur.rowcount
-            self.cnn.commit()
+            sql = """
+                  INSERT INTO rubros (ru_nombre)
+                  VALUES (%s) 
+                  """
+            valores = (
+                datos_rubros["ru_nombre"],
+            )
+            cur.execute(sql, valores)
+            cnn.commit()
+            # devolvemos el Id generado del nuevo cliente
+            id_nuevo = cur.lastrowid
+            return id_nuevo
+        except Exception:
+            cnn.rollback()
+            raise
+        finally:
             cur.close()
-            return n
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=Modificar_rubros", parent=self.master)
-            exit()
+            cnn.close()
+
+    def modificar_rubros(self, datos_rubros):
+
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
+        try:
+
+            sql = """
+                  UPDATE rubros 
+                  SET ru_nombre=%s 
+                  WHERE Id = %s 
+                  """
+
+            # Creo tupla valores a partir del diccionario : dame el valor de la clave cliente[codigo]
+            # y asi se genera la tupla
+            valores = (
+                datos_rubros["ru_nombre"],
+                datos_rubros["Id"]
+            )
+            cur.execute(sql, valores)
+            cnn.commit()
+            return
+        except Exception:
+            cnn.rollback()
+            raise
+        finally:
+            cur.close()
+            cnn.close()
 
     def modi_rub_enart(self, tofil, anterior):
         # modifica los rubros en la tabla articulos al modificarlos en la tabla rubros
 
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            cur = self.cnn.cursor()
             sql =  "UPDATE articulos SET rubro = '" + tofil +"' WHERE rubro = '" + anterior + "'"
             cur.execute(sql)
-            datos = cur.fetchone()
+            # datos = cur.fetchone()
             n = cur.rowcount
-            self.cnn.commit()
-            cur.close()
+            cnn.commit()
             return n
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=Modificar_rubros", parent=self.master)
-            exit()
+        except Exception:
+            cnn.rollback()
+            raise
+        finally:
+            cur.close()
+            cnn.close()
 
     def eliminar_rubros(self, Id):
-        cur = self.cnn.cursor()
-        sql = '''DELETE FROM rubros WHERE Id = {}'''.format(Id)
-        cur.execute(sql)
-        n = cur.rowcount
-        self.cnn.commit()
-        cur.close()
-        return n
+
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
+        try:
+            sql = "DELETE FROM rubros WHERE Id = %s"
+            # 1 parámetro → (valor,)
+            # varios → (v1, v2, v3)
+            cur.execute(sql, (Id,))
+            n = cur.rowcount
+            cnn.commit()
+            return n
+        except Exception:
+            cnn.rollback()
+            raise
+        finally:
+            cur.close()
+            cnn.close()
 
     def verifica_articulos(self, tofil):
         # verifica si hay articulos con el rubro a eliminar o modificar
 
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            cur = self.cnn.cursor()
             sql =  "SELECT * FROM articulos WHERE rubro = '" + tofil + "'"
             cur.execute(sql)
-            datos = cur.fetchall()
+            # datos = cur.fetchall()
             n = cur.rowcount
-            self.cnn.commit()
             cur.close()
             return n
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=Verifica_articulos", parent=self.master)
-            exit()
+        except Exception:
+            cnn.rollback()
+            raise
+        finally:
+            cur.close()
+            cnn.close()
 
     def quitarubro(self, tofil):
         # quita los rubros asignados en tabla articulos al ser eliminado de la tabla rubros
 
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-            cur = self.cnn.cursor()
             sql =  "UPDATE articulos SET rubro = '' WHERE rubro = '" + tofil + "'"
             cur.execute(sql)
-            datos = cur.fetchone()
+            # datos = cur.fetchone()
             n = cur.rowcount
-            self.cnn.commit()
-            cur.close()
+            cnn.commit()
             return n
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=quitarubro", parent=self.master)
-            exit()
-
-    def buscar_entabla(self, argumento):
-
-        try:
-            cur = self.cnn.cursor()
-            cur.execute("SELECT * FROM " + argumento)
-            datos = cur.fetchall()
-            self.cnn.commit()
+        except Exception:
+            cnn.rollback()
+            raise
+        finally:
             cur.close()
-            return datos
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-buscAr_entabla", parent=self.master)
-            exit()
-
-    def traer_ultimo(self, xparametro):
-
-        try:
-            cur = self.cnn.cursor()
-            cur.execute("SELECT * FROM rubros ORDER BY Id")
-            datos = cur.fetchall()
-            aux = ""
-            for row in datos:
-                if xparametro == 1:
-                    aux = str(row[1]) + "\n"
-                else:
-                    aux = str(row[0]) + "\n"
-            self.cnn.commit()
-            cur.close()
-            return aux
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=traer ultimo",
-                                 parent=self.master)
-            exit()
+            cnn.close()

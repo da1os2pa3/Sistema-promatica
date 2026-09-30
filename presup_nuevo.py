@@ -4,7 +4,9 @@ import tkinter.font as tkfont
 from datetime import date
 from tkinter import ttk
 from tkinter.scrolledtext import *  # para campos text
+
 from PIL import Image, ImageTk
+
 from PDF_clase import PDF
 from articulos import ClaseArticulos
 from funcion_new import ClaseFuncionNew
@@ -21,36 +23,20 @@ class ClasePresupuestos(tk.Frame):
         self.master = master
         self.status = StatusBar(self.master)
 
+        # PANTALLA -----------------------------------------------------------------
+        self.pantalla_()
         # --------------------------------------------------------------------------
-        # PANTALLA
-        # --------------------------------------------------------------------------
-        self.master.resizable(0, 0)
 
-        """ Actualizamos el contenido de la ventana (la ventana pude crecer si se le agrega
-            mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer.
-            Obtenemos el alto y  ancho de la pantalla """
-
-        ancho = self.master.winfo_screenwidth()
-        alto = self.master.winfo_screenheight()
-        # Asigno fijo un ancho y un alto
-        ancho_ventana = 1045
-        alto_ventana = 670
-        # X e Y son las coordenadas para el posicionamiento del vertice superior izquierdo
-        x = int((ancho - ancho_ventana) / 2)
-        y = int((alto - alto_ventana) / 2)
-        self.master.geometry(f"{ancho_ventana}x{alto_ventana}+{x}+{y}")
-        # -------------------------------------------------------------------------
-
-        # Otros ajuste para las pestañas ------------------------------------------
+        # Otros ajuste para las pestañas -------------------------------------------
         style = ttk.Style()
         style.theme_use('clam')
         # Bajamos de 230 a 216 para darles el tamaño justo sin que se corten
         style.configure('TNotebook.Tab', padding=[227, 8, 227, 8], font=('Arial', 10, 'bold'))
         # Mantenemos el bloqueo del estado seleccionado con el nuevo número
         style.map('TNotebook.Tab', padding=[('selected', [227, 8, 227, 8])])
-        # -----------------------------------------------------------------------
+        # --------------------------------------------------------------------------
 
-        # CONFIGURACIÓN DE COLOR SEGURA -----------------------------------------
+        # CONFIGURACIÓN DE COLOR SEGURA --------------------------------------------
         # Usamos el gris claro estándar directamente para no romper el layout
         style.configure('TNotebook.Tab', background='#a0a0a0')
         style.map('TNotebook.Tab', background=[('selected', '#f0f0f0'), ('active', '#f0f0f0')])
@@ -61,21 +47,21 @@ class ClasePresupuestos(tk.Frame):
         self.var_obj_funcionnew = ClaseFuncionNew(self.master)
         # -----------------------------------------------------------------------
 
-        # Variables uso compartido en pestanas ----------------------------------
-        self.sv_nro_presup = tk.StringVar(value="0")
-        self.sv_fecha_presup = tk.StringVar(value="")
-        self.sv_valor_dolar_presup = tk.StringVar(value="0.00")
+        # Variables uso compartido en pestañas ----------------------------------
+        self.sv_nro_presup =              tk.StringVar(value="0")
+        self.sv_fecha_presup =            tk.StringVar(value="")
+        self.sv_valor_dolar_presup =      tk.StringVar(value="0.00")
         self.sv_valor_dolar_oficial_hoy = tk.StringVar(value="0.00")
-        self.sv_tasa_ganancia = tk.StringVar(value="0.00")
+        self.sv_tasa_ganancia =           tk.StringVar(value="0.00")
         # variables de totales generales
-        self.sv_total_presup = tk.StringVar(value="0.00")
-        self.sv_total_item_redondo = tk.StringVar(value="0.00")
-        self.sv_total_ganancia = tk.StringVar(value="0.00")
-        self.sv_total_costos = tk.StringVar(value="0.00")
-        self.sv_total_presup_redondo = tk.StringVar(value="0.00")
+        self.sv_total_presup =            tk.StringVar(value="0.00")
+        self.sv_total_item_redondo =      tk.StringVar(value="0.00")
+        self.sv_total_ganancia =          tk.StringVar(value="0.00")
+        self.sv_total_costos =            tk.StringVar(value="0.00")
+        self.sv_total_presup_redondo =    tk.StringVar(value="0.00")
         # ----------------------------------------------------------------------
 
-        # Pestañas --------------------------------------------------------------
+        # Pestañas -------------------------------------------------------------
         # 1. Crear el contenedor de pestañas (Notebook) usando self.master
         self.notebook = ttk.Notebook(self.master)
         self.notebook.pack(expand=True, fill="both")
@@ -87,7 +73,7 @@ class ClasePresupuestos(tk.Frame):
             variables Que quiera compartir en las dos pestañas"""
         self.pestana_1 = ClasePestanaUno(self.notebook, self) # self seria "clase ventas principal"
         self.pestana_2 = ClasePestanaDos(self.notebook, self)
-        # -----------------------------------------------------------------------ººº
+        # -----------------------------------------------------------------------
 
         # 3. Añadir las pestañas al contenedor ----------------------------------
         self.notebook.add(self.pestana_1, text="Encabezado")
@@ -109,18 +95,21 @@ class ClasePresupuestos(tk.Frame):
 
     def traer_dolarhoy(self):
 
-        # ----------------------------------------------------------
-        try:
-            dev_informa = self.var_obj_presup.consultar_informa()
-        except Exception:
-            self.var_obj_funcionnew.mostrar_error()
-            return
-        # ----------------------------------------------------------
+        self.sv_valor_dolar_presup.set(value=self.var_obj_funcionnew.traer_dolarhoy())
+        self.sv_valor_dolar_oficial_hoy.set(value=self.var_obj_funcionnew.traer_dolarhoy())
 
-        for row in dev_informa:
-            self.sv_valor_dolar_presup.set(value=row[21])
-            self.sv_valor_dolar_oficial_hoy.set(value=row[21])
-            # self.sv_tasa_recargo_precio.set(value=row[23])
+        # # ----------------------------------------------------------
+        # try:
+        #     dev_informa = self.var_obj_presup.consultar_informa()
+        # except Exception:
+        #     self.var_obj_funcionnew.mostrar_error()
+        #     return
+        # # ----------------------------------------------------------
+        #
+        # for row in dev_informa:
+        #     self.sv_valor_dolar_presup.set(value=row[21])
+        #     self.sv_valor_dolar_oficial_hoy.set(value=row[21])
+        #     # self.sv_tasa_recargo_precio.set(value=row[23])
 
     def fcancela_presup(self):
 
@@ -129,15 +118,31 @@ class ClasePresupuestos(tk.Frame):
             return
         self.estado_inicial_general()
 
-    def cargar_icono(self, path, size=(18, 18)):
+    @staticmethod
+    def cargar_icono(path, size=(18, 18)):
         img = Image.open(path).resize(size)
         return ImageTk.PhotoImage(img)
 
     def fsalir(self):
         self.winfo_toplevel().destroy()
 
+    def pantalla_(self):
 
+        self.master.resizable(0, 0)
 
+        """ Actualizamos el contenido de la ventana (la ventana pude crecer si se le agrega
+            mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer.
+            Obtenemos el alto y  ancho de la pantalla """
+
+        ancho = self.master.winfo_screenwidth()
+        alto = self.master.winfo_screenheight()
+        # Asigno fijo un ancho y un alto
+        ancho_ventana = 1045
+        alto_ventana = 720
+        # X e Y son las coordenadas para el posicionamiento del vertice superior izquierdo
+        x = int((ancho - ancho_ventana) / 2)
+        y = int((alto - alto_ventana) / 2)
+        self.master.geometry(f"{ancho_ventana}x{alto_ventana}+{x}+{y}")
 
 
 # =========================================================================================
@@ -156,36 +161,32 @@ class ClasePestanaUno(tk.Frame):
 
         # =STRINGVARS= usadas en la pestaña uno -------------------------------
         # Datos de la venta y datos del cliente
-        self.sv_codigo_cliente = tk.StringVar(value="0")
-        self.sv_nombre_cliente = tk.StringVar(value="Consumidor Final")
-        self.sv_sit_fiscal = tk.StringVar(value="")
-        self.sv_cuit = tk.StringVar(value="")
+        self.sv_codigo_cliente    = tk.StringVar(value="0")
+        self.sv_nombre_cliente    = tk.StringVar(value="Consumidor Final")
+        self.sv_sit_fiscal        = tk.StringVar(value="")
+        self.sv_cuit              = tk.StringVar(value="")
         # Tipos de pago
         self.sv_combo_formas_pago = tk.StringVar()
-        self.sv_detalle_pago = tk.StringVar(value="")
-        self.sv_aceptado = tk.StringVar(value="0")
+        self.sv_detalle_pago      = tk.StringVar(value="")
+        self.sv_aceptado          = tk.StringVar(value="0")
         # Busquedas
-        self.sv_buscostring = tk.StringVar(value="")
+        self.sv_buscostring       = tk.StringVar(value="")
         # ---------------------------------------------------------------------
 
         # Ejecutamos tu secuencia de inicialización adaptada a la Pestaña 1 ---
         self.create_widgets()
         self.festado_inicial_uno()
-        # self.fllena_grilla_presupuestos("")
         # ---------------------------------------------------------------------
 
     def create_widgets(self):
 
         # VARIABLES GENERALES -------------------------------------------------
         # para validar ingresos de numeros en gets numericos
-        # "Tkinter, registrame esta función porque después
-        # quiero que vos la llames."
+        # "Tkinter, registrame esta función porque después quiero que vos la llames."
         self.vcmd = (self.register(self.principal.var_obj_funcionnew.validar), "%P")
         # ---------------------------------------------------------------------
 
-        # ---------------------------------------------------------------------
-        # CUADROS
-        # ---------------------------------------------------------------------
+        # CUADROS -------------------------------------------------------------
         self.frame_principal = tk.LabelFrame(self, text="", foreground="#CD5C5C")
         self.frame_principal.pack(expand=True, fill="both", padx=5, pady=5)
 
@@ -225,6 +226,12 @@ class ClasePestanaUno(tk.Frame):
         self.frame_forma_pago.pack(side="top", fill="both", expand=0, padx=5, pady=3)
         # ----------------------------------------------------------------------
 
+        # CUADRO FRAME_CAJADETEXTO ---------------------------------------------
+        self.frame_cajatexto = tk.LabelFrame(self.frame_principal, text="Descripcion adicional", fg="red")
+        self.cuadro_caja_texto_detalles_extensos()
+        self.frame_cajatexto.pack(side="top", expand=0, fill="both", padx=5, pady=3)
+        # ----------------------------------------------------------------------
+
         # CUADRO BOTONES CRUD Y MOV GRIDPRESUPUESTOS ---------------------------
         self.frame_botones_uno_grid_presupuestos = tk.LabelFrame(self.frame_principal, text="", bg="#CD5C5C")
         self.fcuadro_botones__uno_grid_presupuestos()
@@ -252,7 +259,7 @@ class ClasePestanaUno(tk.Frame):
 
     def festado_inicial_uno(self):
 
-        self.filtro_activo_presupuestos = "ORDER BY rp_fecha, rp_numero ASC"
+        self.filtro_activo_presupuestos = "ORDER BY rp_numero ASC"
         # self.alta_modif_presup = 0      # tabla resu_presu
 
         # limpia todos los entrys - borro los datos que puedan tener
@@ -293,6 +300,7 @@ class ClasePestanaUno(tk.Frame):
         self.combo_formapago.configure(state=estado)
         self.entry_deta_formapago.configure(state=estado)
         self.btn_busco_cliente.configure(state=estado)
+        self.text_especificaciones.configure(state=estado)
 
     def flimpiar_entrys_uno(self):
 
@@ -309,7 +317,7 @@ class ClasePestanaUno(tk.Frame):
         self.principal.sv_tasa_ganancia.set(value="0.00")
         self.principal.traer_dolarhoy()
         self.sv_aceptado.set(value="0")
-        # self.principal.sv_valor_dolar_presup.set(value="0.00")
+        self.text_especificaciones.delete('1.0', 'end')
 
     def flimpiar_totales_finales(self):
 
@@ -332,7 +340,6 @@ class ClasePestanaUno(tk.Frame):
         self.btn_showall.configure(state=estado)
         self.btn_buscar.configure(state=estado)
         self.btn_imprime_presup.configure(state=estado)
-        #self.btn_imprime_presup_ext.configure(state=estado)
         self.entry_busqueda_presup.configure(state=estado)
 
     def fllena_grilla_presupuestos(self, set_foco):
@@ -405,14 +412,12 @@ class ClasePestanaUno(tk.Frame):
             self.principal.var_obj_funcionnew.mostrar_error("Fallo en carga de GRID resu_presup")
             return
 
-
     # ----------------------------------------------------------------------------
     # BOTONES CRUD - NUEVOS PRESUPUESTOS
     # ----------------------------------------------------------------------------
 
     def fnuevo_presupuesto(self):
 
-        # self.alta_modif_presup = 1
         self.estado_entrys_crud_uno("normal")
         self.estado_botones_uno("disabled")
         self.principal.pestana_2.estado_botones_dos("normal")
@@ -445,8 +450,6 @@ class ClasePestanaUno(tk.Frame):
             return
         # -------------------------------------------------------------------
 
-        #self.alta_modif_presup = 2
-
         # En la lista valores cargo todos los registros completos con todos los campos
         valores = self.grid_presupuestos.item(self.selected, 'values')
         self.principal.sv_nro_presup.set(value=valores[0])
@@ -472,9 +475,9 @@ class ClasePestanaUno(tk.Frame):
         self.sv_combo_formas_pago.set(value=datos_presu_entregado[11])
         self.sv_detalle_pago.set(value=datos_presu_entregado[12])
         self.sv_aceptado.set(value=datos_presu_entregado[14])
-        self.principal.pestana_2.text_especificaciones.configure(state="normal")
-        self.principal.pestana_2.text_especificaciones.insert("end", datos_presu_entregado[13])
-        self.principal.pestana_2.text_especificaciones.configure(state="disabled")
+        self.principal.pestana_1.text_especificaciones.configure(state="normal")
+        self.principal.pestana_1.text_especificaciones.insert("end", datos_presu_entregado[13])
+        self.principal.pestana_1.text_especificaciones.configure(state="normal")
         # ---------------------------------------------------------------------
 
         # ---------------------------------------------------------------------
@@ -497,18 +500,18 @@ class ClasePestanaUno(tk.Frame):
 
             # -----------------------------------------------------------------
             dic_deta_auxpresup = {
-                "Id": row[0],                              # Id
-                "ax_orden": row[1],                        # orden elemento
-                "ax_proved": row[3],                       # nombre del proveedor
-                "ax_codcomp": row[4],                      # codigo componente del proveedor
-                "ax_componente": row[5],                   # descripcion del componente
-                "ax_iva": row[6],                          # tasa iva del componente
-                "ax_cantidad": row[7],                     # cantidad del componente
-                "ax_neto_dolar": row[8],                   # costo neto componente en dolares
-                "ax_total_presup": total_presupuesto,      # total del presupuesto real
-                "ax_total_redondo": row[9],                # total en pesos redondeo
-                "ax_total_ganancia": ganancia_a_cargar,    # total ganancia
-                "ax_total_costos": dolar_a_pesos           # total costos
+                "Id":                row[0],             # Id
+                "ax_orden":          row[1],             # orden elemento
+                "ax_proved":         row[3],             # nombre del proveedor
+                "ax_codcomp":        row[4],             # codigo componente del proveedor
+                "ax_componente":     row[5],             # descripcion del componente
+                "ax_iva":            row[6],             # tasa iva del componente
+                "ax_cantidad":       row[7],             # cantidad del componente
+                "ax_neto_dolar":     row[8],             # costo neto componente en dolares
+                "ax_total_presup":   total_presupuesto,  # total del presupuesto real
+                "ax_total_redondo":  row[9],             # total en pesos redondeo
+                "ax_total_ganancia": ganancia_a_cargar,  # total ganancia
+                "ax_total_costos":   dolar_a_pesos       # total costos
             }
             # -----------------------------------------------------------------
 
@@ -528,11 +531,11 @@ class ClasePestanaUno(tk.Frame):
 
         # ----------------------------------------------------------------------
         # selecciono el Id del grid para su uso posterior
-        self.selected = self.grid_presupuestos.focus()
+        self.selected     = self.grid_presupuestos.focus()
         self.selected_ant = self.grid_presupuestos.prev(self.selected)
         # guardo en clave el Id pero de la Tabla (no son el mismo)
-        self.clave = self.grid_presupuestos.item(self.selected, 'text')
-        self.clave_ant = self.grid_presupuestos.item(self.selected_ant, 'text')
+        self.clave        = self.grid_presupuestos.item(self.selected, 'text')
+        self.clave_ant    = self.grid_presupuestos.item(self.selected_ant, 'text')
         # ----------------------------------------------------------------------
 
         if self.clave == "":
@@ -566,7 +569,7 @@ class ClasePestanaUno(tk.Frame):
         # selecciono el Id del Tv grid para su uso posterior
         self.selected = self.grid_presupuestos.focus()
         # guardo en clave el Id pero de la tabla (no son el mismo)
-        self.clave = self.grid_presupuestos.item(self.selected, 'text')
+        self.clave    = self.grid_presupuestos.item(self.selected, 'text')
         # ----------------------------------------------------------------------
 
         if self.clave == "":
@@ -623,8 +626,7 @@ class ClasePestanaUno(tk.Frame):
         self.fcerrar_presupuesto("normal")
 
     def fguardar_como(self):
-        pass
-    #     self.fcerrar_presupuesto("como")
+        self.fcerrar_presupuesto("como")
 
     def fcerrar_presupuesto(self, parametro):
 
@@ -649,6 +651,7 @@ class ClasePestanaUno(tk.Frame):
 
         # --------------------------------------------------------------------
         if parametro == "normal":
+            
             # Es una carga normal
             r = messagebox.askquestion("Cerrar presupuesto", "Guardamos el presupuesto? ", parent=self)
             if r == messagebox.NO:
@@ -668,19 +671,18 @@ class ClasePestanaUno(tk.Frame):
         # --------------------------------------------------------------------
         if parametro == "como":
             # Es guardar como para generar un presupuesto igual pero con otro numero
-
-            r = messagebox.askquestion("Presupuesto", "Duplicar presupuesto... asignando numero siguiente ", parent=self)
+            r = messagebox.askquestion("Presupuesto", "Duplicar presupuesto... asignando numero siguiente ",
+                                       parent=self)
             if r == messagebox.NO:
                 return
-
             # Si es -guardar_como- busco solamente asignar un numero mas de presupuesto como si fuera uno nuevo
             self.principal.sv_nro_presup.set(value=str(int(self.principal.var_obj_presup.traer_ultimo(1)) + 1))
         # --------------------------------------------------------------------
 
         # --------------------------------------------------------------------
         try:
-            # Antes de insertar los presupuestos en las tablas principales, borro todo aux_presup y
-            #  lo vuelvo a cargar desde el GRID con los datos actualizados
+            # Antes de insertar los presupuestos en las tablas principales, borro _todo aux_presup y
+            # lo vuelvo a cargar desde el GRID con los datos actualizados
             self.principal.var_obj_presup.actualizar_auxpresup(self.principal.pestana_2.grid_componentes)
         except Exception:
             self.principal.var_obj_funcionnew.mostrar_error()
@@ -704,16 +706,16 @@ class ClasePestanaUno(tk.Frame):
 
             # -----------------------------------------------------------------
             dic_deta_presup = {
-                "Id": row[0],                                          # Id
-                "dp_orden": row[1],                                    # orden elemento
-                "dp_numero": self.principal.sv_nro_presup.get(),       # numero de presupuesto
-                "dp_proved": row[2],                                   # nombre proveedor
-                "dp_codcomp": row[3],                                  # codigo componente del proveedor
-                "dp_componente": row[4],                               # descripcion del componente
-                "dp_iva": row[5],                                      # tasa iva del componente
-                "dp_cantidad": row[6],                                 # cantidad del componente
-                "dp_neto_dolar": row[7],                               # costo neto componente en dolares
-                "dp_redondo": row[9]                                   # total en pesos redondeo
+                "Id":            row[0],                                          # Id
+                "dp_orden":      row[1],                              # orden elemento
+                "dp_numero":     self.principal.sv_nro_presup.get(),  # numero de presupuesto
+                "dp_proved":     row[2],                              # nombre proveedor
+                "dp_codcomp":    row[3],                              # codigo componente del proveedor
+                "dp_componente": row[4],                              # descripcion del componente
+                "dp_iva":        row[5],                              # tasa iva del componente
+                "dp_cantidad":   row[6],                              # cantidad del componente
+                "dp_neto_dolar": row[7],                              # costo neto componente en dolares
+                "dp_redondo":    row[9]                               # total en pesos redondeo
             }
 
             # -----------------------------------------------------------------
@@ -730,21 +732,21 @@ class ClasePestanaUno(tk.Frame):
 
         # ------------------------------------------------------------------------------
         dic_resu_presup = {
-            "Id": "",                                                                  # Id
-            "rp_numero": self.principal.sv_nro_presup.get(),                           # numero de presupuesto
-            "rp_fecha": self.principal.sv_fecha_presup.get(),                          # fecha de presupuesto
-            "rp_codcli": self.sv_codigo_cliente.get(),                                 # codigo de cliente
-            "rp_nomcli": self.sv_nombre_cliente.get(),                                 # nombre del cliente
-            "rp_sitfiscal": self.sv_sit_fiscal.get(),                                  # situacion fiscal del cliente
-            "rp_cuit": self.sv_cuit.get(),                                             # cuit del cliente
-            "rp_valor_dolar": self.principal.sv_valor_dolar_presup.get(),              # valor asignado del dolar hoy
-            "rp_tasa_gan": self.principal.sv_tasa_ganancia.get(),                      # tasa de ganancia
-            "rp_total_real": self.principal.sv_total_presup.get(),                     # total en pesos redondeo
-            "rp_total_redondo": self.principal.sv_total_presup_redondo.get(),          # total en pesos redondeo
-            "rp_forma_pago": self.sv_combo_formas_pago.get(),                          # forma de pago
-            "rp_detalle_pago": self.sv_detalle_pago.get(),                             # detalle del pago
-            "rp_detalle": self.principal.pestana_2.text_especificaciones.get(1.0, 'end-1c'),  # texto especificaciones
-            "rp_aceptado": self.sv_aceptado.get()                            # codigo 0/1 de presupuesto aceptado o no
+            "Id": "",                                                                   # Id
+            "rp_numero":        self.principal.sv_nro_presup.get(),                     # numero de presupuesto
+            "rp_fecha":         self.principal.sv_fecha_presup.get(),                   # fecha de presupuesto
+            "rp_codcli":        self.sv_codigo_cliente.get(),                           # codigo de cliente
+            "rp_nomcli":        self.sv_nombre_cliente.get(),                           # nombre del cliente
+            "rp_sitfiscal":     self.sv_sit_fiscal.get(),                               # situacion fiscal del cliente
+            "rp_cuit":          self.sv_cuit.get(),                                     # cuit del cliente
+            "rp_valor_dolar":   self.principal.sv_valor_dolar_presup.get(),             # valor asignado del dolar hoy
+            "rp_tasa_gan":      self.principal.sv_tasa_ganancia.get(),                  # tasa de ganancia
+            "rp_total_real":    self.principal.sv_total_presup.get(),                   # total en pesos redondeo
+            "rp_total_redondo": self.principal.sv_total_presup_redondo.get(),           # total en pesos redondeo
+            "rp_forma_pago":    self.sv_combo_formas_pago.get(),                        # forma de pago
+            "rp_detalle_pago":  self.sv_detalle_pago.get(),                             # detalle del pago
+            "rp_detalle":       self.principal.pestana_1.text_especificaciones.get(1.0, 'end-1c'),  # texto especificaciones
+            "rp_aceptado":      self.sv_aceptado.get()                                  # codigo 0/1 de presupuesto aceptado o no
         }
 
         # --------------------------------------------------------------------------
@@ -757,7 +759,6 @@ class ClasePestanaUno(tk.Frame):
 
         # pongo all en blanco como si recien iniciara para que se pueda pedir un nuevo presupuesto
         self.principal.estado_inicial_general()
-
         self.principal.status.set_status("🗑 Ingreso correcto detalle y resumen", "ok")
 
         # ---------------------------------------------------------------------
@@ -785,8 +786,6 @@ class ClasePestanaUno(tk.Frame):
         self.estado_entrys_crud_uno("disabled")
         self.fedito_presupuesto()
 
-
-
     # ----------------------------------------------------------------------
     # CUADROS
     # ----------------------------------------------------------------------
@@ -798,14 +797,14 @@ class ClasePestanaUno(tk.Frame):
         style = ttk.Style(self.frame_grid_presupuestos)
         style.theme_use("clam")
         style.configure("Treeview.Heading", background="black", foreground="white")
-        self.grid_presupuestos = ttk.Treeview(self.frame_grid_presupuestos, height=8, columns=("col1",
+        self.grid_presupuestos = ttk.Treeview(self.frame_grid_presupuestos, height=5, columns=("col1",
                                                     "col2", "col3", "col4", "col5", "col6", "col7", "col8", "col9"))
 
         self.grid_presupuestos.bind("<Double-Button-1>", self.doble_click_grid)
 
-        self.grid_presupuestos.column("#0", width=60, anchor="center", minwidth=60)
-        self.grid_presupuestos.column("col1", width=100, anchor="w", minwidth=100)
-        self.grid_presupuestos.column("col2", width=80, anchor="w", minwidth=80)
+        self.grid_presupuestos.column("#0",   width=60,  anchor="center", minwidth=60)
+        self.grid_presupuestos.column("col1", width=100, anchor="w",      minwidth=100)
+        self.grid_presupuestos.column("col2", width=80,  anchor="w",      minwidth=80)
         self.grid_presupuestos.column("col3", width=350, anchor="center", minwidth=350)
         self.grid_presupuestos.column("col4", width=100, anchor="center", minwidth=100)
         self.grid_presupuestos.column("col5", width=100, anchor="center", minwidth=100)
@@ -814,20 +813,20 @@ class ClasePestanaUno(tk.Frame):
         self.grid_presupuestos.column("col8", width=130, anchor="center", minwidth=130)
         self.grid_presupuestos.column("col9", width=130, anchor="center", minwidth=130)
 
-        self.grid_presupuestos.heading("#0", text="Id", anchor="center")
-        self.grid_presupuestos.heading("col1", text="Nº Venta", anchor="w")
-        self.grid_presupuestos.heading("col2", text="Fecha", anchor="w")
-        self.grid_presupuestos.heading("col3", text="Cliente", anchor="center")
-        self.grid_presupuestos.heading("col4", text="Dolar", anchor="center")
-        self.grid_presupuestos.heading("col5", text="% Ganancia", anchor="center")
-        self.grid_presupuestos.heading("col6", text="Total venta", anchor="center")
-        self.grid_presupuestos.heading("col7", text="Redondeo", anchor="center")
-        self.grid_presupuestos.heading("col8", text="Forma pago", anchor="center")
+        self.grid_presupuestos.heading("#0",   text="Id",           anchor="center")
+        self.grid_presupuestos.heading("col1", text="Nº Venta",     anchor="w")
+        self.grid_presupuestos.heading("col2", text="Fecha",        anchor="w")
+        self.grid_presupuestos.heading("col3", text="Cliente",      anchor="center")
+        self.grid_presupuestos.heading("col4", text="Dolar",        anchor="center")
+        self.grid_presupuestos.heading("col5", text="% Ganancia",   anchor="center")
+        self.grid_presupuestos.heading("col6", text="Total venta",  anchor="center")
+        self.grid_presupuestos.heading("col7", text="Redondeo",     anchor="center")
+        self.grid_presupuestos.heading("col8", text="Forma pago",   anchor="center")
         self.grid_presupuestos.heading("col9", text="Detalle pago", anchor="center")
 
-        self.grid_presupuestos.tag_configure('oddrow', background='light grey')
+        self.grid_presupuestos.tag_configure('oddrow',  background='light grey')
         self.grid_presupuestos.tag_configure('evenrow', background='white')
-        self.grid_presupuestos.tag_configure('error', background='#AADE64')
+        self.grid_presupuestos.tag_configure('error',   background='#AADE64')
 
         # SCROLLBAR del Treeview
         scroll_x = tk.Scrollbar(self.frame_grid_presupuestos, orient="horizontal")
@@ -929,7 +928,8 @@ class ClasePestanaUno(tk.Frame):
                                             justify="right")
         self.entry_tasa_ganancia.grid(row=0, column=1, padx=3, pady=2, sticky="e")
         self.entry_tasa_ganancia.config(validate="key", validatecommand=self.vcmd)
-        self.entry_tasa_ganancia.bind("<FocusOut>", lambda e: self.principal.var_obj_funcionnew.corregir_al_salir(self.entry_tasa_ganancia))
+        self.entry_tasa_ganancia.bind("<FocusOut>", lambda e: self.principal.var_obj_funcionnew.corregir_al_salir(
+            self.entry_tasa_ganancia))
         self.entry_tasa_ganancia.bind('<Tab>', lambda e: self.principal.pestana_2.calcular("completo"))
 
         # COTIZACION DEL DOLAR A APLICAR EN ESTE PRESUPUESTO
@@ -1017,6 +1017,15 @@ class ClasePestanaUno(tk.Frame):
 
         for widg in self.frame_cliente.winfo_children():
             widg.grid_configure(padx=3, pady=3, sticky='nsew')
+
+    # Caja de texto para detalle extenso
+    def cuadro_caja_texto_detalles_extensos(self):
+
+        self.frame_cajatexto.grid_rowconfigure(0, weight=1)
+        self.frame_cajatexto.grid_columnconfigure(0, weight=1)
+        self.text_especificaciones = ScrolledText(self.frame_cajatexto)
+        self.text_especificaciones.config(width=100, height=5, wrap="word", padx=5, pady=3)
+        self.text_especificaciones.grid(row=0, column=0, padx=5, pady=3)
 
     # Botones CRUD grid presupuestos entregados
     def fcuadro_botones__uno_grid_presupuestos(self):
@@ -1232,13 +1241,11 @@ class ClasePestanaUno(tk.Frame):
         self.principal.var_obj_funcionnew.mover_puntero_topend(self.grid_presupuestos, 'END')
 
     def fshowall(self):
+
         self.selected = self.grid_presupuestos.focus()
         self.clave = self.grid_presupuestos.item(self.selected, 'text')
-        self.filtro_activo_presupuestos = "ORDER BY rp_fecha"
+        self.filtro_activo_presupuestos = "ORDER BY rp_numero"
         self.fllena_grilla_presupuestos(self.clave)
-
-
-
 
     # ----------------------------------------------------------------------------
     # IMPRESION
@@ -1686,11 +1693,6 @@ class ClasePestanaUno(tk.Frame):
 
 
 
-
-
-
-
-
 # =========================================================================================
 # PESTAÑA DOS
 # =========================================================================================
@@ -1707,33 +1709,31 @@ class ClasePestanaDos(tk.Frame):
         # ---------------------------------------------------------------------
         # STRINGVARS
         # ---------------------------------------------------------------------
-        self.sv_buscostring = tk.StringVar(value="")
-
-        self.sv_componente = tk.StringVar(value="")
-        self.sv_combo_tasa_iva = tk.StringVar(value="")
-        self.sv_cantidad_vendida = tk.StringVar(value="0.00")
-        self.sv_neto_dolar = tk.StringVar(value="0.00")
-        self.sv_proveedor = tk.StringVar(value="")
+        self.sv_buscostring       = tk.StringVar(value="")
+        self.sv_componente        = tk.StringVar(value="")
+        self.sv_combo_tasa_iva    = tk.StringVar(value="")
+        self.sv_cantidad_vendida  = tk.StringVar(value="0.00")
+        self.sv_neto_dolar        = tk.StringVar(value="0.00")
+        self.sv_proveedor         = tk.StringVar(value="")
         self.sv_codigo_componente = tk.StringVar(value="")
 
-        self.sv_neto_dolar = tk.StringVar(value="0.00")
-        self.sv_costo_neto_pesos_unidad = tk.StringVar(value="0.00")
-        self.sv_costo_neto_pesos_xcanti = tk.StringVar(value="0.00")
+        self.sv_neto_dolar               = tk.StringVar(value="0.00")
+        self.sv_costo_neto_pesos_unidad  = tk.StringVar(value="0.00")
+        self.sv_costo_neto_pesos_xcanti  = tk.StringVar(value="0.00")
         self.sv_costo_bruto_pesos_unidad = tk.StringVar(value="0.00")
         self.sv_costo_bruto_pesos_xcanti = tk.StringVar(value="0.00")
-        self.sv_importe_iva_unidad = tk.StringVar(value="0.00")
-        self.sv_importe_iva_xcanti = tk.StringVar(value="0.00")
-        self.sv_importe_ganancia_unidad = tk.StringVar(value="0.00")
-        self.sv_importe_ganancia_xcanti = tk.StringVar(value="0.00")
-        self.sv_precio_final_unidad = tk.StringVar(value="0.00")
-        self.sv_precio_final_xcanti = tk.StringVar(value="0.00")
+        self.sv_importe_iva_unidad       = tk.StringVar(value="0.00")
+        self.sv_importe_iva_xcanti       = tk.StringVar(value="0.00")
+        self.sv_importe_ganancia_unidad  = tk.StringVar(value="0.00")
+        self.sv_importe_ganancia_xcanti  = tk.StringVar(value="0.00")
+        self.sv_precio_final_unidad      = tk.StringVar(value="0.00")
+        self.sv_precio_final_xcanti      = tk.StringVar(value="0.00")
 
         self.sv_combo_tasa_iva = tk.StringVar()
         # ----------------------------------------------------------------------
 
         # Ejecutamos tu secuencia de inicialización adaptada a la Pestaña 2
         self.create_widgets()
-
 
     def create_widgets(self):
 
@@ -1746,46 +1746,40 @@ class ClasePestanaDos(tk.Frame):
 
         # CUADROS - CONTENEDORES ----------------------------------------------
 
-        # Contenedor principal
+        # Contenedor principal ------------------------------------------------
         self.frame_principal = tk.LabelFrame(self, text="", foreground="#CD5C5C")
         self.frame_principal.pack(expand=True, fill="both", padx=5, pady=5)  # O el empaquetado que uses (.grid o .pack)
 
+        # ---------------------------------------------------------------------
         # Contenedor GRID Tabla aux_ventas (auxiliar) para los detalles de articulos vendidos
         self.frame_grid_componentes=tk.LabelFrame(self.frame_principal, text="Componentes presupuesto actual",
                                                   foreground="#CD5C5C")
         self.cuadro_grid_componentes()
         self.frame_grid_componentes.pack(side="top", fill="both", padx=5, pady=2)
 
-        # Botones CRUD GRID auxiliar de< componentes
+        # Botones CRUD GRID auxiliar de< componentes --------------------------
         self.frame_cuadro3 = tk.LabelFrame(self.frame_principal, text="", bg="#27F5E4")
         self.cuadro_botones_grid_componentes()
         self.frame_cuadro3.pack(side="top", fill="both", padx=5, pady=5)
         # ---------------------------------------------------------------------
 
-        # ENTRYS ARTICULO/COMPONENTE A VENDER
+        # ENTRYS ARTICULO/COMPONENTE A VENDER ---------------------------------
         self.frame_componentes = tk.LabelFrame(self.frame_principal, text="", bg="#81EBCD", borderwidth=2,
                                                relief="solid", highlightbackground="blue")
         self.entrys_componentes()
         self.frame_componentes.pack(side="top", fill="both", expand=0, padx=5, pady=2)
         # ----------------------------------------------------------------------
 
-        # ENTRYS IMPORTES ARTICULO - Linea de precios del item a cargar
+        # ENTRYS IMPORTES ARTICULO - Linea de precios del item a cargar --------
         self.frame_precios_articulo = tk.LabelFrame(self.frame_principal, text="", bg="#81EBCD", foreground="black",
                                                     relief="solid")
         self.entrys_precios_componentes()
         self.frame_precios_articulo.pack(side="top", fill="both", expand=0, padx=5, pady=2)
         # -----------------------------------------------------------------------
 
-        # CUADRO FRAME_CAJADETEXTO
-        self.frame_cajatexto = tk.LabelFrame(self.frame_principal, text="Descripcion adicional", fg="red")
-        self.cuadro_caja_texto_detalles_extensos()
-        self.frame_cajatexto.pack(expand=0, side="top", fill="both", pady=5, padx=5)
-        # ----------------------------------------------------------------------
-
     def festado_inicial_dos(self):
 
         self.alta_modif_aux = 0  # tabla aux_presu
-        # self.filtro_activo_presupuestos = "ORDER BY rp_fecha, rp_numero ASC"
         self.filtro_activo_auxiliar = "ORDER BY ax_orden ASC"
 
         # Limpiar los entrys de la pestaña dos
@@ -1808,19 +1802,14 @@ class ClasePestanaDos(tk.Frame):
         self.btn_editar_componente.configure(state=estado)
         self.btn_ingresar_componente.configure(state=estado)
         self.btn_reset_componente.configure(state=estado)
-
-        # self.btn_cancelar_presupuesto.configure(state=estado)
-
-        # self.btn_cerrar_presupuesto.configure(state=estado)
-        # self.btn_guardar_como.configure(state=estado)
-        # self.btn_busco_cliente.configure(state=estado)
-        # self.btn_bus_art.configure(state=estado)
-
+        self.btn_detalle_precio_articulo.configure(state=estado)
+        self.btn_articulo.configure(state=estado)
 
     # ---------------------------------------------------------------------
     # GRID AUXILIAR - El de los componentes
     # ---------------------------------------------------------------------
 
+    # ---------------------------------------------------------------------
     # GRID presupuesto actual o el que estamos recien creando en auxcomp tabla auxilliar
     def cuadro_grid_componentes(self):
 
@@ -1832,32 +1821,32 @@ class ClasePestanaDos(tk.Frame):
                                                  "col4", "col5", "col6", "col7", "col8", "col9", "col10", "col11"))
 
         #self.grid_venta_articulos.bind("<Double-Button-1>", self.doble_click_grid)
-        self.grid_componentes.column("#0", width=40, anchor="center", minwidth=40)
-        self.grid_componentes.column("col1", width=50, anchor="w", minwidth=50)
-        self.grid_componentes.column("col2", width=50, anchor="w", minwidth=60)
-        self.grid_componentes.column("col3", width=90, anchor="center", minwidth=90)
-        self.grid_componentes.column("col4", width=300, anchor="center", minwidth=250)
-        self.grid_componentes.column("col5", width=50, anchor="center", minwidth=50)
-        self.grid_componentes.column("col6", width=40, anchor="center", minwidth=40)
-        self.grid_componentes.column("col7", width=100, anchor="center", minwidth=100)
-        self.grid_componentes.column("col8", width=100, anchor="center", minwidth=100)
-        self.grid_componentes.column("col9", width=100, anchor="center", minwidth=100)
+        self.grid_componentes.column("#0",    width=40,  anchor="center", minwidth=40)
+        self.grid_componentes.column("col1",  width=50,  anchor="w",      minwidth=50)
+        self.grid_componentes.column("col2",  width=50,  anchor="w",      minwidth=60)
+        self.grid_componentes.column("col3",  width=90,  anchor="center", minwidth=90)
+        self.grid_componentes.column("col4",  width=300, anchor="center", minwidth=250)
+        self.grid_componentes.column("col5",  width=50,  anchor="center", minwidth=50)
+        self.grid_componentes.column("col6",  width=40,  anchor="center", minwidth=40)
+        self.grid_componentes.column("col7",  width=100, anchor="center", minwidth=100)
+        self.grid_componentes.column("col8",  width=100, anchor="center", minwidth=100)
+        self.grid_componentes.column("col9",  width=100, anchor="center", minwidth=100)
         self.grid_componentes.column("col10", width=100, anchor="center", minwidth=100)
         self.grid_componentes.column("col11", width=100, anchor="center", minwidth=100)
         #self.grid_componentes.column("col12", width=100, anchor="center", minwidth=80)
 
-        self.grid_componentes.heading("#0", text="Id", anchor="center")
-        self.grid_componentes.heading("col1", text="Orden", anchor="w")
-        self.grid_componentes.heading("col2", text="Proveedor", anchor="w")
-        self.grid_componentes.heading("col3", text="Codigo Compn.", anchor="w")
-        self.grid_componentes.heading("col4", text="Componente", anchor="center")
-        self.grid_componentes.heading("col5", text="%IVA", anchor="center")
-        self.grid_componentes.heading("col6", text="Cant.", anchor="center")
-        self.grid_componentes.heading("col7", text="CostoNeto U$S", anchor="center")
-        self.grid_componentes.heading("col8", text="Tot.Presupuesto", anchor="center")
-        self.grid_componentes.heading("col9", text="Tot.Redondeo", anchor="center")
-        self.grid_componentes.heading("col10", text="Tot.Ganancia", anchor="center")
-        self.grid_componentes.heading("col11", text="Tot.Costo", anchor="center")
+        self.grid_componentes.heading("#0",    text="Id",              anchor="center")
+        self.grid_componentes.heading("col1",  text="Orden",           anchor="w")
+        self.grid_componentes.heading("col2",  text="Proveedor",       anchor="w")
+        self.grid_componentes.heading("col3",  text="Codigo Compn.",   anchor="w")
+        self.grid_componentes.heading("col4",  text="Componente",      anchor="center")
+        self.grid_componentes.heading("col5",  text="%IVA",            anchor="center")
+        self.grid_componentes.heading("col6",  text="Cant.",           anchor="center")
+        self.grid_componentes.heading("col7",  text="CostoNeto U$S",   anchor="center")
+        self.grid_componentes.heading("col8",  text="Tot.Presupuesto", anchor="center")
+        self.grid_componentes.heading("col9",  text="Tot.Redondeo",    anchor="center")
+        self.grid_componentes.heading("col10", text="Tot.Ganancia",    anchor="center")
+        self.grid_componentes.heading("col11", text="Tot.Costo",       anchor="center")
         #self.grid_componentes.heading("col12", text="Total Costo", anchor="center")
 
         # SCROLLBAR del Treeview
@@ -1871,7 +1860,6 @@ class ClasePestanaDos(tk.Frame):
         scroll_x.pack(side="bottom", fill="x")
         self.grid_componentes['selectmode'] = 'browse'
         self.grid_componentes.pack(side="top", fill="both", expand=1, padx=5, pady=2)
-
 
     # ---------------------------------------------------------------------
     # BOTONES CRUD GRID AUXILIAR - El de los componentes
@@ -1962,16 +1950,6 @@ class ClasePestanaDos(tk.Frame):
         for widg in self.frame_cuadro3.winfo_children():
             widg.grid_configure(padx=3, pady=3, sticky='nsew')
 
-    # Caja de texto para detalle extenso
-    def cuadro_caja_texto_detalles_extensos(self):
-
-        self.frame_cajatexto.grid_rowconfigure(0, weight=1)
-        self.frame_cajatexto.grid_columnconfigure(0, weight=1)
-        self.text_especificaciones = ScrolledText(self.frame_cajatexto)
-        self.text_especificaciones.config(width=100, height=8, wrap="word", padx=5, pady=5)
-        self.text_especificaciones.grid(row=0, column=0, padx=5, pady=15)
-
-
     # ---------------------------------------------------------------------
     # FUNCIONES CRUD DE BOTONES CRUD GRID AUXILIAR - El de los componentes
     # ---------------------------------------------------------------------
@@ -1987,9 +1965,6 @@ class ClasePestanaDos(tk.Frame):
         self.btn_ingresar_componente.configure(state="normal")
         self.btn_reset_componente.configure(state="normal")
         self.entry_componente.focus()
-        # self.btn_mas_componente.configure(state="disabled")
-        # self.btn_menos_componente.configure(state="disabled")
-        # self.btn_editar_componente.configure(state="disabled")
 
     def feditar_item_auxpresup(self):
 
@@ -2115,7 +2090,7 @@ class ClasePestanaDos(tk.Frame):
             # ----------------------------------------------------------------
             try:
                 # Elimino el item anterior en la tabla aux_presup
-                self.principal.var_obj_presupuestos.eliminar_auxpresup(self.clave)
+                self.principal.var_obj_presup.eliminar_auxpresup(self.clave)
             except Exception:
                 self.principal.var_obj_funcionnew.mostrar_error()
                 return
@@ -2134,18 +2109,18 @@ class ClasePestanaDos(tk.Frame):
 
         # -----------------------------------------------------------------
         dic_deta_auxpresup = {
-            "Id": "",                                                          # Id
-            "ax_orden": orden_item,                                            # orden elemento
-            "ax_proved": self.sv_proveedor.get(),                              # nombre del proveedor
-            "ax_codcomp": self.sv_codigo_componente.get(),                     # codigo componente del proveedor
-            "ax_componente": self.sv_componente.get(),                         # descripcion del componente
-            "ax_iva": self.sv_combo_tasa_iva.get(),                            # tasa iva del componente
-            "ax_cantidad": self.sv_cantidad_vendida.get(),                     # cantidad del componente
-            "ax_neto_dolar": self.sv_neto_dolar.get(),                         # costo neto componente en dolares
-            "ax_total_presup": self.sv_precio_final_xcanti.get(),              # total del presupuesto real
-            "ax_total_redondo": self.principal.sv_total_item_redondo.get(),    # total en pesos redondeo
-            "ax_total_ganancia": self.sv_importe_ganancia_xcanti.get(),        # total ganancia
-            "ax_total_costos": self.sv_costo_bruto_pesos_xcanti.get()          # total costos
+            "Id":                "",                                          # Id
+            "ax_orden":          orden_item,                                  # orden elemento
+            "ax_proved":         self.sv_proveedor.get(),                     # nombre del proveedor
+            "ax_codcomp":        self.sv_codigo_componente.get(),             # codigo componente del proveedor
+            "ax_componente":     self.sv_componente.get(),                    # descripcion del componente
+            "ax_iva":            self.sv_combo_tasa_iva.get(),                # tasa iva del componente
+            "ax_cantidad":       self.sv_cantidad_vendida.get(),              # cantidad del componente
+            "ax_neto_dolar":     self.sv_neto_dolar.get(),                    # costo neto componente en dolares
+            "ax_total_presup":   self.sv_precio_final_xcanti.get(),           # total del presupuesto real
+            "ax_total_redondo":  self.principal.sv_total_item_redondo.get(),  # total en pesos redondeo
+            "ax_total_ganancia": self.sv_importe_ganancia_xcanti.get(),       # total ganancia
+            "ax_total_costos":   self.sv_costo_bruto_pesos_xcanti.get()       # total costos
         }
         # -----------------------------------------------------------------
 
@@ -2194,10 +2169,6 @@ class ClasePestanaDos(tk.Frame):
         self.entry_codigo_componente.configure(state=estado)
         self.entry_total_item_redondo.configure(state=estado)
         self.btn_bus_art.configure(state=estado)
-        self.text_especificaciones.configure(state=estado)
-
-        # self.btn_detalle_precio_articulo.configure(state=estado)
-        # self.btn_reset_componente.configure(state=estado)
 
     def freset_articulo(self):
 
@@ -2212,10 +2183,6 @@ class ClasePestanaDos(tk.Frame):
         self.flimpiar_importes_componente()
         self.estado_entrys_crud_dos("disabled")
         self.estado_botones_dos("normal")
-
-        # self.alta_modif_aux = 0
-        # self.alta_modif_presup = 0
-        # self.entry_componente.focus()
 
     def fsubir_uno(self):
 
@@ -2279,7 +2246,8 @@ class ClasePestanaDos(tk.Frame):
 
         self.freordenar(self.grid_componentes)
 
-    def freordenar(self, tree):
+    @staticmethod
+    def freordenar(tree):
 
         """
         👉  enumerate(..., start=1)
@@ -2304,7 +2272,6 @@ class ClasePestanaDos(tk.Frame):
             # Es la que actualiza el contenido completo de la fila en el Treeview de Tkinter.
             # item es el index del registro del treeview I001, I002...
             tree.item(item, values=valores)
-
 
     # -----------------------------------------------------------------------------
     # ENTRYS DE COMPONENTES
@@ -2417,7 +2384,8 @@ class ClasePestanaDos(tk.Frame):
                                                  justify="right")
         self.entry_total_item_redondo.grid(row=2, column=9, padx=1, pady=2, sticky="e")
         self.entry_total_item_redondo.config(validate="key", validatecommand=self.vcmd)
-        self.entry_total_item_redondo.bind("<FocusOut>", lambda e: self.principal.var_obj_funcionnew.corregir_al_salir(self.entry_total_item_redondo))
+        self.entry_total_item_redondo.bind("<FocusOut>", lambda e: self.principal.var_obj_funcionnew.corregir_al_salir(
+            self.entry_total_item_redondo))
         self.entry_total_item_redondo.bind('<Tab>', lambda e: self.calcular("precio_venta_unidad"))
 
         self.btn_detalle_precio_articulo = tk.Button(self.frame_precios_articulo, text="Detalle precio",
@@ -2457,10 +2425,9 @@ class ClasePestanaDos(tk.Frame):
         self.entry_componente.focus()
         self.entry_componente.icursor(tk.END)
 
-
-    # # -----------------------------------------------------------
-    # # VALIDACION ENTRADAS
-    # # -----------------------------------------------------------
+    # -----------------------------------------------------------
+    # VALIDACION ENTRADAS
+    # -----------------------------------------------------------
 
     def limpiar_entrys_parcial(self):
 
@@ -2474,13 +2441,10 @@ class ClasePestanaDos(tk.Frame):
         self.sv_codigo_componente.set(value="")
         self.sv_costo_neto_pesos_unidad.set(value="0.00")
         self.sv_costo_neto_pesos_xcanti.set(value="0.00")
-        # self.sv_total_item_redondo.set(value="0.00")
-        self.text_especificaciones.delete('1.0', 'end')
 
-
-    # # -----------------------------------------------------------------
-    # # GRIDS
-    # # -----------------------------------------------------------------
+    # -----------------------------------------------------------------
+    # GRIDS
+    # -----------------------------------------------------------------
 
     def llena_grilla_auxiliar(self, set_foco):
 
@@ -2536,7 +2500,6 @@ class ClasePestanaDos(tk.Frame):
 
             self.principal.var_obj_funcionnew.mostrar_error("Fallo en carga de GRID auxiliar")
             return
-
 
     # ----------------------------------------------------------
     # CALCULOS
@@ -2629,16 +2592,16 @@ class ClasePestanaDos(tk.Frame):
                     self.principal.var_obj_funcionnew.mostrar_error()
                     return
 
-                sumatot_presu = 0
+                sumatot_presu   = 0
                 sumatot_redondo = 0
-                sumatot_costos = 0
+                sumatot_costos  = 0
 
                 """ Itero dentro de los componentes y calculo los totales generales """
                 for row in datos:
 
                     # total costos mas IVA
-                    sumatot_costos += (row[11] * (1 + (row[5]/100)))
-                    sumatot_presu += row[8]
+                    sumatot_costos  += (row[11] * (1 + (row[5]/100)))
+                    sumatot_presu   += row[8]
                     sumatot_redondo += row[9]
 
                 """ La ganancia la calculo entre el total redondeado y el costo total bruto para todos los
@@ -2670,15 +2633,14 @@ class ClasePestanaDos(tk.Frame):
         self.sv_importe_ganancia_xcanti.set(value="0.00")
         self.sv_costo_bruto_pesos_unidad.set(value="0.00")
         self.sv_costo_bruto_pesos_xcanti.set(value="0.00")
-        self.text_especificaciones.delete('1.0', 'end')
-
 
     # -------------------------------------------------------------
     # VARIAS
     # -------------------------------------------------------------
 
     # Accede directamente al modulo de articulos completo
-    def fver_articulos(self):
+    @staticmethod
+    def fver_articulos():
 
         vent = tk.Toplevel()
         vent.title("ABM Articulos")
@@ -2693,7 +2655,7 @@ class ClasePestanaDos(tk.Frame):
 
         self.pantalla_detalle = tk.Toplevel()
 
-        self.pantalla_detalle.protocol("WM_DELETE_WINDOW", self.fcerrar5)
+        self.pantalla_detalle.protocol("WM_DELETE_WINDOW", self.cerrar_pantalla_articulos)
         self.pantalla_detalle.geometry('580x260+600+400')
         self.pantalla_detalle.config(bg='#27BEF5', padx=5, pady=5)
         self.pantalla_detalle.resizable(1, 1)
@@ -2777,20 +2739,16 @@ class ClasePestanaDos(tk.Frame):
 
         self.frame_detalle_articulo.pack(side="top", fill="both", expand=1, padx=5, pady=5)
 
-        self.btn_volver_pantalla = tk.Button(self.frame_detalle_articulo, text="Volver", command=self.fcerrar5, width=22,
+        self.btn_volver_pantalla = tk.Button(self.frame_detalle_articulo, text="Volver", command=self.cerrar_pantalla_articulos, width=22,
                                     bg="blue", fg="white")
         self.btn_volver_pantalla.grid(row=8, column=0, padx=10, pady=2, sticky="nsew")
 
         self.pantalla_detalle.mainloop()
 
-    def fcerrar5(self):
+    def cerrar_pantalla_articulos(self):
         self.pantalla_detalle.destroy()
         self.master.grab_set()
         self.master.focus_set()
-
-
-
-
 
 
 """

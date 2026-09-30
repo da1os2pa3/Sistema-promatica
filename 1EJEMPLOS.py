@@ -3,107 +3,8 @@
 # =================================================================================================
 
 
-
-""" FORMATEAR COLUMNAS EN UN GRID DE BOTONES
-
-📌 Código
-for c in range(7):
-    self.frame_botones_grid.grid_columnconfigure(c, weight=1, minsize=140)
-
-🔹 1️⃣ for c in range(7):
-
-Esto es un bucle que se repite 7 veces.
-
-range(7) genera: 0, 1, 2, 3, 4, 5, 6
-
-Cada valor representa el número de columna en el grid
-
-👉 O sea: vas a configurar las columnas 0 a la 6 del frame.
-
-🔹 2️⃣ self.frame_botones_grid
-
-Es el Frame (o LabelFrame) donde tenés los botones.
-
-grid_columnconfigure no se aplica a los botones,
-se aplica al contenedor que usa grid.
-
-🔹 3️⃣ grid_columnconfigure(c, ...)
-
-Este método configura cómo se comporta una columna del grid.
-
-c → número de columna
-
-lo que pongas acá afecta a todos los widgets que estén en esa columna
-
-🔹 4️⃣ weight=1
-
-👉 Significa:
-
-Esta columna puede crecer cuando sobra espacio.
-
-weight=0 (default) → no se estira
-
-weight=1 → se estira
-
-todas con 1 → crecen por igual
-
-📌 En tu caso:
-
-las 7 columnas crecen igual
-
-los botones quedan del mismo ancho
-
-🔹 5️⃣ minsize=140
-
-👉 Significa:
-
-Esta columna nunca será más chica que 140 píxeles.
-
-Aunque el botón sea chico o tenga una imagen pequeña:
-
-la columna no se achica
-
-el botón ocupa ese ancho con sticky="nsew"
-
-🧠 Qué logra TODO JUNTO
-Parte	Efecto
-range(7)	configura las 7 columnas
-minsize=140	ancho mínimo fijo
-weight=1	columnas elásticas
-sticky="nsew"	botón llena la celda
-
-👉 Resultado final:
-
-botones del mismo tamaño
-
-imagen + texto sin achicarse
-
-interfaz prolija y escalable
-
-📦 Analogía simple
-
-Pensalo como 7 cajones:
-
-cada cajón mide mínimo 140 px
-
-si sobra lugar, todos se agrandan igual
-
-el botón se estira para llenar su cajón
-
-Si querés, después te explico:
-
-rowconfigure
-
-sticky
-
-o cómo dejar una columna fija y las otras no
-"""
-# ----------------------------------------------------------------------
-
-
-
-
-# -----------------------------------------------------------------------
+""" -----------------------------------------------------------------------
+FORMATEAR_CIFRA EN FUNCION
 # formatear_cifra en funcion
 # numero = total_pesos_mesactual
 # salida1 = "{:,.2f}".format(numero)
@@ -112,24 +13,12 @@ o cómo dejar una columna fija y las otras no
 # salida4 = salida3.replace('n','.')
 # total_pesos_mesactual = salida4
 # -------------------------------------------------------------------------
-
+"""
 
 # =================================================================================================
 # =================================== TABLAS ======================================================
 # =================================================================================================
 
-"""
-Esto uso para saber si una tabla esta vacia - mando una consulta estandar del archivo
-como hago en llena grilla y me devuelve una lista con los datos de los registros, pregunto
-por el LEN de esa lista y si me da cero es que la tabla esta vacia
-
-largo = self.varCotiz.consultar_detalle_auxventas("aux_ventas")
-if len(largo) <= 0:
-    messagebox.showwarning("Cuidado", "No existen items a ingresar", parent=self)
-    return
-"""
-
-# --------------------------------------------------------------------------------------------------
 
 
 # =================================================================================================
@@ -137,28 +26,9 @@ if len(largo) <= 0:
 # =================================================================================================
 
 
-# -------------------------------------------------------------------------------------------------
 """
-=============================================================================================================
-Esta usa la otra funcion de entrada de fecha que esta muy buena - Va evaluando tecla por tecla y solo te deja 
-poner numeros y barras
-
-self.entry_stringquebusco=Entry(self.frame_buscar, validate="key", 
-                                validatecommand=(self.frame_buscar.register(validate_entry), "%P"),
-                                width=40, textvariable=self.strvar_stringquebusco)
-
-validate="key" = Es que actua cada vez que presionamos una tecla
-validatecommand = es en que frame estamos trabajando y llama a la funcion validate_entry) que la tengo 
-definida aca mismo en funciones.py
-"%P" es lo que ingresa el usuario
-lo demas se entiende es lo que comunmente usamos
-esta semiusada en el programa o modulo ventas_interno.py 
-
-=============================================================================================================
-"""
-
-"""
-=============================================================================================================
+-------------------------------------------------------------------------------------------------------------
+OPERACIONES CON FECHAS
 ========= primer caso
 from datetime import datetime
 from datetime import timedelta
@@ -179,12 +49,13 @@ dentro_de_1_hora = ahora + timedelta(hours=1)
 print("Dentro de una hora: " + str(dentro_de_1_hora))
 
 ============== tercer caso
-
 Usando dateutil.relativedelta
-Hasta ahora hemos operado con horas y con días, pero falta operar con meses o semanas. Lo anteriormente explicado solo cubre horas, días y otros, pero no meses (tomando en cuenta años bisiestos y todo eso)
+Hasta ahora hemos operado con horas y con días, pero falta operar con meses o semanas. Lo anteriormente explicado 
+solo cubre horas, días y otros, pero no meses (tomando en cuenta años bisiestos y todo eso)
 Afortunadamente existe un paquete que podemos instalar con pip:
 pip install python-dateutil
-Y a partir del mismo ya podemos usar dateutil.relativedelta. Lo importante aquí es saber que siempre vamos a sumar, pero que si queremos restar, debemos indicar los parámetros en negativo.
+Y a partir del mismo ya podemos usar dateutil.relativedelta. Lo importante aquí es saber que siempre vamos a sumar, 
+pero que si queremos restar, debemos indicar los parámetros en negativo.
 
 Veamos los ejemplos:
 
@@ -201,16 +72,11 @@ print("Dentro de un año y una semana: " + str(dentro_de_anio_y_semana))
 
 hace_dos_anios = ahora + relativedelta(years=-2)
 print("Hace dos años: " + str(hace_dos_anios))
-
-========================================================================================================
+--------------------------------------------------------------------------------------------------------
 """
-# -------------------------------------------------------------------------------------------------
 
-
-# -------------------------------------------------------------------------------------------------
 """
-# ======================================================================================================
-
+--------------------------------------------------------------------------------------------------------
 # para filtrar tablas por fechas
 
         # ejemplo de senni --------------------------------------------------------------------
@@ -218,8 +84,7 @@ print("Hace dos años: " + str(hace_dos_anios))
         # fecha1 + "' AS date) and CAST(ac_fecha AS date) <= CAST('" + \
         # fecha2 + "' AS date) ORDER BY ac_nro_contrato ASC"
         # -------------------------------------------------------------------------------------
-
-# ======================================================================================================
+---------------------------------------------------------------------------------------------------------
 """
 
 
@@ -228,16 +93,25 @@ print("Hace dos años: " + str(hace_dos_anios))
 # =================================== TREEVIEW ====================================================
 # =================================================================================================
 
+
 """
-=====================================================================================================================
+---------------------------------------------------------------------------------------------------------
  Hace que el treeview se posicione en el ultimo registro
-
-        self.grid_resumen_ventas.yview((self.grid_resumen_ventas.index(self.grid_resumen_ventas.get_children()[-1])))
-===================================================================================================================
+self.grid_resumen_ventas.yview((self.grid_resumen_ventas.index(self.grid_resumen_ventas.get_children()[-1])))
+---------------------------------------------------------------------------------------------------------
 """
 
+
+
+
+
+
+
+
+
+
 """
-====================================================================================================================
+---------------------------------------------------------------------------------------------------------
 Metodo para eliminar un registro de una tabla a traves del treeview 
 
     def fBorrarVenta(self):
@@ -473,4 +347,33 @@ def creopdf(self):
     path = 'hoja.pdf'
     os.system(path)
 '''
+
+
+
+""" ----------------------------------------------------------------------------------------------------------
+    MOSTRAR ERROR
+    ejemplo de uso funcion mostrar error
+
+        try:
+            id_ref = self.principal.varCotiz.insertar_resuventa(dic_resuventas)
+        except ValueError as e:
+            messagebox.showwarning("Datos inválidos en Cerrar_Venta_alta_resumen - ValueError", str(e))
+            return
+        except Exception:
+            self.principal.var_obj_funcionnew.mostrar_error("Error Cerrar_Venta_alta_resumen")
+            return
+        else:
+            self.principal.status.set_status("✔ Ingreso nueva venta guardada correctamente", "Ok")
+            # Refresco el GRID - voy al foco del nuevo
+            self.principal.pestana_1.llena_grilla_ventas(id_ref)  # paso solo el foco, sin datos de busqueda
+----------------------------------------------------------------------------------------------------------
+        SET_STATUS
+        
+        # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+        self.set_status("✔ Registro guardado correctamente", "ok")
+        self.set_status("🗑 Cliente eliminado", "ok")
+        self.set_status("⚠ CUIT incorrecto", "warn")
+        self.set_status("❌ Error al guardar", "error")
+        self.set_status("ℹ Buscando clientes...", "info")
+"""
 

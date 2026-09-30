@@ -1,65 +1,38 @@
-from marcas_ABM import *
-# -----------------------------------------
-from tkinter import *
+import tkinter as tk
 from tkinter import ttk
-from tkinter import messagebox
-# -----------------------------------------
 from PIL import Image, ImageTk
-# -----------------------------------------
+from funcion_new import ClaseFuncionNew
+from funciones import *
+from marcas_ABM import DatosMarcas
+from status_bar import StatusBar
 
-class ClaseMarcas(Frame):
+
+class ClaseMarcas(tk.Frame):
 
     def __init__(self, master=None):
 
         super().__init__(master)
         self.master = master
+        self.status = StatusBar(self.master)
 
-        # Seteo pantalla master principal -------------------------------------------------
+        # ---------------------------------------------------------------------------------
+        # Instanciaciones - Creo una instancia de la clase marcas Abm y funcionnew
+        self.varMarcas = DatosMarcas(self.master)
+        self.varFuncion_new = ClaseFuncionNew(self.master)
+        # ---------------------------------------------------------------------------------
+        # ---------------------------------------------------------------------------------
+        # Seteo pantalla master principal
         self.master.grab_set()
         self.master.focus_set()
         # ---------------------------------------------------------------------------------
 
-        # Instanciaciones ------------------------------------------------------------------
-        # Creo una instancia de la clase marcas Abm
-        self.varMarcas = datosMarcas(self.master)
-        # ---------------------------------------------------------------------------------
-
-        # ----------------------------------------------------------------------------------
-        # Esto esta agregado para centrar las ventanas en la pantalla
-        # ----------------------------------------------------------------------------------
-        """ Actualizamos todo el contenido de la ventana (la ventana pude crecer si se le agrega
-        mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer. """
-        master.resizable(0, 0)
-
-        # Obtenemos el largo y  ancho de la pantalla
-        wtotal = master.winfo_screenwidth()
-        htotal = master.winfo_screenheight()
-        # Guardamos el largo y alto de la ventana
-        wventana = 670
-        hventana = 490
-        # Aplicamos la siguiente formula para calcular donde debería posicionarse
-        pwidth = round(wtotal / 2 - wventana / 2)
-        pheight = round(htotal / 2 - hventana / 2)
-        # Se lo aplicamos a la geometría de la ventana
-        master.geometry(str(wventana) + "x" + str(hventana) + "+" + str(pwidth) + "+" + str(pheight))
-        # ------------------------------------------------------------------------------
-
+        self.pantalla()
         self.create_widgets()
-
-        # ------------------------------------------------------------------------------
-        # Carga del Treeview y seteo de foco y punteros sobre el mismo (grid)
         self.llena_grilla("")
-        item = self.grid_marcas.identify_row(0)
-        self.grid_marcas.selection_set(item)
-        self.grid_marcas.focus(item)
-        # -----------------------------------------------------------------------------
-
-        # -----------------------------------------------------------------------------
-        # ESTADO INICIAL
 
         self.habilitar_text("disabled")
-        self.habilitar_Btn_Final("disabled")
-        self.habilitar_Btn_Oper("normal")
+        self.habilitar_btn_final("disabled")
+        self.habilitar_btn_oper("normal")
 
     # -----------------------------------------------------------------------------
     # WIDGETS
@@ -69,243 +42,116 @@ class ClaseMarcas(Frame):
 
         # --------------------------------------------------------------------------
         # VARIABLES GENERALES
-
-        # Se usa para saber que filtro esta activo y mantenerlo hasta que el usuario lo quite en Reset
-        # inicialmente esta en blanco
-        self.filtro_activo = "marcas ORDER BY ma_nombre"
-        # Para identificar si el movimiento es alta o modificacion (1 - ALTA 2 - Modificacion)
-        self.var_Id = -1
+        self.filtro_activo = "ORDER BY ma_nombre"
         self.alta_modif = 0
         # --------------------------------------------------------------------------
 
         # --------------------------------------------------------------------------
-        # TITULOS
-
-        # Encabezado logo y titulo con PACK
-        self.frame_titulo_top = Frame(self.master)
-
-        # Armo el logo y el titulo
-        self.photo3 = Image.open('marcas.png')
-        self.photo3 = self.photo3.resize((75, 75), Image.LANCZOS)  # Redimension (Alto, Ancho)
-        self.png_marca = ImageTk.PhotoImage(self.photo3)
-        self.lbl_png_marca = Label(self.frame_titulo_top, image=self.png_marca, bg="red", relief=RIDGE, bd=5)
-
-        self.lbl_titulo = Label(self.frame_titulo_top, width=16, text="Marcas",
-                                bg="black", fg="gold", font=("Arial bold", 38, "bold"), bd=5, relief=RIDGE, padx=5)
-
-        # Coloco logo y titulo en posicion de pantalla
-        self.lbl_png_marca.grid(row=0, column=0, sticky=W, padx=5, ipadx=22)
-        self.lbl_titulo.grid(row=0, column=1, sticky="nsew")
-        self.frame_titulo_top.pack(side=TOP, fill=X, padx=5, pady=5)
+        # TITULOS Y LOGO
         # --------------------------------------------------------------------------
-
+        self.frame_titulo_top = tk.Frame(self.master)
+        self.titulo_logo()
+        self.frame_titulo_top.pack(side="top", fill="x", padx=5, pady=5)
+        # --------------------------------------------------------------------------
         # --------------------------------------------------------------------------
         # STRINGVARS
-
-        self.strvar_nombre = StringVar(value="")
+        self.sv_nombre = tk.StringVar(value="")
         # -------------------------------------------------------------------------
 
         # -------------------------------------------------------------------------
-        # CUADRO DE BOTONES
+        # CUADRO DE BOTONES LATERAL
 
-        # Armar un frame para colocar los botones
-        barra_botones = LabelFrame(self.master)
+        barra_botones = tk.LabelFrame(self.master)
 
         # BOTONES 1
-        botones1 = LabelFrame(barra_botones, bd=5, relief=RIDGE)
-
-        # Instalacion botones
-        self.btnNuevo = Button(botones1, text="Nuevo", command=self.fNuevo, bg="blue", fg="white", width=10)
-        self.btnNuevo.grid(row=0, column=0, padx=5, pady=3, ipadx=10)
-        self.btnModificar = Button(botones1, text="Modificar", command=self.fModificar, bg="blue", fg="white", width=10)
-        self.btnModificar.grid(row=1, column=0, padx=5, pady=3, ipadx=10)
-        self.btnEliminar = Button(botones1, text="Eliminar", command=self.fEliminar, bg="red", fg="white", width=10)
-        self.btnEliminar.grid(row=2, column=0, padx=5, pady=3, ipadx=10)
-        self.btnGuardar = Button(botones1, text="Guardar", command=self.fGuardar, bg="green", fg="white", width=10)
-        self.btnGuardar.grid(row=3, column=0, padx=5, pady=3, columnspan=2)
-        self.btnCancelar = Button(botones1, text="Cancelar", command=self.fCancelar, bg="black", fg="white", width=10)
-        self.btnCancelar.grid(row=4, column=0, padx=5, pady=3, columnspan=2)
-
-        botones1.pack(side=TOP, padx=3, pady=3, fill=Y)
-
+        self.cuadro_botones_crud = tk.LabelFrame(barra_botones, bd=5, relief="ridge")
+        self.botones_crud()
+        self.cuadro_botones_crud.pack(side="top", padx=3, pady=3, fill="y")
         # BOTONES 2
-        botones2 = LabelFrame(barra_botones, bd=5, relief=RIDGE)
-
-        self.btn_reset = Button(botones2, text="Reset", width=11, command=self.fReset, bg="black", fg="white")
-        self.btn_reset.grid(row=7, column=0, padx=6, pady=3, ipadx=10)
-
-        # botones para ir al tope y al fin del archivo
-        self.photo4 = Image.open('toparch.png')
-        self.photo4 = self.photo4.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
-        self.photo4 = ImageTk.PhotoImage(self.photo4)
-        self.btnToparch = Button(botones2, text="", image=self.photo4, command=self.fToparch, bg="grey", fg="white")
-        self.btnToparch.grid(row=0, column=0, padx=5, sticky="nsew", pady=3)
-        # ToolTip(self.btnToparch, msg="Ir a principio de archivo")
-        self.photo5 = Image.open('finarch.png')
-        self.photo5 = self.photo5.resize((25, 25), Image.LANCZOS)  # Redimension (Alto, Ancho)
-        self.photo5 = ImageTk.PhotoImage(self.photo5)
-        self.btnFinarch = Button(botones2, text="", image=self.photo5, command=self.fFinarch, bg="grey", fg="white")
-        self.btnFinarch.grid(row=1, column=0, padx=5, sticky="nsew", pady=3)
-        # ToolTip(self.btnFinarch, msg="Ir al final del archivo")
-
-        botones2.pack(side=TOP, padx=3, pady=3, fill=Y)
-
+        self.cuadro_botones_tablero = tk.LabelFrame(barra_botones, bd=5, relief="ridge")
+        self.botones_tablero()
+        self.cuadro_botones_tablero.pack(side="top", padx=3, pady=3, fill="y")
         # BOTONES 3
-        botones3 = LabelFrame(barra_botones, bd=5, relief=RIDGE)
+        self.cuandro_boton_salida = tk.LabelFrame(barra_botones, bd=5, relief="ridge")
+        self.boton_salida()
+        self.cuandro_boton_salida.pack(side="top", padx=3, pady=3, fill="y")
 
-        self.photo3 = Image.open('salida.png')
-        self.photo3 = self.photo3.resize((50, 50), Image.LANCZOS)  # Redimension (Alto, Ancho)
-        self.photo3 = ImageTk.PhotoImage(self.photo3)
-        self.btnSalir = Button(botones3, text="Salir", image=self.photo3, command=self.fSalir, bg="yellow", fg="white")
-        self.btnSalir.grid(row=0, column=0, padx=5, pady=3, sticky="nsew")
-
-        botones3.pack(side=TOP, padx=3, pady=3, fill=Y)
-
-        # PACK - frame de botones
-        barra_botones.pack(side=LEFT, padx=15, pady=5, ipady=5, fill=Y)
+        barra_botones.pack(side="left", padx=15, pady=5, ipady=5, fill="y")
         # ---------------------------------------------------------------------
 
         # ---------------------------------------------------------------------
         # BUSQUEDAS
 
-        self.frame_tv = Frame(self.master)
+        self.cuadro_grid = tk.Frame(self.master)
 
         # FRAME dentro del frame principal para poner la llinea de busqueda
-        self.frame_buscar = LabelFrame(self.frame_tv)
-        # BUSCAR Linea de label y entry de busqueda
-        self.lbl_buscar_marca = Label(self.frame_buscar, text="Buscar: ")
-        self.lbl_buscar_marca.grid(row=0, column=0, padx=5, pady=2)
-        self.entry_buscar_marca = Entry(self.frame_buscar, width=30)
-        self.entry_buscar_marca.grid(row=0, column=1, padx=5, pady=2, sticky=W)
-        self.btn_buscar_marca = Button(self.frame_buscar, text="Buscar", command=self.fBuscar_en_tabla,
-                                         bg="blue", fg="white", width=13)
-        self.btn_buscar_marca.grid(row=0, column=2, padx=5, pady=2, sticky=W)
-        self.btn_show_all = Button(self.frame_buscar, text="Mostrar todo", command=self.fShow_all,
-                                         bg="blue", fg="white", width=13)
-        self.btn_show_all.grid(row=0, column=3, padx=5, pady=2, sticky=W)
+        self.cuadro_busqueda = tk.LabelFrame(self.cuadro_grid)
+        self.barra_busqueda()
+        self.cuadro_busqueda.pack(expand=1, fill="x", pady=10, padx=5)
 
-        self.frame_buscar.pack(expand=1, fill=X, pady=10, padx=5)
+        self.armado_grid()
 
-        # STYLE TREEVIEW - un chiche para formas y colores
-        style = ttk.Style(self.frame_tv)
-        style.theme_use("clam")
-        style.configure("Treeview.Heading", background="black", foreground="white")
-        # --------------------------------------------------------------------------
-
-        # --------------------------------------------------------------------------
-        # TREEVIEW
-
-        self.grid_marcas = ttk.Treeview(self.frame_tv, columns=("col1"))
-        self.grid_marcas.bind("<Double-Button-1>", self.DobleClickGrid)
-
-        self.grid_marcas.column("#0", width=60, anchor=CENTER)
-        self.grid_marcas.column("col1", width=250, anchor=CENTER)
-
-        self.grid_marcas.heading("#0", text="Id", anchor=CENTER)
-        self.grid_marcas.heading("col1", text="Nombre", anchor=CENTER)
-
-        self.grid_marcas.tag_configure('oddrow', background='light grey')
-        self.grid_marcas.tag_configure('evenrow', background='white')
-
-        # SCROLLBAR del Treeview
-        scroll_x = Scrollbar(self.frame_tv, orient=HORIZONTAL)
-        scroll_y = Scrollbar(self.frame_tv, orient=VERTICAL)
-        self.grid_marcas.config(xscrollcommand=scroll_x.set)
-        self.grid_marcas.config(yscrollcommand=scroll_y.set)
-        scroll_x.config(command=self.grid_marcas.xview)
-        scroll_y.config(command=self.grid_marcas.yview)
-        scroll_y.pack(side=RIGHT, fill=Y)
-        scroll_x.pack(side=BOTTOM, fill=X)
-        self.grid_marcas['selectmode'] = 'browse'
-
-        # PACK - de el treeview y el FRAME tv
-        self.frame_buscar.pack(side=TOP, fill=BOTH, expand=1, padx=5, pady=3)
-        self.grid_marcas.pack(side=TOP, fill=BOTH, expand=1, padx=5, pady=5)
-        self.frame_tv.pack(side=TOP, fill=BOTH, padx=5, pady=5)
+        self.cuadro_grid.pack(side="top", fill="both", padx=5, pady=5)
         # --------------------------------------------------------------------------
 
         # --------------------------------------------------------------------------
         # ENTRYS
-
-        self.sector_entry = LabelFrame(self.master)
-
-        # NOMBRE
-        self.lbl_nombre = Label(self.sector_entry, text="Nombre: ")
-        self.lbl_nombre.grid(row=0, column=0, padx=10, pady=3, sticky=W)
-        self.entry_nombre = Entry(self.sector_entry, textvariable=self.strvar_nombre, justify="left", width=50)
-        self.strvar_nombre.trace("w", lambda *args: self.limitador(self.strvar_nombre, 40))
-        self.entry_nombre.grid(row=0, column=1, padx=10, pady=3, sticky=W)
-
-        # PACK del frame "sector_entry"
-        self.sector_entry.pack(expand=1, fill=X, pady=5, padx=5)
+        self.cuadro_entrys = tk.LabelFrame(self.master)
+        self.sector_entrys()
+        self.cuadro_entrys.pack(expand=1, fill="x", pady=5, padx=5)
         # ----------------------------------------------------------------------------------
 
     # ----------------------------------------------------------------------------------
     # GRID
     # ----------------------------------------------------------------------------------
 
-    def limpiar_Grid(self):
+    def llena_grilla(self, set_foco):
+
         for item in self.grid_marcas.get_children():
             self.grid_marcas.delete(item)
-
-    def llena_grilla(self, ult_tabla_id):
 
         if len(self.filtro_activo) > 0:
             datos = self.varMarcas.consultar_marcas(self.filtro_activo)
         else:
-            datos = self.varMarcas.consultar_marcas("marcas ORDER BY ma_nombre ASC")
+            datos = self.varMarcas.consultar_marcas("ORDER BY ma_nombre ASC")
 
         cont = 0
         for row in datos:
-
             cont += 1
             color = ('evenrow',) if cont % 2 else ('oddrow',)
 
-            self.grid_marcas.insert("", END, tags=color, text=row[0], values=(row[1]))
+            self.grid_marcas.insert("", "end", tags=color, text=row[0], values=(row[1]))
 
-        if len(self.grid_marcas.get_children()) > 0:
-            self.grid_marcas.selection_set(self.grid_marcas.get_children()[0])
+        # Controles ---------------------------------------------------------
 
-        # ----------------------------------------------------------------------------------
-        # Procedimiento para acomodar los punteros en caso de altas, modif. ....)
-
-        """ ult_tabla_id = Trae el Id de la tabla (21, 60, 61, ..) correspondiente identificando al registro 
-        en el cual yo quiero que se ponga el puntero del GRID.
-        Traera blanco ('') si la funcion llena_grilla es llamada desde cualquier lugar que no 
-        necesite acomodar puntero en un item en particular (caso altas, modificaciones ...)."""
-
-        if ult_tabla_id:
-
-            """ regis = Guardo todos los Id del Grid (I001, IB003, ...)"""
-            regis = self.grid_marcas.get_children()
-            rg = ""
-
-            for rg in regis:
-
-                """ buscado = guardo el 'text' correspondiente al Id del grid que esta en regis y muevo toda 
-                la linea de datos del treeview a la variable buscado), o sea, para el Id I0001 paso el Id de la 
-                tabla 57... y asi ira cambiando para cada rg
-                text = te da el valor de la primera columna del grid, que es donde veo el Id del registro 
-                asignado en la tabla"""
-
-                buscado = self.grid_marcas.item(rg)['text']
-                if int(buscado) == int(ult_tabla_id):
-                    """ Si coinciden los Id quiere decir que encontre al registro que estoy buscando por Id de tabla."""
-                    break
-
-            """ Ahora ejecuto este procedimiento que se encarga de poner el puntero en el registro que acabamos 
-            de encontrar correspondiente al Id de tabla asignado en el parametro de la funcion llena_grilla. """
-            """ "rg" = es el Text o Index del registro en el Treeview I001, IB002.... y ahi posiciono el foco 
-            con las siguientes instrucciones. """
-
-            self.grid_marcas.selection_set(rg)
-            # Para que no me diga que no hay nada seleccionado
-            self.grid_marcas.focus(rg)
-            # para que la linea seleccionada no me quede fuera del area visible del treeview
-            self.grid_marcas.yview(self.grid_marcas.index(rg))
+        # Devuelve una colección(tupla) con los IDs de todas las filas cargadas
+        children = self.grid_marcas.get_children()
+        # Si no hay filas (grid vacio), salgo sin intentar seleccionar
+        if not children:
+            self.status.set_status("ℹ Grid vacio...", "info")
             return
 
-        self.mover_puntero_topend("END")
+        # Si el parametro set_foco esta vacío (no hay foco), voy al ultimo de la grilla,
+        # caso contrario, voy a la clave que se haya enviado en set_foco para dejar el puntero.
+        if not set_foco:
+            # self.grid_orden.selection_set(children[0]) # asi tambien voy al ultimo
+            # posicion = children[-1]                      # ultimo
+            posicion = children[0]                     # primero
+            self.grid_marcas.focus_set()
+            self.grid_marcas.focus(posicion)
+            self.grid_marcas.selection_set(posicion)
+            self.grid_marcas.see(posicion)
+        else:
+            for item in children:
+                texto = self.grid_marcas.item(item, "text")
+                # print(str(set_foco) + " " + str(texto))
+                if str(texto).strip() == str(set_foco).strip():  # suponiendo que el ID está en la columna 0
+                    self.grid_marcas.update_idletasks()
+                    self.grid_marcas.focus_set()
+                    self.grid_marcas.selection_set(item)
+                    self.grid_marcas.focus(item)
+                    self.grid_marcas.see(item)
+                    break
 
     # ----------------------------------------------------------------------------------
     # ESTADOS PANTALLA
@@ -315,10 +161,10 @@ class ClaseMarcas(Frame):
         self.entry_nombre.configure(state=estado)
 
     def limpiar_text(self):
-        self.entry_nombre.delete(0, END)
-        self.entry_nombre.delete(0, END)
+        self.entry_nombre.delete(0, "end")
+        self.entry_nombre.delete(0, "end")
 
-    def habilitar_Btn_Oper(self, estado):
+    def habilitar_btn_oper(self, estado):
 
         self.btnNuevo.configure(state=estado)
         self.btnEliminar.configure(state=estado)
@@ -328,34 +174,27 @@ class ClaseMarcas(Frame):
         self.entry_buscar_marca.configure(state=estado)
         self.btn_buscar_marca.configure(state=estado)
         self.btn_show_all.configure(state=estado)
-        if estado == "disabled":
-            self.grid_marcas['selectmode'] = 'none'
-        else:
-            self.grid_marcas['selectmode'] = 'browse'
 
-    def habilitar_Btn_Final(self, estado):
+    def habilitar_btn_final(self, estado):
         self.btnGuardar.configure(state=estado)
-        #self.btnCancelar.configure(state=estado)
 
     # -------------------------------------------------------------
     # CRUD
     # -------------------------------------------------------------
 
-    def fNuevo(self):
+    def fnuevo(self):
 
         self.alta_modif = 1
-
         self.habilitar_text("normal")
-        self.habilitar_Btn_Final("normal")
-        self.habilitar_Btn_Oper("disabled")
+        self.habilitar_btn_final("normal")
+        self.habilitar_btn_oper("disabled")
         self.limpiar_text()
         self.entry_nombre.focus()
 
-    def fModificar(self):
+    def fmodificar(self):
 
         self.selected = self.grid_marcas.focus()
         self.clave = self.grid_marcas.item(self.selected, 'text')
-        #self.valores = self.grid_marcas.item(self.selected, 'values')
 
         if self.clave == "":
             messagebox.showwarning("Modificar", "No hay nada seleccionado", parent=self)
@@ -363,22 +202,20 @@ class ClaseMarcas(Frame):
 
         self.alta_modif = 2
 
-        self.var_Id = self.clave  #puede traer -1 , en ese caso seria un alta
         self.habilitar_text('normal')
 
         self.valores = self.grid_marcas.item(self.selected, 'values')
 
         self.limpiar_text()
         self.entry_nombre.insert(0, self.valores[0])
-        self.habilitar_Btn_Final("normal")
-        self.habilitar_Btn_Oper("disabled")
+        self.habilitar_btn_final("normal")
+        self.habilitar_btn_oper("disabled")
         self.entry_nombre.focus()
 
-    def fEliminar(self):
+    def feliminar(self):
 
         # --------------------------------------------------------------------------
         # Tomo referencias de posicion del puntero para despues
-
         self.selected = self.grid_marcas.focus()
         self.selected_ant = self.grid_marcas.prev(self.selected)
         self.clave = self.grid_marcas.item(self.selected, 'text')
@@ -392,7 +229,7 @@ class ClaseMarcas(Frame):
         # ------------------------------------------------------------------------------
         # traigo valores desde el Grid
         valores = self.grid_marcas.item(self.selected, 'values')
-        data = str(self.clave)+" "+valores[0]
+        data = str(self.clave) + " " + valores[0]
         # ------------------------------------------------------------------------------
 
         # --------------------------------------------------------------------------
@@ -430,177 +267,335 @@ class ClaseMarcas(Frame):
 
         messagebox.showinfo("Eliminar", "Registro eliminado correctamente", parent=self)
 
-        self.limpiar_Grid()
         """ Vuelvo al inmediato anterior segun el orden establecido en el grid """
         self.llena_grilla(self.clave_ant)
 
-    def fGuardar(self):
+    def fguardar(self):
 
-        # --------------------------------------------------------------------------
-        # VALIDACIONES
-
+        # VALIDACIONES -------------------------------------------------------
         if self.entry_nombre.get() == "":
             messagebox.showwarning("Alerta", "No ingreso Marca", parent=self)
             self.entry_nombre.focus()
             return
 
-        if self.alta_modif == 1:
+        # guardo el Id del Grid en selected para ubicacion del foco a posteriori --------------
+        self.selected = self.grid_marcas.focus()
+        # Guardo el Id del registro de la base de datos (no es el mismo que el otro, este puedo verlo en la base)
+        self.clave = self.grid_marcas.item(self.selected, 'text')
+        # -------------------------------------------------------------------------------------
 
-            self.varMarcas.insertar_marcas(self.strvar_nombre.get())
-            messagebox.showinfo("Guardar", "Nuevo registro creado correctamente", parent=self)
+        # Preparo la fecha y pongo en la variable "dic_marcas" el diccionario completo con todos
+        # los datos a ingresar a la tabla
+        dic_marcas = self.get_marcas_dic()                  # funcion que genera el diccionario
 
-        elif self.alta_modif == 2:
+        #-----------------------------------------------------------------
+        # GUARDADO DATOS Y EVALUACION DEL PROCEDIMIENTO
+        #-----------------------------------------------------------------
+        id_ref = ""
+        try:
+            if self.alta_modif == 1:
+                self.id_nuevo = self.varMarcas.insertar_marcas(dic_marcas)
+                id_ref = self.id_nuevo
+            elif self.alta_modif == 2:
+                # Verifico tabla articulos y si la marca ya existe asignada, lo modifico en todas sus apariciones
+                exis = self.varMarcas.verifica_articulos(self.valores[0])
 
-            # Verifico tabla articulos y si el rubro ya existe asignado, lo modifico en todas sus apariciones
-            exis = self.varMarcas.verifica_articulos(self.valores[0])
+                # si la marca existe, pido confirmacion de modificarlos en los articulos que lo tengan asignado
+                if exis != 0:
+                    r2 = messagebox.askquestion("Modificar", "Existen articulos asignados a la marca y "
+                                                             "se modificaran, Continua?\n " + self.valores[0], parent=self)
+                    if r2 == messagebox.NO:
+                        return
 
-            # si la marca existe, pido confirmacion de borrarlo en los articulos que lo tengan asignado
-            if exis != 0:
-                r2 = messagebox.askquestion("Modificar", "Existen articulos asignados a la marca y "
-                                                         "se modificaran, Continua?\n " + self.valores[0], parent=self)
-                if r2 == messagebox.NO:
-                    return
+                # Modificamos ya la marca en la tabla marcas pasando el Id -----
+                self.varMarcas.modificar_marcas(dic_marcas)
+                # --------------------------------------------------------------
 
-            # Modificamos ya la marca en la tabla marcas pasando el Id
-            self.varMarcas.modificar_marcas(self.var_Id, self.strvar_nombre.get())
+                id_ref = self.clave
 
-            if exis != 0:
-                # Modifica la marca en los articulos por la modificacion
-                self.varMarcas.modi_marca_enart(self.strvar_nombre.get(), self.valores[0])
+                if exis != 0:
+                    # Modifica la marca en los articulos por la modificacion
+                    self.varMarcas.modi_marca_enart(self.sv_nombre.get(), self.valores[0])
 
-            self.var_Id == -1
+        except ValueError as e:
+            messagebox.showwarning("Datos inválidos en Insertar/Modificar", str(e))
+            return
+        except Exception:
+            self.varFuncion_new.mostrar_error()
+            return
+        else:
+            self.status.set_status("✔ Registro guardado correctamente", "ok")
 
-            messagebox.showinfo("Modificacion", "Modificacion en Marcas y Articulos exitosa", parent=self)
-
-        self.limpiar_Grid()
-        #self.llena_grilla("")
         self.limpiar_text()
-        self.habilitar_Btn_Final("disabled")
-        self.habilitar_Btn_Oper("normal")
+        self.habilitar_btn_final("disabled")
+        self.habilitar_btn_oper("normal")
         self.habilitar_text("disabled")
-
-        if self.alta_modif == 1:
-            ultimo_tabla_id = self.varMarcas.traer_ultimo(0)
-            self.llena_grilla(ultimo_tabla_id)
-        elif self.alta_modif == 2:
-            self.llena_grilla(self.clave)
-
+        self.llena_grilla(id_ref)
         self.alta_modif = 0
 
-    def fCancelar(self):
-
+    def fcancelar(self):
         r = messagebox.askquestion("Cancelar", "Confirma cancelar operacion actual?", parent=self)
-        if r == messagebox.YES:
-            self.limpiar_text()
-            self.habilitar_Btn_Final("disabled")
-            self.habilitar_Btn_Oper("normal")
-            self.habilitar_text("disabled")
+        if r == messagebox.NO:
+            return
+        self.limpiar_text()
+        self.habilitar_btn_final("disabled")
+        self.habilitar_btn_oper("normal")
+        self.habilitar_text("disabled")
 
-    def fSalir(self):
+    def fsalir(self):
         self.master.destroy()
 
-    def fReset(self):
+    def freset(self):
 
-        self.entry_buscar_marca.delete(0, END)
+        self.entry_buscar_marca.delete(0, "end")
         self.selected = self.grid_marcas.focus()
         self.clave = self.grid_marcas.item(self.selected, 'text')
-        self.filtro_activo = "marcas ORDER BY ma_nombre"
+        self.filtro_activo = "ORDER BY ma_nombre"
         self.limpiar_text()
         self.habilitar_text("disabled")
-        self.limpiar_Grid()
         self.llena_grilla("")
-        self.habilitar_Btn_Final("disabled")
-        self.habilitar_Btn_Oper("normal")
-        self.puntero_modificacion(self.clave)
+        self.habilitar_btn_final("disabled")
+        self.habilitar_btn_oper("normal")
 
-    def DobleClickGrid(self, event):
-        self.fModificar()
+    def doble_click_grid(self, _event):
+        self.fmodificar()
 
     # -----------------------------------------------------------------------------
     # VARIAS
     # -----------------------------------------------------------------------------
 
-    def limitador(self, entry_text, caract):
+    @staticmethod
+    def limitador(entry_text, caract):
         if len(entry_text.get()) > 0:
             entry_text.set(entry_text.get()[:caract])
 
-    def fToparch(self):
-        self.mover_puntero_topend('TOP')
+    def ftoparch(self):
+        self.varFuncion_new.mover_puntero_topend(self.grid_marcas, 'TOP')
 
-    def fFinarch(self):
-        self.mover_puntero_topend('END')
+    def ffinarch(self):
+        self.varFuncion_new.mover_puntero_topend(self.grid_marcas, 'END')
 
-    def fBuscar_en_tabla(self):
+    def fbuscar_en_tabla(self):
 
         if not len(self.entry_buscar_marca.get()):
             messagebox.showwarning("Buscar", "No ingreso busqueda", parent=self)
             return
 
         se_busca = self.entry_buscar_marca.get()
-        self.filtro_activo = "marcas WHERE INSTR(ma_nombre, '" + se_busca + "') > 0" \
+        self.filtro_activo = "WHERE INSTR(ma_nombre, '" + se_busca + "') > 0" \
                              + " ORDER BY ma_nombre ASC"
 
         self.varMarcas.buscar_entabla(self.filtro_activo)
-        self.limpiar_Grid()
         self.llena_grilla("")
 
         """ Obtengo el Id del grid para que me tome la seleccion y el foco se coloque efectivamente en el 
         item buscado y asi cuando le doy -show all- el puntero se sigue quedando en el registro buscado"""
-        item = self.grid_marcas.selection()
+        item = self.grid_marcas.identify_row(0)
+        self.grid_marcas.selection_set(item)
         self.grid_marcas.focus(item)
 
-    def fShow_all(self):
+    def fshowall(self):
 
         self.selected = self.grid_marcas.focus()
         self.clave = self.grid_marcas.item(self.selected, 'text')
-        self.filtro_activo = "marcas ORDER BY ma_nombre ASC"
-        self.entry_buscar_marca.delete(0, END)
-        self.limpiar_Grid()
+        self.filtro_activo = "ORDER BY ma_nombre ASC"
+        self.entry_buscar_marca.delete(0, "end")
         self.llena_grilla(self.clave)
 
-    def mover_puntero_topend(self, param_topend):
+    def pantalla(self):
 
-        if param_topend == 'TOP':
+        """ Actualizamos todo el contenido de la ventana (la ventana pude crecer si se le agrega
+        mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer. """
+        self.master.resizable(0, 0)
+        # Obtenemos el largo y  ancho de la pantalla
+        wtotal = self.master.winfo_screenwidth()
+        htotal = self.master.winfo_screenheight()
+        # Guardamos el largo y alto de la ventana
+        wventana = 790
+        hventana = 500
+        # Aplicamos la siguiente formula para calcular donde debería posicionarse
+        pwidth = round(wtotal / 2 - wventana / 2)
+        pheight = round(htotal / 2 - hventana / 2)
+        # Se lo aplicamos a la geometría de la ventana
+        self.master.geometry(str(wventana) + "x" + str(hventana) + "+" + str(pwidth) + "+" + str(pheight))
+        # ------------------------------------------------------------------------------
 
-            # obtengo una lista con todos los Id del treeview
-            regis = self.grid_marcas.get_children()
-            # barro y salgo al primero, pero me quedo en el primero
-            rg = ""
-            for rg in regis:
-                break
-            if rg == "":
-                return
-            # selecciono el Id primero de la lista en este caso
-            self.grid_marcas.selection_set(rg)
-            # pongo el foco sobre el primero Id
-            self.grid_marcas.focus(rg)
-            # lleva el foco al principio del treeview con esta instruccion que encontre
-            self.grid_marcas.yview(self.grid_marcas.index(self.grid_marcas.get_children()[0]))
+    def titulo_logo(self):
 
-        elif param_topend == 'END':
+        # Armo el logo y el titulo
+        self.photo3 = Image.open('marcas.png')
+        self.photo3 = self.photo3.resize((105, 75), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
+        self.png_marca = ImageTk.PhotoImage(self.photo3)
+        self.lbl_png_marca = tk.Label(self.frame_titulo_top, image=self.png_marca, bg="red", relief="ridge", bd=5)
 
-            # Obtengo una lista con todos los Id del treeview
-            regis = self.grid_marcas.get_children()
-            # Barro la lista y ,me quedo conel ultimo Id
-            rg = ""
-            for rg in regis:
-                pass
-            if rg == "":
-                return
-            # Selecciono el ultimo Id en este caso
-            self.grid_marcas.selection_set(rg)
-            # Pongo el foco alultimo elemento de la lista (al final)
-            self.grid_marcas.focus(rg)
-            # lleva el foco al final del treeview  -------------------------
-            self.grid_marcas.yview(self.grid_marcas.index(self.grid_marcas.get_children()[-1]))
+        self.lbl_titulo = tk.Label(self.frame_titulo_top, width=19, text="Marcas", bg="black", fg="gold",
+                                   font=("Arial bold", 36, "bold"), bd=5, relief="ridge", padx=5)
+        # Coloco logo y titulo en posicion de pantalla
+        self.lbl_png_marca.grid(row=0, column=0, sticky="w", padx=10, ipadx=22)
+        self.lbl_titulo.grid(row=0, column=1, padx=5, sticky="nsew")
 
-    def mover_puntero_crud(self, posicion):
+    def botones_crud(self):
 
-        # Entonces, "rg" es el Text o Index del registro en el Treeview y ahi posiciono el foco con las
-        # siguientes instrucciones
-        self.grid_marcas.selection_set(posicion)
-        # Para que no me diga que no hay nada seleccionado
-        self.grid_marcas.focus(posicion)
-        # para que la linea seleccionada no me quede fuera del area visible del treeview
-        self.grid_marcas.yview(self.grid_marcas.index(posicion))
-        return
+        for c in range(1):
+            self.cuadro_botones_crud.grid_columnconfigure(c, weight=1, minsize=140)
+
+        icono = self.cargar_icono("archivo-nuevo.png")
+        self.btnNuevo = tk.Button(self.cuadro_botones_crud, text="Nuevo", command=self.fnuevo, bg="blue", fg="white",
+                                  width=10, compound="left")
+        self.btnNuevo.image = icono
+        self.btnNuevo.config(image=icono)
+        self.btnNuevo.grid(row=0, column=0, padx=5, pady=3, ipadx=10)
+
+        icono = self.cargar_icono("editar.png")
+        self.btnModificar = tk.Button(self.cuadro_botones_crud, text="Modificar", command=self.fmodificar, bg="blue",
+                                      fg="white", width=10, compound="left")
+        self.btnModificar.image = icono
+        self.btnModificar.config(image=icono)
+        self.btnModificar.grid(row=1, column=0, padx=5, pady=3, ipadx=10)
+
+        icono = self.cargar_icono("eliminar.png")
+        self.btnEliminar = tk.Button(self.cuadro_botones_crud, text="Eliminar", command=self.feliminar, bg="red",
+                                     fg="white", width=10, compound="left")
+        self.btnEliminar.image = icono
+        self.btnEliminar.config(image=icono)
+        self.btnEliminar.grid(row=2, column=0, padx=5, pady=3, ipadx=10)
+
+        icono = self.cargar_icono("guardar.png")
+        self.btnGuardar = tk.Button(self.cuadro_botones_crud, text="Guardar", command=self.fguardar, bg="green",
+                                    fg="white", width=10, compound="left")
+        self.btnGuardar.image = icono
+        self.btnGuardar.config(image=icono)
+        self.btnGuardar.grid(row=3, column=0, padx=5, pady=3, columnspan=2)
+
+        icono = self.cargar_icono("cancelar.png")
+        self.btnCancelar = tk.Button(self.cuadro_botones_crud, text="Cancelar", command=self.fcancelar, bg="black",
+                                     fg="white", width=10, compound="left")
+        self.btnCancelar.image = icono
+        self.btnCancelar.config(image=icono)
+        self.btnCancelar.grid(row=4, column=0, padx=5, pady=3, columnspan=2)
+
+        for widg in self.cuadro_botones_crud.winfo_children():
+            widg.grid_configure(padx=6, pady=3, sticky='nsew')
+
+    def botones_tablero(self):
+
+        for c in range(1):
+            self.cuadro_botones_tablero.grid_columnconfigure(c, weight=1, minsize=140)
+
+        icono = self.cargar_icono("reset.png")
+        self.btn_reset = tk.Button(self.cuadro_botones_tablero, text="Reset", width=11, command=self.freset,
+                                   bg="black", fg="white", compound="left")
+        self.btn_reset.image = icono
+        self.btn_reset.config(image=icono)
+        self.btn_reset.grid(row=7, column=0, padx=6, pady=3, ipadx=10)
+
+        # botones para ir al tope y al fin del archivo
+        self.photo4 = Image.open('toparch.png')
+        self.photo4 = self.photo4.resize((25, 25), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo4 = ImageTk.PhotoImage(self.photo4)
+        self.btnToparch = tk.Button(self.cuadro_botones_tablero, text="", image=self.photo4, command=self.ftoparch,
+                                    bg="grey", fg="white")
+        self.btnToparch.grid(row=0, column=0, padx=5, sticky="nsew", pady=3)
+        # ToolTip(self.btnToparch, msg="Ir a principio de archivo")
+        self.photo5 = Image.open('finarch.png')
+        self.photo5 = self.photo5.resize((25, 25), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo5 = ImageTk.PhotoImage(self.photo5)
+        self.btnFinarch = tk.Button(self.cuadro_botones_tablero, text="", image=self.photo5, command=self.ffinarch,
+                                    bg="grey", fg="white")
+        self.btnFinarch.grid(row=1, column=0, padx=5, sticky="nsew", pady=3)
+        # ToolTip(self.btnFinarch, msg="Ir al final del archivo")
+
+        for widg in self.cuadro_botones_tablero.winfo_children():
+            widg.grid_configure(padx=6, pady=3, sticky='nsew')
+
+    def boton_salida(self):
+
+        self.photo3 = Image.open('salida.png')
+        self.photo3 = self.photo3.resize((50, 50), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo3 = ImageTk.PhotoImage(self.photo3)
+        self.btnSalir = tk.Button(self.cuandro_boton_salida, text="Salir", image=self.photo3, command=self.fsalir,
+                                  bg="yellow", fg="white")
+        self.btnSalir.grid(row=0, column=0, padx=5, pady=3, sticky="nsew")
+
+    def barra_busqueda(self):
+
+        for c in range(4):
+            self.cuadro_busqueda.grid_columnconfigure(c, weight=1, minsize=140)
+
+        # BUSCAR Linea de label y entry de busqueda
+        self.lbl_buscar_marca = tk.Label(self.cuadro_busqueda, text="Buscar:")
+        self.lbl_buscar_marca.grid(row=0, column=0, padx=3, pady=2)
+
+        self.entry_buscar_marca = tk.Entry(self.cuadro_busqueda, width=20)
+        self.entry_buscar_marca.grid(row=0, column=1, padx=3, pady=2, sticky="w")
+
+        icono = self.cargar_icono("buscar.png")
+        self.btn_buscar_marca = tk.Button(self.cuadro_busqueda, text="Buscar", command=self.fbuscar_en_tabla, bg="blue",
+                                          fg="white", width=7, compound="left")
+        self.btn_buscar_marca.image = icono
+        self.btn_buscar_marca.config(image=icono)
+        self.btn_buscar_marca.grid(row=0, column=2, padx=3, pady=2, sticky="w")
+
+        icono = self.cargar_icono("ver_todo.png")
+        self.btn_show_all = tk.Button(self.cuadro_busqueda, text="Mostrar todo", command=self.fshowall, bg="blue",
+                                      fg="white", width=7, compound="left")
+        self.btn_show_all.image = icono
+        self.btn_show_all.config(image=icono)
+        self.btn_show_all.grid(row=0, column=3, padx=3, pady=2, sticky="w")
+
+        for widg in self.cuadro_busqueda.winfo_children():
+            widg.grid_configure(padx=3, pady=3, sticky='nsew')
+
+    def armado_grid(self):
+
+        # STYLE TREEVIEW - un chiche para formas y colores
+        style = ttk.Style(self.cuadro_grid)
+        style.theme_use("clam")
+        style.configure("Treeview.Heading", background="black", foreground="white")
+
+        # GRID
+        self.grid_marcas = ttk.Treeview(self.cuadro_grid, columns="col1")
+        self.grid_marcas.bind("<Double-Button-1>", self.doble_click_grid)
+
+        self.grid_marcas.column("#0", width=60, anchor="center")
+        self.grid_marcas.column("col1", width=250, anchor="center")
+
+        self.grid_marcas.heading("#0", text="Id", anchor="center")
+        self.grid_marcas.heading("col1", text="Nombre", anchor="center")
+
+        self.grid_marcas.tag_configure('oddrow', background='light grey')
+        self.grid_marcas.tag_configure('evenrow', background='white')
+
+        # SCROLLBAR del Treeview
+        scroll_x = tk.Scrollbar(self.cuadro_grid, orient="horizontal")
+        scroll_y = tk.Scrollbar(self.cuadro_grid, orient="vertical")
+        self.grid_marcas.config(xscrollcommand=scroll_x.set)
+        self.grid_marcas.config(yscrollcommand=scroll_y.set)
+        scroll_x.config(command=self.grid_marcas.xview)
+        scroll_y.config(command=self.grid_marcas.yview)
+        scroll_y.pack(side="right", fill="y")
+        scroll_x.pack(side="bottom", fill="x")
+        self.grid_marcas['selectmode'] = 'browse'
+
+        # PACK - de el treeview y el FRAME tv
+        #self.cuadro_busqueda.pack(side="top", fill="both", expand=1, padx=5, pady=3)
+        self.grid_marcas.pack(side="top", fill="both", expand=1, padx=5, pady=5)
+
+    def sector_entrys(self):
+
+        self.lbl_nombre = tk.Label(self.cuadro_entrys, text="Nombre: ")
+        self.lbl_nombre.grid(row=0, column=0, padx=10, pady=3, sticky="w")
+        self.entry_nombre = tk.Entry(self.cuadro_entrys, textvariable=self.sv_nombre, justify="left", width=80)
+        self.sv_nombre.trace("w", lambda *args: self.limitador(self.sv_nombre, 40))
+        self.entry_nombre.grid(row=0, column=1, padx=10, pady=3, sticky="w")
+
+    @staticmethod
+    def cargar_icono(path, size=(18,18)):
+        img = Image.open(path).resize(size)
+        return ImageTk.PhotoImage(img)
+
+    def get_marcas_dic(self):
+        return {
+            "Id":            self.clave,
+            "ma_nombre":     self.sv_nombre.get()
+        }

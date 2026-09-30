@@ -1,5 +1,7 @@
 from datetime import date
+
 from PIL import Image, ImageTk
+
 from PDF_clase import *
 from compras_ABM import *
 from funcion_new import *
@@ -253,7 +255,7 @@ class ClaseCompras(tk.Frame):
     # CRUD
     # ---------------------------------------------------------------------
 
-    def fNuevo_articulo(self):
+    def fnuevo_articulo(self):
 
         self.alta_modif = 1
         self.estado_entrys("normal")
@@ -274,6 +276,7 @@ class ClaseCompras(tk.Frame):
         self.estado_entrys("normal")
         self.estado_botones_dos("normal")
         self.estado_botones_uno("disabled")
+        self.combo_estado.configure(state="readonly")
 
         self.entry_articulo.focus()
 
@@ -291,7 +294,7 @@ class ClaseCompras(tk.Frame):
         self.sv_combo_estado.set(value=valores[2])
         self.sv_articulo_obser.set(value=valores[3])
 
-    def fBorro_articulo(self):
+    def fborro_articulo(self):
 
         # -----------------------------------------------------------------------------
         # selecciono el Id del Tv grid para su uso posterior
@@ -395,10 +398,14 @@ class ClaseCompras(tk.Frame):
     # PUNTEROS MANEJO
     # ---------------------------------------------------------------------
 
-    def fToparch(self):
+    def ffiltrar(self):
+        self.filtro_activo = "WHERE fa_estado = '" + self.sv_combo_filtro.get() + "' ORDER BY fa_fecha"
+        self.llena_grilla("")
+
+    def ftoparch(self):
         self.varFuncion_new.mover_puntero_topend(self.grid_art_faltantes, 'TOP')
 
-    def fFinarch(self):
+    def ffinarch(self):
         self.varFuncion_new.mover_puntero_topend(self.grid_art_faltantes, 'END')
 
     def fshowall(self):
@@ -408,7 +415,7 @@ class ClaseCompras(tk.Frame):
         self.filtro_activo = "ORDER BY fa_fecha"
         self.llena_grilla(self.clave)
 
-    def fBuscar_articulo(self):
+    def fbuscar_articulo(self):
 
         if len(self.sv_buscostring.get()) > 0:
 
@@ -432,7 +439,7 @@ class ClaseCompras(tk.Frame):
 
             messagebox.showwarning("Buscar", "No ingreso busqueda", parent=self)
 
-    def formato_fecha(self, pollo):
+    def formato_fecha(self, _pollo):
 
         """Aqui dentro llamo a la funcion validar fechas para revisar todo sus valores posibles
         le paso la fecha tipo string con barras o sin barras """
@@ -458,10 +465,10 @@ class ClaseCompras(tk.Frame):
                 return
 
 
-
     # ===================================================
     # INFORMES
     # ===================================================
+
 
     def creopdf(self):
 
@@ -547,10 +554,7 @@ class ClaseCompras(tk.Frame):
         path = 'hoja.pdf'
         os.system(path)
 
-    def fFiltrar(self):
-
-        self.filtro_activo = "WHERE fa_estado = '" + self.sv_combo_filtro.get() + "' ORDER BY fa_fecha"
-        self.llena_grilla("")
+    # CUADROS ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
     def cuadro_titulos(self):
 
@@ -573,7 +577,7 @@ class ClaseCompras(tk.Frame):
         style.theme_use("clam")
         style.configure("Treeview.Heading", background="black", foreground="white")
         self.grid_art_faltantes = ttk.Treeview(self.frame_art_faltantes_dos, height=4, columns=("col1", "col2", "col3"))
-        #self.grid_venta_articulos.bind("<Double-Button-1>", self.DobleClickGrid)
+        self.grid_art_faltantes.bind("<Double-Button-1>", self.doble_click_grid)
 
         self.grid_art_faltantes.column("#0", width=30, anchor="center", minwidth=30)
         self.grid_art_faltantes.column("col1", width=60, anchor="w", minwidth=60)
@@ -609,7 +613,7 @@ class ClaseCompras(tk.Frame):
         # nuevo pedido articulo
         icono = self.cargar_icono("archivo-nuevo.png")
         self.btn_nuevo_articulo=tk.Button(self.frame_art_faltantes_uno, text=" Nuevo articulo",
-                                       command=self.fNuevo_articulo, width=17, bg='blue', fg='white', compound="left")
+                                       command=self.fnuevo_articulo, width=17, bg='blue', fg='white', compound="left")
         self.btn_nuevo_articulo.image = icono
         self.btn_nuevo_articulo.config(image=icono)
         self.btn_nuevo_articulo.grid(row=0, column=0, padx=3, pady=3, sticky="w")
@@ -625,7 +629,7 @@ class ClaseCompras(tk.Frame):
         # borrar  pedido articulo
         icono = self.cargar_icono("eliminar.png")
         self.btn_borro_articulo=tk.Button(self.frame_art_faltantes_uno, text=" Borrar articulo",
-                                       command=self.fBorro_articulo, width=17, bg='blue', fg='white', compound="left")
+                                       command=self.fborro_articulo, width=17, bg='blue', fg='white', compound="left")
         self.btn_borro_articulo.image = icono
         self.btn_borro_articulo.config(image=icono)
         self.btn_borro_articulo.grid(row=2, column=0, padx=3, pady=3, sticky="w")
@@ -634,14 +638,14 @@ class ClaseCompras(tk.Frame):
         self.photo4 = Image.open('toparch.png')
         self.photo4 = self.photo4.resize((25, 25), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo4 = ImageTk.PhotoImage(self.photo4)
-        self.btnToparch = tk.Button(self.frame_art_faltantes_uno, text="", image=self.photo4, command=self.fToparch,
+        self.btnToparch = tk.Button(self.frame_art_faltantes_uno, text="", image=self.photo4, command=self.ftoparch,
                                  bg="grey", fg="white")
         self.btnToparch.grid(row=3, column=0, padx=5, sticky="nsew", pady=3)
         # ToolTip(self.btnToparch, msg="Ir a principio de archivo")
         self.photo5 = Image.open('finarch.png')
         self.photo5 = self.photo5.resize((25, 25), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo5 = ImageTk.PhotoImage(self.photo5)
-        self.btnFinarch = tk.Button(self.frame_art_faltantes_uno, text="", image=self.photo5, command=self.fFinarch,
+        self.btnFinarch = tk.Button(self.frame_art_faltantes_uno, text="", image=self.photo5, command=self.ffinarch,
                                  bg="grey", fg="white")
         self.btnFinarch.grid(row=4, column=0, padx=5, sticky="nsew", pady=3)
         # ToolTip(self.btnFinarch, msg="Ir al final del archivo")
@@ -670,7 +674,7 @@ class ClaseCompras(tk.Frame):
         # Filtrar la busqueda
         icono = self.cargar_icono("filtrar.png")
         self.btn_buscar = tk.Button(self.frame_busqueda_art_faltantes, text=" Filtrar busqueda",
-                                    command=self.fBuscar_articulo, width=11, bg='#5F9EA0', fg='white', compound="left")
+                                    command=self.fbuscar_articulo, width=11, bg='#5F9EA0', fg='white', compound="left")
         self.btn_buscar.image = icono
         self.btn_buscar.config(image=icono)
         self.btn_buscar.grid(row=0, column=2, padx=5, pady=2, sticky="w")
@@ -703,7 +707,7 @@ class ClaseCompras(tk.Frame):
         self.combo_filtro.grid(row=0, column=6, padx=3, pady=3, sticky="e")
         #self.combo_estado.bind('<Tab>', lambda e: self.calcular("completo"))
 
-        self.btn_filtro=tk.Button(self.frame_busqueda_art_faltantes, text="Filtrar", command=self.fFiltrar,
+        self.btn_filtro=tk.Button(self.frame_busqueda_art_faltantes, text="Filtrar", command=self.ffiltrar,
                                width=11, bg='#5F9EA0', fg='white', compound="left")
         self.btn_filtro.grid(row=0, column=7, padx=5, pady=2, sticky="w")
 
@@ -774,10 +778,13 @@ class ClaseCompras(tk.Frame):
         for widg in self.frame_botones2.winfo_children():
             widg.grid_configure(padx=6, pady=3, sticky='nsew')
 
-    def cargar_icono(self, path, size=(18,18)):
+    # OTRAS FUNCIONES :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    @staticmethod
+    def cargar_icono(path, size=(18,18)):
         img = Image.open(path).resize(size)
         return ImageTk.PhotoImage(img)
 
+    # Crea diccionario para ABM
     def get_faltantes_dic(self, fecha_aux):
 
         # Preparo Diccionario ----------------------------------------------------------------
@@ -790,4 +797,5 @@ class ClaseCompras(tk.Frame):
         }
         # ------------------------------------------------------------------------------------
 
-    #self.sv_fecha_anotado.get(), self.sv_articulo.get(),                self.sv_combo_estado.get(), self.sv_articulo_obser.get())
+    def doble_click_grid(self, _event):
+        self.fedito_articulo()

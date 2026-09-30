@@ -21,7 +21,8 @@ class ClaseFuncionNew:
 
         self.master = root
 
-    def get_connection(self):
+    @staticmethod
+    def get_connection():
 
         return mysql.connector.connect(
             host="localhost",
@@ -36,7 +37,8 @@ class ClaseFuncionNew:
           comas decimales - cifra debe venir tipo numerico
     ------------------------------------------------------------------------------
     """
-    def formatear_cifra(self, cifra):
+    @staticmethod
+    def formatear_cifra(cifra):
         numero = cifra
         salida1 = "{:,.2f}".format(numero)
         salida2 = salida1.replace(',', 'n')
@@ -52,7 +54,8 @@ class ClaseFuncionNew:
         Ya tanmbien la tengo hecha en funciones como 'fecha_str_reves_normal(self, par, con_hora=False):' 
     --------------------------------------------------------------------------
     """
-    def fecha_es(self, par, con_hora=False):
+    @staticmethod
+    def fecha_es(par, con_hora=False):
 
         try:
             if con_hora:
@@ -74,7 +77,8 @@ class ClaseFuncionNew:
     1 - FECHA_A_TABLA - Toma una fecha en formato normal 2025/12/26 (tabla) y la devuelve 2026-12-26 (uso en tablas)
     --------------------------------------------------------------------------
     """
-    def fecha_a_tabla(self, fecha_str):
+    @staticmethod
+    def fecha_a_tabla(fecha_str):
         try:
             fecha = datetime.strptime(fecha_str, "%d/%m/%Y %H:%M:%S")
             return fecha.strftime("%Y-%m-%d %H:%M:%S")
@@ -144,7 +148,8 @@ class ClaseFuncionNew:
                 return "N"
         return fecha.strftime("%d/%m/%Y")
 
-    def mensajes_error_fechas(self, tipo_error, widget):
+    @staticmethod
+    def mensajes_error_fechas(tipo_error, widget):
 
         mensajes = {
             "A": "La fecha no puede ser vacía",
@@ -156,7 +161,7 @@ class ClaseFuncionNew:
 
         if tipo_error in mensajes:
             messagebox.showerror("Error", mensajes[tipo_error], parent=widget.winfo_toplevel())
-            return
+            return "N"
 
         if tipo_error == "F":
             return "S" if messagebox.askyesno(
@@ -179,7 +184,8 @@ class ClaseFuncionNew:
         finalizado", "green", 2500, ""))
     --------------------------------------------------------------------------
     """
-    def mostrar_toast(self, pantalla_padre, mensaje, pa_color, duracion=3000, tipo="info"):
+    @staticmethod
+    def mostrar_toast(pantalla_padre, mensaje, pa_color, duracion=3000, tipo="info"):
 
         tipo = str(tipo).strip().lower()
 
@@ -247,7 +253,8 @@ class ClaseFuncionNew:
     1 - MOVER PUNTERO top end
     ------------------------------------------------------------------------------
     """
-    def mover_puntero_topend(self, tree, posicion):
+    @staticmethod
+    def mover_puntero_topend(tree, posicion):
 
         items = tree.get_children()
         if not items:
@@ -323,7 +330,7 @@ class ClaseFuncionNew:
 
         # VENTANA ------------------------------------------------------------------
         self.sel_item = tk.Toplevel(self.master)
-        self.sel_item.protocol("WM_DELETE_WINDOW", self.fCerrar)
+        self.sel_item.protocol("WM_DELETE_WINDOW", self.fcerrar)
         self.sel_item.geometry('820x300+600+250')
         self.sel_item.config(bg='light grey', padx=5, pady=5)
         self.sel_item.resizable(1, 1)
@@ -347,7 +354,7 @@ class ClaseFuncionNew:
 
         self.grid_funcsel = ttk.Treeview(frame, height=10, columns=("col1", "col2", "col3"), selectmode="browse")
 
-        self.grid_funcsel.bind("<Double-Button-1>", lambda e: self.DobleClickGrid(e, xtabla))
+        self.grid_funcsel.bind("<Double-Button-1>", lambda e: self.doble_click_grid(e, xtabla))
 
         # COLUMNAS
         self.grid_funcsel.column("#0", width=50, anchor="center")
@@ -411,23 +418,23 @@ class ClaseFuncionNew:
         frame_btn.pack(pady=5)
 
         tk.Button(frame_btn, text="Seleccionar", width=20,
-                  command=lambda: self.fSelec_sel_item(xtabla)).grid(row=0, column=0, padx=5)
-        tk.Button(frame_btn, text="Volver", width=20, command=self.fVuelvo_nada).grid(row=0, column=1, padx=5)
+                  command=lambda: self.fselec_sel_item(xtabla)).grid(row=0, column=0, padx=5)
+        tk.Button(frame_btn, text="Volver", width=20, command=self.fvuelvo_nada).grid(row=0, column=1, padx=5)
 
         # ESPERA (reemplaza mainloop) ------------------------------------------------
         self.master.wait_window(self.sel_item)
 
         return self.todo_el_registro
 
-    def DobleClickGrid(self, event, la_tabla):
-        self.fSelec_sel_item(la_tabla)
+    def doble_click_grid(self, _event, la_tabla):
+        self.fselec_sel_item(la_tabla)
 
-    def fVuelvo_nada(self):
+    def fvuelvo_nada(self):
         # Boton de opcion volver
         self.todo_el_registro = ""
-        self.fCerrar()
+        self.fcerrar()
 
-    def fSelec_sel_item(self, ztabla):
+    def fselec_sel_item(self, ztabla):
 
         # Asi obtengo el Id del Grid de donde esta el foco (I006...I002...)
         self.selected = self.grid_funcsel.focus()
@@ -446,7 +453,7 @@ class ClaseFuncionNew:
         #self.todo_el_registro = self.varObjeto.pasar_item_seleccionado(self.clave, ztabla)
         self.todo_el_registro = self.pasar_item_seleccionado(self.clave, ztabla)
 
-        self.fCerrar()
+        self.fcerrar()
 
     def pasar_item_seleccionado(self, Id, is_ztabla):
 
@@ -510,11 +517,11 @@ class ClaseFuncionNew:
             cur.close()
             cnn.close()
 
-    def limpiar_Grid_sel(self):
+    def limpiar_grid_sel(self):
         for item in self.grid_funcsel.get_children():
             self.grid_funcsel.delete(item)
 
-    def fCerrar(self):
+    def fcerrar(self):
 
         """ El quit hace que el sistema salga fuera del mainloop, esto sale pero no destruye la pantalla, la misma
         queda congelada, para eso luego hay que hacer el destroy. """
@@ -525,9 +532,11 @@ class ClaseFuncionNew:
         self.master.focus_set()
 
     def traer_dolarhoy(self):
+
         dev_informa = self.consultar_informa()
         for row in dev_informa:
             return row[21]
+
     # ---------------------------------------------------------------------------
     # FIN METODO SEL
     # ---------------------------------------------------------------------------
@@ -541,7 +550,8 @@ class ClaseFuncionNew:
         y la otra pone cero si queda un punto o un guion solos
     --------------------------------------------------------------------------
     """
-    def validar(self, value):
+    @staticmethod
+    def validar(value):
         if value == "":
             return True
         for c in value:
@@ -564,7 +574,9 @@ class ClaseFuncionNew:
         texto_final = self.corregir_valor(valor)
         entry.delete(0, tk.END)
         entry.insert(0, texto_final)
-    def corregir_valor(self, valor):
+
+    @staticmethod
+    def corregir_valor(valor):
         """
         Función 'pura': recibe un valor (string, o lo que devuelva un StringVar/Entry),
         y devuelve el string ya corregido y formateado a 2 decimales.

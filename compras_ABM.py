@@ -4,15 +4,15 @@ from mysql.connector import Error
 class DatosCompras:
 
     def __init__(self, pantalla):
-
         self.master = pantalla
 
-        try:
-            self.cnn = mysql.connector.connect(host="localhost", user="root", passwd="", database="sist_prom")
-        except Error as ex:
-            print("Error de conexion: {0}".format(ex))
+        # try:
+        #     self.cnn = mysql.connector.connect(host="localhost", user="root", passwd="", database="sist_prom")
+        # except Error as ex:
+        #     print("Error de conexion: {0}".format(ex))
 
-    def get_connection(self):
+    @staticmethod
+    def get_connection():
         return mysql.connector.connect(
             host="localhost",
             user="root",
@@ -33,7 +33,7 @@ class DatosCompras:
             cur.close()
             cnn.close()
 
-    def traer_ultimo(self, xparametro):
+    def traer_ultimo(self, _xparametro):
 
         cnn = self.get_connection()
         cur = cnn.cursor(buffered=True)
@@ -115,7 +115,7 @@ class DatosCompras:
             cur.execute(sql, valores)
             cnn.commit()
             return
-        except Exception as e:
+        except Exception:
             cnn.rollback()
             raise
         finally:
@@ -134,7 +134,7 @@ class DatosCompras:
             n = cur.rowcount
             cnn.commit()
             return n
-        except Exception as e:
+        except Exception:
             cnn.rollback()
             raise
         finally:

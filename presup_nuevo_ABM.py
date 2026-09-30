@@ -7,7 +7,8 @@ class DatosPresupuestos:
 
         self.master = pantalla
 
-    def get_connection(self):
+    @staticmethod
+    def get_connection():
         return mysql.connector.connect(
             host="localhost",
             user="root",
@@ -66,11 +67,12 @@ class DatosPresupuestos:
             cnn.close()
 
     def traer_ultimo(self, xparametro):
+        # lo ordeno por numero, para que me sume el ultimo en roden numerico y no por fecha
 
         cnn = self.get_connection()
         cur = cnn.cursor(buffered=True)
         try:
-            cur.execute("SELECT * FROM resu_presup ORDER BY Id DESC LIMIT 1")
+            cur.execute("SELECT * FROM resu_presup ORDER BY rp_numero DESC LIMIT 1")
             row = cur.fetchone()
             if row is None:
                 return 0

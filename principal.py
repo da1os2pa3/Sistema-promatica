@@ -1,9 +1,10 @@
 """ Este es el modulo menu principal desde donde accedemos a cada ABM y proceso del sistema"""
-from tkinter import Frame, LabelFrame, Button, Toplevel
-from PIL import Image, ImageTk
-
-#import locale
+# import locale
 import tkinter as tk
+from tkinter import Frame, LabelFrame, Button, Toplevel
+from tkinter import messagebox
+
+from PIL import Image, ImageTk
 
 from articulos import ClaseArticulos
 from clientes import ClaseClientes
@@ -12,7 +13,7 @@ from configuracion import ClaseConfiguracion
 from cotiz_vta import VentasPrincipal
 from ctacte import ClaseCuentaCorriente
 from garantias import ClaseGarantias
-from guias_tecnicas import Clase_GuiasTecnicas
+#from guias_tecnicas import Clase_GuiasTecnicas
 from inf_tecnicos import ClaseInformeTecnico
 from marcas import ClaseMarcas
 from orden_reparacion import ClaseOrdenesRepara
@@ -67,15 +68,17 @@ class Principal(Frame):
         self.master.geometry(f"{self.ancho_ventana}x{self.alto_ventana}+{x}+{y}")
         # ----------------------------------------------------------------------
 
-        # Imagen de fondo -------------------------------------------------------
-        self.imagen = Image.open("promatica.jpg")
-        # Redimension (Alto, Ancho)
-        self.imagen = self.imagen.resize((self.ancho_ventana, self.alto_ventana), Image.Resampling.LANCZOS)
-        self.fondo = ImageTk.PhotoImage(self.imagen)
-        self.label_fondo = tk.Label(self.master, image=self.fondo)
-        self.label_fondo.place(x=0, y=0, relwidth=1, relheight=1)
-        # self.master.bind("<Configure>", self.ajustar_fondo)
-        #tk.Label(self.master, image=fondo).place(x=0, y=0, relwidth=1, relheight=1)
+        # -----------------------------------------------------------------------
+        # Acá el error no debería frenar el arranque del sistema — si falta la imagen, mejor
+        # mostrar la ventana sin fondo que no mostrar nada.
+        try:
+            self.imagen = Image.open("promatica.jpg")
+            self.imagen = self.imagen.resize((self.ancho_ventana, self.alto_ventana), Image.Resampling.LANCZOS)
+            self.fondo = ImageTk.PhotoImage(self.imagen)
+            self.label_fondo = tk.Label(self.master, image=self.fondo)
+            self.label_fondo.place(x=0, y=0, relwidth=1, relheight=1)
+        except FileNotFoundError:
+            print("No se encontró la imagen de fondo, se continúa sin ella")
         # -----------------------------------------------------------------------
 
         # Barra de titulo superior ----------------------------------------------
@@ -89,18 +92,18 @@ class Principal(Frame):
         # ---------------------------------------------------------------------
         menu_principal = tk.Menu(self.master)
         menu_archivo = tk.Menu(menu_principal, tearoff=0)
-        menu_archivo.add_command(label='* Archivo de Clientes', command=self.fClientes)
-        menu_archivo.add_command(label='* Archivo de Proveedores', command=self.fProved)
-        menu_archivo.add_command(label='* Archivo de Marcas', command=self.fMarcas)
-        menu_archivo.add_command(label='* Archivo de Rubros', command=self.fRubros)
-        menu_archivo.add_command(label='* Configuracion', command=self.fConfiguracion)
+        menu_archivo.add_command(label='* Archivo de Clientes', command=self.fclientes)
+        menu_archivo.add_command(label='* Archivo de Proveedores', command=self.fproved)
+        menu_archivo.add_command(label='* Archivo de Marcas', command=self.fmarcas)
+        menu_archivo.add_command(label='* Archivo de Rubros', command=self.frubros)
+        menu_archivo.add_command(label='* Configuracion', command=self.fconfiguracion)
 
         menu_informes = tk.Menu(menu_principal, tearoff=0)
-        menu_informes.add_command(label='* Saldos cuenta corriente', command=self.fInf_ctacte)
-        menu_informes.add_command(label='* Informes Tecnicos', command=self.fInf_tecnico)
+        menu_informes.add_command(label='* Saldos cuenta corriente', command=self.finf_ctacte)
+        menu_informes.add_command(label='* Informes Tecnicos', command=self.finf_tecnico)
 
         menu_tecnica = tk.Menu(menu_principal, tearoff=0)
-        menu_tecnica.add_command(label='* Guias Tecnicas', command=self.fTecnicas)
+        menu_tecnica.add_command(label='* Guias Tecnicas', command=self.ftecnicas)
 
         menu_principal.add_cascade(label='Archivos', menu=menu_archivo)
         menu_principal.add_cascade(label='Tecnica', menu=menu_tecnica)
@@ -127,87 +130,32 @@ class Principal(Frame):
         # ------------------------------------------------------
         self.frame2 = LabelFrame(self.master, bg="#bfdaff")
         self.cuadro_cinta_superior()
-        self.frame2.pack(side="top", fill="x", pady=10, padx=5)
+        self.frame2.pack(side="top", fill="x", pady=3, padx=5)
 
     def cuadro_cinta_superior(self):
 
-        for c in range(8):
+        for c in range(7):
             self.frame2.grid_columnconfigure(c, weight=1, minsize=100)
 
         # CLIENTES
-        img = Image.open("clientes4.png").resize((35, 35))
-        icono = ImageTk.PhotoImage(img)
-        self.btn_clientes = Button(self.frame2, text="Clientes",compound="top", pady=3,
-                                   command=self.fClientes, height=53, border=3, bg="blue", fg="white")
-        self.btn_clientes.image = icono
-        self.btn_clientes.config(image=icono)
-        self.btn_clientes.grid(row=0, column=0, padx=3, pady=3, sticky="nsew")
-
+        self.btn_clientes = self.crear_boton(self.frame2, "Clientes", "clientes4.png", self.fclientes, col=0, height=53)
         # GARANTIAS
-        img = Image.open("garantia.png").resize((35, 35))
-        icono = ImageTk.PhotoImage(img)
-        self.btn_ctacte = Button(self.frame2, text="Garantias", compound="top", pady=3, command=self.fGarantia,
-                                 height=53, border=3, bg="blue", fg="white")
-        self.btn_ctacte.image = icono
-        self.btn_ctacte.config(image=icono)
-        self.btn_ctacte.grid(row=0, column=1, padx=3, pady=3, sticky="nsew")
-
+        self.btn_garantia = self.crear_boton(self.frame2, "Garantias", "garantia.png", self.fgarantia, col=1, height=53)
         # RECIBOS
-        img = Image.open("recibo.png").resize((35, 35))
-        icono = ImageTk.PhotoImage(img)
-        self.btn_recibos = Button(self.frame2, text="Recibos", compound="top", pady=3, command=self.fRecibos, height=53,
-                                 border=3, bg="blue", fg="white")
-        self.btn_recibos.image = icono
-        self.btn_recibos.config(image=icono)
-        self.btn_recibos.grid(row=0, column=2, padx=3, pady=3, sticky="nsew")
-
-        # PRESUPUESTOS
-        img = Image.open("presuequipo.png").resize((35, 35))
-        icono = ImageTk.PhotoImage(img)
-        self.btn_presupuestos = Button(self.frame2, text="Presupuestos", compound="top", pady=3,
-                                      command=self.fPresupuestos, height=53, border=3, bg="blue", fg="white")
-        self.btn_presupuestos.image = icono
-        self.btn_presupuestos.config(image=icono)
-        self.btn_presupuestos.grid(row=0, column=3, padx=3, pady=3, sticky="nsew")
-
+        self.btn_recibos = self.crear_boton(self.frame2, "Recibos", "recibo.png", self.frecibos, col=2, height=53)
+        # # PRESUPUESTOS
+        # self.btn_presupuestos = self.crear_boton(self.frame2, "Presupuestos", "presuequipo.png", self.fpresupuestos,
+        #                                          col=3, height=53)
         # ARTICULOS FALTANTES
-        img = Image.open("comprasmay.png").resize((35, 35))
-        icono = ImageTk.PhotoImage(img)
-        self.btn_art_faltantes = Button(self.frame2, text="Articulos\na comprar", compound="top", pady=3,
-                                   command=self.fCompras, height=53, border=3, bg="blue", fg="white")
-        self.btn_art_faltantes.image = icono
-        self.btn_art_faltantes.config(image=icono)
-        self.btn_art_faltantes.grid(row=0, column=4, padx=3, pady=3, sticky="nsew")
-
+        self.btn_art_faltantes = self.crear_boton(self.frame2, "Compras\nArticulos", "comprasmay.png", self.fcompras,
+                                                  col=3, height=53)
         # Pendientes
-        img = Image.open("rma.png").resize((35, 35))
-        icono = ImageTk.PhotoImage(img)
-        self.btn_rma = Button(self.frame2, text="Agenda\nPendientes", compound="top", pady=3, command=self.fRma,
-                             border=3, bg="blue", fg="white")
-        self.btn_rma.image = icono
-        self.btn_rma.config(image=icono)
-        self.btn_rma.grid(row=0, column=5, padx=3, pady=3, sticky="nsew")
-
+        self.btn_rma = self.crear_boton(self.frame2, "Agenda\nPendientes", "rma.png", self.frma, col=4, height=53)
         # Respaldos
-        img = Image.open("backup.png").resize((35, 35))
-        icono = ImageTk.PhotoImage(img)
-        self.btn_backup = Button(self.frame2, text="Backup", compound="top", pady=3, command=self.fBackup, height=53,
-                                border=3, bg="blue", fg="white")
-        self.btn_backup.image = icono
-        self.btn_backup.config(image=icono)
-        self.btn_backup.grid(row=0, column=6, padx=3, pady=3, sticky="nsew")
-
+        self.btn_backup = self.crear_boton(self.frame2, "Backups", "backup.png", self.fbackup, col=5, height=53)
         # PRESUPUESTOS nuevo
-        img = Image.open("presuequipo.png").resize((35, 35))
-        icono = ImageTk.PhotoImage(img)
-        self.btn_presupuestos = Button(self.frame2, text="Presupuestos dos", compound="top", pady=3,
-                                      command=self.fPresu_pest, height=53, border=3, bg="blue", fg="white")
-        self.btn_presupuestos.image = icono
-        self.btn_presupuestos.config(image=icono)
-        self.btn_presupuestos.grid(row=0, column=7, padx=3, pady=3, sticky="nsew")
-
-
-
+        self.btn_presupuestos2 = self.crear_boton(self.frame2, "Presupuestos", "presuequipo.png", self.fpresu_pest,
+                                                  col=6, height=53)
 
         # reordenamiento de self.frame_botones_grid
         for widg in self.frame2.winfo_children():
@@ -219,17 +167,15 @@ class Principal(Frame):
             self.frame1.grid_columnconfigure(c, weight=1, minsize=100)
 
         # ARTICULOS CRUD - ABM
-        img = Image.open("productos.png").resize((35, 35))
-        icono = ImageTk.PhotoImage(img)
+        icono = self.cargar_icono("productos.png")
         self.btn_articulos = Button(self.frame1, text="Articulos", compound="top", pady=3, border=3,
-                                   command=self.fArticulos, bg="blue", fg="white")
+                                   command=self.farticulos, bg="blue", fg="white")
         self.btn_articulos.image = icono
         self.btn_articulos.config(image=icono)
         self.btn_articulos.grid(row=0, column=0, padx=3, pady=3, sticky="nsew")
 
         # ORDENES DE REPARACION
-        img = Image.open("reparar.png").resize((35, 35))
-        icono = ImageTk.PhotoImage(img)
+        icono = self.cargar_icono("reparar.png")
         self.btn_orden_rep = Button(self.frame1, text="Orden Reparacion", compound="top", pady=3, border=3,
                                    command=self.forden_repara, bg="blue", fg="white")
         self.btn_orden_rep.image = icono
@@ -237,9 +183,8 @@ class Principal(Frame):
         self.btn_orden_rep.grid(row=0, column=1, padx=3, pady=3, sticky="nsew")
 
         # PRESUPUESTOS COTIZACIONES - INGRESO VENTAS
-        img = Image.open("presupuesto.png").resize((35, 35))
-        icono = ImageTk.PhotoImage(img)
-        self.btn_cotiz_vta = Button(self.frame1, text="Cotizar/Venta", compound="top", pady=3, command=self.fcotVta,
+        icono = self.cargar_icono("presupuesto.png")
+        self.btn_cotiz_vta = Button(self.frame1, text="Cotizar/Venta", compound="top", pady=3, command=self.fcotiza_venta,
                                 border=3, bg="blue", fg="white")
         self.btn_cotiz_vta.image = icono
         self.btn_cotiz_vta.config(image=icono)
@@ -248,25 +193,23 @@ class Principal(Frame):
         # PLANILLA DE CAJA
         img = Image.open("planilla.png").resize((35, 35))
         icono = ImageTk.PhotoImage(img)
-        self.btn_planicaja = Button(self.frame1, text="Planilla Caja", compound="top", pady=3, command=self.fPlaniCaja,
+        self.btn_planicaja = Button(self.frame1, text="Planilla Caja", compound="top", pady=3, command=self.fplani_caja,
                                    border=3, bg="blue", fg="white")
         self.btn_planicaja.image = icono
         self.btn_planicaja.config(image=icono)
         self.btn_planicaja.grid(row=0, column=3, padx=3, pady=3, sticky="nsew")
 
         # CUENTA CORRIENTE
-        img = Image.open("ctacte.png").resize((35, 35))
-        icono = ImageTk.PhotoImage(img)
-        self.btnCtacte = Button(self.frame1, text="Cuenta Corriente", compound="top", pady=3, command=self.fCtacte,
+        icono = self.cargar_icono("ctacte.png")
+        self.btnCtacte = Button(self.frame1, text="Cuenta Corriente", compound="top", pady=3, command=self.fctacte,
                                 border=3, bg="blue", fg="white")
         self.btnCtacte.image = icono
         self.btnCtacte.config(image=icono)
         self.btnCtacte.grid(row=0, column=4, padx=3, pady=3, sticky="nsew")
 
         # SALIDA DEL SISTEMA
-        img = Image.open("salida.png").resize((35, 35))
-        icono = ImageTk.PhotoImage(img)
-        self.btnSalida = Button(self.frame1, text="Salir", compound="top", pady=3, command=self.fSalir, border=3,
+        icono = self.cargar_icono("salida.png")
+        self.btnSalida = Button(self.frame1, text="Salir", compound="top", pady=3, command=self.fsalir, border=3,
                                 bg="yellow", fg="Black")
         self.btnSalida.image = icono
         self.btnSalida.config(image=icono)
@@ -277,7 +220,6 @@ class Principal(Frame):
             widg.grid_configure(padx=3, pady=3, sticky='nsew')
 
     def fsale_menu(self):
-
         self.master.quit()
         self.master.destroy()
 
@@ -286,90 +228,80 @@ class Principal(Frame):
     """ En los proximos metods, Defino una variable vent que toma valores de una pantalla "TOPLEVEL" dependiendo
         de master de principal entiendo ???ver eso de depender de principal """
 
-    def fPlaniCaja(self):
+    def fplani_caja(self):
         self.abrir_ventana(ClasePlaniCaja, "Planilla de caja")
-
-    # def fPlaniCaja(self):
-    #     # PLANILLA DE CAJA
-    #     vent = Toplevel()
-    #     vent.title("Planilla de Caja")
-    #     vent.grab_set()
-    #     vent.focus_set()
-    #     app = PlaniCaja(vent)
-    #     app.mainloop()
-
-    # def fcotVta(self):
-    #     self.abrir_ventana(Clase_CotizVenta, "Cotizaciones - Ventas")
-
-    def fcotVta(self):
+    def fcotiza_venta(self):
         self.abrir_ventana(VentasPrincipal, "Cotizaciones - Ventas")
-
     def forden_repara(self):
         self.abrir_ventana(ClaseOrdenesRepara, "Ordenes de reparacion")
-
-    def fMarcas(self):
+    def fmarcas(self):
         self.abrir_ventana(ClaseMarcas, "Marcas")
-
-    def fRubros(self):
+    def frubros(self):
         self.abrir_ventana(ClaseRubros, "Rubros de Articulos")
-
-    def fClientes(self):
+    def fclientes(self):
         self.abrir_ventana(ClaseClientes, "ABM Clientes")
-
-    def fProved(self):
+    def fproved(self):
         self.abrir_ventana(ClaseProved, "ABM Proveeores")
-
-    def fArticulos(self):
+    def farticulos(self):
         self.abrir_ventana(ClaseArticulos, "ABM Articulos")
-
-    def fCtacte(self):
+    def fctacte(self):
         self.abrir_ventana(ClaseCuentaCorriente, "ABM Cuentas Corrientes")
-
-    def fGarantia(self):
+    def fgarantia(self):
         self.abrir_ventana(ClaseGarantias, "Garantias")
-
-    def fRecibos(self):
+    def frecibos(self):
         self.abrir_ventana(ClaseRecibos, "Recibos")
-
-    def fPresupuestos(self):
-        self.abrir_ventana(Clase_Presupuestos, "Presupuestos")
-
-    def fPresu_pest(self):
+    def fpresupuestos(self):
+        pass
+        #self.abrir_ventana(Clase_Presupuestos, "Presupuestos")
+    def fpresu_pest(self):
         self.abrir_ventana(ClasePresupuestos, "Presupuestos")
-
-    def fCompras(self):
+    def fcompras(self):
         self.abrir_ventana(ClaseCompras, "Articulos faltantes")
-
-    def fRma(self):
+    def frma(self):
         self.abrir_ventana(ClaseRma, "RMA")
-
-    def fBackup(self):
+    def fbackup(self):
         self.abrir_ventana(ClaseBackup, "Backup")
-
-    def fConfiguracion(self):
+    def fconfiguracion(self):
         self.abrir_ventana(ClaseConfiguracion, "Configuracion - Parametros")
-
-    def fInf_ctacte(self):
+    def finf_ctacte(self):
         self.abrir_ventana(ClaseSaldosCuentaCorriente, "Saldos en Cuentas Corrientes")
-
-    def fInf_tecnico(self):
+    def finf_tecnico(self):
         self.abrir_ventana(ClaseInformeTecnico, "Informes tecnicos")
-
-    def fTecnicas(self):
-        self.abrir_ventana(Clase_GuiasTecnicas, "Guias tecnicas")
+    def ftecnicas(self):
+        pass
+        #self.abrir_ventana(Clase_GuiasTecnicas, "Guias tecnicas")
     # --------------------------------------------------------------------------
 
-    def fSalir(self):
+    def fsalir(self):
         self.master.destroy()
 
-
-
     def abrir_ventana(self, clase, titulo):
+        try:
+            vent = Toplevel(self.master)
+            vent.withdraw()
+            vent.title(titulo)
+            clase(vent)
+            vent.deiconify()
+            vent.grab_set()
+            vent.focus_set()
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo abrir '{titulo}':\n{e}")
+            vent.destroy()
 
-        vent = Toplevel(self.master) #Crea una nueva ventana hija de la ventana principal (self.master).
-        vent.withdraw()              # Oculta la ventana
-        vent.title(titulo)           # asignás el título:
-        clase(vent)                  #
-        vent.deiconify()             # La muestra cuando ya está construida
-        vent.grab_set()              # Hace que esa ventana sea modal.
-        vent.focus_set()
+    @staticmethod
+    def crear_boton(frame, texto, imagen, comando, col, row=0, **kwargs):
+        try:
+            img = Image.open(imagen).resize((35, 35))
+            icono = ImageTk.PhotoImage(img)
+        except FileNotFoundError:
+            icono = None
+        btn = Button(frame, text=texto, image=icono, compound="top", pady=13,
+                     command=comando, border=3, bg="blue", fg="white", **kwargs)
+        btn.image = icono
+        btn.grid(row=row, column=col, padx=3, pady=3, sticky="nsew")
+        return btn
+
+    @staticmethod
+    def cargar_icono(path, size=(35, 35)):
+        img = Image.open(path).resize(size)
+        return ImageTk.PhotoImage(img)

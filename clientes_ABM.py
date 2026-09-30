@@ -1,13 +1,12 @@
 import mysql.connector
-#from datetime import datetime
 
-class datosClientes:
+class DatosClientes:
 
     def __init__(self, pantalla):
-
         self.master = pantalla
 
-    def get_connection(self):
+    @staticmethod
+    def get_connection():
         return mysql.connector.connect(
             host="localhost",
             user="root",
@@ -154,7 +153,7 @@ class datosClientes:
             n = cur.rowcount
             cnn.commit()
             return n
-        except Exception as e:
+        except Exception:
             cnn.rollback()
             raise
         finally:

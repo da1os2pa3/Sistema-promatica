@@ -1,18 +1,18 @@
 import datetime
 import os
 import subprocess
-#import time
+import threading
 from datetime import datetime
 from tkinter import *
 from tkinter import ttk
+
 from PIL import Image, ImageTk
-import threading
+
 
 class ClaseBackup(Frame):
 
     def __init__(self, master=None):
         super().__init__(master, width=880, height=150)
-    #     # self.master = master
 
         # ----------------------------------------------------------------------------------
         # TITULOS
@@ -25,11 +25,9 @@ class ClaseBackup(Frame):
 
         ancho = self.master.winfo_screenwidth()
         alto = self.master.winfo_screenheight()
-
         # Asigno fijo un ancho y un alto
         ancho_ventana = 920
         alto_ventana = 200
-
         # X e Y son las coordenadas para el posicionamiento del vertice superior izquierdo
         x = int((ancho - ancho_ventana) / 2)
         y = int((alto - alto_ventana) / 2)
@@ -52,7 +50,6 @@ class ClaseBackup(Frame):
         # -----------------------------------------------------------------
         # TITULOS
         # -----------------------------------------------------------------
-
         # --------------------------------------------
         # Encabezado logo y titulo con PACK
         self.frame_titulo_top = Frame(self.master)
@@ -64,7 +61,6 @@ class ClaseBackup(Frame):
 
         self.lbl_titulo = Label(self.frame_titulo_top, width=45, text="Backup",
                                 bg="black", fg="gold", font=("Arial bold", 20, "bold"), bd=5, relief="ridge", padx=5)
-
         # Coloco logo y titulo en posicion de pantalla
         self.lbl_png_recibo.grid(row=0, column=0, sticky=W, padx=5, ipadx=22)
         self.lbl_titulo.grid(row=0, column=1, sticky="nsew")
@@ -106,7 +102,6 @@ class ClaseBackup(Frame):
         # -----------------------------------------------------------------
         # BOTONES
         # -----------------------------------------------------------------
-
         self.frame_botones=LabelFrame(self.master)
 
         self.btnstart=Button(self.frame_botones, text="Comenzar", width=10, command=self.act_1, bg="blue", fg="white")

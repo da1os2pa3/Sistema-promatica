@@ -1,30 +1,25 @@
 import os
-from funciones import *
-#from funcion_new import ClaseFuncion_new
-from inf_tecnicos_ABM import *
-
 import tkinter as tk
+from datetime import date
 from tkinter import ttk
 from tkinter.scrolledtext import *
-
-from datetime import date, datetime
-
-from tktooltip import ToolTip
 from PIL import Image, ImageTk
+from tktooltip import ToolTip
 from PDF_clase import *
+from funcion_new import ClaseFuncionNew
+from funciones import *
+from inf_tecnicos_ABM import ClaseInfTecnicosABM
 
-#from tkinter import messagebox
 
 class ClaseInformeTecnico(tk.Frame):
-
 
     def __init__(self, master=None):
         super().__init__(master, width=880, height=810)
         self.master = master
 
         # Instanciaciones -----------------------------------------------------------------
-        # Creo instancia de la clase ABM y la paso pantalla master
-        self.var_inf_tecnicos = clase_inf_tecnicos_ABM(self.master)
+        self.var_inf_tecnicos = ClaseInfTecnicosABM(self.master)
+        self.varFuncion_new = ClaseFuncionNew(self.master)
         # ---------------------------------------------------------------------------------
 
         self.master.grab_set()
@@ -51,17 +46,9 @@ class ClaseInformeTecnico(tk.Frame):
         # ------------------------------------------------------------------------------
 
         self.filtro_activo = ""
-
         self.create_widgets()
         self.estado_inicial()
         self.llena_grilla("")
-
-        # # guarda en item el Id del elemento fila en este caso fila 0
-        # item = self.grid_informes_tecnicos.identify_row(0)
-        # self.grid_informes_tecnicos.selection_set(item)
-        # # pone el foco en el item seleccionado
-        # self.grid_informes_tecnicos.focus(item)
-        # self.estado_inicial("disabled")
 
         """ La función Treeview.selection() retorna una tupla con los ID de los elementos seleccionados o una
         # tupla vacía en caso de no haber ninguno
@@ -77,15 +64,14 @@ class ClaseInformeTecnico(tk.Frame):
 
     def create_widgets(self):
 
-        # ---------------------------------------------------------------
-        # TITULOS
+        # TITULOS -----------------------------------------------------------------
 
         # Encabezado logo y titulo con PACK
         self.frame_titulo_top = tk.Frame(self.master)
 
         # Armo el logo y el titulo
         self.photocc = Image.open('inf_tecnico.png')
-        self.photocc = self.photocc.resize((50, 50), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photocc = self.photocc.resize((50, 50), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         self.png_ctacte = ImageTk.PhotoImage(self.photocc)
         self.lbl_png_ctacte = tk.Label(self.frame_titulo_top, image=self.png_ctacte, bg="red", relief="ridge", bd=5)
         self.lbl_titulo = tk.Label(self.frame_titulo_top, width=52, text="Informes tècnicos",
@@ -100,15 +86,15 @@ class ClaseInformeTecnico(tk.Frame):
         # STRINGVARS
         # --------------------------------------------------------------------------
 
-        self.strvar_fecha = tk.StringVar(value="")
-        self.strvar_usuario = tk.StringVar(value="")
-        self.strvar_dni = tk.StringVar(value="")
-        self.strvar_numdoc = tk.StringVar(value="")
-        self.strvar_equipo = tk.StringVar(value="")
-        self.strvar_modelo = tk.StringVar(value="")
-        self.strvar_serie = tk.StringVar(value="")
-        self.strvar_diagnostico = tk.StringVar(value="")
-        self.strvar_provocado = tk.StringVar(value="")
+        self.sv_fecha       = tk.StringVar(value="")
+        self.sv_usuario     = tk.StringVar(value="")
+        self.sv_dni         = tk.StringVar(value="")
+        self.sv_numdoc      = tk.StringVar(value="")
+        self.sv_equipo      = tk.StringVar(value="")
+        self.sv_modelo      = tk.StringVar(value="")
+        self.sv_serie       = tk.StringVar(value="")
+        self.sv_diagnostico = tk.StringVar(value="")
+        self.sv_provocado   = tk.StringVar(value="")
 
         # --------------------------------------------------------------------------
         # BUSCAR
@@ -125,10 +111,10 @@ class ClaseInformeTecnico(tk.Frame):
         self.lbl_buscar_informe.grid(row=0, column=0, padx=5, pady=2)
         self.entry_buscar_informe=tk.Entry(self.frame_buscar, width=50)
         self.entry_buscar_informe.grid(row=0, column=1, padx=5, pady=2, sticky=tk.W)
-        self.btn_buscar_informe = tk.Button(self.frame_buscar, text="Buscar", command=self.fBuscar_en_tabla,
+        self.btn_buscar_informe = tk.Button(self.frame_buscar, text="Buscar", command=self.fbuscar_en_tabla,
                                          bg="CadetBlue", fg="white", width=27)
         self.btn_buscar_informe.grid(row=0, column=2, padx=5, pady=2, sticky=tk.W)
-        self.btn_mostrar_todo = tk.Button(self.frame_buscar, text="Mostrar todo", command=self.fShowall, bg="CadetBlue",
+        self.btn_mostrar_todo = tk.Button(self.frame_buscar, text="Mostrar todo", command=self.fshowall, bg="CadetBlue",
                                        fg="white", width=27)
         self.btn_mostrar_todo.grid(row=0, column=3, padx=5, pady=2, sticky=tk.W)
 
@@ -144,7 +130,7 @@ class ClaseInformeTecnico(tk.Frame):
         self.grid_informes_tecnicos = ttk.Treeview(self.frame_treeview, height=5, columns=("col1", "col2", "col3",
                                                                             "col4", "col5", "col6", "col7", "col8"))
 
-        self.grid_informes_tecnicos.bind("<Double-Button-1>", self.DobleClickGrid)
+        self.grid_informes_tecnicos.bind("<Double-Button-1>", self.doble_click_grid)
 
         self.grid_informes_tecnicos.column("#0", width=50, anchor="center", minwidth=50)
         self.grid_informes_tecnicos.column("col1", width=80, anchor="center", minwidth=50)
@@ -206,10 +192,8 @@ class ClaseInformeTecnico(tk.Frame):
 
     def estado_inicial(self):
 
-        self.var_Id = -1
         self.alta_modif = 0
         self.filtro_activo = "inf_tecnicos ORDER BY it_fecha ASC"
-
         self.limpiar_text()
         self.estado_botones("normal")
         self.habilitar_text("disabled")
@@ -229,7 +213,6 @@ class ClaseInformeTecnico(tk.Frame):
 
         self.btn_guardar.configure(state=estado)
         self.btn_genero_informe.configure(state=estado)
-        self.grid_informes_tecnicos['selectmode'] = 'browse'
 
     def estado_botones(self, estado):
 
@@ -240,19 +223,17 @@ class ClaseInformeTecnico(tk.Frame):
         self.btnToparch.configure(state=estado)
         self.btnFinarch.configure(state=estado)
 
-        self.grid_informes_tecnicos['selectmode'] = 'none'
-
     def limpiar_text(self):
 
-        self.strvar_fecha.set(value="")
-        self.strvar_usuario.set(value="")
+        self.sv_fecha.set(value="")
+        self.sv_usuario.set(value="")
         self.combo_tipo_dni.set("")
-        self.strvar_numdoc.set(value="")
-        self.strvar_equipo.set(value="")
-        self.strvar_modelo.set(value="")
-        self.strvar_serie.set(value="")
-        self.strvar_diagnostico.set(value="")
-        self.strvar_provocado.set(value="")
+        self.sv_numdoc.set(value="")
+        self.sv_equipo.set(value="")
+        self.sv_modelo.set(value="")
+        self.sv_serie.set(value="")
+        self.sv_diagnostico.set(value="")
+        self.sv_provocado.set(value="")
         self.text_descripcion.delete('1.0', 'end')
 
     # --------------------------------------------------------------------------
@@ -260,6 +241,9 @@ class ClaseInformeTecnico(tk.Frame):
     # --------------------------------------------------------------------------
 
     def llena_grilla(self, ult_tabla_id):
+
+        for item in self.grid_informes_tecnicos.get_children():
+            self.grid_informes_tecnicos.delete(item)
 
         if len(self.filtro_activo) <= 0:
             messagebox.showwarning("Aviso", "No hay un Orden para la tabla - filtro_activo - "
@@ -321,88 +305,47 @@ class ClaseInformeTecnico(tk.Frame):
             self.grid_informes_tecnicos.yview(self.grid_informes_tecnicos.index(rg))
         else:
             # En caso de que el parametro sea "" muevo el puntero al final del GRID
-            self.muevo_puntero_topend("END")
-
-    def limpiar_Grid(self):
-
-        for item in self.grid_informes_tecnicos.get_children():
-            self.grid_informes_tecnicos.delete(item)
+            self.varFuncion_new.mover_puntero_topend(self.grid_informes_tecnicos, "END")
 
     # --------------------------------------------------------------------------
     # PUNTEROS
     # --------------------------------------------------------------------------
 
-    def fToparch(self):
-        self.muevo_puntero_topend('TOP')
+    def ftoparch(self):
+        self.varFuncion_new.mover_puntero_topend(self.grid_informes_tecnicos, 'TOP')
 
-    def fFinarch(self):
-        self.muevo_puntero_topend('END')
-
-    def muevo_puntero_topend(self, param_topend):
-
-        if param_topend == 'TOP':
-
-            # obtengo una lista con todos los Id del treeview
-            regis = self.grid_informes_tecnicos.get_children()
-            # barro y salgo al primero, pero me quedo en el primero
-            rg = ""
-            for rg in regis:
-                break
-            if rg == "":
-                return
-            # selecciono el Id primero de la lista en este caso
-            self.grid_informes_tecnicos.selection_set(rg)
-            # pone el primero Id
-            self.grid_informes_tecnicos.focus(rg)
-            # lle principio del treeview con esta instruccion que encontre
-            self.grid_informes_tecnicos.yview(self.grid_informes_tecnicos.index(self.grid_informes_tecnicos.get_children()[0]))
-
-        elif param_topend == 'END':
-
-            # Obtengo una lista con todos los Id del treeview
-            regis = self.grid_informes_tecnicos.get_children()
-            # Barro la lista y ,me quedo conel ultimo Id
-            rg = ""
-            for rg in regis:
-                pass
-            if rg == "":
-                return
-            # Selecciono el ultimo Id en este caso
-            self.grid_informes_tecnicos.selection_set(rg)
-            # Pongo el foco alultimo elemento de la lista (al final)
-            self.grid_informes_tecnicos.focus(rg)
-            # lleva el foco al final del treeview
-            self.grid_informes_tecnicos.yview(self.grid_informes_tecnicos.index(self.grid_informes_tecnicos.get_children()[-1]))
+    def ffinarch(self):
+        self.varFuncion_new.mover_puntero_topend(self.grid_informes_tecnicos, 'END')
 
     # --------------------------------------------------------------------------
     # CRUD
     # --------------------------------------------------------------------------
 
-    def fSalir(self):
+    def fsalir(self):
         self.master.destroy()
 
-    def fCancelar(self):
+    def fcancelar(self):
+
         self.limpiar_text()
         self.estado_botones("normal")
         self.habilitar_text("disabled")
 
-    def DobleClickGrid(self, event):
-        self.fEditar()
+    def doble_click_grid(self, _event):
+        self.feditar()
 
-    def fNuevo(self):
+    def fnuevo(self):
 
         self.estado_botones("disabled")
         self.habilitar_text("normal")
         self.limpiar_text()
         self.alta_modif = 1
-
         # Fecha y hora de ingreso
         una_fecha = datetime.now()
         self.fecha = una_fecha.strftime("%d/%m/%Y")
-        self.strvar_fecha.set(self.fecha)
+        self.sv_fecha.set(self.fecha)
         self.entry_usuario.focus()
 
-    def fEditar(self):
+    def feditar(self):
 
         self.selected = self.grid_informes_tecnicos.focus()
         self.clave = self.grid_informes_tecnicos.item(self.selected, 'text')
@@ -412,7 +355,6 @@ class ClaseInformeTecnico(tk.Frame):
             return
 
         self.alta_modif = 2
-        self.var_Id = self.clave  # puede traer -1 , en ese caso seria un alta
 
         self.habilitar_text("normal")
         self.limpiar_text()
@@ -421,8 +363,6 @@ class ClaseInformeTecnico(tk.Frame):
         # aplico el filtro sobre el registro que quiero
         self.filtro_activo = "inf_tecnicos WHERE Id = " + str(self.clave)
 
-        #self.grid_informes_tecnicos.configure(selectmode="none")
-
         # traigo los valores directamente desde la tabla y no del treeview - solo el registro requerido
         campos = self.var_inf_tecnicos.consultar_edicion(self.filtro_activo)
 
@@ -430,19 +370,19 @@ class ClaseInformeTecnico(tk.Frame):
         fecha_convertida = fecha_str_reves_normal(self, datetime.strftime(campos[1], "%Y-%m-%d"), False)
         self.entry_fecha.delete(0, tk.END)
         self.entry_fecha.insert(0, fecha_convertida)
-        self.strvar_usuario.set(value=campos[2])
+        self.sv_usuario.set(value=campos[2])
         self.combo_tipo_dni.insert(0, campos[3])
-        self.strvar_numdoc.set(value=campos[4])
-        self.strvar_equipo.set(value=campos[5])
-        self.strvar_modelo.set(value=campos[6])
-        self.strvar_serie.set(value=campos[7])
-        self.strvar_diagnostico.set(value=campos[8])
-        self.strvar_provocado.set(value=campos[9])
+        self.sv_numdoc.set(value=campos[4])
+        self.sv_equipo.set(value=campos[5])
+        self.sv_modelo.set(value=campos[6])
+        self.sv_serie.set(value=campos[7])
+        self.sv_diagnostico.set(value=campos[8])
+        self.sv_provocado.set(value=campos[9])
         self.text_descripcion.insert(tk.END, campos[10])
 
         self.entry_usuario.focus()
 
-    def fBorrar(self):
+    def fborrar(self):
 
         self.selected = self.grid_informes_tecnicos.focus()
         self.selected_ant = self.grid_informes_tecnicos.prev(self.selected)
@@ -454,7 +394,7 @@ class ClaseInformeTecnico(tk.Frame):
             return
 
         valores = self.grid_informes_tecnicos.item(self.selected, 'values')
-        data = str(self.clave)+" "+valores[1]+" "+valores[2]
+        data    = str(self.clave)+" "+valores[1]+" "+valores[2]
 
         r = messagebox.askquestion("Eliminar", "Confirma eliminar registro?\n " + data, parent=self)
 
@@ -466,27 +406,26 @@ class ClaseInformeTecnico(tk.Frame):
 
         messagebox.showinfo("Eliminar", "Registro eliminado correctamente", parent=self)
 
-        self.limpiar_Grid()
         self.llena_grilla(self.clave_ant)
 
-    def fGuardar(self):
+    def fguardar(self):
 
         # VALIDACION QUE EXISTA Cliente y equipo declarado
-        if self.strvar_usuario.get() == "":
+        if self.sv_usuario.get() == "":
             messagebox.showwarning("Alerta", "Ingrese nombre/s", parent=self)
             self.entry_usuario.focus()
             self.filtro_activo = "inf_tecnicos ORDER BY it_fecha"
             return
 
-        if self.strvar_equipo.get() == "":
+        if self.sv_equipo.get() == "":
             messagebox.showwarning("Alerta", "Ingrese equipo", parent=self)
             self.entry_equipo.focus()
             self.filtro_activo = "inf_tecnicos ORDER BY it_fecha"
             return
 
-        #try:
-        aaa = 0
-        if aaa==0:
+        try:
+        #aaa = 0
+        #if aaa==0:
 
             # guardo el Id del Treeview en selected para ubicacion del foco a posteriori
             self.selected = self.grid_informes_tecnicos.focus()
@@ -495,25 +434,23 @@ class ClaseInformeTecnico(tk.Frame):
 
             if self.alta_modif == 1:
 
-                self.var_inf_tecnicos.insertar_informe(self.strvar_fecha.get(), self.strvar_usuario.get(),
-                self.strvar_dni.get(), self.strvar_numdoc.get(), self.strvar_equipo.get(), self.strvar_modelo.get(),
-                self.strvar_serie.get(), self.strvar_diagnostico.get(), self.strvar_provocado.get(),
+                self.var_inf_tecnicos.insertar_informe(self.sv_fecha.get(), self.sv_usuario.get(),
+                self.sv_dni.get(), self.sv_numdoc.get(), self.sv_equipo.get(), self.sv_modelo.get(),
+                self.sv_serie.get(), self.sv_diagnostico.get(), self.sv_provocado.get(),
                 self.text_descripcion.get(1.0, 'end-1c'))
 
                 messagebox.showinfo("Guardar", "Nuevo registro creado correctamente", parent=self)
 
             elif self.alta_modif == 2:
 
-                self.var_inf_tecnicos.modificar_informe(self.var_Id, self.strvar_fecha.get(),
-                self.strvar_usuario.get(), self.strvar_dni.get(), self.strvar_numdoc.get(),
-                self.strvar_equipo.get(), self.strvar_modelo.get(), self.strvar_serie.get(),
-                self.strvar_diagnostico.get(), self.strvar_provocado.get(),
+                self.var_inf_tecnicos.modificar_informe(self.clave, self.sv_fecha.get(),
+                self.sv_usuario.get(), self.sv_dni.get(), self.sv_numdoc.get(),
+                self.sv_equipo.get(), self.sv_modelo.get(), self.sv_serie.get(),
+                self.sv_diagnostico.get(), self.sv_provocado.get(),
                 self.text_descripcion.get(1.0, 'end-1c'))
 
-                self.var_Id == -1
                 messagebox.showinfo("Modificacion", "La modificacion del registro fue exitosa", parent=self)
 
-            self.limpiar_Grid()
             self.limpiar_text()
             self.estado_botones("normal")
             self.habilitar_text("disabled")
@@ -528,18 +465,22 @@ class ClaseInformeTecnico(tk.Frame):
 
             self.alta_modif = 0
 
-        #except:
-        else:
+        except Exception:
 
-            messagebox.showerror("Error", "Revise datos ingresados por favor", parent=self)
-            self.entry_usuario.focus()
+            self.varFuncion_new.mostrar_error()
             return
+
+        # except:
+        # #else:
+        #     messagebox.showerror("Error", "Revise datos ingresados por favor", parent=self)
+        #     self.entry_usuario.focus()
+        #     return
 
     # --------------------------------------------------------------------------
     # BUSCAR - MOSTRAR
     # --------------------------------------------------------------------------
 
-    def fBuscar_en_tabla(self):
+    def fbuscar_en_tabla(self):
 
         # Buscar en el TREVIEW
         if len(self.entry_buscar_informe.get()) <= 0:
@@ -551,40 +492,42 @@ class ClaseInformeTecnico(tk.Frame):
         self.filtro_activo = "inf_tecnicos WHERE INSTR(it_usuario, '" + se_busca + "') > 0"  + " ORDER BY it_usuario"
 
         self.var_inf_tecnicos.buscar_entabla(self.filtro_activo)
-        self.limpiar_Grid()
         self.llena_grilla("")
 
         """ Obtengo el Id del grid para que me tome la seleccion y el foco se coloque efectivamente en el 
         item buscado y asi cuando le doy -show all- el puntero se sigue quedando en el registro buscado"""
-        item = self.grid_informes_tecnicos.selection()
+        # item = self.grid_informes_tecnicos.selection()
+        # self.grid_informes_tecnicos.focus(item)
+
+        item = self.grid_informes_tecnicos.identify_row(0)
+        self.grid_informes_tecnicos.selection_set(item)
         self.grid_informes_tecnicos.focus(item)
 
-    def fShowall(self):
+    def fshowall(self):
 
         self.selected = self.grid_informes_tecnicos.focus()
         self.clave = self.grid_informes_tecnicos.item(self.selected, 'text')
         self.filtro_activo = "inf_tecnicos ORDER BY it_usuario"
-        self.limpiar_Grid()
         self.llena_grilla(self.clave)
 
     # --------------------------------------------------------------------------
     # INFORMES
     # --------------------------------------------------------------------------
 
-    def fGenero_informe(self):
+    def fgenero_informe(self):
 
         self.text_descripcion.delete('1.0', 'end')
 
-        self.text_descripcion.insert(tk.END,f"De acuerdo a lo solicitado por el señor/a {self.strvar_usuario.get()} "
-                                     f"{self.strvar_dni.get()} - Nº: {self.strvar_numdoc.get()}, "
+        self.text_descripcion.insert(tk.END,f"De acuerdo a lo solicitado por el señor/a {self.sv_usuario.get()} "
+                                     f"{self.sv_dni.get()} - Nº: {self.sv_numdoc.get()}, "
                                      f"se extiende el presente informe tècnico sobre la revisiòn del siguiente "
-                                     f"equipo: {self.strvar_equipo.get()} Modelo {self.strvar_modelo.get()} Nº de "
-                                     f"serie{self.strvar_serie.get()} Una vez revisado/a, se constata que el mismo "
-                                     f"presenta las siguientes fallas: {self.strvar_diagnostico.get()}. Se estima que "
-                                     f"los daños fueron provocados por {self.strvar_provocado.get()}. Se extiende este "
+                                     f"equipo: {self.sv_equipo.get()} Modelo {self.sv_modelo.get()} Nº de "
+                                     f"serie{self.sv_serie.get()} Una vez revisado/a, se constata que el mismo "
+                                     f"presenta las siguientes fallas: {self.sv_diagnostico.get()}. Se estima que "
+                                     f"los daños fueron provocados por {self.sv_provocado.get()}. Se extiende este "
                                      f"informe para ser presentado ante quien corresponda.")
 
-    def fImprime(self):
+    def fimprime(self):
 
         self.selected = self.grid_informes_tecnicos.focus()
         # Asi obtengo la clave de la base de datos campo Id que no es lo mismo que el otro (numero secuencial
@@ -653,37 +596,33 @@ class ClaseInformeTecnico(tk.Frame):
     # VARIAS
     # --------------------------------------------------------------------------
 
-    def formato_fecha(self, pollo):
+    def formato_fecha(self, _pollo):
 
         """Aqui dentro llamo a la funcion validar fechas para revisar todo sus valores posibles
         le paso la fecha tipo string con barras o sin barras """
 
         # FUNCION VALIDA FECCHAS en programa funcion
-        retorno_VerFal = valida_fechas(self, self.strvar_fecha.get())
+        retorno_validacion = self.varFuncion_new.validar_fecha(self.sv_fecha.get(), self.entry_fecha)
 
         una_fecha = date.today()
 
-        if retorno_VerFal == "":
-            # Retorno con error
-            self.strvar_fecha.set(value=una_fecha.strftime('%d/%m/%Y'))
-            self.entry_fecha.focus()
-            return "error"
-        elif retorno_VerFal == "S":
-            # esto es control del año y decidio seguir
-            self.entry_fecha.focus()
-            return "bien"
-        elif retorno_VerFal == "N":
-            # esto es error en el año y decidio no seguir
-            self.strvar_fecha.set(value=una_fecha.strftime('%d/%m/%Y'))
-            self.entry_fecha.focus()
-            return "error"
-        elif retorno_VerFal == "BLANCO":
-            return "bien"
-        else:
-            self.strvar_fecha.set(retorno_VerFal)
-            return "bien"
+        match retorno_validacion:
 
-    def limitador(self, entry_text, caract):
+            case "break":
+                self.entry_fecha.focus()
+                return
+            case "S":
+                self.entry_fecha.focus()
+            case "N" | "BLANCO":
+                pass
+            case "":
+                self.sv_fecha.set(una_fecha.strftime('%d/%m/%Y'))
+                self.entry_fecha.focus()
+            case _:
+                return
+
+    @staticmethod
+    def limitador(entry_text, caract):
 
         if len(entry_text.get()) > 0:
             # donde esta el :5 limitas la cantidad d caracteres
@@ -708,7 +647,7 @@ class ClaseInformeTecnico(tk.Frame):
         # Nuevo informe
         img = Image.open("archivo-nuevo.png").resize((20, 20))
         icono = ImageTk.PhotoImage(img)
-        self.btn_nuevo = tk.Button(self.frame_botones_grid, text="Nuevo Informe", command=self.fNuevo, width=16, bg="blue",
+        self.btn_nuevo = tk.Button(self.frame_botones_grid, text="Nuevo Informe", command=self.fnuevo, width=16, bg="blue",
                                 fg="white", compound="left")
         self.btn_nuevo.grid(row=0, column=0, padx=4, pady=2, sticky="nsew")
         self.btn_nuevo.image = icono
@@ -718,7 +657,7 @@ class ClaseInformeTecnico(tk.Frame):
         # Editar un informe
         img = Image.open("editar.png").resize((20, 20))
         icono = ImageTk.PhotoImage(img)
-        self.btn_editar = tk.Button(self.frame_botones_grid, text="Edita Informe", command=self.fEditar, width=16,
+        self.btn_editar = tk.Button(self.frame_botones_grid, text="Edita Informe", command=self.feditar, width=16,
                                  bg="blue", fg="white", compound="left")
         self.btn_editar.grid(row=0, column=1, padx=4, pady=2, sticky="nsew")
         self.btn_editar.image = icono
@@ -728,7 +667,7 @@ class ClaseInformeTecnico(tk.Frame):
         # Eliminar un informe
         img = Image.open("eliminar.png").resize((20, 20))
         icono = ImageTk.PhotoImage(img)
-        self.btn_borrar = tk.Button(self.frame_botones_grid, text="Eliminar Informe", command=self.fBorrar, width=16,
+        self.btn_borrar = tk.Button(self.frame_botones_grid, text="Eliminar Informe", command=self.fborrar, width=16,
                                  bg="red", fg="white", compound="left")
         self.btn_borrar.grid(row=0, column=2, padx=4, pady=2, sticky="nsew")
         self.btn_borrar.image = icono
@@ -738,7 +677,7 @@ class ClaseInformeTecnico(tk.Frame):
         # Guardar Informe
         img = Image.open("guardar.png").resize((20, 20))
         icono = ImageTk.PhotoImage(img)
-        self.btn_guardar = tk.Button(self.frame_botones_grid, text="Guardar Informe", command=self.fGuardar, width=16,
+        self.btn_guardar = tk.Button(self.frame_botones_grid, text="Guardar Informe", command=self.fguardar, width=16,
                                   bg="green", fg="white", compound="left")
         self.btn_guardar.grid(row=0, column=3, padx=4, pady=2, sticky="nsew")
         self.btn_guardar.image = icono
@@ -748,7 +687,7 @@ class ClaseInformeTecnico(tk.Frame):
         # Cancelar
         img = Image.open("cancelar.png").resize((20, 20))
         icono = ImageTk.PhotoImage(img)
-        self.btn_Cancelar = tk.Button(self.frame_botones_grid, text="Cancelar", command=self.fCancelar, width=16,
+        self.btn_Cancelar = tk.Button(self.frame_botones_grid, text="Cancelar", command=self.fcancelar, width=16,
                                    bg="black", fg="white", compound="left")
         self.btn_Cancelar.grid(row=0, column=4, padx=4, pady=2, sticky="nsew")
         self.btn_Cancelar.image = icono
@@ -757,28 +696,28 @@ class ClaseInformeTecnico(tk.Frame):
 
         # SALIR
         self.photo3 = Image.open('salida.png')
-        self.photo3 = self.photo3.resize((20, 20), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo3 = self.photo3.resize((20, 20), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo3 = ImageTk.PhotoImage(self.photo3)
-        self.btnSalir=tk.Button(self.frame_botones_grid, text="Salir", image=self.photo3, width=25, command=self.fSalir,
+        self.btnSalir=tk.Button(self.frame_botones_grid, text="Salir", image=self.photo3, width=25, command=self.fsalir,
                              bg="yellow", fg="white")
         self.btnSalir.grid(row=0, column=8, padx=4, pady=2, sticky="nsew")
 
         # Boton Imprimir
         self.photo_imp = Image.open('impresora.png')
-        self.photo_imp = self.photo_imp.resize((20, 20), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo_imp = self.photo_imp.resize((20, 20), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo_imp = ImageTk.PhotoImage(self.photo_imp)
-        self.btn_imprime = tk.Button(self.frame_botones_grid, image=self.photo_imp, pady=3, command=self.fImprime, border=3)
+        self.btn_imprime = tk.Button(self.frame_botones_grid, image=self.photo_imp, pady=3, command=self.fimprime, border=3)
         self.btn_imprime.grid(row=0, column=5, padx=4, pady=2, sticky="nsew")
 
         self.photo1 = Image.open('toparch.png')
-        self.photo1 = self.photo1.resize((25, 20), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo1 = self.photo1.resize((25, 20), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo1 = ImageTk.PhotoImage(self.photo1)
-        self.btnToparch = tk.Button(self.frame_botones_grid, text="", image=self.photo1, command=self.fToparch, bg="grey", fg="white")
+        self.btnToparch = tk.Button(self.frame_botones_grid, text="", image=self.photo1, command=self.ftoparch, bg="grey", fg="white")
         self.btnToparch.grid(row=0, column=6, padx=4, pady=2, sticky="nsew")
         self.photo2 = Image.open('finarch.png')
-        self.photo2 = self.photo2.resize((25, 20), Image.LANCZOS)  # Redimension (Alto, Ancho)
+        self.photo2 = self.photo2.resize((25, 20), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo2 = ImageTk.PhotoImage(self.photo2)
-        self.btnFinarch = tk.Button(self.frame_botones_grid, text="", image=self.photo2, command=self.fFinarch, bg="grey", fg="white")
+        self.btnFinarch = tk.Button(self.frame_botones_grid, text="", image=self.photo2, command=self.ffinarch, bg="grey", fg="white")
         self.btnFinarch.grid(row=0, column=7, padx=4, pady=2, sticky="nsew")
 
         # reordenamiento de self.frame_botones_grid
@@ -790,21 +729,21 @@ class ClaseInformeTecnico(tk.Frame):
         # FECHA
         self.lbl_fecha = tk.Label(self.frame_dos, text="Fecha emision: ")
         self.lbl_fecha.grid(row=0, column=0, padx=4, pady=3, sticky=tk.W)
-        self.entry_fecha = tk.Entry(self.frame_dos, textvariable=self.strvar_fecha, justify="left", width=10)
+        self.entry_fecha = tk.Entry(self.frame_dos, textvariable=self.sv_fecha, justify="left", width=10)
         self.entry_fecha.bind("<FocusOut>", self.formato_fecha)
         self.entry_fecha.grid(row=0, column=1, padx=4, pady=3, sticky=tk.W)
 
         # NOMBRE
         self.lbl_usuario = tk.Label(self.frame_dos, text="Cliente: ")
         self.lbl_usuario.grid(row=0, column=2, padx=4, pady=3, sticky=tk.W)
-        self.entry_usuario = tk.Entry(self.frame_dos, textvariable=self.strvar_usuario, justify="left", width=47)
-        self.strvar_usuario.trace("w", lambda *args: self.limitador(self.strvar_usuario, 50))
+        self.entry_usuario = tk.Entry(self.frame_dos, textvariable=self.sv_usuario, justify="left", width=47)
+        self.sv_usuario.trace("w", lambda *args: self.limitador(self.sv_usuario, 50))
         self.entry_usuario.grid(row=0, column=3, padx=4, pady=3, sticky=tk.W)
 
         # TIPO DOCUMENTO - COMBOBOX
         self.lbl_tipo_dni = tk.Label(self.frame_dos, text="Tipo Documento: ")
         self.lbl_tipo_dni.grid(row=0, column=4, padx=4, pady=3, sticky=tk.W)
-        self.combo_tipo_dni = ttk.Combobox(self.frame_dos, textvariable=self.strvar_dni, state='readonly', width=46)
+        self.combo_tipo_dni = ttk.Combobox(self.frame_dos, textvariable=self.sv_dni, state='readonly', width=46)
         # self.cargar_combo = self.varClientes.llenar_combo_rubro()
         self.combo_tipo_dni["values"] = ["DNI-Documento Nacional de Identidad", "CI-Cedula de Identidad",
                                          "CUIT-Clave unica de identificacion tributaria", "LC-Libreta Civica",
@@ -814,43 +753,43 @@ class ClaseInformeTecnico(tk.Frame):
         # NUMERO DOCUMENTO
         self.lbl_numdoc = tk.Label(self.frame_dos, text="Nº Documento: ")
         self.lbl_numdoc.grid(row=1, column=0, padx=4, pady=3, sticky=tk.W)
-        self.entry_numdoc = tk.Entry(self.frame_dos, textvariable=self.strvar_numdoc, justify="left", width=13)
-        self.strvar_numdoc.trace("w", lambda *args: self.limitador(self.strvar_numdoc, 13))
+        self.entry_numdoc = tk.Entry(self.frame_dos, textvariable=self.sv_numdoc, justify="left", width=13)
+        self.sv_numdoc.trace("w", lambda *args: self.limitador(self.sv_numdoc, 13))
         self.entry_numdoc.grid(row=1, column=1, padx=4, pady=3, sticky=tk.W)
 
         # EQUIPO
         self.lbl_equipo = tk.Label(self.frame_dos, text="Equipo: ")
         self.lbl_equipo.grid(row=1, column=2, padx=4, pady=3, sticky=tk.W)
-        self.entry_equipo = tk.Entry(self.frame_dos, textvariable=self.strvar_equipo, justify="left", width=118)
-        self.strvar_equipo.trace("w", lambda *args: self.limitador(self.strvar_equipo, 100))
+        self.entry_equipo = tk.Entry(self.frame_dos, textvariable=self.sv_equipo, justify="left", width=118)
+        self.sv_equipo.trace("w", lambda *args: self.limitador(self.sv_equipo, 100))
         self.entry_equipo.grid(row=1, column=3, columnspan=3, padx=4, pady=3, sticky=tk.W)
 
         # MODELO
         self.lbl_modelo = tk.Label(self.frame_dos, text="Modelo: ")
         self.lbl_modelo.grid(row=2, column=0, padx=4, pady=3, sticky=tk.W)
-        self.entry_modelo = tk.Entry(self.frame_dos, textvariable=self.strvar_modelo, justify="left", width=80)
-        self.strvar_modelo.trace("w", lambda *args: self.limitador(self.strvar_modelo, 100))
+        self.entry_modelo = tk.Entry(self.frame_dos, textvariable=self.sv_modelo, justify="left", width=80)
+        self.sv_modelo.trace("w", lambda *args: self.limitador(self.sv_modelo, 100))
         self.entry_modelo.grid(row=2, column=1, columnspan=3, padx=4, pady=3, sticky=tk.W)
 
         # NUMERO DE SERIE
         self.lbl_serie = tk.Label(self.frame_dos, text="Numero de Serie: ")
         self.lbl_serie.grid(row=2, column=4, padx=4, pady=3, sticky=tk.W)
-        self.entry_serie = tk.Entry(self.frame_dos, textvariable=self.strvar_serie, justify="left", width=40)
-        self.strvar_serie.trace("w", lambda *args: self.limitador(self.strvar_serie, 30))
+        self.entry_serie = tk.Entry(self.frame_dos, textvariable=self.sv_serie, justify="left", width=40)
+        self.sv_serie.trace("w", lambda *args: self.limitador(self.sv_serie, 30))
         self.entry_serie.grid(row=2, column=5, padx=4, pady=3, sticky=tk.W)
 
         # FALLOS
         self.lbl_diagnostico = tk.Label(self.frame_dos, text="Diagnostico: ")
         self.lbl_diagnostico.grid(row=3, column=0, padx=4, pady=3, sticky=tk.W)
-        self.entry_diagnostico = tk.Entry(self.frame_dos, textvariable=self.strvar_diagnostico, justify="left", width=150)
-        self.strvar_diagnostico.trace("w", lambda *args: self.limitador(self.strvar_diagnostico, 250))
+        self.entry_diagnostico = tk.Entry(self.frame_dos, textvariable=self.sv_diagnostico, justify="left", width=150)
+        self.sv_diagnostico.trace("w", lambda *args: self.limitador(self.sv_diagnostico, 250))
         self.entry_diagnostico.grid(row=3, column=1, columnspan=5, padx=4, pady=3, sticky=tk.W)
 
         # PROVOCADO
         self.lbl_provocado = tk.Label(self.frame_dos, text="Provocado: ")
         self.lbl_provocado.grid(row=4, column=0, padx=4, pady=3, sticky=tk.W)
-        self.entry_provocado = tk.Entry(self.frame_dos, textvariable=self.strvar_provocado, justify="left", width=150)
-        self.strvar_provocado.trace("w", lambda *args: self.limitador(self.strvar_provocado, 250))
+        self.entry_provocado = tk.Entry(self.frame_dos, textvariable=self.sv_provocado, justify="left", width=150)
+        self.sv_provocado.trace("w", lambda *args: self.limitador(self.sv_provocado, 250))
         self.entry_provocado.grid(row=4, column=1, columnspan=5, padx=4, pady=3, sticky=tk.W)
 
         self.frame_dos.pack(side="top", fill="both", expand=0, padx=5, pady=2)
@@ -863,6 +802,6 @@ class ClaseInformeTecnico(tk.Frame):
         self.text_descripcion.grid(row=0, column=0, padx=10, pady=5, sticky="nsew")
 
         # BOTON GENERAR TEXTO INFORME
-        self.btn_genero_informe = tk.Button(self.frame_tres, text="Generar\nInforme", command=self.fGenero_informe,
+        self.btn_genero_informe = tk.Button(self.frame_tres, text="Generar\nInforme", command=self.fgenero_informe,
                                          width=16, height=4, bg="blue", fg="white")
         self.btn_genero_informe.grid(row=0, column=1, padx=5, pady=2)

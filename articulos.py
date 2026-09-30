@@ -7,7 +7,7 @@ from PIL import Image, ImageTk
 # from tkinter import messagebox, filedialog
 from tktooltip import ToolTip
 # import sys
-from articulos_ABM import datosArtic
+from articulos_ABM import DatosArtic
 from funcion_new import ClaseFuncionNew
 from funciones import *
 from status_bar import StatusBar
@@ -28,7 +28,7 @@ class ClaseArticulos(tk.Frame):
 
         # Instanciaciones -----------------------------------------------------------------
         # Creo el objeto - clase definida en articulos_ABM.py
-        self.varArtic = datosArtic(self.master)
+        self.varArtic = DatosArtic(self.master)
         self.varFuncion_new = ClaseFuncionNew(self.master)
         # ---------------------------------------------------------------------------------
 
@@ -416,10 +416,11 @@ class ClaseArticulos(tk.Frame):
         self.varFuncion_new.mover_puntero_topend(self.grid_articulos, 'TOP')
         self.btn_nuevo.focus()
 
-    def doble_click_grid(self, event):
+    def doble_click_grid(self, _event):
         self.feditar()
 
-    def fno_modifique(self, event):
+    @staticmethod
+    def fno_modifique(_event):
         return "breack"
 
     def fsalir(self):
@@ -662,7 +663,7 @@ class ClaseArticulos(tk.Frame):
     def fresetmarca(self):
         self.combo_bus_marca.set("")
 
-    def formato_fecha(self, pollo):
+    def formato_fecha(self, _pollo):
 
         """Aqui dentro llamo a la funcion validar fechas para revisar todo sus valores posibles
         le paso la fecha tipo string con barras o sin barras """
@@ -712,7 +713,8 @@ class ClaseArticulos(tk.Frame):
                 self.entry_codbar.focus()
                 return
 
-    def limitador(self, entry_text, caract):
+    @staticmethod
+    def limitador(entry_text, caract):
         entry_text.set(entry_text.get()[:caract])
 
     def recarga_imagen(self):
@@ -775,7 +777,7 @@ class ClaseArticulos(tk.Frame):
         self.lbl_imagen_art = tk.Label(self.sector_imagen, image=self.imagen_art, bg="white", relief="ridge", bd=5)
         self.lbl_imagen_art.pack(expand=1, side="top", fill="both", pady=2, padx=2)
 
-    def amplia_img(self, event):
+    def amplia_img(self, _event):
 
         if self.sv_imagen_Art.get():
             self.vent_img = tk.Toplevel(self.master)
@@ -1473,7 +1475,8 @@ class ClaseArticulos(tk.Frame):
         # PACK - de el treeview y el FRAME tv
         self. grid_articulos.pack(side= "top", fill="both", expand=1, padx=5, pady=5)
 
-    def estado_numero(self, sv):
+    @staticmethod
+    def estado_numero(sv):
         valor = sv.get().strip()
         if valor == "":
             return "vacio"
@@ -1485,7 +1488,8 @@ class ClaseArticulos(tk.Frame):
         except ValueError:
             return "invalido"
 
-    def cargar_icono(self, path, size=(18,18)):
+    @ staticmethod
+    def cargar_icono(path, size=(18,18)):
         img = Image.open(path).resize(size)
         return ImageTk.PhotoImage(img)
 

@@ -271,12 +271,13 @@ class ClaseGarantias(tk.Frame):
         self.text_detalle.configure(state=estado)
         if self.alta_modif == 1:
             self.grid_garantias['selectmode'] = 'none'
-            self.grid_garantias.bind("<Double-Button-1>", self.fNo_modifique)
+            self.grid_garantias.bind("<Double-Button-1>", self.fno_modifique)
         if self.alta_modif == 2 or self.alta_modif == 0:
             self.grid_garantias['selectmode'] = 'browse'
-            self.grid_garantias.bind("<Double-Button-1>", self.DobleClickGrid)
+            self.grid_garantias.bind("<Double-Button-1>", self.doble_click_grid)
 
     def habilitar_btn_A(self, estado):
+
         self.btn_nuevoitem.configure(state=estado)
         self.btn_borraitem.configure(state=estado)
         self.btn_editaitem.configure(state=estado)
@@ -284,9 +285,11 @@ class ClaseGarantias(tk.Frame):
         self.btnFinarch.configure(state=estado)
 
     def habilitar_btn_B(self, estado):
+
         self.btn_guardaritem.configure(state=estado)
 
     def habilitar_btn_busquedas(self, estado):
+
         self.btn_filtrar_movim.configure(state=estado)
         self.btn_showall_movim.configure(state=estado)
         self.entry_buscar_movim.configure(state=estado)
@@ -455,13 +458,13 @@ class ClaseGarantias(tk.Frame):
         if r == messagebox.YES:
             self.estado_inicial()
 
-    def fSalir(self):
+    def fsalir(self):
         self.master.destroy()
 
-    def fNo_modifique(self, event):
+    def fno_modifique(self, event):
         return
 
-    def fBuscar_en_tabla(self):
+    def fbuscar_en_tabla(self):
 
         # verifico que el string de busqueda traiga algo o este vacio
         if len(self.sv_buscostring.get()) > 0:
@@ -473,12 +476,17 @@ class ClaseGarantias(tk.Frame):
 
             """ Obtengo el Id del grid para que me tome la seleccion y el foco se coloque efectivamente en el 
                 item buscado y asi cuando le doy -show all- el puntero se sigue quedando en el registro buscado"""
-            item = self.grid_garantias.selection()
+            item = self.grid_garantias.identify_row(0)
+            self.grid_garantias.selection_set(item)
             self.grid_garantias.focus(item)
+            # item = self.grid_config.identify_row(0)
+            # self.grid_config.selection_set(item)
+            # self.grid_config.focus(item)
         else:
             self.status.set_status("❌ No ingreso busqueda", "error")
 
     def fshowall(self):
+
         self.selected = self.grid_garantias.focus()
         self.clave = self.grid_garantias.item(self.selected, 'text')
         self.filtro_activo = "ORDER BY gt_fechavto ASC"
@@ -488,10 +496,10 @@ class ClaseGarantias(tk.Frame):
     # PUNTEROS
     # -------------------------------------------------------------------------
 
-    def fToparch(self):
+    def ftoparch(self):
         self.varFuncion_new.mover_puntero_topend(self.grid_garantias, 'TOP')
 
-    def fFinarch(self):
+    def ffinarch(self):
         self.varFuncion_new.mover_puntero_topend(self.grid_garantias, 'END')
 
     # ------------------------------------------------------------------------
@@ -499,16 +507,19 @@ class ClaseGarantias(tk.Frame):
     # ------------------------------------------------------------------------
 
     def traer_dolarhoy(self):
+
         dev_informa = self.varGarantia.consultar_informa()
         for row in dev_informa:
             self.sv_valor_dolar_hoy.set(value=row[21])
 
-    def limitador(self, entry_text, caract):
+    @staticmethod
+    def limitador(entry_text, caract):
+
         if len(entry_text.get()) > 0:
             # donde esta CARACT va la cantidad de caracteres
             entry_text.set(entry_text.get()[:caract])
 
-    def DobleClickGrid(self, event):
+    def doble_click_grid(self, _event):
         self.feditar()
 
     def calcular_fechas(self):
@@ -529,7 +540,6 @@ class ClaseGarantias(tk.Frame):
         # Volver a texto para mostrarlo en el StringVar
         self.sv_fecha_vto.set(fecha2.strftime('%d/%m/%Y'))
         return None
-
 
     # ------------------------------------------------------------------------------
     # BUSQUEDA POR CLIENTE
@@ -566,7 +576,7 @@ class ClaseGarantias(tk.Frame):
     # BUSQUEDA POR ARTICULO ARTICULO
     # ------------------------------------------------------------------------------
 
-    def fBusart(self):
+    def fbusart(self):
 
         """ Paso los parametros de busqueda - Tabla, el string de busqueda y en que campos debe hacerse. """
 
@@ -615,7 +625,7 @@ class ClaseGarantias(tk.Frame):
         self.grid_garantias = ttk.Treeview(self.frame_tvw_garantias, height=5, columns=("col1", "col2", "col3", "col4",
                                                                                "col5", "col6", "col7", "col8", "col9"))
 
-        self.grid_garantias.bind("<Double-Button-1>", self.DobleClickGrid)
+        self.grid_garantias.bind("<Double-Button-1>", self.doble_click_grid)
 
         self.grid_garantias.column("#0", width=60, anchor="center", minwidth=60)
         self.grid_garantias.column("col1", width=100, anchor="center", minwidth=80)
@@ -673,7 +683,7 @@ class ClaseGarantias(tk.Frame):
 
         # BOTON FILTRAR
         icono = self.cargar_icono("filtrar.png")
-        self.btn_filtrar_movim = tk.Button(self.frame_busco_garantia, text=" Buscar", command=self.fBuscar_en_tabla,
+        self.btn_filtrar_movim = tk.Button(self.frame_busco_garantia, text=" Buscar", command=self.fbuscar_en_tabla,
                                        bg="blue", fg="white", width=34, compound="left")
         self.btn_filtrar_movim.image = icono
         self.btn_filtrar_movim.config(image=icono)
@@ -744,13 +754,13 @@ class ClaseGarantias(tk.Frame):
         self.photo4 = Image.open('toparch.png')
         self.photo4 = self.photo4.resize((25, 25), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo4 = ImageTk.PhotoImage(self.photo4)
-        self.btnToparch = tk.Button(self.frame_primero, text="", image=self.photo4, command=self.fToparch, bg="grey",
+        self.btnToparch = tk.Button(self.frame_primero, text="", image=self.photo4, command=self.ftoparch, bg="grey",
                                  fg="white")
         self.btnToparch.grid(row=0, column=5, padx=5, sticky="nsew", pady=2)
         self.photo5 = Image.open('finarch.png')
         self.photo5 = self.photo5.resize((25, 25), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo5 = ImageTk.PhotoImage(self.photo5)
-        self.btnFinarch = tk.Button(self.frame_primero, text="", image=self.photo5, command=self.fFinarch, bg="grey",
+        self.btnFinarch = tk.Button(self.frame_primero, text="", image=self.photo5, command=self.ffinarch, bg="grey",
                                  fg="white")
         self.btnFinarch.grid(row=0, column=6, padx=5, sticky="nsew", pady=2)
 
@@ -758,7 +768,7 @@ class ClaseGarantias(tk.Frame):
         self.photo3 = Image.open('salida.png')
         self.photo3 = self.photo3.resize((30, 30), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo3 = ImageTk.PhotoImage(self.photo3)
-        self.btnSalir=tk.Button(self.frame_primero, text="Salir", image=self.photo3, width=65, command=self.fSalir,
+        self.btnSalir=tk.Button(self.frame_primero, text="Salir", image=self.photo3, width=65, command=self.fsalir,
                              bg="yellow", fg="white")
         self.btnSalir.grid(row=0, column=7, padx=5, pady=2, sticky="nsew")
 
@@ -806,7 +816,7 @@ class ClaseGarantias(tk.Frame):
         self.photo_bus_art = Image.open('buscar.png')
         self.photo_bus_art = self.photo_bus_art.resize((25, 25), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo_bus_art = ImageTk.PhotoImage(self.photo_bus_art)
-        self.btn_bus_art = tk.Button(self.frame_tercero, text="", image=self.photo_bus_art, command=self.fBusart,
+        self.btn_bus_art = tk.Button(self.frame_tercero, text="", image=self.photo_bus_art, command=self.fbusart,
                                   bg="grey", fg="white")
         self.btn_bus_art.grid(row=0, column=1, padx=5, pady=3)
         self.entry_detalle_articulo = tk.Entry(self.frame_tercero, textvariable=self.sv_detalle_articulo, width=143,
@@ -850,7 +860,8 @@ class ClaseGarantias(tk.Frame):
         self.text_detalle.config(width=115, height=6, wrap="word", padx=4, pady=3)
         self.text_detalle.grid(row=1, column=1, padx=4, pady=5, sticky="nsew")
 
-    def cargar_icono(self, path, size=(18,18)):
+    @staticmethod
+    def cargar_icono(path, size=(18,18)):
         img = Image.open(path).resize(size)
         return ImageTk.PhotoImage(img)
 

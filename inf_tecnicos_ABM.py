@@ -1,9 +1,10 @@
-import mysql.connector
-from mysql.connector import Error
 from datetime import datetime
 from tkinter import messagebox
+import mysql.connector
+from mysql.connector import Error
 
-class clase_inf_tecnicos_ABM:
+
+class ClaseInfTecnicosABM:
 
     def __init__(self, pantalla):
 
@@ -14,40 +15,69 @@ class clase_inf_tecnicos_ABM:
         except Error as ex:
             print("Error de conexion: {0}".format(ex))
 
-    def __str__(self):
-        datos = self.consultar_inf_tecnicos()
-        aux = ""
-        for row in datos:
-            aux = aux + str(row) + "\n"
-        return aux
+    @staticmethod
+    def get_connection():
 
-    def aplicar_filtro(self, tofil):
+        return mysql.connector.connect(
+            host="localhost",
+            user="root",
+            passwd="",
+            database="sist_prom")
 
-        cur = self.cnn.cursor()
+    # def aplicar_filtro(self, orden=None):
+    #
+    #     cnn = self.get_connection()
+    #     cur = cnn.cursor(buffered=True)
+    #     try:
+    #         sql = "SELECT * FROM inf_tecnicos"
+    #         if orden:
+    #             sql += " " + orden
+    #         cur.execute(sql)
+    #         return cur.fetchall()
+    #     finally:
+    #         cur.close()
+    #         cnn.close()
+    #
+    #     # cur = self.cnn.cursor()
+    #     #
+    #     # cur.execute("SELECT * FROM " + tofil)   # incluye el WHERE
+    #     # datos = cur.fetchall()
+    #     #
+    #     # self.cnn.commit()
+    #     # cur.close()
+    #     # print("cambio de filtro exitoso")
+    #     # return
 
-        cur.execute("SELECT * FROM " + tofil)   # incluye el WHERE
-        datos = cur.fetchall()
+    def consultar_inf_tecnicos(self, orden=None):
 
-        self.cnn.commit()
-        cur.close()
-        print("cambio de filtro exitoso")
-        return
-
-    def consultar_inf_tecnicos(self, tofil):
-
+        cnn = self.get_connection()
+        cur = cnn.cursor(buffered=True)
         try:
-
-            cur = self.cnn.cursor()
-            cur.execute("SELECT * FROM " + tofil)   # incluye el WHERE
-            datos = cur.fetchall()
-            self.cnn.commit()
+            sql = "SELECT * FROM inf_tecnicos"
+            if orden:
+                sql += " " + orden
+            cur.execute(sql)
+            return cur.fetchall()
+        finally:
             cur.close()
-            return datos
+            cnn.close()
 
-        except:
+        # try:
+        #
+        #     cur = self.cnn.cursor()
+        #     cur.execute("SELECT * FROM " + tofil)   # incluye el WHERE
+        #     datos = cur.fetchall()
+        #     self.cnn.commit()
+        #     cur.close()
+        #     return datos
+        #
+        # except:
+        #
+        #     messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=Consultar-", parent=self.master)
+        #     exit()
 
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=Consultar-", parent=self.master)
-            exit()
+
+
 
     def consultar_edicion(self, tofil):
         # lo usa la parte de edicion del programa para mandar solo el registro solicitado
