@@ -3,7 +3,9 @@ import tkinter as tk
 import tkinter.font as tkfont
 from datetime import date, timedelta
 from tkinter import ttk
+
 from PIL import Image, ImageTk
+
 from PDF_clase import *
 from ctacte_ABM import DatosCtacte
 from funcion_new import ClaseFuncionNew
@@ -31,21 +33,7 @@ class ClaseCuentaCorriente(tk.Frame):
         # ----------------------------------------------------------------------------------
         # Esto esta agregado para centrar las ventanas en la pantalla
         # ----------------------------------------------------------------------------------
-        # master.geometry("880x510")
-        self.master.resizable(0, 0)
-        # Actualizamos el contenido de la ventana (la ventana pude crecer si se le agrega
-        # mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer.
-        # Obtenemos el largo y  ancho de la pantalla
-        wtotal = self.master.winfo_screenwidth()
-        htotal = self.master.winfo_screenheight()
-        # Guardamos el largo y alto de la ventana
-        wventana = 1035
-        hventana = 470
-        # Aplicamos la siguiente formula para calcular donde debería posicionarse
-        pwidth = round(wtotal / 2 - wventana / 2) + 0
-        pheight = round(htotal / 2 - hventana / 2) + 0
-        # Se lo aplicamos a la geometría de la ventana
-        self.master.geometry(str(wventana) + "x" + str(hventana) + "+" + str(pwidth) + "+" + str(pheight))
+        self. pantalla()
         # ------------------------------------------------------------------------------
 
         # ------------------------------------------------------------------------------
@@ -72,22 +60,8 @@ class ClaseCuentaCorriente(tk.Frame):
 
         self.vcmd = (self.register(self.varFuncion_new.validar), "%P")
 
-        # ------------------------------------------------------------------
-        # TITULOS
-        # ------------------------------------------------------------------
-        # Encabezado logo y titulo con PACK
-        self.frame_titulo_top = tk.Frame(self.master)
-        # Armo el logo y el titulo
-        self.photocc = Image.open('ctacte.png')
-        self.photocc = self.photocc.resize((50, 50), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
-        self.png_ctacte = ImageTk.PhotoImage(self.photocc)
-        self.lbl_png_ctacte = tk.Label(self.frame_titulo_top, image=self.png_ctacte, bg="red", relief="ridge", bd=5)
-        self.lbl_titulo = tk.Label(self.frame_titulo_top, width=52, text="Cuentas Corrientes",
-                                bg="black", fg="gold", font=("Arial bold", 20, "bold"), bd=5, relief="ridge", padx=5)
-        # Coloco logo y titulo en posicion de pantalla
-        self.lbl_png_ctacte.grid(row=0, column=0, sticky="w", padx=5, ipadx=22)
-        self.lbl_titulo.grid(row=0, column=1, sticky="nsew")
-        self.frame_titulo_top.pack(side="top", fill="x", padx=5, pady=2)
+        # TITULOS ----------------------------------------------------------
+        self.titulos()
         # ------------------------------------------------------------------
 
         # ------------------------------------------------------------------
@@ -298,7 +272,6 @@ class ClaseCuentaCorriente(tk.Frame):
     def fnuevo(self):
 
         # VALIDACIONES
-
         if self.sv_nombre_cliente.get() == "" or self.sv_codigo_cliente.get() == "0":
             messagebox.showwarning("Error", " Debe existir un cliente asignado", parent=self)
             self.entry_nombre_cliente.focus()
@@ -421,7 +394,8 @@ class ClaseCuentaCorriente(tk.Frame):
         except ValueError as e:
             messagebox.showwarning("Datos inválidos en Insertar/Modificar", str(e))
             return
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.varFuncion_new.mostrar_error()
             return
         else:
@@ -1238,7 +1212,6 @@ class ClaseCuentaCorriente(tk.Frame):
                              f"cc_fecha <= '{fecha_convertida2}' AND cc_codcli = '{self.sv_codigo_cliente.get()}'")
         # metodo de borrado de los movimientos seleccionados entre fechas
         self.varCtacte.borrar_compactar(self.filtro_activo)
-        #retorno = self.varCtacte.borrar_compactar(self.filtro_activo)
         # -----------------------------------------------------------------------
 
         # -----------------------------------------------------------------------
@@ -1254,6 +1227,7 @@ class ClaseCuentaCorriente(tk.Frame):
         self.pantalla_estad.destroy()
 
     def get_ctacte_dic(self, fecha_aux):
+
         return {
             "Id": self.clave,
             "cc_fecha": fecha_aux,
@@ -1267,8 +1241,45 @@ class ClaseCuentaCorriente(tk.Frame):
 
     @staticmethod
     def cargar_icono(path, size=(18,18)):
+
         img = Image.open(path).resize(size)
         return ImageTk.PhotoImage(img)
+
+    def pantalla(self):
+
+        # master.geometry("880x510")
+        self.master.resizable(0, 0)
+        # Actualizamos el contenido de la ventana (la ventana pude crecer si se le agrega
+        # mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer.
+        # Obtenemos el largo y  ancho de la pantalla
+        wtotal = self.master.winfo_screenwidth()
+        htotal = self.master.winfo_screenheight()
+        # Guardamos el largo y alto de la ventana
+        wventana = 1035
+        hventana = 470
+        # Aplicamos la siguiente formula para calcular donde debería posicionarse
+        pwidth = round(wtotal / 2 - wventana / 2) + 0
+        pheight = round(htotal / 2 - hventana / 2) + 0
+        # Se lo aplicamos a la geometría de la ventana
+        self.master.geometry(str(wventana) + "x" + str(hventana) + "+" + str(pwidth) + "+" + str(pheight))
+
+    def titulos(self):
+
+        # Encabezado logo y titulo con PACK
+        self.frame_titulo_top = tk.Frame(self.master)
+        # Armo el logo y el titulo
+        self.photocc = Image.open('ctacte.png')
+        self.photocc = self.photocc.resize((50, 50), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
+        self.png_ctacte = ImageTk.PhotoImage(self.photocc)
+        self.lbl_png_ctacte = tk.Label(self.frame_titulo_top, image=self.png_ctacte, bg="red", relief="ridge", bd=5)
+        self.lbl_titulo = tk.Label(self.frame_titulo_top, width=52, text="Cuentas Corrientes",
+                                bg="black", fg="gold", font=("Arial bold", 20, "bold"), bd=5, relief="ridge", padx=5)
+        # Coloco logo y titulo en posicion de pantalla
+        self.lbl_png_ctacte.grid(row=0, column=0, sticky="w", padx=5, ipadx=22)
+        self.lbl_titulo.grid(row=0, column=1, sticky="nsew")
+        self.frame_titulo_top.pack(side="top", fill="x", padx=5, pady=2)
+
+
 
     # -------------------------------------------------------
     # INFORMES

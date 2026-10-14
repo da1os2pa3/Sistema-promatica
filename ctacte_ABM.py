@@ -1,5 +1,4 @@
 import mysql.connector
-from mysql.connector import Error
 
 class DatosCtacte:
 
@@ -14,29 +13,31 @@ class DatosCtacte:
             passwd="",
             database="sist_prom")
 
-    # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    # CRUD
-    # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
     def consultar_ctacte(self, orden=""):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql = "SELECT * FROM ctacte"
             if orden:
                 sql += " " + orden
             cur.execute(sql)
             return cur.fetchall()
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def insertar_ctacte(self, datos_ctacte):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql = """
                   INSERT INTO ctacte (cc_fecha, cc_detalle, cc_ingreso, cc_egreso, cc_codcli, cc_nomcli, cc_clavemov)
                   VALUES (%s, %s, %s, %s, %s, %s, %s)
@@ -61,14 +62,18 @@ class DatosCtacte:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def eliminar_item_ctacte(self, Id):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql = '''DELETE FROM ctacte WHERE Id = {}'''.format(Id)
             # 1 parámetro → (valor,)
             # varios → (v1, v2, v3)
@@ -80,15 +85,18 @@ class DatosCtacte:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def modificar_ctacte(self, datos_ctacte):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
-
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             # genero instruccion sql
             sql = """
                   UPDATE ctacte \
@@ -116,8 +124,10 @@ class DatosCtacte:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     # COMPACTACION
@@ -125,37 +135,49 @@ class DatosCtacte:
 
     def sumar_compactar(self, tofil):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             cur.execute(tofil)
             total_ing, total_egr = cur.fetchone()
             return [total_ing, total_egr]
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def borrar_compactar(self, tofil):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             cur.execute(tofil)
             # datos = cur.fetchall()
-            self.cnn.commit()
+            cnn.commit()
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def sumar_saldo_control(self, tofil):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             cur.execute(tofil)
             nuevo_saldo = cur.fetchone()
             #datos = cur.fetchall()
             return nuevo_saldo
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()

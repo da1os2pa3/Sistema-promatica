@@ -17,35 +17,45 @@ class DatosGarantias:
 
     def consultar_garantia(self, orden=""):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql = "SELECT * FROM garantias"
             if orden:
                 sql += " " + orden
             cur.execute(sql)
             return cur.fetchall()
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
     # 1 uso
     def consultar_informa(self):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             cur.execute("SELECT * FROM informa WHERE 1")
             datos_inf = cur.fetchall()
             return datos_inf
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def insertar_garantias(self, val_garantias):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             aux_fecha_venta = datetime.strptime(val_garantias["gt_fechaventa"], '%d/%m/%Y')
             aux_fecha_vto = datetime.strptime(val_garantias["gt_fechavto"], '%d/%m/%Y')
 
@@ -78,14 +88,18 @@ class DatosGarantias:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def modificar_garantias(self, val_garantias):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             aux_fecha_venta = datetime.strptime(val_garantias["gt_fechaventa"], '%d/%m/%Y')
             aux_fecha_vto = datetime.strptime(val_garantias["gt_fechavto"], '%d/%m/%Y')
 
@@ -117,14 +131,18 @@ class DatosGarantias:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def eliminar_item_garantia(self, Id):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql = "DELETE FROM garantias WHERE Id = %s"
             # 1 parámetro → (valor,)
             # varios → (v1, v2, v3)
@@ -136,15 +154,19 @@ class DatosGarantias:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     # 1 uso
     def buscar_entabla(self, texto):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql = """
                   SELECT * FROM garantias WHERE gt_nomcli LIKE %s OR gt_articulo LIKE %s ORDER BY gt_fechavto ASC 
                   """
@@ -158,5 +180,7 @@ class DatosGarantias:
             datos = cur.fetchall()
             return datos
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()

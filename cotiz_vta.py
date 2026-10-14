@@ -7,7 +7,7 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 
 from PDF_clase import PDF
-from cotiz_ABM import datosCotiz
+from cotiz_ABM import DatosCotiz
 from funcion_new import ClaseFuncionNew
 from funciones import *
 from status_bar import StatusBar
@@ -31,18 +31,7 @@ class VentasPrincipal(tk.Frame):  # <--- Sin (tk.Tk) ni (tk.Tk, master=None)
 
         # ------------------------------------------------------------------------
         # CONFIGURACIÓN Y CENTRADO DE PANTALLA
-        self.master.resizable(0, 0)
-        # Forzamos a Tkinter a procesar tareas pendientes antes de medir la pantalla
-        self.master.update_idletasks()
-        ancho = self.master.winfo_screenwidth()
-        alto = self.master.winfo_screenheight()
-        # Asigno fijo un ancho y un alto
-        ancho_ventana = 1030
-        alto_ventana = 550
-        # Coordenadas para centrar la ventana
-        x = int((ancho - ancho_ventana) / 2)
-        y = int((alto - alto_ventana) / 2)
-        self.master.geometry(f"{ancho_ventana}x{alto_ventana}+{x}+{y}")
+        self.pantalla()
         # ------------------------------------------------------------------------------
 
         # -----------------------------------------------------------------------
@@ -62,7 +51,7 @@ class VentasPrincipal(tk.Frame):  # <--- Sin (tk.Tk) ni (tk.Tk, master=None)
         # -----------------------------------------------------------------------
 
         # Instanciaciones -------------------------------------------------------
-        self.varCotiz = datosCotiz(self.master)
+        self.varCotiz = DatosCotiz(self.master)
         self.varFuncion_new = ClaseFuncionNew(self.master)
         # -----------------------------------------------------------------------
 
@@ -87,6 +76,21 @@ class VentasPrincipal(tk.Frame):  # <--- Sin (tk.Tk) ni (tk.Tk, master=None)
     # -----------------------------------------------------------------------
     # Funciones definidas en la clase principal
     # -----------------------------------------------------------------------
+
+    def pantalla(self):
+
+        self.master.resizable(0, 0)
+        # Forzamos a Tkinter a procesar tareas pendientes antes de medir la pantalla
+        self.master.update_idletasks()
+        ancho = self.master.winfo_screenwidth()
+        alto = self.master.winfo_screenheight()
+        # Asigno fijo un ancho y un alto
+        ancho_ventana = 1030
+        alto_ventana = 550
+        # Coordenadas para centrar la ventana
+        x = int((ancho - ancho_ventana) / 2)
+        y = int((alto - alto_ventana) / 2)
+        self.master.geometry(f"{ancho_ventana}x{alto_ventana}+{x}+{y}")
 
     def freiniciar_todo(self):
 
@@ -118,7 +122,8 @@ class VentasPrincipal(tk.Frame):  # <--- Sin (tk.Tk) ni (tk.Tk, master=None)
         self.pestana_2.sv_global_final_venta_iva105.set(value="0.00")
         self.pestana_2.sv_global_final_venta.set(value="0.00")
 
-    def cargar_icono(self, path, size=(18,18)):
+    @staticmethod
+    def cargar_icono(path, size=(18,18)):
         img = Image.open(path).resize(size)
         return ImageTk.PhotoImage(img)
 
@@ -144,18 +149,18 @@ class PestanaUno(tk.Frame):
         # ---------------------------------------------------------------------
         # DATOS DE LA VENTA Y DATOS CLIENTE
         self.principal.sv_venta_fecha = tk.StringVar(self, value="")
-        self.sv_codigo_cliente = tk.StringVar(self, value="0")
-        self.sv_nombre_cliente = tk.StringVar(self, value="Consumidor Final")
-        self.sv_sit_fiscal = tk.StringVar(self, value="")
-        self.sv_cuit = tk.StringVar(self, value="")
+        self.sv_codigo_cliente        = tk.StringVar(self, value="0")
+        self.sv_nombre_cliente        = tk.StringVar(self, value="Consumidor Final")
+        self.sv_sit_fiscal            = tk.StringVar(self, value="")
+        self.sv_cuit                  = tk.StringVar(self, value="")
 
         # TIPOS DE PAGO
-        self.sv_combo_formas_pago = tk.StringVar()
-        self.sv_detalle_pago = tk.StringVar(value="")
+        self.sv_combo_formas_pago     = tk.StringVar()
+        self.sv_detalle_pago          = tk.StringVar(value="")
 
         # VALOR DEL DOLAR HOY
-        self.sv_valor_dolar_hoy = tk.StringVar(self, value="0.00")
-        self.sv_tasa_recargo_precio = tk.StringVar(self, value="0")
+        self.sv_valor_dolar_hoy       = tk.StringVar(self, value="0.00")
+        self.sv_tasa_recargo_precio   = tk.StringVar(self, value="0")
         self.traer_dolarhoy()  # trae dolar y tasa recargo precio con tarjeta
 
         self.sv_buscostring = tk.StringVar(self, value="")
@@ -187,12 +192,14 @@ class PestanaUno(tk.Frame):
         self.frame_grid_ventas_realizadas.pack(side="top", fill="both", padx=5, pady=2)
 
         # contenedor Botones de busquedas en tabla resuventas GRID encabezado de Ventas
-        self.frame_botones_grid_principal = tk.LabelFrame(self.frame_principal, text="", border=5, foreground="black", background="light blue")
+        self.frame_botones_grid_principal = tk.LabelFrame(self.frame_principal, text="", border=5, foreground="black",
+                                                          background="light blue")
         self.cuadro_botones_grid_ventas()
         self.frame_botones_grid_principal.pack(side="top", fill="both", padx=5, pady=2)
 
         # Contenedor Botones Crud 
-        self.frame_botones_grid_crudresu = tk.LabelFrame(self.frame_principal, text="", border=5, foreground="black", background="light blue")
+        self.frame_botones_grid_crudresu = tk.LabelFrame(self.frame_principal, text="", border=5, foreground="black",
+                                                         background="light blue")
         self.cuadro_botones_grid_crudresu()
         self.frame_botones_grid_crudresu.pack(side="top", fill="both", padx=5, pady=2)
 
@@ -202,11 +209,11 @@ class PestanaUno(tk.Frame):
         self.frame_entrys_ventas.pack(side="top", fill="both", expand=0, padx=5, pady=3)
 
         # Contenedor que muestra el Valor del dolar para hoy
-        self.frame_valor_dolarhoy = tk.LabelFrame(self.frame_principal, text="", border=5, foreground="black", background="light blue")
+        self.frame_valor_dolarhoy = tk.LabelFrame(self.frame_principal, text="", border=5, foreground="black",
+                                                  background="light blue")
         self.cuadro_valor_dolarhoy()
         self.frame_valor_dolarhoy.pack(side="top", fill="both", padx=5, pady=2)
         # ---------------------------------------------------------------------
-
 
     # ---------------------------------------------------------------------
     # Configuracion inicial
@@ -268,8 +275,6 @@ class PestanaUno(tk.Frame):
             self.sv_tasa_recargo_precio.set(value=row[23])
 
 
-
-
     # ---------------------------------------------------------------------
     # GRIDS
     # ---------------------------------------------------------------------
@@ -299,8 +304,8 @@ class PestanaUno(tk.Frame):
 
             cont += 1
             color = ('evenrow',) if cont % 2 else ('oddrow',)
-            self.grid_tvw_todaslasventas.insert("", "end", tags=color, text=row[0], values=(row[1], forma_normal,
-                                                                                      row[4], row[10], row[7], row[8]))
+            self.grid_tvw_todaslasventas.insert("", "end", tags=color, text=row[0], values=(row[1],
+                                                                       forma_normal, row[4], row[10], row[7], row[8]))
 
         # Controles --------------------------------------------------------
         # Devuelve una colección(tupla) con los IDs de todas las filas cargadas
@@ -330,9 +335,6 @@ class PestanaUno(tk.Frame):
                     self.grid_tvw_todaslasventas.focus(item)
                     self.grid_tvw_todaslasventas.see(item)
                     break
-
-
-
 
     # ---------------------------------------------------------------------
     # BUSQUEDAS y movimientos en el grid
@@ -386,9 +388,6 @@ class PestanaUno(tk.Frame):
 
     def ffinarch(self):
         self.principal.varFuncion_new.mover_puntero_topend(self.grid_tvw_todaslasventas, 'END')
-
-
-
 
     # ---------------------------------------------------------------------
     # CRUD en resu_venta
@@ -523,16 +522,14 @@ class PestanaUno(tk.Frame):
             # Elimino todos los items de resu_vents y deta_ventas
             self.principal.varCotiz.eliminar_resuventa(self.clave)
             self.principal.varCotiz.eliminar_detaventa(valores[0])
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.principal.varFuncion_new.mostrar_error()
             return
         else:
             self.principal.status.set_status("🗑 Venta eliminada correctamente", "ok")
 
         self.llena_grilla_ventas(self.clave_ant)
-
-
-
 
     # ---------------------------------------------------------------------
     # CUADROS
@@ -550,7 +547,7 @@ class PestanaUno(tk.Frame):
 
         self.grid_tvw_todaslasventas.bind("<Double-Button-1>", self.doble_click_grid)
 
-        self.grid_tvw_todaslasventas.column("#0", width=60, anchor="center", minwidth=60)
+        self.grid_tvw_todaslasventas.column("#0",   width=60, anchor="center", minwidth=60)
         self.grid_tvw_todaslasventas.column("col1", width=100, anchor="w", minwidth=100)
         self.grid_tvw_todaslasventas.column("col2", width=80, anchor="w", minwidth=80)
         self.grid_tvw_todaslasventas.column("col3", width=350, anchor="center", minwidth=350)
@@ -558,7 +555,7 @@ class PestanaUno(tk.Frame):
         self.grid_tvw_todaslasventas.column("col5", width=100, anchor="center", minwidth=100)
         self.grid_tvw_todaslasventas.column("col6", width=130, anchor="center", minwidth=130)
 
-        self.grid_tvw_todaslasventas.heading("#0", text="Id", anchor="center")
+        self.grid_tvw_todaslasventas.heading("#0",   text="Id", anchor="center")
         self.grid_tvw_todaslasventas.heading("col1", text="Nº Venta", anchor="w")
         self.grid_tvw_todaslasventas.heading("col2", text="Fecha", anchor="w")
         self.grid_tvw_todaslasventas.heading("col3", text="Cliente", anchor="center")
@@ -694,7 +691,8 @@ class PestanaUno(tk.Frame):
         self.principal.sv_venta_numero.set(value=str(int(self.principal.varCotiz.traer_ultimo(1)) + 1))
         self.lbl_texto_nro_venta = tk.Label(self.frame_entrys_ventas, text="Nº Vta: ", font=fff, fg="black", justify="left")
         self.lbl_texto_nro_venta.grid(row=0, column=0, padx=1, pady=2, sticky='nsew')
-        self.lbl_nro_venta = tk.Label(self.frame_entrys_ventas, textvariable=self.principal.sv_venta_numero, font=fff, fg="black", width=4)
+        self.lbl_nro_venta = tk.Label(self.frame_entrys_ventas, textvariable=self.principal.sv_venta_numero, font=fff,
+                                      fg="black", width=4)
         self.lbl_nro_venta.grid(row=0, column=1, padx=2, pady=2, sticky='nsew')
 
         # FECHA DE VENTA
@@ -750,7 +748,8 @@ class PestanaUno(tk.Frame):
 
         # COTIZACION DEL DOLAR DEL DIA
         fff = tkfont.Font(family="Arial", size=10, weight="bold")
-        self.lbl_dolarhoy1 = tk.Label(self.frame_valor_dolarhoy, text="Dolar hoy:", justify="left", font=fff, foreground="green")
+        self.lbl_dolarhoy1 = tk.Label(self.frame_valor_dolarhoy, text="Dolar hoy:", justify="left", font=fff,
+                                      foreground="green")
         self.lbl_dolarhoy1.grid(row=0, column=0, padx=4, pady=2, sticky='nsew')
         self.lbl_dolarhoy2 = tk.Label(self.frame_valor_dolarhoy, textvariable=self.sv_valor_dolar_hoy, width=10,
                                       justify="right", font=fff, foreground="green")
@@ -816,7 +815,8 @@ class PestanaUno(tk.Frame):
 
         # Traer todos los registros de la tabla de articulos vendidos deta_ventas
         # self.datos_articulos_vendidos = self.varCotiz.consultar_detalle_auxventas("aux", "")
-        self.datos_articulos_vendidos = self.principal.varCotiz.consultar_tablas("deta", "WHERE dv_numero = "+str(self.principal.sv_venta_numero.get()))
+        self.datos_articulos_vendidos = self.principal.varCotiz.consultar_tablas("deta", "WHERE dv_numero = " + str(
+            self.principal.sv_venta_numero.get()))
 
         sumotot = 0
         for row in self.datos_articulos_vendidos:
@@ -849,11 +849,13 @@ class PestanaUno(tk.Frame):
 
 
 
-
-
 # =========================================================================================
 # PESTAÑA DOS
 # =========================================================================================
+
+
+
+
 
 class PestanaDos(tk.Frame):
 
@@ -863,25 +865,19 @@ class PestanaDos(tk.Frame):
         # Creo una instancia de la clase principal
         self.principal = principal
 
-        #self.configure(bg=self.master.master.cget('bg'))
-        # # Contenido de la pestaña 2
-        # label = ttk.Label(self, text="Detalle Venta", font=("Arial", 14), background=self.master.master.cget('bg'))
-        # label.pack(pady=7)
-
         # ---------------------------------------------------------------------
         # STRINGVARS
         # ---------------------------------------------------------------------
-
         # Valor del dolar hoy
-        self.sv_valor_dolar_hoy = tk.StringVar(value="0.00")
+        self.sv_valor_dolar_hoy     = tk.StringVar(value="0.00")
         self.sv_tasa_recargo_precio = tk.StringVar(value="0")
 
         # Detalles del articulo a vender
-        self.sv_it_codigo_articulo = tk.StringVar(value="")
+        self.sv_it_codigo_articulo      = tk.StringVar(value="")
         self.sv_it_descripcion_articulo = tk.StringVar(value="")
-        self.sv_it_marca_articulo = tk.StringVar(value="")
-        self.sv_it_rubro_articulo = tk.StringVar(value="")
-        self.sv_it_ultima_actual = tk.StringVar(value="")
+        self.sv_it_marca_articulo       = tk.StringVar(value="")
+        self.sv_it_rubro_articulo       = tk.StringVar(value="")
+        self.sv_it_ultima_actual        = tk.StringVar(value="")
 
         # cantidad a comprar
         self.sv_cantidad_venta = tk.StringVar(value="1")
@@ -984,8 +980,6 @@ class PestanaDos(tk.Frame):
         # ---------------------------------------------------------------------
 
 
-
-
     # -------------------------------------------------------------------------
     # Inicializacion Pantalla
     # -------------------------------------------------------------------------
@@ -1032,11 +1026,6 @@ class PestanaDos(tk.Frame):
         self.sv_it_rubro_articulo.set(value="")
         self.sv_it_ultima_actual.set(value="")
 
-        # # Forma de pago
-        # self.combo_formapago.current(0)
-        # #self.combo_formapago.configure(state="")
-        # self.principal.pestana_1.sv_detalle_pago.set(value="")
-
         # cantidad a comprar
         self.sv_cantidad_venta.set(value="1")
 
@@ -1080,8 +1069,6 @@ class PestanaDos(tk.Frame):
         if r == messagebox.NO:
             return
 
-        #self.fReiniciar_carga_articulo()
-
     def freset_articulo_activo(self):
         # limpiar los Entrys que puedan tener datos cargados
         self.limpiar_entrys_2()
@@ -1095,11 +1082,10 @@ class PestanaDos(tk.Frame):
 
 
 
-
-
     # -------------------------------------------------------------------------
     # GRIDS
     # -------------------------------------------------------------------------
+
     def refrescar_auxventas(self):
         self.llena_grilla_auxiliar()
 
@@ -1162,8 +1148,6 @@ class PestanaDos(tk.Frame):
                     break
 
 
-
-
     # ---------------------------------------------------------------------
     # Busquedas y movimientos en el Grid
     # ---------------------------------------------------------------------
@@ -1173,8 +1157,6 @@ class PestanaDos(tk.Frame):
 
     def ffinarch(self):
         self.principal.varFuncion_new.mover_puntero_topend(self.grid_tvw_auxiliar_venta, 'END')
-
-
 
 
     # ----------------------------------------------------------------------------
@@ -1235,7 +1217,8 @@ class PestanaDos(tk.Frame):
 
         try:
             id_ref = self.principal.varCotiz.insertar_resuventa(dic_resuventas)
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.principal.varFuncion_new.mostrar_error()
             return
         else:
@@ -1278,7 +1261,8 @@ class PestanaDos(tk.Frame):
         try:
             self.principal.varCotiz.modificar_resuventa(dic_resuventas)
             id_ref = self.clave
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.principal.varFuncion_new.mostrar_error()
             return
         else:
@@ -1310,7 +1294,8 @@ class PestanaDos(tk.Frame):
 
             try:
                 self.principal.varCotiz.insertar_detaventa(dic_detaventas)
-            except Exception:
+            except Exception as e:
+                print(f"Error no controlado: {e}")
                 self.principal.varFuncion_new.mostrar_error()
                 return
 
@@ -1344,7 +1329,8 @@ class PestanaDos(tk.Frame):
 
             try:
                 self.principal.varCotiz.insertar_detaventa(dic_detaventas)
-            except Exception:
+            except Exception as e:
+                print(f"Error no controlado: {e}")
                 self.principal.varFuncion_new.mostrar_error()
                 return
 
@@ -1408,7 +1394,8 @@ class PestanaDos(tk.Frame):
             elif self.alta_modif_p2 == 2:
                 self.id_nuevo = self.principal.varCotiz.modificar_auxventa(dic_auxventas)
                 id_ref = self.id_nuevo
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.principal.varFuncion_new.mostrar_error()
             return
         else:
@@ -1484,7 +1471,8 @@ class PestanaDos(tk.Frame):
 
         try:
             self.principal.varCotiz.eliminar_auxventa(self.clave)
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.principal.varFuncion_new.mostrar_error()
             return
         else:
@@ -1522,7 +1510,7 @@ class PestanaDos(tk.Frame):
 
         self.grid_tvw_auxiliar_venta.bind("<Double-Button-1>", self.doble_click_grid2)
         #("<Double-Button-1>", self.doble_click_grid)
-        self.grid_tvw_auxiliar_venta.column("#0", width=60, anchor="center", minwidth=60)
+        self.grid_tvw_auxiliar_venta.column("#0",   width=60, anchor="center", minwidth=60)
         self.grid_tvw_auxiliar_venta.column("col1", width=80, anchor="w", minwidth=80)
         self.grid_tvw_auxiliar_venta.column("col2", width=430, anchor="w", minwidth=430)
         self.grid_tvw_auxiliar_venta.column("col3", width=110, anchor="center", minwidth=110)
@@ -1533,7 +1521,7 @@ class PestanaDos(tk.Frame):
         self.grid_tvw_auxiliar_venta.column("col8", width=70, anchor="center", minwidth=70)
         self.grid_tvw_auxiliar_venta.column("col9", width=70, anchor="center", minwidth=70)
 
-        self.grid_tvw_auxiliar_venta.heading("#0", text="Id", anchor="center")
+        self.grid_tvw_auxiliar_venta.heading("#0",   text="Id", anchor="center")
         self.grid_tvw_auxiliar_venta.heading("col1", text="Codigo", anchor="w")
         self.grid_tvw_auxiliar_venta.heading("col2", text="Descripcion", anchor="w")
         self.grid_tvw_auxiliar_venta.heading("col3", text="Marca", anchor="center")
@@ -1576,7 +1564,8 @@ class PestanaDos(tk.Frame):
         # Editar articulo en la venta
         icono = self.principal.cargar_icono("editar.png")
         self.btn_editar_itemventa = tk.Button(self.frame_botones_articulos, text=" Editar articulo", width=19,
-                                              command=self.feditar_item_venta_auxiliar, bg='blue', fg='white', compound="left")
+                                              command=self.feditar_item_venta_auxiliar, bg='blue', fg='white',
+                                              compound="left")
         self.btn_editar_itemventa.image = icono
         self.btn_editar_itemventa.config(image=icono)
         self.btn_editar_itemventa.grid(row=0, column=1, padx=3, pady=2, sticky=tk.W)
@@ -1600,8 +1589,8 @@ class PestanaDos(tk.Frame):
 
         # Cancelar operaciones en articulos
         icono = self.principal.cargar_icono("cancelar.png")
-        self.btn_cancela_art = tk.Button(self.frame_botones_articulos, text=" Cancelar carga articulos", command=self.cancelar_articulo,
-                                       width=19, bg='black', fg='white', compound="left")
+        self.btn_cancela_art = tk.Button(self.frame_botones_articulos, text=" Cancelar carga articulos",
+                                         command=self.cancelar_articulo, width=19, bg='black', fg='white', compound="left")
         self.btn_cancela_art.image = icono
         self.btn_cancela_art.config(image=icono)
         self.btn_cancela_art.grid(row=0, column=4, padx=3, pady=2, sticky=tk.W)
@@ -1640,10 +1629,11 @@ class PestanaDos(tk.Frame):
 
         # Numero de venta
         fff = tkfont.Font(family="Arial", size=10, weight="bold")
-        self.lbl_ventanro = tk.Label(self.frame_entrys_articulos, text="Venta Nro.:", justify="left", font=fff, foreground="black")
+        self.lbl_ventanro = tk.Label(self.frame_entrys_articulos, text="Venta Nro.:", justify="left", font=fff,
+                                     foreground="black")
         self.lbl_ventanro.grid(row=0, column=2, padx=4, pady=2, sticky=tk.W)
-        self.lbl_ventanro_valor = tk.Label(self.frame_entrys_articulos, textvariable=self.principal.sv_venta_numero, width=10,
-                                      justify="right", font=fff, foreground="black")
+        self.lbl_ventanro_valor = tk.Label(self.frame_entrys_articulos, textvariable=self.principal.sv_venta_numero,
+                                           width=10, justify="right", font=fff, foreground="black")
         self.lbl_ventanro_valor.grid(row=0, column=3, padx=4, pady=2, sticky='nsew')
 
         # BOTON DE  BUSQUEDA DE ARTICULO SI CORRESPONDE AL DETALLE
@@ -1664,7 +1654,8 @@ class PestanaDos(tk.Frame):
         # COMBO TASA IVA
         self.lbl_combo_tasa_iva = tk.Label(self.frame_entrys_articulos, justify="left", foreground="black", text="IVA %")
         self.lbl_combo_tasa_iva.grid(row=0, column=7, padx=4, pady=2, sticky=tk.W)
-        self.combo_tasa_iva = ttk.Combobox(self.frame_entrys_articulos, textvariable=self.sv_combo_tasa_iva, state='readonly', width=8)
+        self.combo_tasa_iva = ttk.Combobox(self.frame_entrys_articulos, textvariable=self.sv_combo_tasa_iva,
+                                           state='readonly', width=8)
         self.combo_tasa_iva['value'] = ["21.00", "10.50"]
         self.combo_tasa_iva.current(0)
         self.combo_tasa_iva.grid(row=0, column=8, padx=4, pady=2, sticky=tk.W)
@@ -1684,7 +1675,8 @@ class PestanaDos(tk.Frame):
 
         # PRECIO VENTA FINAL UNIDAD LISTA + % recargo tarjeta
         self.lbl_precio_lista_unidad1 = tk.Label(self.frame_entrys_importes_articulos, text=f"Precio LISTA (c/"
-                                                 f"{self.sv_tasa_recargo_precio.get()}% rec.)$:", font=fff, justify="left", fg="green")
+                                                 f"{self.sv_tasa_recargo_precio.get()}% rec.)$:", font=fff,
+                                                 justify="left", fg="green")
         self.lbl_precio_lista_unidad1.grid(row=0, column=0, padx=2, pady=2, sticky=tk.W)
 
         self.entry_precio_lista_unidad = tk.Entry(self.frame_entrys_importes_articulos, font=fff, width=10,
@@ -1694,7 +1686,8 @@ class PestanaDos(tk.Frame):
         self.entry_precio_lista_unidad.bind('<Tab>', lambda e: self.calcular("precio_lista_unidad"))
 
         # PRECIO VENTA FINAL UNIDAD CONTADO
-        self.lbl_precio_contado_unidad1 = tk.Label(self.frame_entrys_importes_articulos, text="Contado $:", font=fff, justify="left")
+        self.lbl_precio_contado_unidad1 = tk.Label(self.frame_entrys_importes_articulos, text="Contado $:", font=fff,
+                                                   justify="left")
         self.lbl_precio_contado_unidad1.grid(row=0, column=2, padx=2, pady=2, sticky=tk.W)
         self.entry_precio_contado_unidad = tk.Label(self.frame_entrys_importes_articulos, font=fff, width=10,
                                                     textvariable=self.sv_unidad_precio_venta_contado, justify="right")
@@ -1856,7 +1849,6 @@ class PestanaDos(tk.Frame):
             widg.grid_configure(padx=5, pady=3, sticky='nsew')
 
 
-
     # -------------------------------------------------------------------------
     # VALIDACION ENTRADA DE DATOS NUEMERICOS Y FECHAS
     # -------------------------------------------------------------------------
@@ -1878,6 +1870,7 @@ class PestanaDos(tk.Frame):
 
     # -------------------------------------------------------------------------
     # PRECIOS Y TOTALES - Calculos y obtencion de precios - Busqueda de articulos
+
     # -------------------------------------------------------------------------
 
     # Busqueda del articulo - obtencion de precios y tasas - calculos de totales
@@ -2021,6 +2014,7 @@ class PestanaDos(tk.Frame):
 
             messagebox.showerror("Error", str(e), parent=self)
             return
+
 
 
 

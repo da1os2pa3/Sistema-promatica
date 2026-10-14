@@ -1,16 +1,16 @@
 import tkinter as tk
 from datetime import date
 from tkinter import ttk
-# from tkinter import messagebox
 from tkinter.scrolledtext import *
-# ------------------------------------------------
+
 from PIL import Image, ImageTk
 from dateutil.relativedelta import relativedelta
-# ------------------------------------------------
+
 from funcion_new import ClaseFuncionNew
 from funciones import *
 from garantias_ABM import DatosGarantias
 from status_bar import StatusBar
+
 
 class ClaseGarantias(tk.Frame):
 
@@ -23,29 +23,15 @@ class ClaseGarantias(tk.Frame):
         self.master.grab_set()
         self.master.focus_set()
 
-        # Instanciaciones -----------------------------------------------------------
+        # Instanciaciones -------------------------------------------------------------
         """ Creo una instancia de clase varGarantia. Le paso la pantalla para poder usar los parent 
             en los mensajes de messagebox. """
         self.varGarantia = DatosGarantias(self.master)
         self.varFuncion_new = ClaseFuncionNew(self.master)
-        # ---------------------------------------------------------------------------
+        # -----------------------------------------------------------------------------
 
-        # ---------------------------------------------------------------------------------
-        # PANTALLA -*-
-        # ---------------------------------------------------------------------------------
-        self.master.resizable(0, 0)
-        """ Actualizamos el contenido de la ventana (la ventana pude crecer si se le agrega
-            mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer.
-            Obtenemos el alto y  ancho de la pantalla """
-        ancho = self.master.winfo_screenwidth()
-        alto = self.master.winfo_screenheight()
-        # Asigno fijo un ancho y un alto
-        ancho_ventana = 980
-        alto_ventana = 645
-        # X e Y son las coordenadas para el posicionamiento del vertice superior izquierdo
-        x = int((ancho - ancho_ventana) / 2)
-        y = int((alto - alto_ventana) / 2)
-        self.master.geometry(f"{ancho_ventana}x{alto_ventana}+{x}+{y}")
+        # PANTALLA --------------------------------------------------------------------
+        self.pantalla()
         # ------------------------------------------------------------------------------
 
         self.create_widgets()
@@ -53,7 +39,6 @@ class ClaseGarantias(tk.Frame):
         self.llena_grilla("")
 
         # ------------------------------------------------------------------------------
-
         """ La función Treeview.selection() retorna una tupla con los ID de los elementos seleccionados o una
         # tupla vacía en caso de no haber ninguno
         # Otras funciones para manejar los elementos seleccionados incluyen:
@@ -107,9 +92,9 @@ class ClaseGarantias(tk.Frame):
         self.sv_numero_factura = tk.StringVar(value="")
         self.sv_observaciones = tk.StringVar(value="")
 
-        # ------------------------------------------------------------------------
+        # ---------------------------------------------------------------------------
         # TREVIEEW - GRID
-        # ------------------------------------------------------------------------
+        # ---------------------------------------------------------------------------
         self.frame_tvw_garantias=tk.LabelFrame(self.master, text="Garantias: ", foreground="#CF09BD")
         self.cuadro_grid()
         self.frame_tvw_garantias.pack(side="top", fill="both", padx=5, pady=2)
@@ -178,8 +163,6 @@ class ClaseGarantias(tk.Frame):
             color = ('evenrow',) if cont % 2 else ('oddrow',)
 
             # convierto fecha de 2024-12-19 a 19/12/2024 y le digo si va con la hora tambien o no
-            # forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[1], '%Y-%m-%d'), False)
-            # forma_normal2 = fecha_str_reves_normal(self, datetime.strftime(row[3], '%Y-%m-%d'), False)
             forma_normal = self.varFuncion_new.fecha_es(datetime.strftime(row[1], '%Y-%m-%d'), False)
             forma_normal2 = self.varFuncion_new.fecha_es(datetime.strftime(row[3], '%Y-%m-%d'), False)
 
@@ -269,12 +252,6 @@ class ClaseGarantias(tk.Frame):
         self.btn_bus_art.configure(state=estado)
         self.btn_bus_cli.configure(state=estado)
         self.text_detalle.configure(state=estado)
-        if self.alta_modif == 1:
-            self.grid_garantias['selectmode'] = 'none'
-            self.grid_garantias.bind("<Double-Button-1>", self.fno_modifique)
-        if self.alta_modif == 2 or self.alta_modif == 0:
-            self.grid_garantias['selectmode'] = 'browse'
-            self.grid_garantias.bind("<Double-Button-1>", self.doble_click_grid)
 
     def habilitar_btn_A(self, estado):
 
@@ -381,7 +358,8 @@ class ClaseGarantias(tk.Frame):
 
         try:
             self.varGarantia.eliminar_item_garantia(self.clave)
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.varFuncion_new.mostrar_error()
             return
         else:
@@ -441,7 +419,8 @@ class ClaseGarantias(tk.Frame):
             elif self.alta_modif == 2:
                 self.varGarantia.modificar_garantias(dic_garantias)
                 id_ref = self.clave
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.varFuncion_new.mostrar_error()
             return
         else:
@@ -479,9 +458,6 @@ class ClaseGarantias(tk.Frame):
             item = self.grid_garantias.identify_row(0)
             self.grid_garantias.selection_set(item)
             self.grid_garantias.focus(item)
-            # item = self.grid_config.identify_row(0)
-            # self.grid_config.selection_set(item)
-            # self.grid_config.focus(item)
         else:
             self.status.set_status("❌ No ingreso busqueda", "error")
 
@@ -865,6 +841,23 @@ class ClaseGarantias(tk.Frame):
         img = Image.open(path).resize(size)
         return ImageTk.PhotoImage(img)
 
+    def pantalla(self):
+
+        self.master.resizable(0, 0)
+
+        """ Actualizamos el contenido de la ventana (la ventana pude crecer si se le agrega
+            mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer.
+            Obtenemos el alto y  ancho de la pantalla """
+
+        ancho = self.master.winfo_screenwidth()
+        alto = self.master.winfo_screenheight()
+        # Asigno fijo un ancho y un alto
+        ancho_ventana = 980
+        alto_ventana = 645
+        # X e Y son las coordenadas para el posicionamiento del vertice superior izquierdo
+        x = int((ancho - ancho_ventana) / 2)
+        y = int((alto - alto_ventana) / 2)
+        self.master.geometry(f"{ancho_ventana}x{alto_ventana}+{x}+{y}")
 
 
 """

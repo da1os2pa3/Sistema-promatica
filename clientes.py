@@ -35,22 +35,8 @@ class ClaseClientes(tk.Frame):
         self.varFuncion_new = ClaseFuncionNew(self.master)
         # ---------------------------------------------------------------------------------
 
-        # ---------------------------------------------------------------------------------
-        # PANTALLA -*-
-        # ---------------------------------------------------------------------------------
-        self.master.resizable(0, 0)
-        """ Actualizamos el contenido de la ventana (la ventana pude crecer si se le agrega
-            mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer.
-            Obtenemos el alto y  ancho de la pantalla """
-        ancho = self.master.winfo_screenwidth()
-        alto = self.master.winfo_screenheight()
-        # Asigno fijo un ancho y un alto
-        ancho_ventana = 980
-        alto_ventana = 630
-        # X e Y son las coordenadas para el posicionamiento del vertice superior izquierdo
-        x = int((ancho - ancho_ventana) / 2)
-        y = int((alto - alto_ventana) / 2)
-        self.master.geometry(f"{ancho_ventana}x{alto_ventana}+{x}+{y}")
+        # PANTALLA ---------------------------------------------------------------------
+        self. pantalla()
         # ------------------------------------------------------------------------------
 
         self.create_widgets()
@@ -59,30 +45,26 @@ class ClaseClientes(tk.Frame):
 
     def create_widgets(self):
 
-        # --------------------------------------------------------------------------
-        # TITULOS -*-
-        # --------------------------------------------------------------------------
+        # TITULOS ------------------------------------------------------------------
         # Encabezado logo y titulo con PACK
         self.frame_titulo_top = tk.Frame(self.master)
         self.cuadro_titulos()
         self.frame_titulo_top.pack(side="top", fill="x", padx=8, pady=5)
         # --------------------------------------------------------------------------
 
-        # --------------------------------------------------------------------------
-        # STRINGVARS -*-
-        # --------------------------------------------------------------------------
-        self.sv_codigo = tk.StringVar(value="")
-        self.sv_apellido = tk.StringVar(value="")
-        self.sv_nombres = tk.StringVar(value="")
-        self.sv_direccion = tk.StringVar(value="")
-        self.sv_localidad = tk.StringVar(value="")
-        self.sv_provincia = tk.StringVar(value="")
-        self.sv_postal = tk.StringVar(value="")
-        self.sv_telef_pers = tk.StringVar(value="")
-        self.sv_telef_trab = tk.StringVar(value="")
-        self.sv_mail = tk.StringVar(value="")
-        self.sv_sit_fis = tk.StringVar(value="")
-        self.sv_cuit = tk.StringVar(value="")
+        # STRINGVARS ---------------------------------------------------------------
+        self.sv_codigo        = tk.StringVar(value="")
+        self.sv_apellido      = tk.StringVar(value="")
+        self.sv_nombres       = tk.StringVar(value="")
+        self.sv_direccion     = tk.StringVar(value="")
+        self.sv_localidad     = tk.StringVar(value="")
+        self.sv_provincia     = tk.StringVar(value="")
+        self.sv_postal        = tk.StringVar(value="")
+        self.sv_telef_pers    = tk.StringVar(value="")
+        self.sv_telef_trab    = tk.StringVar(value="")
+        self.sv_mail          = tk.StringVar(value="")
+        self.sv_sit_fis       = tk.StringVar(value="")
+        self.sv_cuit          = tk.StringVar(value="")
         self.sv_fecha_ingreso = tk.StringVar(value="")
         self.sv_observaciones = tk.StringVar(value="")
         self.sv_cant_clientes = tk.StringVar(value="0")
@@ -98,6 +80,7 @@ class ClaseClientes(tk.Frame):
 
         # --------------------------------------------------------------------------
         # CUADRO PRINCIPAL CONTENEDOR DEL GRID Y BARRA DE BUSQUEDAS
+        # --------------------------------------------------------------------------
         self.frame_principal = tk.Frame(self.master)
 
         # BUSQUEDA DE CLIENTES -----------------------------------------------------
@@ -105,8 +88,10 @@ class ClaseClientes(tk.Frame):
         self.cuadro_buscar()
         self.frame_buscar.pack(side="top", fill="both", expand=1, padx=1, pady=3)
         # -------------------------------------------------------------------------
+
         # GRID --------------------------------------------------------------------
         self.cuadro_grid_clientes()
+        # --------------------------------------------------------------------------
 
         self.frame_principal.pack(side="top", fill="both", padx=5, pady=5)
         # --------------------------------------------------------------------------
@@ -126,20 +111,20 @@ class ClaseClientes(tk.Frame):
         """ En set_foco viene el Id de la tabla que identidica el registro donde quiero oner el foco - 2312, 23, 456..
         Puede llegar a venir en vacio """
 
-        # Limpio el grid --------------------------------------------------------
+        # Limpio el grid
         for item in self.grid_clientes.get_children():
             self.grid_clientes.delete(item)
 
-        # Asigno orden -----------------------------------------------------------
+        # Asigno orden
         if self.filtro_activo:
             datos = self.varClientes.consultar_clientes(self.filtro_activo)
         else:
             datos = self.varClientes.consultar_clientes("ORDER BY apellido, nombres ASC")
 
-        # Tomo la cantidad de clientes -------------------------------------------
+        # Tomo la cantidad de clientes
         self.sv_cant_clientes.set(value=str(len(datos)))
 
-        # Inserto items en el Grid -----------------------------------------------
+        # Inserto items en el Grid
         cont = 0
         for row in datos:
 
@@ -151,8 +136,6 @@ class ClaseClientes(tk.Frame):
             self.grid_clientes.insert("", "end", tags=color, text=row[0], values=(row[1], row[2], row[3],
                                                                row[4], row[5], row[6], row[7], row[8], row[9], row[10],
                                                                row[11], row[12], forma_normal, row[14]))
-
-        # Controles ---------------------------------------------------------
 
         # Devuelve una colección(tupla) con los IDs de todas las filas cargadas
         children = self.grid_clientes.get_children()
@@ -368,11 +351,11 @@ class ClaseClientes(tk.Frame):
         # ------------------------------------------------------------------------------
         """ prev(self.selected) → intenta traer el item anterior Si no existe(por ejemplo, estás en el
         primero) → devuelve "" Entonces entra el or → usa self.selected. """
-        self.selected = self.grid_clientes.focus()
+        self.selected     = self.grid_clientes.focus()
         self.selected_ant = self.grid_clientes.prev(self.selected) or self.selected
         # guardo en clave el Id pero de la Tabla (no son el mismo que el grid)
-        self.clave = self.grid_clientes.item(self.selected, 'text')
-        self.clave_ant = self.grid_clientes.item(self.selected_ant, 'text')
+        self.clave        = self.grid_clientes.item(self.selected, 'text')
+        self.clave_ant    = self.grid_clientes.item(self.selected_ant, 'text')
         # ------------------------------------------------------------------------------
 
         if self.clave == "":
@@ -389,16 +372,16 @@ class ClaseClientes(tk.Frame):
             return
 
         try:
-            # Elimino el cliente -----------------------
+            # Elimino el cliente ------------------------------------
             self.varClientes.eliminar_clientes(self.clave)
-            # ------------------------------------------
-        except Exception:
+            # -------------------------------------------------------
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.varFuncion_new.mostrar_error()
             return
         else:
-            self.status.set_status("🗑 Cliente eliminado correctamente", "ok")
+            self.status.set_status("🗑 Registro eliminado correctamente", "ok")
 
-        # recarga del Grid
         self.llena_grilla(self.clave_ant)
 
     def fguardar(self):
@@ -412,7 +395,6 @@ class ClaseClientes(tk.Frame):
             self.status.set_status("❌ El Codigo ya existe, error al guardar", "error")
             self.entry_apellido.focus()
             return
-
         # VALIDACION QUE EXISTA APELLIDO y NOMBRE
         if self.sv_apellido.get() == "":
             self.status.set_status("⚠ Ingrese apellido/s", "warn")
@@ -443,27 +425,6 @@ class ClaseClientes(tk.Frame):
         fecha_aux = datetime.strptime(self.sv_fecha_ingreso.get(), '%d/%m/%Y')
         dic_clientes = self.get_clientes_dic(fecha_aux)    # funcion que genera el diccionario
 
-        """
-        # clientes = {
-        #     "Id": self.clave,
-        #     "codigo": self.sv_codigo.get(),
-        #     "apellido": self.sv_apellido.get(),
-        #     "nombres": self.sv_nombres.get(),
-        #     "direccion": self.sv_direccion.get(),
-        #     "localidad": self.sv_localidad.get(),
-        #     "provincia": self.sv_provincia.get(),
-        #     "postal": self.sv_postal.get(),
-        #     "telef_pers": self.sv_telef_pers.get(),
-        #     "telef_trab": self.sv_telef_trab.get(),
-        #     "mail": self.sv_mail.get(),
-        #     "fecha_ingreso": self.sv_fecha_ingreso.get(),
-        #     "sit_fis": self.sv_sit_fis.get(),
-        #     "cuit": self.sv_cuit.get(),
-        #     "observaciones": self.sv_observaciones.get(),
-        #     "apenombre": self.sv_apellido.get() + ' ' + self.sv_nombres.get()
-        # }
-        """
-
         #-----------------------------------------------------------------
         # GUARDADO DATOS Y EVALUACION DEL PROCEDIMIENTO
         #-----------------------------------------------------------------
@@ -478,7 +439,8 @@ class ClaseClientes(tk.Frame):
         except ValueError as e:
             messagebox.showwarning("Datos inválidos en Insertar/Modificar clientes", str(e))
             return
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.varFuncion_new.mostrar_error()
             return
         else:
@@ -542,6 +504,7 @@ class ClaseClientes(tk.Frame):
         self.llena_grilla(self.clave)
 
     def forden_apellido(self):
+
         # guardo los focos e items donde estamos posicionados en el TV
         self.selected = self.grid_clientes.focus()
         self.clave = self.grid_clientes.item(self.selected, 'text')
@@ -567,7 +530,8 @@ class ClaseClientes(tk.Frame):
         # Retorno las coincidencias
         try:
             datos = self.varClientes.buscar_clientes(se_busca)
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.varFuncion_new.mostrar_error()
             return
 
@@ -590,6 +554,7 @@ class ClaseClientes(tk.Frame):
             self.grid_clientes.see(primero)
 
     def fshowall(self):
+
         self.selected = self.grid_clientes.focus()
         self.clave = self.grid_clientes.item(self.selected, 'text')
         self.filtro_activo = "ORDER BY apellido, nombres ASC"
@@ -700,6 +665,7 @@ class ClaseClientes(tk.Frame):
             widg.grid_configure(padx=6, pady=3, sticky='nsew')
 
     def cuadro_boton_salida(self):
+
         self.photo3 = Image.open('salida.png')
         self.photo3 = self.photo3.resize((50, 50), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
         self.photo3 = ImageTk.PhotoImage(self.photo3)
@@ -707,6 +673,7 @@ class ClaseClientes(tk.Frame):
         self.btnSalir.grid(row=0, column=0, padx=5, pady=3, sticky="nsew")
 
     def cuadro_cartel_clientes(self):
+
         fff = tkfont.Font(family="Arial", size=9, weight="bold")
         self.lbl_cant_clientes = tk.Label(self.botones4, text="Clientes", font=fff)
         self.lbl_cant_clientes1= tk.Label(self.botones4, textvariable=self.sv_cant_clientes, font=fff)
@@ -714,6 +681,7 @@ class ClaseClientes(tk.Frame):
         self.lbl_cant_clientes1.grid(row=1, column=0, padx=5, pady=3, columnspan=2, sticky='nsew')
 
     def cuadro_entrys(self):
+
         # CODIGO
         self.lbl_codigo = tk.Label(self.sector_entry, text="Codigo: ")
         self.lbl_codigo.grid(row=0, column=0, padx=10, pady=3, sticky="w")
@@ -830,9 +798,7 @@ class ClaseClientes(tk.Frame):
         ToolTip(self.entry_buscar_cliente, msg="Escriba el nombre o apellido del cliente buscado")
 
         # BOTON BUSCAR UN CLIENTE
- #       img = Image.open("filtrar.png").resize((18, 18))
         icono = self.cargar_icono("filtrar.png")
-#        icono = ImageTk.PhotoImage(img)
         self.btn_buscar_cliente = tk.Button(self.frame_buscar, text=" Buscar", command=self.fbuscar_en_tabla,
                                          bg="CadetBlue", fg="white", width=30, compound="left")
         self.btn_buscar_cliente.image = icono
@@ -866,32 +832,32 @@ class ClaseClientes(tk.Frame):
 
         self.grid_clientes.bind("<Double-Button-1>", self.doble_click_grid)
 
-        self.grid_clientes.column("#0", width=60, anchor="center")
-        self.grid_clientes.column("col1", width=60, anchor="center")
-        self.grid_clientes.column("col2", width=180, anchor="w")
-        self.grid_clientes.column("col3", width=220, anchor="w")
-        self.grid_clientes.column("col4", width=220, anchor="w")
-        self.grid_clientes.column("col5", width=120, anchor="center")
-        self.grid_clientes.column("col6", width=90, anchor="center")
-        self.grid_clientes.column("col7", width=60, anchor="center")
-        self.grid_clientes.column("col8", width=200, anchor="center")
-        self.grid_clientes.column("col9", width=200, anchor="center")
+        self.grid_clientes.column("#0",    width=60,  anchor="center")
+        self.grid_clientes.column("col1",  width=60,  anchor="center")
+        self.grid_clientes.column("col2",  width=180, anchor="w")
+        self.grid_clientes.column("col3",  width=220, anchor="w")
+        self.grid_clientes.column("col4",  width=220, anchor="w")
+        self.grid_clientes.column("col5",  width=120, anchor="center")
+        self.grid_clientes.column("col6",  width=90,  anchor="center")
+        self.grid_clientes.column("col7",  width=60,  anchor="center")
+        self.grid_clientes.column("col8",  width=200, anchor="center")
+        self.grid_clientes.column("col9",  width=200, anchor="center")
         self.grid_clientes.column("col10", width=200, anchor="center")
         self.grid_clientes.column("col11", width=150, anchor="center")
         self.grid_clientes.column("col12", width=100, anchor="center")
         self.grid_clientes.column("col13", width=100, anchor="center")
         self.grid_clientes.column("col14", width=200, anchor="center")
 
-        self.grid_clientes.heading("#0", text="Id", anchor="center")
-        self.grid_clientes.heading("col1", text="Codigo", anchor="center")
-        self.grid_clientes.heading("col2", text="Apellido", anchor="center")
-        self.grid_clientes.heading("col3", text="Nombres", anchor="center")
-        self.grid_clientes.heading("col4", text="Direccion", anchor="center")
-        self.grid_clientes.heading("col5", text="Localidad", anchor="center")
-        self.grid_clientes.heading("col6", text="Provincia", anchor="center")
-        self.grid_clientes.heading("col7", text="Postal", anchor="center")
-        self.grid_clientes.heading("col8", text="Telf.Personal", anchor="center")
-        self.grid_clientes.heading("col9", text="Telf.Trabajo", anchor="center")
+        self.grid_clientes.heading("#0",    text="Id", anchor="center")
+        self.grid_clientes.heading("col1",  text="Codigo", anchor="center")
+        self.grid_clientes.heading("col2",  text="Apellido", anchor="center")
+        self.grid_clientes.heading("col3",  text="Nombres", anchor="center")
+        self.grid_clientes.heading("col4",  text="Direccion", anchor="center")
+        self.grid_clientes.heading("col5",  text="Localidad", anchor="center")
+        self.grid_clientes.heading("col6",  text="Provincia", anchor="center")
+        self.grid_clientes.heading("col7",  text="Postal", anchor="center")
+        self.grid_clientes.heading("col8",  text="Telf.Personal", anchor="center")
+        self.grid_clientes.heading("col9",  text="Telf.Trabajo", anchor="center")
         self.grid_clientes.heading("col10", text="E-mail", anchor="center")
         self.grid_clientes.heading("col11", text="Sit.Fiscal", anchor="center")
         self.grid_clientes.heading("col12", text="CUIT", anchor="center")
@@ -936,21 +902,34 @@ class ClaseClientes(tk.Frame):
         self.botones1 = tk.LabelFrame(self.barra_botones, bd=5, relief="ridge")
         self.cuadro_botones_grid()
         self.botones1.pack(side="top", padx=3, pady=3, fill="y")
-
         # BOTONES ORDEN - TOPE Y FIN DE ARCHIVO - BOTONES 2
         self.botones2 = tk.LabelFrame(self.barra_botones, bd=5, relief="ridge")
         self.cuadro_botones_movimiento()
         self.botones2.pack(side="top", padx=3, pady=3, fill="y")
-
         # BOTONES SALIDA - BOTONES 3
         self.botones3 = tk.LabelFrame(self.barra_botones)
         self.cuadro_boton_salida()
         self.botones3.pack(side="top", padx=3, pady=3, fill="y")
-
         # BOTONES ROTULO CANT DE CLIENTES - BOTONES 4
         self.botones4 = tk.LabelFrame(self.barra_botones)
         self.cuadro_cartel_clientes()
         self.botones4.pack(side="top", padx=3, pady=3, fill="y")
+
+    def pantalla(self):
+
+        self.master.resizable(0, 0)
+        """ Actualizamos el contenido de la ventana (la ventana pude crecer si se le agrega
+            mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer.
+            Obtenemos el alto y  ancho de la pantalla """
+        ancho = self.master.winfo_screenwidth()
+        alto = self.master.winfo_screenheight()
+        # Asigno fijo un ancho y un alto
+        ancho_ventana = 980
+        alto_ventana = 630
+        # X e Y son las coordenadas para el posicionamiento del vertice superior izquierdo
+        x = int((ancho - ancho_ventana) / 2)
+        y = int((alto - alto_ventana) / 2)
+        self.master.geometry(f"{ancho_ventana}x{alto_ventana}+{x}+{y}")
 
     @staticmethod
     def cargar_icono(path, size=(18,18)):
@@ -960,22 +939,22 @@ class ClaseClientes(tk.Frame):
     def get_clientes_dic(self, fecha_aux):
 
         return {
-            "Id": self.clave,
-            "codigo": self.sv_codigo.get(),
-            "apellido": self.sv_apellido.get(),
-            "nombres": self.sv_nombres.get(),
-            "direccion": self.sv_direccion.get(),
-            "localidad": self.sv_localidad.get(),
-            "provincia": self.sv_provincia.get(),
-            "postal": self.sv_postal.get(),
+            "Id":         self.clave,
+            "codigo":     self.sv_codigo.get(),
+            "apellido":   self.sv_apellido.get(),
+            "nombres":    self.sv_nombres.get(),
+            "direccion":  self.sv_direccion.get(),
+            "localidad":  self.sv_localidad.get(),
+            "provincia":  self.sv_provincia.get(),
+            "postal":     self.sv_postal.get(),
             "telef_pers": self.sv_telef_pers.get(),
             "telef_trab": self.sv_telef_trab.get(),
-            "mail": self.sv_mail.get(),
+            "mail":       self.sv_mail.get(),
             "fecha_ingreso": fecha_aux,
-            "sit_fis": self.sv_sit_fis.get(),
-            "cuit": self.sv_cuit.get(),
+            "sit_fis":    self.sv_sit_fis.get(),
+            "cuit":       self.sv_cuit.get(),
             "observaciones": self.sv_observaciones.get(),
-            "apenombre": self.sv_apellido.get() + ' ' + self.sv_nombres.get()
+            "apenombre":  self.sv_apellido.get() + ' ' + self.sv_nombres.get()
         }
 
 

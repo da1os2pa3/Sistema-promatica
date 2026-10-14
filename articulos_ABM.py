@@ -26,27 +26,33 @@ class DatosArtic:
         # cursor.fetchone()El método devuelve un solo registro o Ninguno si no hay más filas disponibles.
         """
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql = "SELECT * FROM articulos "
             if orden:
-                sql += orden
+                sql += " "+orden
             cur.execute(sql)
             return cur.fetchall()
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def insertar_articulo(self, articulo):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql = """
-                  INSERT INTO articulos (codigo, descripcion, marca, rubro, codbar, costodolar, iva, \
-                                        impint, porcgan, observa, ultact, costohist, imagen) \
-                  VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) \
+                  INSERT INTO articulos (codigo, descripcion, marca, rubro, codbar, costodolar, iva, impint, porcgan, 
+                                         observa, ultact, costohist, imagen) 
+                  VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) 
                   """
 
             valores = (
@@ -74,14 +80,19 @@ class DatosArtic:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def modificar_articulo(self, articulo):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
+
             sql = ('''UPDATE articulos 
                 SET codigo=%s, 
                     descripcion=%s,
@@ -123,14 +134,18 @@ class DatosArtic:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def eliminar_articulo(self, Id):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql = '''DELETE FROM articulos WHERE Id = {}'''.format(Id)
             cur.execute(sql)
             n = cur.rowcount
@@ -140,49 +155,57 @@ class DatosArtic:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def consultar_informa(self):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             # Devuelve el registro de la tabla Informa
             cur.execute("SELECT * FROM informa WHERE 1")
             datos_inf = cur.fetchall()
             return datos_inf
-        except Exception:
-            raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def buscar_entabla(self, argumento):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             cur.execute("SELECT * FROM articulos " + argumento)
             datos = cur.fetchall()
             return datos
-        except Exception:
-            raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def combo_input(self, xcampo, xtabla, xorden):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
             """ Llenar un combobox con datos de una tabla. Paso el campo, la tabla y el orden de los datos """
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             cur.execute("SELECT " + xcampo + " FROM " + xtabla + " ORDER BY " + xorden)
             result = cur.fetchall()
             return result
-        except Exception:
-            raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()

@@ -298,21 +298,12 @@ class ClaseConfiguracion(tk.Frame):
         except ValueError as e:
             messagebox.showwarning("Datos inválidos en Insertar/Modificar", str(e))
             return
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.varFuncion_new.mostrar_error()
             return
         else:
             self.status.set_status("✔ Registro guardado correctamente", "ok")
-
-            # self.clave, self.sv_empresa.get(),
-            # self.sv_direccion.get(), self.sv_localidad.get(), self.sv_provincia.get(),
-            # self.sv_postal.get(), self.sv_correo.get(), self.sv_telef1.get(),
-            # self.sv_telef2.get(), self.sv_titular.get(), self.sv_contacto.get(),
-            # self.sv_sit_fis.get(), self.sv_cuit.get(), self.sv_rentas.get(),
-            # self.sv_municipal.get(), self.sv_tasa_iva1.get(), self.sv_tasa_iva2.get(),
-            # self.sv_tasa_iva3.get(), self.sv_tasa_impint.get(), self.sv_tasa_reten.get(),
-            # self.sv_tasa_percep.get(), self.sv_dolar1.get(), self.sv_dolar2.get(),
-            # self.sv_ultimo_saldo.get())
 
         self.llena_grilla(id_ref)
         self.limpiar_text()

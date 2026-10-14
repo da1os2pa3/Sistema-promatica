@@ -1,19 +1,10 @@
 from datetime import datetime
-from tkinter import messagebox
 import mysql.connector
-from mysql.connector import Error
-
 
 class ClaseInfTecnicosABM:
 
     def __init__(self, pantalla):
-
         self.master = pantalla
-
-        try:
-            self.cnn = mysql.connector.connect(host="localhost", user="root", passwd="", database="sist_prom")
-        except Error as ex:
-            print("Error de conexion: {0}".format(ex))
 
     @staticmethod
     def get_connection():
@@ -24,91 +15,57 @@ class ClaseInfTecnicosABM:
             passwd="",
             database="sist_prom")
 
-    # def aplicar_filtro(self, orden=None):
-    #
-    #     cnn = self.get_connection()
-    #     cur = cnn.cursor(buffered=True)
-    #     try:
-    #         sql = "SELECT * FROM inf_tecnicos"
-    #         if orden:
-    #             sql += " " + orden
-    #         cur.execute(sql)
-    #         return cur.fetchall()
-    #     finally:
-    #         cur.close()
-    #         cnn.close()
-    #
-    #     # cur = self.cnn.cursor()
-    #     #
-    #     # cur.execute("SELECT * FROM " + tofil)   # incluye el WHERE
-    #     # datos = cur.fetchall()
-    #     #
-    #     # self.cnn.commit()
-    #     # cur.close()
-    #     # print("cambio de filtro exitoso")
-    #     # return
-
     def consultar_inf_tecnicos(self, orden=None):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql = "SELECT * FROM inf_tecnicos"
             if orden:
                 sql += " " + orden
             cur.execute(sql)
             return cur.fetchall()
         finally:
-            cur.close()
-            cnn.close()
-
-        # try:
-        #
-        #     cur = self.cnn.cursor()
-        #     cur.execute("SELECT * FROM " + tofil)   # incluye el WHERE
-        #     datos = cur.fetchall()
-        #     self.cnn.commit()
-        #     cur.close()
-        #     return datos
-        #
-        # except:
-        #
-        #     messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=Consultar-", parent=self.master)
-        #     exit()
-
-
-
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def consultar_edicion(self, tofil):
         # lo usa la parte de edicion del programa para mandar solo el registro solicitado
+
+        cnn = None
+        cur = None
         try:
-
-            cur = self.cnn.cursor()
-
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             cur.execute("SELECT * FROM " + tofil)   # incluye el WHERE
             datos = cur.fetchone()
-
-            self.cnn.commit()
-            cur.close()
-            #messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=Consultar-", parent=self.master)
-
             return datos
+        finally:
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
-        except:
-
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=Consultar-", parent=self.master)
-            exit()
-
-    def traer_un_registro(self, Id):
-
-        cur = self.cnn.cursor()
-        sql = '''SELECT * FROM orden_repara WHERE Id = {}'''.format(Id)
-        cur.execute(sql)
-        datos_inf = cur.fetchone()
-        n = cur.rowcount                       # ver esto porque no lo uso en la modif
-        self.cnn.commit()
-        cur.close()
-        return datos_inf
+    # def traer_un_registro(self, Id):
+    #
+    #     cnn = None
+    #     cur = None
+    #     try:
+    #         cnn = self.get_connection()
+    #         cur = cnn.cursor(buffered=True)
+    #         sql = '''SELECT * FROM orden_repara WHERE Id = {}'''.format(Id)
+    #         cur.execute(sql)
+    #         datos_inf = cur.fetchone()
+    #         return datos_inf
+    #     finally:
+    #         if cur is not None:
+    #             cur.close()
+    #         if cnn is not None:
+    #             cnn.close()
 
     def insertar_informe(self, fecha, usuario, tipodoc, numdoc, equipo, modelo, serie, diagnostico, provocado, informe):
 
@@ -116,18 +73,27 @@ class ClaseInfTecnicosABM:
         fecha_paso = fecha
         fecha_ingreso = datetime.strptime(fecha_paso, '%d/%m/%Y')
 
-        cur = self.cnn.cursor()
-        sql = '''INSERT INTO inf_tecnicos (it_fecha, it_usuario, it_dni, it_numdoc, it_equipo, it_modelo, it_serie, 
-        it_diagnostico, it_provocado, it_informe)
-        VALUES('{}', '{}', '{}', '{}', '{}','{}','{}', '{}', '{}', '{}')'''.format(fecha_ingreso, usuario, tipodoc,
-                                                                       numdoc, equipo, modelo, serie, diagnostico,
-                                                                       provocado, informe)
+        cnn = None
+        cur = None
+        try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
 
-        cur.execute(sql)
-        n = cur.rowcount
-        self.cnn.commit()
-        cur.close()
-        return n
+            sql = '''INSERT INTO inf_tecnicos (it_fecha, it_usuario, it_dni, it_numdoc, it_equipo, it_modelo, it_serie, 
+            it_diagnostico, it_provocado, it_informe)
+            VALUES('{}', '{}', '{}', '{}', '{}','{}','{}', '{}', '{}', '{}')'''.format(fecha_ingreso, usuario, tipodoc,
+                                                                           numdoc, equipo, modelo, serie, diagnostico,
+                                                                           provocado, informe)
+
+            cur.execute(sql)
+            n = cur.rowcount
+            cnn.commit()
+            return n
+        finally:
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def modificar_informe(self, Id, fecha, usuario, tipodoc, numdoc, equipo, modelo, serie, diagnostico, provocado,
                           informe):
@@ -136,34 +102,53 @@ class ClaseInfTecnicosABM:
         fecha_paso = fecha
         fecha_ingreso = datetime.strptime(fecha_paso, '%d/%m/%Y')
 
-        cur = self.cnn.cursor()
-        sql = '''UPDATE inf_tecnicos SET it_fecha='{}', it_usuario='{}', it_dni='{}', it_numdoc='{}', it_equipo='{}',
-        it_modelo='{}', it_serie='{}', it_diagnostico='{}', it_provocado='{}', it_informe='{}' 
-                            WHERE Id={}'''.format(fecha_ingreso, usuario, tipodoc, numdoc, equipo, modelo, serie,
-                                           diagnostico, provocado, informe, Id)
+        cnn = None
+        cur = None
+        try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
 
-        cur.execute(sql)
-        n = cur.rowcount
-        self.cnn.commit()
-        cur.close()
-        return n
+            sql = '''UPDATE inf_tecnicos SET it_fecha='{}', it_usuario='{}', it_dni='{}', it_numdoc='{}', it_equipo='{}',
+            it_modelo='{}', it_serie='{}', it_diagnostico='{}', it_provocado='{}', it_informe='{}' 
+                                WHERE Id={}'''.format(fecha_ingreso, usuario, tipodoc, numdoc, equipo, modelo, serie,
+                                               diagnostico, provocado, informe, Id)
+
+            cur.execute(sql)
+            n = cur.rowcount
+            cnn.commit()
+            return n
+        finally:
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def eliminar_informe(self, Id):
 
-        cur = self.cnn.cursor()
-        sql = '''DELETE FROM inf_tecnicos WHERE Id = {}'''.format(Id)
-        cur.execute(sql)
-        n = cur.rowcount
-        self.cnn.commit()
-        cur.close()
-        return n
+        cnn = None
+        cur = None
+        try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
+            sql = '''DELETE FROM inf_tecnicos WHERE Id = {}'''.format(Id)
+            cur.execute(sql)
+            n = cur.rowcount
+            cnn.commit()
+            return n
+        finally:
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def traer_ultimo(self, xparametro):
-
         # Trae el último código de cliente en la tabla para proponer el nuevo número en alta
 
+        cnn = None
+        cur = None
         try:
-            cur = self.cnn.cursor()
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             cur.execute("SELECT * FROM inf_tecnicos ORDER BY id ASC")
             datos = cur.fetchall()
             aux = ""
@@ -172,23 +157,25 @@ class ClaseInfTecnicosABM:
                     aux = str(row[1]) + "\n" # retorna el codigo
                 else:
                     aux = str(row[0]) + "\n" # retorna el Id
-            self.cnn.commit()
-            cur.close()
             return aux
-        except:
-            messagebox.showerror("Error inesperado", "Contacte asistencia-Metodo=traer ultimo",
-                                 parent=self.master)
-            exit()
+        finally:
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def buscar_entabla(self, argumento):
 
-        cur = self.cnn.cursor()
-        if len(argumento) <= 0:
-            return
-
-        cur.execute("SELECT * FROM " + argumento)
-
-        datos = cur.fetchall()
-        self.cnn.commit()
-        cur.close()
-        return datos
+        cnn = None
+        cur = None
+        try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
+            cur.execute("SELECT * FROM " + argumento)
+            datos = cur.fetchall()
+            return datos
+        finally:
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()

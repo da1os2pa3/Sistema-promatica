@@ -1,18 +1,13 @@
 import mysql.connector
-from mysql.connector import Error
 from datetime import datetime
 
-class datosCotiz:
+class DatosCotiz:
 
     def __init__(self, pantalla):
-        try:
-            self.cnn = mysql.connector.connect(host="localhost", user="root",
-            passwd="", database="sist_prom")
-            self.master = pantalla
-        except Error as ex:
-            print("Error de conexion: {0}".format(ex))
+        self.master = pantalla
 
-    def get_connection(self):
+    @staticmethod
+    def get_connection():
         return mysql.connector.connect(
             host="localhost",
             user="root",
@@ -21,9 +16,12 @@ class datosCotiz:
 
     def consultar_tablas(self, tabla, orden=""):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
+        sql=""
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             if tabla == "aux":
                 sql = "SELECT * FROM aux_ventas"
             if tabla == "resu":
@@ -35,20 +33,26 @@ class datosCotiz:
             cur.execute(sql)
             return cur.fetchall()
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def consultar_informa(self):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             cur.execute("SELECT * FROM informa WHERE 1")
             datos_inf = cur.fetchall()
             return datos_inf
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     # ----------------------------------------------------------------
     # CRUD
@@ -57,48 +61,54 @@ class datosCotiz:
     # Inserta los datos de un nuevo articulo en la tabla aux_ventas para ser vistos en el GRID auxiliar
     def insertar_auxventa(self, dic_auxventas):
 
-      cnn = self.get_connection()
-      cur = cnn.cursor(buffered=True)
-      try:
-          sql = """
-                INSERT INTO aux_ventas (av_codigo_art, av_desc_art, av_marca_art, av_cantidad, av_tot_uni_conta, 
-                                        av_tot_uni_lista, av_neto_unidad, av_impor_iva21, av_impor_iva105, 
-                                        av_impor_ganancia, av_costo_dolar, av_costo_bruto, av_tasaiva)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                """
-          valores = (
-              dic_auxventas["av_codigo_art"],
-              dic_auxventas["av_desc_art"],
-              dic_auxventas["av_marca_art"],
-              dic_auxventas["av_cantidad"],
-              dic_auxventas["av_tot_uni_conta"],
-              dic_auxventas["av_tot_uni_lista"],
-              dic_auxventas["av_neto_unidad"],
-              dic_auxventas["av_impor_iva21"],
-              dic_auxventas["av_impor_iva105"],
-              dic_auxventas["av_impor_ganancia"],
-              dic_auxventas["av_costo_dolar"],
-              dic_auxventas["av_costo_bruto"],
-              dic_auxventas["av_tasaiva"]
-          )
+        cnn = None
+        cur = None
+        try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
+            sql = """
+                  INSERT INTO aux_ventas (av_codigo_art, av_desc_art, av_marca_art, av_cantidad, av_tot_uni_conta, 
+                                          av_tot_uni_lista, av_neto_unidad, av_impor_iva21, av_impor_iva105, 
+                                          av_impor_ganancia, av_costo_dolar, av_costo_bruto, av_tasaiva)
+                  VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                  """
+            valores = (
+                dic_auxventas["av_codigo_art"],
+                dic_auxventas["av_desc_art"],
+                dic_auxventas["av_marca_art"],
+                dic_auxventas["av_cantidad"],
+                dic_auxventas["av_tot_uni_conta"],
+                dic_auxventas["av_tot_uni_lista"],
+                dic_auxventas["av_neto_unidad"],
+                dic_auxventas["av_impor_iva21"],
+                dic_auxventas["av_impor_iva105"],
+                dic_auxventas["av_impor_ganancia"],
+                dic_auxventas["av_costo_dolar"],
+                dic_auxventas["av_costo_bruto"],
+                dic_auxventas["av_tasaiva"]
+            )
 
-          cur.execute(sql, valores)
-          cnn.commit()
-          # devolvemos el Id generado del nuevo cliente
-          id_nuevo = cur.lastrowid
-          return id_nuevo
-      except Exception as e:
-          cnn.rollback()
-          raise
-      finally:
-          cur.close()
-          cnn.close()
+            cur.execute(sql, valores)
+            cnn.commit()
+            # devolvemos el Id generado del nuevo cliente
+            id_nuevo = cur.lastrowid
+            return id_nuevo
+        except Exception:
+            cnn.rollback()
+            raise
+        finally:
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def insertar_resuventa(self, resuventa):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             fecha = datetime.strptime(resuventa["rv_fecha"], '%d/%m/%Y')
             sql = """
                   INSERT INTO resu_ventas(rv_numero, rv_fecha, rv_cod_cliente, rv_cliente, rv_sitfis, rv_cuit, 
@@ -123,21 +133,23 @@ class datosCotiz:
             # devolvemos el Id generado del nuevo cliente
             id_nuevo = cur.lastrowid
             return id_nuevo
-        except Exception as e:
+        except Exception:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     # Inserta los articulos vendidos en la tabla de detalle de las ventas realizadas
     def insertar_detaventa(self, detaventa):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
-        # aa = 0
-        # if aa == 0:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             #fecha_ingreso = datetime.strptime(resuventa["rv_fecha"], '%d/%m/%Y')
             sql = """
                   INSERT INTO deta_ventas(dv_numero, dv_codigo_art, dv_desc_art, dv_marca_art, dv_cantidad, 
@@ -168,22 +180,26 @@ class datosCotiz:
             # devolvemos el Id generado del nuevo cliente
             id_nuevo = cur.lastrowid
             return id_nuevo
-        except Exception as e:
+        except Exception:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def modificar_resuventa(self, dic_resuventas):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
+
             # Convierto fecha nuevamente de String a Datetime para guardar en SQL
             fecha_venta = datetime.strptime(dic_resuventas["rv_fecha"], '%d/%m/%Y')
 
-            # genero instruccion sql
             sql = """
                   UPDATE resu_ventas
                   SET rv_numero=%s, rv_fecha=%s, rv_cod_cliente=%s, rv_cliente=%s, rv_sitfis=%s, rv_cuit=%s, 
@@ -209,59 +225,68 @@ class datosCotiz:
             cur.execute(sql, valores)
             cnn.commit()
             return
-        except Exception as e:
+        except Exception:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def modificar_auxventa(self, dic_auxventas):
 
-      cnn = self.get_connection()
-      cur = cnn.cursor(buffered=True)
-      try:
-          sql = """
-                UPDATE aux_ventas SET av_codigo_art=%s, av_desc_art=%s, av_marca_art=%s, av_cantidad=%s, 
-                                      av_tot_uni_conta=%s, av_tot_uni_lista=%s, av_neto_unidad=%s, av_impor_iva21=%s, 
-                                      av_impor_iva105=%s, av_impor_ganancia=%s, av_costo_dolar=%s, av_costo_bruto=%s, 
-                                      av_tasaiva=%s
-                WHERE Id = %s 
-                """
-          valores = (
-              dic_auxventas["av_codigo_art"],
-              dic_auxventas["av_desc_art"],
-              dic_auxventas["av_marca_art"],
-              dic_auxventas["av_cantidad"],
-              dic_auxventas["av_tot_uni_conta"],
-              dic_auxventas["av_tot_uni_lista"],
-              dic_auxventas["av_neto_unidad"],
-              dic_auxventas["av_impor_iva21"],
-              dic_auxventas["av_impor_iva105"],
-              dic_auxventas["av_impor_ganancia"],
-              dic_auxventas["av_costo_dolar"],
-              dic_auxventas["av_costo_bruto"],
-              dic_auxventas["av_tasaiva"],
-              dic_auxventas["Id"]
-          )
+        cnn = None
+        cur = None
+        try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
 
-          cur.execute(sql, valores)
-          cnn.commit()
-          # devolvemos el Id generado del nuevo cliente
-          id_nuevo = cur.lastrowid
-          return id_nuevo
-      except Exception as e:
-          cnn.rollback()
-          raise
-      finally:
-          cur.close()
-          cnn.close()
+            sql = """
+                  UPDATE aux_ventas SET av_codigo_art=%s, av_desc_art=%s, av_marca_art=%s, av_cantidad=%s, 
+                                        av_tot_uni_conta=%s, av_tot_uni_lista=%s, av_neto_unidad=%s, av_impor_iva21=%s, 
+                                        av_impor_iva105=%s, av_impor_ganancia=%s, av_costo_dolar=%s, av_costo_bruto=%s, 
+                                        av_tasaiva=%s
+                  WHERE Id = %s 
+                  """
+            valores = (
+                dic_auxventas["av_codigo_art"],
+                dic_auxventas["av_desc_art"],
+                dic_auxventas["av_marca_art"],
+                dic_auxventas["av_cantidad"],
+                dic_auxventas["av_tot_uni_conta"],
+                dic_auxventas["av_tot_uni_lista"],
+                dic_auxventas["av_neto_unidad"],
+                dic_auxventas["av_impor_iva21"],
+                dic_auxventas["av_impor_iva105"],
+                dic_auxventas["av_impor_ganancia"],
+                dic_auxventas["av_costo_dolar"],
+                dic_auxventas["av_costo_bruto"],
+                dic_auxventas["av_tasaiva"],
+                dic_auxventas["Id"]
+            )
+
+            cur.execute(sql, valores)
+            cnn.commit()
+            # devolvemos el Id generado del nuevo cliente
+            id_nuevo = cur.lastrowid
+            return id_nuevo
+        except Exception:
+            cnn.rollback()
+            raise
+        finally:
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def eliminar_auxventa(self, Id):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql = "DELETE FROM aux_ventas WHERE Id = %s"
             # 1 parámetro → (valor,)
             # varios → (v1, v2, v3)
@@ -269,19 +294,24 @@ class datosCotiz:
             n = cur.rowcount
             cnn.commit()
             return n
-        except Exception as e:
+        except Exception:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     # esta elimina el ancabezado de la venta por el Id que le pasemos del registro
     def eliminar_resuventa(self, Id):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
+
             sql = "DELETE FROM resu_ventas WHERE Id = %s"
             # 1 parámetro → (valor,)
             # varios → (v1, v2, v3)
@@ -289,19 +319,23 @@ class datosCotiz:
             n = cur.rowcount
             cnn.commit()
             return n
-        except Exception as e:
+        except Exception:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     # esta elimina el ancabezado de la venta por numero de venta
     def eliminar_resuventa2(self, nroventa):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql = "DELETE FROM resu_ventas WHERE rv_numero = %s"
             #sql = "DELETE FROM resu_ventas WHERE rv_numero = {}'''.format(nroventa)
             # 1 parámetro → (valor,)
@@ -310,49 +344,58 @@ class datosCotiz:
             n = cur.rowcount
             cnn.commit()
             return n
-        except Exception as e:
+        except Exception:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def eliminar_detaventa(self, nroventa):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql = "DELETE FROM deta_ventas WHERE dv_numero = %s"
             #sql = "DELETE FROM resu_ventas WHERE rv_numero = {}'''.format(nroventa)
             # 1 parámetro → (valor,)
             # varios → (v1, v2, v3)
             cur.execute(sql, (nroventa,))
             cnn.commit()
-        except Exception as e:
+        except Exception:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     # ----------------------------------------------------------------
     # VACIADOS
     # ----------------------------------------------------------------
 
-    def vaciar_auxventas(self, tofil):
+    def vaciar_auxventas(self, _tofil):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             cur.execute("DELETE FROM aux_ventas")
             cnn.commit()
-        except Exception as e:
+        except Exception:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
-
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     # ----------------------------------------------------------------
     # BUSQUEDAS
@@ -361,9 +404,12 @@ class datosCotiz:
     # busca en tabla resu_venta
     def buscar_entabla(self, texto):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
+
             sql = """
                   SELECT * FROM resu_ventas WHERE rv_cliente LIKE %s
                   """
@@ -376,8 +422,10 @@ class datosCotiz:
         except Exception:
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     # ----------------------------------------------------------------
     # TRAER DATOS
@@ -387,9 +435,11 @@ class datosCotiz:
 
         """ Devuelve el Id. del ultimo registro de la tabla (primer valor autocompletado por la tabla) """
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             cur.execute("SELECT * FROM resu_ventas ORDER BY rv_numero ASC")
             datos = cur.fetchall()
             aux = ""
@@ -404,53 +454,66 @@ class datosCotiz:
         except Exception:
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def traer_resu_venta(self,nroventa):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             cur.execute("SELECT * FROM resu_ventas WHERE rv_numero = " + nroventa)
             datos = cur.fetchone()
             return datos
         except Exception:
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def traer_deta_venta(self,nroventa):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             cur.execute("SELECT * FROM deta_ventas WHERE dv_numero = " + nroventa)
             datos = cur.fetchall()
             return datos
         except Exception:
             raise
         finally:
-            cur.close()
-            cnn.close()
-
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     # ----------------------------------------------------------------
     # OTRAS
     # ----------------------------------------------------------------
 
-    # Llenar un combobox con datos xe una tabla
-    def combo_input(self, xcampo, xtabla, xorden):
-
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
-        try:
-            cur.execute("SELECT " + xcampo + " FROM " + xtabla + " ORDER BY " + xorden)
-            result = cur.fetchall()
-            return result
-        except Exception:
-            raise
-        finally:
-            cur.close()
-            cnn.close()
+    # # Llenar un combobox con datos xe una tabla
+    # def combo_input(self, xcampo, xtabla, xorden):
+    #
+    #     cnn = None
+    #     cur = None
+    #     try:
+    #         cnn = self.get_connection()
+    #         cur = cnn.cursor(buffered=True)
+    #         cur.execute("SELECT " + xcampo + " FROM " + xtabla + " ORDER BY " + xorden)
+    #         result = cur.fetchall()
+    #         return result
+    #     except Exception:
+    #         raise
+    #     finally:
+    #         if cur is not None:
+    #             cur.close()
+    #         if cnn is not None:
+    #             cnn.close()

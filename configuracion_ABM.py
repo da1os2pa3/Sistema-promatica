@@ -24,24 +24,30 @@ class DatosConfig:
         """👉 buffered=True = MySQL:manda TODO el resultado de una, el cursor lo guarda en memoria.
         ✔ Después podés hacer lo que quieras: otro execute, cerrar cursor, no consumir todo
         SIN errores"""
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql = "SELECT * FROM informa"
             if orden:
                 sql += " " + orden
             cur.execute(sql)
             return cur.fetchall()
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def modificar_setting(self, configuracion):
 
-        cnn=self.get_connection()
-        cur = cnn.cursor(buffered=True)
-
+        cnn = None
+        cur = None
         try:
+
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
 
             # genero instruccion sql
             sql = """
@@ -107,8 +113,10 @@ class DatosConfig:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
         #                   Id, empresa, direccion, localidad, provincia, postal, correo, telef1, telef2,
         #                             titular, contacto, sitfis, cuit, rentas, municipal, iva1, iva2, iva3, impint, reten,

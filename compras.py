@@ -8,39 +8,27 @@ from funcion_new import *
 from funciones import *
 from status_bar import StatusBar
 
-
 class ClaseCompras(tk.Frame):
+    master: tk.Tk | tk.Toplevel
 
-    def __init__(self, master=None):
+    def __init__(self, master: tk.Tk | tk.Toplevel):
 
-        super().__init__(master, width=880, height=510)
+        super().__init__(master)
         self.master = master
         self.status = StatusBar(self.master)
 
         self.master.grab_set()
         self.master.focus_set()
 
-        # ---------------------------------------------------------------------------------
+        # ------------------------------------------------------------------------------
         # Instanciaciones -*-
         self.varCompras = DatosCompras(self.master)
         self.varFuncion_new = ClaseFuncionNew(self.master)
+        # ------------------------------------------------------------------------------
 
-        # --------------------------------------------------------------------
+        # ------------------------------------------------------------------------------
         # PANTALLA
-        # --------------------------------------------------------------------
-        self.master.resizable(0, 0)
-        """ Actualizamos el contenido de la ventana (la ventana pude crecer si se le agrega
-            mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer.
-            Obtenemos el alto y  ancho de la pantalla """
-        ancho = self.master.winfo_screenwidth()
-        alto = self.master.winfo_screenheight()
-        # Asigno fijo un ancho y un alto
-        ancho_ventana = 1035
-        alto_ventana = 440
-        # X e Y son las coordenadas para el posicionamiento del vertice superior izquierdo
-        x = int((ancho - ancho_ventana) / 2)
-        y = int((alto - alto_ventana) / 2)
-        self.master.geometry(f"{ancho_ventana}x{alto_ventana}+{x}+{y}")
+        self.pantalla()
         # ------------------------------------------------------------------------------
 
         self.create_widgets()
@@ -48,13 +36,11 @@ class ClaseCompras(tk.Frame):
         self.llena_grilla("")
 
         # ------------------------------------------------------------------------------
-
         # # guarda en item el Id del elemento fila en este caso fila 0 del grid principal
         # item = self.grid_art_faltantes.identify_row(0)
         # self.grid_art_faltantes.selection_set(item)
         # # pone el foco en el item seleccionado
         # self.grid_art_faltantes.focus(item)
-
         """ La función Treeview.selection() retorna una tupla con los ID de los elementos seleccionados o una
         tupla vacía en caso de no haber ninguno
         Otras funciones para manejar los elementos seleccionados incluyen:
@@ -62,6 +48,7 @@ class ClaseCompras(tk.Frame):
         selection_remove(): remueve elementos de la selección.
         selection_set(): similar a selection_add(), pero remueve los elementos previamente seleccionados.
         selection_toggle(): cambia la selección de un elemento. """
+        # ------------------------------------------------------------------------------
 
     # --------------------------------------------------------------------
     #  WIDGETS
@@ -88,33 +75,30 @@ class ClaseCompras(tk.Frame):
         # STRINGVARS
         # ---------------------------------------------------------------------
         una_fecha= date.today()
-        self.sv_fecha_anotado = tk.StringVar(value=una_fecha.strftime('%d/%m/%Y'))
-        self.sv_articulo = tk.StringVar(value="")
+        self.sv_fecha_anotado  = tk.StringVar(value=una_fecha.strftime('%d/%m/%Y'))
+        self.sv_articulo       = tk.StringVar(value="")
         self.sv_articulo_obser = tk.StringVar(value="")
-        self.sv_estado = tk.StringVar(value="")
-        self.sv_buscostring = tk.StringVar(value="")
-        self.sv_combo_filtro = tk.StringVar(value="")
-        self.sv_combo_estado = tk.StringVar(value="")
+        self.sv_estado         = tk.StringVar(value="")
+        self.sv_buscostring    = tk.StringVar(value="")
+        self.sv_combo_filtro   = tk.StringVar(value="")
+        self.sv_combo_estado   = tk.StringVar(value="")
 
         # ---------------------------------------------------------------------
         # CONTENEDOR
         # ---------------------------------------------------------------------
         self.frame_art_faltantes = tk.LabelFrame(self.master, text="Articulos faltantes", foreground="#CD5C5C")
-
         # ---------------------------------------------------------------------
         # CUADRO GRID
         # ---------------------------------------------------------------------
         self.frame_art_faltantes_dos=tk.LabelFrame(self.frame_art_faltantes, text="", foreground="#CD5C5C")
         self.cuadro_grid()
         self.frame_art_faltantes_dos.pack(side="top", fill="both", padx=5, pady=2)
-
         # ---------------------------------------------------------------------
         # BOTONES CRUD - BAJO EL GRID
         # ---------------------------------------------------------------------
         self.frame_art_faltantes_uno = tk.LabelFrame(self.frame_art_faltantes, text="", foreground="#CD5C5C")
         self.cuadro_botones_crud()
         self.frame_art_faltantes_uno.pack(side="left", fill="both", padx=5, pady=2)
-
         # ---------------------------------------------------------------------
         # BUSqUEDA EN EL GRID
         # ---------------------------------------------------------------------
@@ -123,21 +107,18 @@ class ClaseCompras(tk.Frame):
                                                      background="light blue")
         self.cuadro_busqueda_grid()
         self.frame_busqueda_art_faltantes.pack(expand=0, side="top", fill="both", padx=5, pady=2)
-
         # ---------------------------------------------------------------------
         # ENTRYS
         # ---------------------------------------------------------------------
         self.frame_ingreso_datos = tk.LabelFrame(self.frame_art_faltantes, text="", foreground="black")
         self.cuadro_entrys()
         self.frame_ingreso_datos.pack(side="top", fill="both", expand=0, padx=5, pady=5)
-
         # ---------------------------------------------------------------------
         # BOTONES - GUARDAR - SALIR
         # ---------------------------------------------------------------------
         self.frame_botones2 = tk.LabelFrame(self.frame_art_faltantes)
         self.cuadro_botones_guardar()
         self.frame_botones2.pack(expand=0, side="top", fill="both", pady=2, padx=5)
-
         # ---------------------------------------------------------------------
         # PACK CONTENEDOR
         # ---------------------------------------------------------------------
@@ -179,7 +160,6 @@ class ClaseCompras(tk.Frame):
         self.entry_fecha.configure(state=estado)
         self.entry_articulo.configure(state=estado)
         self.entry_articulo_obser.configure(state=estado)
-        #self.combo_estado.configure(state=estado)
         self.entry_busqueda_compra.configure(state=estado)
 
     def estado_botones_uno(self, estado):
@@ -216,11 +196,10 @@ class ClaseCompras(tk.Frame):
                 forma_normal = self.varFuncion_new.fecha_es(datetime.strftime(row[1], '%Y-%m-%d'), False)
                 self.grid_art_faltantes.insert("", "end", tags=color, text=row[0], values=(forma_normal, row[2],
                                                                                            row[3], row[4]))
-            except Exception:
+            except Exception as e:
+                print(f"Error no controlado: {e}")
                 self.varFuncion_new.mostrar_error()
                 return
-
-        # Controles ---------------------------------------------------------
 
         # Devuelve una colección(tupla) con los IDs de todas las filas cargadas
         children = self.grid_art_faltantes.get_children()
@@ -320,13 +299,13 @@ class ClaseCompras(tk.Frame):
 
         try:
             self.varCompras.eliminar_articulo(self.clave)
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.varFuncion_new.mostrar_error()
             return
         else:
             self.status.set_status("🗑 Eliminacion correcta", "ok")
 
-        # recarga del Grid
         self.llena_grilla(self.clave_ant)
 
     def fguardar(self):
@@ -355,12 +334,12 @@ class ClaseCompras(tk.Frame):
             if self.alta_modif == 1:
                 self.id_ref = self.varCompras.insertar_registro(dic_faltantes)
             elif self.alta_modif == 2:
-                print("paso")
                 self.id_ref = self.varCompras.modificar_registro(dic_faltantes)
         except ValueError as e:
             messagebox.showwarning("Datos inválidos en Insertar/Modificar", str(e))
             return
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.varFuncion_new.mostrar_error()
             return
         else:
@@ -381,9 +360,9 @@ class ClaseCompras(tk.Frame):
 
     def fsalir(self):
 
-        r = messagebox.askquestion("Salir", "Confirma salir del modulo?", parent=self)
-        if r == messagebox.NO:
-            return
+        # r = messagebox.askquestion("Salir", "Confirma salir del modulo?", parent=self)
+        # if r == messagebox.NO:
+        #     return
         self.master.destroy()
 
     def fcancelar(self):
@@ -424,7 +403,8 @@ class ClaseCompras(tk.Frame):
 
             try:
                 self.varCompras.buscar_entabla(self.filtro_activo)
-            except Exception:
+            except Exception as e:
+                print(f"Error no controlado: {e}")
                 self.varFuncion_new.mostrar_error()
                 return
             else:
@@ -468,7 +448,6 @@ class ClaseCompras(tk.Frame):
     # ===================================================
     # INFORMES
     # ===================================================
-
 
     def creopdf(self):
 
@@ -579,15 +558,15 @@ class ClaseCompras(tk.Frame):
         self.grid_art_faltantes = ttk.Treeview(self.frame_art_faltantes_dos, height=4, columns=("col1", "col2", "col3"))
         self.grid_art_faltantes.bind("<Double-Button-1>", self.doble_click_grid)
 
-        self.grid_art_faltantes.column("#0", width=30, anchor="center", minwidth=30)
-        self.grid_art_faltantes.column("col1", width=60, anchor="w", minwidth=60)
+        self.grid_art_faltantes.column("#0",   width=30,  anchor="center", minwidth=30)
+        self.grid_art_faltantes.column("col1", width=60,  anchor="w", minwidth=60)
         self.grid_art_faltantes.column("col2", width=290, anchor="w", minwidth=290)
-        self.grid_art_faltantes.column("col3", width=40, anchor="center", minwidth=40)
+        self.grid_art_faltantes.column("col3", width=40,  anchor="center", minwidth=40)
 
-        self.grid_art_faltantes.heading("#0", text="Id", anchor="center")
-        self.grid_art_faltantes.heading("col1", text="Fecha", anchor="w")
+        self.grid_art_faltantes.heading("#0",   text="Id",       anchor="center")
+        self.grid_art_faltantes.heading("col1", text="Fecha",    anchor="w")
         self.grid_art_faltantes.heading("col2", text="Articulo", anchor="w")
-        self.grid_art_faltantes.heading("col3", text="Estado", anchor="center")
+        self.grid_art_faltantes.heading("col3", text="Estado",   anchor="center")
 
         self.grid_art_faltantes.tag_configure('oddrow', background='light grey')
         self.grid_art_faltantes.tag_configure('evenrow', background='white')
@@ -722,14 +701,12 @@ class ClaseCompras(tk.Frame):
         self.entry_fecha = tk.Entry(self.frame_ingreso_datos, textvariable=self.sv_fecha_anotado, width=13)
         self.entry_fecha.grid(row=0, column=1, padx=3, pady=3, sticky="e")
         self.entry_fecha.bind("<FocusOut>", self.formato_fecha)
-
         # Entry articulo faltante
         self.lbl_articulo = tk.Label(self.frame_ingreso_datos, text="Articulo: ", justify="left")
         self.lbl_articulo.grid(row=0, column=2, padx=3, pady=3, sticky="w")
         self.entry_articulo = tk.Entry(self.frame_ingreso_datos, textvariable=self.sv_articulo, width=70, justify="left")
         self.entry_articulo.grid(row=0, column=3, padx=3, pady=3, sticky="w")
         self.sv_articulo.trace("w", lambda *args: limitador(self.sv_articulo, 100))
-
         # Combo estado
         self.lbl_combo_estado = tk.Label(self.frame_ingreso_datos, justify="left", foreground="black", text="Estado")
         self.lbl_combo_estado.grid(row=0, column=4, padx=3, pady=3, sticky="w")
@@ -738,7 +715,6 @@ class ClaseCompras(tk.Frame):
         self.combo_estado['value'] = ["Pendiente", "Comprado", "Finalizado"]
         self.combo_estado.current(0)
         self.combo_estado.grid(row=0, column=5, padx=3, pady=3, sticky="e")
-
         # Entry articulo faltante
         self.lbl_articulo = tk.Label(self.frame_ingreso_datos, text="Observaciones: ", justify="left")
         self.lbl_articulo.grid(row=1, column=0, padx=3, pady=3, sticky="w")
@@ -778,13 +754,11 @@ class ClaseCompras(tk.Frame):
         for widg in self.frame_botones2.winfo_children():
             widg.grid_configure(padx=6, pady=3, sticky='nsew')
 
-    # OTRAS FUNCIONES :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     @staticmethod
     def cargar_icono(path, size=(18,18)):
         img = Image.open(path).resize(size)
         return ImageTk.PhotoImage(img)
 
-    # Crea diccionario para ABM
     def get_faltantes_dic(self, fecha_aux):
 
         # Preparo Diccionario ----------------------------------------------------------------
@@ -799,3 +773,19 @@ class ClaseCompras(tk.Frame):
 
     def doble_click_grid(self, _event):
         self.fedito_articulo()
+
+    def pantalla(self):
+
+        self.master.resizable(False, False)
+        """ Actualizamos el contenido de la ventana (la ventana pude crecer si se le agrega
+            mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer.
+            Obtenemos el alto y  ancho de la pantalla """
+        ancho = self.master.winfo_screenwidth()
+        alto = self.master.winfo_screenheight()
+        # Asigno fijo un ancho y un alto
+        ancho_ventana = 1035
+        alto_ventana = 440
+        # X e Y son las coordenadas para el posicionamiento del vertice superior izquierdo
+        x = int((ancho - ancho_ventana) / 2)
+        y = int((alto - alto_ventana) / 2)
+        self.master.geometry(f"{ancho_ventana}x{alto_ventana}+{x}+{y}")

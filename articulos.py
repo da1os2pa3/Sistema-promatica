@@ -3,10 +3,10 @@ import tkinter as tk
 import tkinter.font as tkfont
 from datetime import date
 from tkinter import ttk, filedialog
+
 from PIL import Image, ImageTk
-# from tkinter import messagebox, filedialog
 from tktooltip import ToolTip
-# import sys
+
 from articulos_ABM import DatosArtic
 from funcion_new import ClaseFuncionNew
 from funciones import *
@@ -36,30 +36,15 @@ class ClaseArticulos(tk.Frame):
         self.master.resizable(0, 0)
         # ---------------------------------------------------------------------------------
 
-        # POSICIONAMIENTO VENTANA ---------------------------------------------------------
-
-        """ Actualizamos todo el contenido de la ventana (la ventana pude crecer si se le agrega
-        mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer. """
-
-        # Obtenemos el largo y  ancho de la pantalla
-        wtotal = self.master.winfo_screenwidth()
-        htotal = self.master.winfo_screenheight()
-        # Guardamos el largo y alto de la ventana
-        wventana = 1120
-        hventana = 650
-        # Aplicamos la siguiente formula para calcular donde debería posicionarse
-        pwidth = round(wtotal / 2 - wventana / 2) + 0
-        pheight = round(htotal / 2 - hventana / 2) + 0
-        # Se lo aplicamos a la geometría de la ventana
-        self.master.geometry(str(wventana) + "x" + str(hventana) + "+" + str(pwidth) + "+" + str(pheight))
-        # ------------------------------------------------------------------------------
+        # POSICIONAMIENTO PANTALLA --------------------------------------------------------
+        self.pantalla()
+        # ---------------------------------------------------------------------------------
 
         self.create_widgets()
         self.estado_inicial()
         self.llena_grilla("")
 
         # SETEO INICIAL DEL GRID --------------------------------------------------------
-
         """ La función Treeview.selection() retorna una tupla con los ID de los elementos seleccionados o una
         tupla vacía en caso de no haber ninguno
         . Otras funciones para manejar los elementos seleccionados incluyen:
@@ -68,7 +53,6 @@ class ClaseArticulos(tk.Frame):
           -selection_set(): similar a selection_add(), pero remueve los elementos previamente seleccionados.
           -selection_toggle(): cambia la selección de un elemento.
         # Carga del Treeview y seteo de foco y punteros sobre el mismo (grid) """
-
         # # guarda en item el Id del elemento fila en este caso fila 0
         # item = self.grid_articulos.identify_row(0)
         # self.grid_articulos.selection_set(item)
@@ -102,51 +86,40 @@ class ClaseArticulos(tk.Frame):
         # TITULOS -----------------------------------------------------------------------
         # Encabezado logo y titulo con PACK
         self.frame_titulo_top = tk.Frame(self.master)
-
-        # Armo el logo y el titulo
-        self.photo3 = Image.open('productos.png')
-        self.photo3 = self.photo3.resize((100, 75), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
-        self.png_articulos = ImageTk.PhotoImage(self.photo3)
-        self.lbl_png_articulos = tk.Label(self.frame_titulo_top, image=self.png_articulos, bg="red", relief="ridge", bd=5)
-
-        self.lbl_titulo = tk.Label(self.frame_titulo_top, width=29, text="Articulos", bg="black", fg="gold",
-                                font=("Arial bold", 38, "bold"), bd=5, relief="ridge", padx=10)
-        # Coloco logo y titulo en posicion de pantalla
-        self.lbl_png_articulos.grid(row=0, column=0, sticky="w", padx=4, ipadx=22)
-        self.lbl_titulo.grid(row=0, column=1, padx=11, sticky="nsew")
+        self.titulos()
         self.frame_titulo_top.pack(side="top", fill="x", padx=5, pady=5)
         # ---------------------------------------------------------------------------------------
 
         # STRINGVARS ----------------------------------------------------------------------------
-        self.sv_codigo = tk.StringVar(value="")
-        self.sv_descripcion = tk.StringVar(value="")
-        self.sv_marca = tk.StringVar(value="")
-        self.sv_rubro = tk.StringVar(value="")
-        self.sv_codbar = tk.StringVar(value="")
-        self.sv_observa = tk.StringVar(value="")
-        self.sv_fechaultact = tk.StringVar(value="")
+        self.sv_codigo          = tk.StringVar(value="")
+        self.sv_descripcion     = tk.StringVar(value="")
+        self.sv_marca           = tk.StringVar(value="")
+        self.sv_rubro           = tk.StringVar(value="")
+        self.sv_codbar          = tk.StringVar(value="")
+        self.sv_observa         = tk.StringVar(value="")
+        self.sv_fechaultact     = tk.StringVar(value="")
         self.sv_costo_historico = tk.StringVar(value="0.00")
-        self.sv_imagen_Art = tk.StringVar(value="")
+        self.sv_imagen_Art      = tk.StringVar(value="")
 
         self.sv_buscar_articulo = tk.StringVar(value="")
 
-        self.sv_costo_neto_dolar = tk.StringVar(value="0.00")
-        self.costo_neto_dolar_comparado = tk.StringVar(value="0.00")
-        self.sv_costo_neto_pesos = tk.StringVar(value="0.00")
-        self.sv_tasa_iva = tk.StringVar(value="0.00")
-        self.sv_total_iva = tk.StringVar(value="0.00")
-        self.sv_tasa_impint = tk.StringVar(value="0.00")
-        self.sv_total_impint = tk.StringVar(value="0.00")
-        self.sv_subtotal = tk.StringVar(value="0.00")
-        self.sv_tasa_ganancia = tk.StringVar(value="0.00")
-        self.sv_total_ganancia = tk.StringVar(value="0.00")
-        self.sv_total_precio_venta = tk.StringVar(value="0.00")
+        self.sv_costo_neto_dolar         = tk.StringVar(value="0.00")
+        self.costo_neto_dolar_comparado  = tk.StringVar(value="0.00")
+        self.sv_costo_neto_pesos         = tk.StringVar(value="0.00")
+        self.sv_tasa_iva                 = tk.StringVar(value="0.00")
+        self.sv_total_iva                = tk.StringVar(value="0.00")
+        self.sv_tasa_impint              = tk.StringVar(value="0.00")
+        self.sv_total_impint             = tk.StringVar(value="0.00")
+        self.sv_subtotal                 = tk.StringVar(value="0.00")
+        self.sv_tasa_ganancia            = tk.StringVar(value="0.00")
+        self.sv_total_ganancia           = tk.StringVar(value="0.00")
+        self.sv_total_precio_venta       = tk.StringVar(value="0.00")
         self.sv_total_precio_venta_mas10 = tk.StringVar(value="0.00")
-        self.sv_costo_dolar_bruto = tk.StringVar(value="0.00")
-        self.sv_costo_pesos_bruto = tk.StringVar(value="0.00")
-        self.sv_recargo_tarjeta = tk.StringVar(value="0.00")
+        self.sv_costo_dolar_bruto        = tk.StringVar(value="0.00")
+        self.sv_costo_pesos_bruto        = tk.StringVar(value="0.00")
+        self.sv_recargo_tarjeta          = tk.StringVar(value="0.00")
 
-        self.sv_dolar_actual = tk.StringVar()
+        self.sv_dolar_actual             = tk.StringVar()
         # -------------------------------------------------------------------------------
 
         # BOTONES -----------------------------------------------------------------------
@@ -179,10 +152,10 @@ class ClaseArticulos(tk.Frame):
         # ---------------------------------------------------------------------------------------
 
         # Frame principal -----------------------------------------------------------------------
-        self.frame_tv = tk.Frame(self.master)
+        self.frame_grid = tk.Frame(self.master)
 
         # BUSQUEDAS -----------------------------------------------------------------------------
-        self.frame_buscar = tk.LabelFrame(self.frame_tv)
+        self.frame_buscar = tk.LabelFrame(self.frame_grid)
         self.cuadro_buscar_articulo()
         self.frame_buscar.pack(side="top", fill="both", expand=1, padx=5, pady=3)
         # ----------------------------------------------------------------------------------------
@@ -191,7 +164,7 @@ class ClaseArticulos(tk.Frame):
         self.cuadro_grid_articulos()
         # ----------------------------------------------------------------------------------------
 
-        self.frame_tv.pack(side="top", fill="both", padx=5, pady=5)
+        self.frame_grid.pack(side="top", fill="both", padx=5, pady=5)
         # ----------------------------------------------------------------------------------------
 
         # ENTRYS ---------------------------------------------------------------------------------
@@ -426,7 +399,6 @@ class ClaseArticulos(tk.Frame):
     def fsalir(self):
         self.master.destroy()
 
-
     # -----------------------------------------------------------------
     # CRUD -*-
     # -----------------------------------------------------------------
@@ -458,7 +430,7 @@ class ClaseArticulos(tk.Frame):
         el otro (numero secuencial que pone la BD automaticamente al dar el alta. """
 
         self.selected = self.grid_articulos.focus()
-        self.clave = self.grid_articulos.item(self.selected, 'text')
+        self.clave    = self.grid_articulos.item(self.selected, 'text')
 
         if self.clave == "":
             self.status.set_status("✔ No hay nada seleccionado", "ok")
@@ -535,13 +507,17 @@ class ClaseArticulos(tk.Frame):
 
         try:
             self.varArtic.eliminar_articulo(self.clave)
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.varFuncion_new.mostrar_error()
             return
         else:
             self.status.set_status("🗑 Registro eliminado correctamente", "ok")
 
         self.llena_grilla(self.clave_ant)
+
+
+
 
     def fguardar(self):
 
@@ -586,20 +562,20 @@ class ClaseArticulos(tk.Frame):
         # Preparo Diccionario ----------------------------------------------------------------
         articulos = {
             #"Id": self.var_Id,
-            "Id": self.clave,
-            "codigo": self.sv_codigo.get(),
+            "Id":          self.clave,
+            "codigo":      self.sv_codigo.get(),
             "descripcion": self.sv_descripcion.get(),
-            "marca": self.combo_marca.get(),
-            "rubro": self.combo_rubro.get(),
-            "codbar": self.sv_codbar.get(),
-            "costodolar": self.sv_costo_neto_dolar.get(),
-            "iva": self.combo_iva.get(),
-            "impint": self.sv_tasa_impint.get(),
-            "porcgan": self.sv_tasa_ganancia.get(),
-            "observa": self.sv_observa.get(),
-            "ultact": self.fecha_aux,
-            "costohist": self.sv_costo_historico.get(),
-            "imagen": self.sv_imagen_Art.get(),
+            "marca":       self.combo_marca.get(),
+            "rubro":       self.combo_rubro.get(),
+            "codbar":      self.sv_codbar.get(),
+            "costodolar":  self.sv_costo_neto_dolar.get(),
+            "iva":         self.combo_iva.get(),
+            "impint":      self.sv_tasa_impint.get(),
+            "porcgan":     self.sv_tasa_ganancia.get(),
+            "observa":     self.sv_observa.get(),
+            "ultact":      self.fecha_aux,
+            "costohist":   self.sv_costo_historico.get(),
+            "imagen":      self.sv_imagen_Art.get(),
         }
         # ------------------------------------------------------------------------------------
 
@@ -615,7 +591,8 @@ class ClaseArticulos(tk.Frame):
                 id_ref = self.clave
 
         # Evaluacion de errores ---------------------------------------------------------------
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.varFuncion_new.mostrar_error()
             return
         else:
@@ -668,8 +645,6 @@ class ClaseArticulos(tk.Frame):
         """Aqui dentro llamo a la funcion validar fechas para revisar todo sus valores posibles
         le paso la fecha tipo string con barras o sin barras """
 
-        #estado_antes = self.sv_fechaultact.get()
-
         # Validacion de fechas
         retorno_validacion = self.varFuncion_new.validar_fecha(self.sv_fechaultact, self.entry_fechaultact)
 
@@ -702,7 +677,8 @@ class ClaseArticulos(tk.Frame):
 
             try:
                 retorno = self.varArtic.buscar_entabla(que_busco)
-            except Exception:
+            except Exception as e:
+                print(f"Error no controlado: {e}")
                 self.varFuncion_new.mostrar_error()
                 return
 
@@ -738,7 +714,8 @@ class ClaseArticulos(tk.Frame):
             # SOLO entra acá si el archivo no existe
             messagebox.showwarning("Imagen no encontrada", f"No se encontró la foto:\n{self.sv_imagen_Art.get()}")
             return
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.varFuncion_new.mostrar_error()
             return
 
@@ -761,7 +738,8 @@ class ClaseArticulos(tk.Frame):
             self.photoa = Image.open(os.path.join(self.carpeta_fotos, self.imagen_defa))
             self.photoa = self.photoa.resize((100, 100), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
             self.imagen_art = ImageTk.PhotoImage(self.photoa)
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.varFuncion_new.mostrar_error()
             return
         finally:
@@ -850,7 +828,9 @@ class ClaseArticulos(tk.Frame):
 
             # " " = ir al primero
             self.llena_grilla("")
+
         except ValueError as e:
+
             self.status.set_status("❌ Error de busqueda - Revise caracteres no admitidos", str(e))
             self.entry_buscar_articulo.focus()
 
@@ -868,13 +848,11 @@ class ClaseArticulos(tk.Frame):
         self.varFuncion_new.corregir_al_salir(self.entry_costo_neto_pesos)
         self.varFuncion_new.corregir_al_salir(self.entry_costo_neto_dolar)
         self.varFuncion_new.corregir_al_salir(self.entry_costo_historico)
-        # variables no entry.. calculadas (a veces no hace falta controlarlas
-        #self.varFuncion_new.corregir_valor(self.sv_valor_dolar_presup.get())
         # ---------------------------------------------------------------------------------
 
-        #try:
-        a = 0
-        if a == 0:
+        try:
+        # a = 0
+        # if a == 0:
 
             # Verifica que costos no esten en cero, porque sino da error el calculo de precio de venta final (divide zero)
             if que_campo != "nada":
@@ -1031,10 +1009,17 @@ class ClaseArticulos(tk.Frame):
             x_recargo_tarjeta = float(self.sv_recargo_tarjeta.get())
             x_calc_total_ventas_mas10 = x_calc_total_ventas * ((x_recargo_tarjeta / 100) + 1)
             self.sv_total_precio_venta_mas10.set(value=str(round(float(x_calc_total_ventas_mas10), 2)))
-        # except ValueError as e:
-        #     self.set_status("❌ Except_error - Revise datos numericos", str(e))
-        #     self.entry_costo_historico.focus()
-        #     return
+
+        except ValueError as e:
+
+            self.status.set_status("❌ Except_error - Revise datos numericos", str(e))
+            self.entry_costo_historico.focus()
+            return
+
+        except Exception as e:
+            print(f"Error no controlado: {e}")
+            self.varFuncion_new.mostrar_error()
+            return
 
     # --------------------------------------------------------------------------
     # PUNTEROS -*-
@@ -1175,7 +1160,8 @@ class ClaseArticulos(tk.Frame):
         # VALOR DOLAR HOY - Aqui traigo de la tabla informa la cotizacion actual del dolar
         try:
             self.dev_informa = self.varArtic.consultar_informa()
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.varFuncion_new.mostrar_error()
             return
 
@@ -1419,41 +1405,40 @@ class ClaseArticulos(tk.Frame):
     def cuadro_grid_articulos(self):
 
         # STYLE TREEVIEW
-        style = ttk.Style(self.frame_tv)
+        style = ttk.Style(self.frame_grid)
         style.theme_use("clam")
         style.configure("Treeview.Heading", background="black", foreground="white")
 
-        self.grid_articulos = ttk.Treeview(self.frame_tv, height=11, columns=("col1", "col2", "col3", "col4", "col5",
+        self.grid_articulos = ttk.Treeview(self.frame_grid, height=11, columns=("col1", "col2", "col3", "col4", "col5",
                                                                               "col6", "col7", "col8", "col9", "col10",
                                                                               "col11", "col12"))
 
         self.grid_articulos.bind("<Double-Button-1>", self.doble_click_grid)
-        #self.grid_articulos.bind("<ButtonRelease-3>", self.muestradatos)
 
-        self.grid_articulos.column("#0", width=60, anchor="center", minwidth=60)
-        self.grid_articulos.column("col1", width=100, anchor="w", minwidth=100)
-        self.grid_articulos.column("col2", width=350, anchor="w", minwidth=350)
-        self.grid_articulos.column("col3", width=110, anchor="center", minwidth=110)
-        self.grid_articulos.column("col4", width=130, anchor="center", minwidth=130)
-        self.grid_articulos.column("col5", width=80, anchor="e", minwidth=80)
-        self.grid_articulos.column("col6", width=70, anchor="e", minwidth=70)
-        self.grid_articulos.column("col7", width=100, anchor="center", minwidth=100)
-        self.grid_articulos.column("col8", width=70, anchor="center", minwidth=70)
-        self.grid_articulos.column("col9", width=60, anchor="center", minwidth=60)
+        self.grid_articulos.column("#0",    width=60,  anchor="center", minwidth=60)
+        self.grid_articulos.column("col1",  width=100, anchor="w", minwidth=100)
+        self.grid_articulos.column("col2",  width=350, anchor="w", minwidth=350)
+        self.grid_articulos.column("col3",  width=110, anchor="center", minwidth=110)
+        self.grid_articulos.column("col4",  width=130, anchor="center", minwidth=130)
+        self.grid_articulos.column("col5",  width=80,  anchor="e", minwidth=80)
+        self.grid_articulos.column("col6",  width=70,  anchor="e", minwidth=70)
+        self.grid_articulos.column("col7",  width=100, anchor="center", minwidth=100)
+        self.grid_articulos.column("col8",  width=70,  anchor="center", minwidth=70)
+        self.grid_articulos.column("col9",  width=60,  anchor="center", minwidth=60)
         self.grid_articulos.column("col10", width=200, anchor="center", minwidth=200)
         self.grid_articulos.column("col11", width=100, anchor="center", minwidth=100)
-        self.grid_articulos.column("col12", width=80, anchor="center", minwidth=80)
+        self.grid_articulos.column("col12", width=80,  anchor="center", minwidth=80)
 
-        self.grid_articulos.heading("#0", text="Id", anchor="center")
-        self.grid_articulos.heading("col1", text="Codigo", anchor="w")
-        self.grid_articulos.heading("col2", text="Descripcion", anchor="w")
-        self.grid_articulos.heading("col3", text="Marca", anchor="center")
-        self.grid_articulos.heading("col4", text="Rubro", anchor="center")
-        self.grid_articulos.heading("col5", text="Pesos final", anchor="center")
-        self.grid_articulos.heading("col6", text="Dolar neto", anchor="center")
-        self.grid_articulos.heading("col7", text="Cod.Barras", anchor="center")
-        self.grid_articulos.heading("col8", text="IVA", anchor="center")
-        self.grid_articulos.heading("col9", text="% Ganancia", anchor="center")
+        self.grid_articulos.heading("#0",    text="Id", anchor="center")
+        self.grid_articulos.heading("col1",  text="Codigo", anchor="w")
+        self.grid_articulos.heading("col2",  text="Descripcion", anchor="w")
+        self.grid_articulos.heading("col3",  text="Marca", anchor="center")
+        self.grid_articulos.heading("col4",  text="Rubro", anchor="center")
+        self.grid_articulos.heading("col5",  text="Pesos final", anchor="center")
+        self.grid_articulos.heading("col6",  text="Dolar neto", anchor="center")
+        self.grid_articulos.heading("col7",  text="Cod.Barras", anchor="center")
+        self.grid_articulos.heading("col8",  text="IVA", anchor="center")
+        self.grid_articulos.heading("col9",  text="% Ganancia", anchor="center")
         self.grid_articulos.heading("col10", text="Observaciones", anchor="w")
         self.grid_articulos.heading("col11", text="Fecha ultima Act.", anchor="center")
         self.grid_articulos.heading("col12", text="Costo Historico", anchor="center")
@@ -1462,8 +1447,8 @@ class ClaseArticulos(tk.Frame):
         self.grid_articulos.tag_configure('evenrow', background='white')
 
         # SCROLLBAR del Treeview
-        scroll_x = tk.Scrollbar(self.frame_tv, orient="horizontal")
-        scroll_y = tk.Scrollbar(self.frame_tv, orient="vertical")
+        scroll_x = tk.Scrollbar(self.frame_grid, orient="horizontal")
+        scroll_y = tk.Scrollbar(self.frame_grid, orient="vertical")
         self.grid_articulos.config(xscrollcommand=scroll_x.set)
         self.grid_articulos.config(yscrollcommand=scroll_y.set)
         scroll_x.config(command=self.grid_articulos.xview)
@@ -1492,6 +1477,35 @@ class ClaseArticulos(tk.Frame):
     def cargar_icono(path, size=(18,18)):
         img = Image.open(path).resize(size)
         return ImageTk.PhotoImage(img)
+
+    def pantalla(self):
+        """ Actualizamos todo el contenido de la ventana (la ventana pude crecer si se le agrega
+        mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer. """
+        # Obtenemos el largo y  ancho de la pantalla
+        wtotal = self.master.winfo_screenwidth()
+        htotal = self.master.winfo_screenheight()
+        # Guardamos el largo y alto de la ventana
+        wventana = 1120
+        hventana = 650
+        # Aplicamos la siguiente formula para calcular donde debería posicionarse
+        pwidth = round(wtotal / 2 - wventana / 2) + 0
+        pheight = round(htotal / 2 - hventana / 2) + 0
+        # Se lo aplicamos a la geometría de la ventana
+        self.master.geometry(str(wventana) + "x" + str(hventana) + "+" + str(pwidth) + "+" + str(pheight))
+
+    def titulos(self):
+        # Armo el logo y el titulo
+        self.photo3 = Image.open('productos.png')
+        self.photo3 = self.photo3.resize((100, 75), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
+        self.png_articulos = ImageTk.PhotoImage(self.photo3)
+        self.lbl_png_articulos = tk.Label(self.frame_titulo_top, image=self.png_articulos, bg="red", relief="ridge", bd=5)
+
+        self.lbl_titulo = tk.Label(self.frame_titulo_top, width=29, text="Articulos", bg="black", fg="gold",
+                                font=("Arial bold", 38, "bold"), bd=5, relief="ridge", padx=10)
+        # Coloco logo y titulo en posicion de pantalla
+        self.lbl_png_articulos.grid(row=0, column=0, sticky="w", padx=4, ipadx=22)
+        self.lbl_titulo.grid(row=0, column=1, padx=11, sticky="nsew")
+
 
 """
     🔥 CÓMO USARLO

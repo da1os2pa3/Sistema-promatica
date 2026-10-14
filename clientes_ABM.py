@@ -19,29 +19,37 @@ class DatosClientes:
         ✔ Después podés hacer lo que quieras: otro execute, cerrar cursor, no consumir todo
         SIN errores"""
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql = "SELECT * FROM clientes"
             if orden:
                 sql += " " + orden
             cur.execute(sql)
             return cur.fetchall()
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def traer_ultimo(self):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             cur.execute("SELECT MAX(codigo) FROM clientes")
             resultado = cur.fetchone()[0]
             return resultado or 0  # 👈 clave
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def insertar_clientes(self, cliente):
 
@@ -50,9 +58,11 @@ class DatosClientes:
         if not cliente.get("apellido"):
             raise ValueError("El apellido es obligatorio")
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             # fecha_ingreso = datetime.strptime(cliente["fecha_ingreso"], '%d/%m/%Y')
 
             sql = """
@@ -90,14 +100,19 @@ class DatosClientes:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def modificar_clientes(self, cliente):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
+
             # Convierto fecha nuevamente de String a Datetime para guardar en SQL
             #fecha_ingreso = datetime.strptime(cliente["fecha_ingreso"], '%d/%m/%Y')
 
@@ -138,14 +153,18 @@ class DatosClientes:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def eliminar_clientes(self, Id):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql = "DELETE FROM clientes WHERE Id = %s"
             # 1 parámetro → (valor,)
             # varios → (v1, v2, v3)
@@ -157,14 +176,18 @@ class DatosClientes:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def buscar_clientes(self, texto):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql = """
                   SELECT * FROM clientes WHERE apellido LIKE %s OR nombres LIKE %s OR apenombre LIKE %s
                   ORDER BY apellido, nombres ASC \
@@ -176,5 +199,7 @@ class DatosClientes:
             datos = cur.fetchall()
             return datos
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()

@@ -1,15 +1,9 @@
 import mysql.connector
-from mysql.connector import Error
 
 class DatosCompras:
 
     def __init__(self, pantalla):
         self.master = pantalla
-
-        # try:
-        #     self.cnn = mysql.connector.connect(host="localhost", user="root", passwd="", database="sist_prom")
-        # except Error as ex:
-        #     print("Error de conexion: {0}".format(ex))
 
     @staticmethod
     def get_connection():
@@ -21,49 +15,63 @@ class DatosCompras:
 
     def consultar_compras(self, orden=""):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql = "SELECT * FROM faltantes"
             if orden:
                 sql += " " + orden
             cur.execute(sql)
             return cur.fetchall()
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def traer_ultimo(self, _xparametro):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             cur.execute("SELECT MAX(codigo) FROM faltantes")
             resultado = cur.fetchone()[0]
             return resultado or 0  # 👈 clave
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def buscar_entabla(self, argumento):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             cur.execute("SELECT * FROM faltantes " + argumento)
             datos = cur.fetchall()
             return datos
         except Exception:
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def insertar_registro(self, articulos):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql = """
                   INSERT INTO faltantes (fa_fecha, fa_articulo, fa_estado, fa_observaciones)
                   VALUES (%s, %s, %s, %s) 
@@ -85,14 +93,18 @@ class DatosCompras:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def modificar_registro(self, articulos):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             # Convierto fecha nuevamente de String a Datetime para guardar en SQL
             #fecha_ingreso = datetime.strptime(cliente["fecha_ingreso"], '%d/%m/%Y')
 
@@ -119,14 +131,18 @@ class DatosCompras:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def eliminar_articulo(self, Id):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql = "DELETE FROM faltantes WHERE Id = %s"
             # 1 parámetro → (valor,)
             # varios → (v1, v2, v3)
@@ -138,5 +154,7 @@ class DatosCompras:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()

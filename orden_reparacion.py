@@ -655,12 +655,14 @@ class ClaseOrdenesRepara(tk.Frame):
 
         r = messagebox.askquestion("Cuidado", "Confirma eliminar registro?\n " + data, parent=self)
         if r == messagebox.NO:
-            messagebox.showinfo("Aviso", "Eliminacion cancelada", parent=self)
+            #messagebox.showinfo("Aviso", "Eliminacion cancelada", parent=self)
+            self.status.set_status("✔ Se cancelo la eliminacion", "ok")
             return
 
         self.varOrdenes.eliminar_orden(self.clave)
 
-        messagebox.showinfo("Aviso", "Registro eliminado correctamente", parent=self)
+        #messagebox.showinfo("Aviso", "Registro eliminado correctamente", parent=self)
+        self.status.set_status("✔ Registro guardado correctamente", "ok")
         self.llena_grilla(self.clave_ant)
 
     def fguardar_orden(self):
@@ -706,7 +708,8 @@ class ClaseOrdenesRepara(tk.Frame):
                 self.varFuncion_new.mostrar_error()
                 return
 
-            messagebox.showinfo("Aviso", "Nuevo registro creado correctamente", parent=self)
+            self.status.set_status("✔ Registro guardado correctamente", "ok")
+            #messagebox.showinfo("Aviso", "Nuevo registro creado correctamente", parent=self)
 
         if self.alta_modif == 2:
 
@@ -746,7 +749,8 @@ class ClaseOrdenesRepara(tk.Frame):
                 self.varFuncion_new.mostrar_error()
                 return
 
-            messagebox.showinfo("Aviso", "La modificacion del registro fue exitosa", parent=self)
+            self.status.set_status("✔ Registro guardado correctamente", "ok")
+            #messagebox.showinfo("Aviso", "La modificacion del registro fue exitosa", parent=self)
 
         # Ordenar estado de pantalla ----------------------------------------------------
         self.habilitar_text("normal")
@@ -770,11 +774,12 @@ class ClaseOrdenesRepara(tk.Frame):
 
     def fcancelar(self):
         r = messagebox.askquestion("Cancelar", "Confirma cancelar operacion actual?", parent=self)
-        if r == messagebox.YES:
-            self.habilitar_text("normal")
-            self.limpiar_text()
-            self.habilitar_text("disabled")
-            self.estado_botones("normal")
+        if r == messagebox.NO:
+            return
+        self.habilitar_text("normal")
+        self.limpiar_text()
+        self.habilitar_text("disabled")
+        self.estado_botones("normal")
 
     def fsalir(self):
         self.master.destroy()

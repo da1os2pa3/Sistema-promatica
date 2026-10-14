@@ -3,12 +3,15 @@ import tkinter as tk
 from datetime import date
 from tkinter import ttk
 from tkinter.scrolledtext import *
+
 from PIL import Image, ImageTk
 from tktooltip import ToolTip
+
 from PDF_clase import *
 from funcion_new import ClaseFuncionNew
 from funciones import *
 from inf_tecnicos_ABM import ClaseInfTecnicosABM
+from status_bar import StatusBar
 
 
 class ClaseInformeTecnico(tk.Frame):
@@ -16,6 +19,7 @@ class ClaseInformeTecnico(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master, width=880, height=810)
         self.master = master
+        self.status = StatusBar(self.master)
 
         # Instanciaciones -----------------------------------------------------------------
         self.var_inf_tecnicos = ClaseInfTecnicosABM(self.master)
@@ -28,24 +32,9 @@ class ClaseInformeTecnico(tk.Frame):
         # ----------------------------------------------------------------------------------
         # Esto esta agregado para centrar las ventanas en la pantalla
         # ----------------------------------------------------------------------------------
-        #master.geometry("880x510")
-        self.master.resizable(0, 0)
-        # Actualizamos el contenido de la ventana (la ventana pude crecer si se le agrega
-        # mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer.
-        # ------ Obtenemos el largo y  ancho de la pantalla
-        wtotal = self.master.winfo_screenwidth()
-        htotal = self.master.winfo_screenheight()
-        # ------ Guardamos el largo y alto de la ventana
-        wventana = 1035
-        hventana = 560
-        # ------ Aplicamos la siguiente formula para calcular donde debería posicionarse
-        pwidth = round(wtotal / 2 - wventana / 2) + 0
-        pheight = round(htotal / 2 - hventana / 2) + 0
-        # ------ Se lo aplicamos a la geometría de la ventana
-        self.master.geometry(str(wventana) + "x" + str(hventana) + "+" + str(pwidth) + "+" + str(pheight))
+        self.pantalla()
         # ------------------------------------------------------------------------------
 
-        self.filtro_activo = ""
         self.create_widgets()
         self.estado_inicial()
         self.llena_grilla("")
@@ -65,27 +54,14 @@ class ClaseInformeTecnico(tk.Frame):
     def create_widgets(self):
 
         # TITULOS -----------------------------------------------------------------
-
-        # Encabezado logo y titulo con PACK
         self.frame_titulo_top = tk.Frame(self.master)
-
-        # Armo el logo y el titulo
-        self.photocc = Image.open('inf_tecnico.png')
-        self.photocc = self.photocc.resize((50, 50), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
-        self.png_ctacte = ImageTk.PhotoImage(self.photocc)
-        self.lbl_png_ctacte = tk.Label(self.frame_titulo_top, image=self.png_ctacte, bg="red", relief="ridge", bd=5)
-        self.lbl_titulo = tk.Label(self.frame_titulo_top, width=52, text="Informes tècnicos",
-                                bg="black", fg="gold", font=("Arial bold", 20, "bold"), bd=5, relief="ridge", padx=5)
-        # Coloco logo y titulo en posicion de pantalla
-        self.lbl_png_ctacte.grid(row=0, column=0, sticky=tk.W, padx=5, ipadx=22)
-        self.lbl_titulo.grid(row=0, column=1, sticky="nsew")
+        self.titulos()
         self.frame_titulo_top.pack(side="top", fill="x", padx=5, pady=2)
         # --------------------------------------------------------------------------
 
         # --------------------------------------------------------------------------
         # STRINGVARS
         # --------------------------------------------------------------------------
-
         self.sv_fecha       = tk.StringVar(value="")
         self.sv_usuario     = tk.StringVar(value="")
         self.sv_dni         = tk.StringVar(value="")
@@ -100,72 +76,17 @@ class ClaseInformeTecnico(tk.Frame):
         # BUSCAR
         # --------------------------------------------------------------------------
 
-        # LABELFRAME DEL TREEVIEW
+        # LABELFRAME DEL GRID ------------------------------------------------------
         self.frame_treeview=tk.LabelFrame(self.master, text="", foreground="#CF09BD")
 
-        # FRAME dentro del frame principal para poner la linea de busqueda
+        # FRAME dentro del frame principal para poner la linea de busqueda ---------
         self.frame_buscar = tk.LabelFrame(self.frame_treeview)
-
-        # BUSCAR Linea de label y entry de busqueda
-        self.lbl_buscar_informe = tk.Label(self.frame_buscar, text="Buscar informe (cliente): ")
-        self.lbl_buscar_informe.grid(row=0, column=0, padx=5, pady=2)
-        self.entry_buscar_informe=tk.Entry(self.frame_buscar, width=50)
-        self.entry_buscar_informe.grid(row=0, column=1, padx=5, pady=2, sticky=tk.W)
-        self.btn_buscar_informe = tk.Button(self.frame_buscar, text="Buscar", command=self.fbuscar_en_tabla,
-                                         bg="CadetBlue", fg="white", width=27)
-        self.btn_buscar_informe.grid(row=0, column=2, padx=5, pady=2, sticky=tk.W)
-        self.btn_mostrar_todo = tk.Button(self.frame_buscar, text="Mostrar todo", command=self.fshowall, bg="CadetBlue",
-                                       fg="white", width=27)
-        self.btn_mostrar_todo.grid(row=0, column=3, padx=5, pady=2, sticky=tk.W)
-
-        # --------------------------------------------------------------------------
-        # TREVIEEW
-        # --------------------------------------------------------------------------
-
-        # STYLE TREEVIEW
-        style = ttk.Style(self.frame_treeview)
-        style.theme_use("clam")
-        style.configure("Treeview.Heading", background="black", foreground="white")
-
-        self.grid_informes_tecnicos = ttk.Treeview(self.frame_treeview, height=5, columns=("col1", "col2", "col3",
-                                                                            "col4", "col5", "col6", "col7", "col8"))
-
-        self.grid_informes_tecnicos.bind("<Double-Button-1>", self.doble_click_grid)
-
-        self.grid_informes_tecnicos.column("#0", width=50, anchor="center", minwidth=50)
-        self.grid_informes_tecnicos.column("col1", width=80, anchor="center", minwidth=50)
-        self.grid_informes_tecnicos.column("col2", width=250, anchor="center", minwidth=200)
-        self.grid_informes_tecnicos.column("col3", width=100, anchor="center", minwidth=80)
-        self.grid_informes_tecnicos.column("col4", width=80, anchor="center", minwidth=80)
-        self.grid_informes_tecnicos.column("col5", width=250, anchor="center", minwidth=80)
-        self.grid_informes_tecnicos.column("col6", width=200, anchor="center", minwidth=80)
-        self.grid_informes_tecnicos.column("col7", width=100, anchor="center", minwidth=80)
-
-        self.grid_informes_tecnicos.heading("#0", text="Id", anchor="center")
-        self.grid_informes_tecnicos.heading("col1", text="Fecha", anchor="center")
-        self.grid_informes_tecnicos.heading("col2", text="Cliente", anchor="center")
-        self.grid_informes_tecnicos.heading("col3", text="Tipo Doc.", anchor="center")
-        self.grid_informes_tecnicos.heading("col4", text="Nº Doc.", anchor="center")
-        self.grid_informes_tecnicos.heading("col5", text="Equipo", anchor="center")
-        self.grid_informes_tecnicos.heading("col6", text="Modelo", anchor="center")
-        self.grid_informes_tecnicos.heading("col7", text="Serie", anchor="center")
-
-        self.grid_informes_tecnicos.tag_configure('oddrow', background='light grey')
-        self.grid_informes_tecnicos.tag_configure('evenrow', background='white')
-
-        # SCROLLBAR del Treeview
-        scroll_x = tk.Scrollbar(self.frame_treeview, orient="horizontal")
-        scroll_y = tk.Scrollbar(self.frame_treeview, orient="vertical")
-        self.grid_informes_tecnicos.config(xscrollcommand=scroll_x.set)
-        self.grid_informes_tecnicos.config(yscrollcommand=scroll_y.set)
-        scroll_x.config(command=self.grid_informes_tecnicos.xview)
-        scroll_y.config(command=self.grid_informes_tecnicos.yview)
-        scroll_y.pack(side="right", fill="y")
-        scroll_x.pack(side="bottom", fill="x")
-        self.grid_informes_tecnicos['selectmode'] = 'browse'
-
+        self.buscar_en_grid()
         self.frame_buscar.pack(side="top", fill="both", expand=1, padx=1, pady=3)
-        self.grid_informes_tecnicos.pack(side="top", fill="both", expand=1, padx=5, pady=2)
+
+        # TREVIEEW - GRID ----------------------------------------------------------
+        self.cuadro_grid()
+
         self.frame_treeview.pack(side="top", fill="both", padx=5, pady=2)
 
         # --------------------------------------------------------------------------
@@ -181,10 +102,6 @@ class ClaseInformeTecnico(tk.Frame):
         self.frame_dos=tk.LabelFrame(self.master, text="", foreground="red")
         self.entrys()
         self.frame_tres.pack(side="top", fill="both", expand=0, padx=5, pady=5)
-
-    # --------------------------------------------------------------------------
-    # METODOS
-    # --------------------------------------------------------------------------
 
     # --------------------------------------------------------------------------
     # ESTADOS
@@ -240,7 +157,7 @@ class ClaseInformeTecnico(tk.Frame):
     # GRILLA
     # --------------------------------------------------------------------------
 
-    def llena_grilla(self, ult_tabla_id):
+    def llena_grilla(self, set_foco):
 
         for item in self.grid_informes_tecnicos.get_children():
             self.grid_informes_tecnicos.delete(item)
@@ -261,51 +178,34 @@ class ClaseInformeTecnico(tk.Frame):
                                                                                         row[3], row[4], row[5], row[6],
                                                                                         row[7], row[8]))
 
-        if len(self.grid_informes_tecnicos.get_children()) > 0:
-            self.grid_informes_tecnicos.selection_set(self.grid_informes_tecnicos.get_children()[0])
+        # Devuelve una colección(tupla) con los IDs de todas las filas cargadas
+        children = self.grid_informes_tecnicos.get_children()
+        # Si no hay filas (grid vacio), salgo sin intentar seleccionar
+        if not children:
+            self.status.set_status("ℹ Grid vacio...", "info")
+            return
 
-        # ----------------------------------------------------------------------------------
-        # Procedimiento para acomodar los punteros en caso de altas, modif. ....)
-        # ----------------------------------------------------------------------------------
-
-        """ ult_tabla_id = Trae el Id de la tabla (21, 60, 61, ..) correspondiente identificando al registro 
-        en el cual yo quiero que se ponga el puntero del GRID.
-        Traera blanco ('') si la funcion llena_grilla es llamada desde cualquier lugar que no 
-        necesite acomodar puntero en un item en particular (caso altas, modificaciones ...)"""
-
-        if ult_tabla_id:
-
-            """ Si NO es blanco - 
-                regis = Guardo todos los Id del Grid (I001, IB003, ...)"""
-            regis = self.grid_informes_tecnicos.get_children()
-            rg = ""
-
-            for rg in regis:
-
-                """ buscado = guardo el 'text' correspondiente al Id del grid que esta en regis y muevo toda 
-                la linea de datos del treeview a la variable buscado), o sea, para el Id I0001 paso el Id de la 
-                tabla 57... y asi ira cambiando para cada rg
-                text = te da el valor de la primera columna del grid, que es donde veo el Id del registro 
-                asignado en la tabla"""
-
-                buscado = self.grid_informes_tecnicos.item(rg)['text']
-                if int(buscado) == int(ult_tabla_id):
-                    """ Si coinciden los Id quiere decir que encontre al registro que estoy buscando por Id de tabla."""
-                    break
-
-            """ Ahora ejecuto este procedimiento que se encarga de poner el puntero en el registro que acabamos 
-            de encontrar correspondiente al Id de tabla asignado en el parametro de la funcion llena_grilla. 
-            "rg" = es el Text o Index del registro en el Treeview I001, IB002.... y ahi posiciono el foco 
-            con las siguientes instrucciones. """
-
-            self.grid_informes_tecnicos.selection_set(rg)
-            # Para que no me diga que no hay nada seleccionado
-            self.grid_informes_tecnicos.focus(rg)
-            # para que la linea seleccionada no me quede fuera del area visible del treeview
-            self.grid_informes_tecnicos.yview(self.grid_informes_tecnicos.index(rg))
+        # Si el parametro set_foco esta vacío (no hay foco), voy al ultimo de la grilla,
+        # caso contrario, voy a la clave que se haya enviado en set_foco para dejar el puntero.
+        if not set_foco:
+            # self.grid_orden.selection_set(children[0]) # asi tambien voy al ultimo
+            # posicion = children[-1]                      # ultimo
+            posicion = children[0]                     # primero
+            self.grid_informes_tecnicos.focus_set()
+            self.grid_informes_tecnicos.focus(posicion)
+            self.grid_informes_tecnicos.selection_set(posicion)
+            self.grid_informes_tecnicos.see(posicion)
         else:
-            # En caso de que el parametro sea "" muevo el puntero al final del GRID
-            self.varFuncion_new.mover_puntero_topend(self.grid_informes_tecnicos, "END")
+            for item in children:
+                texto = self.grid_informes_tecnicos.item(item, "text")
+                # print(str(set_foco) + " " + str(texto))
+                if str(texto).strip() == str(set_foco).strip():  # suponiendo que el ID está en la columna 0
+                    self.grid_informes_tecnicos.update_idletasks()
+                    self.grid_informes_tecnicos.focus_set()
+                    self.grid_informes_tecnicos.selection_set(item)
+                    self.grid_informes_tecnicos.focus(item)
+                    self.grid_informes_tecnicos.see(item)
+                    break
 
     # --------------------------------------------------------------------------
     # PUNTEROS
@@ -399,12 +299,12 @@ class ClaseInformeTecnico(tk.Frame):
         r = messagebox.askquestion("Eliminar", "Confirma eliminar registro?\n " + data, parent=self)
 
         if r == messagebox.NO:
-            messagebox.showinfo("Eliminar", "Eliminacion cancelada", parent=self)
+            self.status.set_status("ℹ Eliminacion cancelada", "info")
             return
 
         self.var_inf_tecnicos.eliminar_informe(self.clave)
 
-        messagebox.showinfo("Eliminar", "Registro eliminado correctamente", parent=self)
+        self.status.set_status("🗑 Eliminacion correcta", "ok")
 
         self.llena_grilla(self.clave_ant)
 
@@ -416,7 +316,6 @@ class ClaseInformeTecnico(tk.Frame):
             self.entry_usuario.focus()
             self.filtro_activo = "inf_tecnicos ORDER BY it_fecha"
             return
-
         if self.sv_equipo.get() == "":
             messagebox.showwarning("Alerta", "Ingrese equipo", parent=self)
             self.entry_equipo.focus()
@@ -424,8 +323,6 @@ class ClaseInformeTecnico(tk.Frame):
             return
 
         try:
-        #aaa = 0
-        #if aaa==0:
 
             # guardo el Id del Treeview en selected para ubicacion del foco a posteriori
             self.selected = self.grid_informes_tecnicos.focus()
@@ -462,19 +359,11 @@ class ClaseInformeTecnico(tk.Frame):
                 self.llena_grilla(ultimo_tabla_id)
             elif self.alta_modif == 2:
                 self.llena_grilla(self.clave)
-
             self.alta_modif = 0
-
-        except Exception:
-
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.varFuncion_new.mostrar_error()
             return
-
-        # except:
-        # #else:
-        #     messagebox.showerror("Error", "Revise datos ingresados por favor", parent=self)
-        #     self.entry_usuario.focus()
-        #     return
 
     # --------------------------------------------------------------------------
     # BUSCAR - MOSTRAR
@@ -530,8 +419,8 @@ class ClaseInformeTecnico(tk.Frame):
     def fimprime(self):
 
         self.selected = self.grid_informes_tecnicos.focus()
-        # Asi obtengo la clave de la base de datos campo Id que no es lo mismo que el otro (numero secuencial
-        # que pone la BD automaticamente al dar el alta
+        # Asi obtengo la clave de la tabla campo Id que no es lo mismo que el otro (numero secuencial)
+        # que pone la tabla automaticamente al dar el alta
         self.clave = self.grid_informes_tecnicos.item(self.selected, 'text')
 
         # traigo el registro que quiero imprimir - aplico el filtro sobre el registro que quiero (UNO SOLO)
@@ -805,3 +694,89 @@ class ClaseInformeTecnico(tk.Frame):
         self.btn_genero_informe = tk.Button(self.frame_tres, text="Generar\nInforme", command=self.fgenero_informe,
                                          width=16, height=4, bg="blue", fg="white")
         self.btn_genero_informe.grid(row=0, column=1, padx=5, pady=2)
+
+    def pantalla(self):
+        self.master.resizable(0, 0)
+        # Actualizamos el contenido de la ventana (la ventana pude crecer si se le agrega
+        # mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer.
+        # ------ Obtenemos el largo y  ancho de la pantalla
+        wtotal = self.master.winfo_screenwidth()
+        htotal = self.master.winfo_screenheight()
+        # ------ Guardamos el largo y alto de la ventana
+        wventana = 1035
+        hventana = 560
+        # ------ Aplicamos la siguiente formula para calcular donde debería posicionarse
+        pwidth = round(wtotal / 2 - wventana / 2) + 0
+        pheight = round(htotal / 2 - hventana / 2) + 0
+        # ------ Se lo aplicamos a la geometría de la ventana
+        self.master.geometry(str(wventana) + "x" + str(hventana) + "+" + str(pwidth) + "+" + str(pheight))
+
+    def titulos(self):
+        # Armo el logo y el titulo
+        self.photocc = Image.open('inf_tecnico.png')
+        self.photocc = self.photocc.resize((50, 50), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
+        self.png_ctacte = ImageTk.PhotoImage(self.photocc)
+        self.lbl_png_ctacte = tk.Label(self.frame_titulo_top, image=self.png_ctacte, bg="red", relief="ridge", bd=5)
+        self.lbl_titulo = tk.Label(self.frame_titulo_top, width=52, text="Informes tècnicos",
+                                bg="black", fg="gold", font=("Arial bold", 20, "bold"), bd=5, relief="ridge", padx=5)
+        # Coloco logo y titulo en posicion de pantalla
+        self.lbl_png_ctacte.grid(row=0, column=0, sticky=tk.W, padx=5, ipadx=22)
+        self.lbl_titulo.grid(row=0, column=1, sticky="nsew")
+
+    def buscar_en_grid(self):
+        # BUSCAR Linea de label y entry de busqueda
+        self.lbl_buscar_informe = tk.Label(self.frame_buscar, text="Buscar informe (cliente): ")
+        self.lbl_buscar_informe.grid(row=0, column=0, padx=5, pady=2)
+        self.entry_buscar_informe = tk.Entry(self.frame_buscar, width=50)
+        self.entry_buscar_informe.grid(row=0, column=1, padx=5, pady=2, sticky=tk.W)
+        self.btn_buscar_informe = tk.Button(self.frame_buscar, text="Buscar", command=self.fbuscar_en_tabla,
+                                            bg="CadetBlue", fg="white", width=27)
+        self.btn_buscar_informe.grid(row=0, column=2, padx=5, pady=2, sticky=tk.W)
+        self.btn_mostrar_todo = tk.Button(self.frame_buscar, text="Mostrar todo", command=self.fshowall, bg="CadetBlue",
+                                          fg="white", width=27)
+        self.btn_mostrar_todo.grid(row=0, column=3, padx=5, pady=2, sticky=tk.W)
+
+    def cuadro_grid(self):
+        # STYLE TREEVIEW
+        style = ttk.Style(self.frame_treeview)
+        style.theme_use("clam")
+        style.configure("Treeview.Heading", background="black", foreground="white")
+
+        self.grid_informes_tecnicos = ttk.Treeview(self.frame_treeview, height=5, columns=("col1", "col2", "col3",
+                                                                            "col4", "col5", "col6", "col7", "col8"))
+
+        self.grid_informes_tecnicos.bind("<Double-Button-1>", self.doble_click_grid)
+
+        self.grid_informes_tecnicos.column("#0", width=50, anchor="center", minwidth=50)
+        self.grid_informes_tecnicos.column("col1", width=80, anchor="center", minwidth=50)
+        self.grid_informes_tecnicos.column("col2", width=250, anchor="center", minwidth=200)
+        self.grid_informes_tecnicos.column("col3", width=100, anchor="center", minwidth=80)
+        self.grid_informes_tecnicos.column("col4", width=80, anchor="center", minwidth=80)
+        self.grid_informes_tecnicos.column("col5", width=250, anchor="center", minwidth=80)
+        self.grid_informes_tecnicos.column("col6", width=200, anchor="center", minwidth=80)
+        self.grid_informes_tecnicos.column("col7", width=100, anchor="center", minwidth=80)
+
+        self.grid_informes_tecnicos.heading("#0", text="Id", anchor="center")
+        self.grid_informes_tecnicos.heading("col1", text="Fecha", anchor="center")
+        self.grid_informes_tecnicos.heading("col2", text="Cliente", anchor="center")
+        self.grid_informes_tecnicos.heading("col3", text="Tipo Doc.", anchor="center")
+        self.grid_informes_tecnicos.heading("col4", text="Nº Doc.", anchor="center")
+        self.grid_informes_tecnicos.heading("col5", text="Equipo", anchor="center")
+        self.grid_informes_tecnicos.heading("col6", text="Modelo", anchor="center")
+        self.grid_informes_tecnicos.heading("col7", text="Serie", anchor="center")
+
+        self.grid_informes_tecnicos.tag_configure('oddrow', background='light grey')
+        self.grid_informes_tecnicos.tag_configure('evenrow', background='white')
+
+        # SCROLLBAR del Treeview
+        scroll_x = tk.Scrollbar(self.frame_treeview, orient="horizontal")
+        scroll_y = tk.Scrollbar(self.frame_treeview, orient="vertical")
+        self.grid_informes_tecnicos.config(xscrollcommand=scroll_x.set)
+        self.grid_informes_tecnicos.config(yscrollcommand=scroll_y.set)
+        scroll_x.config(command=self.grid_informes_tecnicos.xview)
+        scroll_y.config(command=self.grid_informes_tecnicos.yview)
+        scroll_y.pack(side="right", fill="y")
+        scroll_x.pack(side="bottom", fill="x")
+        self.grid_informes_tecnicos['selectmode'] = 'browse'
+
+        self.grid_informes_tecnicos.pack(side="top", fill="both", expand=1, padx=5, pady=2)
