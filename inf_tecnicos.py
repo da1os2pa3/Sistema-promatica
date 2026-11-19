@@ -696,6 +696,7 @@ class ClaseInformeTecnico(tk.Frame):
         self.btn_genero_informe.grid(row=0, column=1, padx=5, pady=2)
 
     def pantalla(self):
+
         self.master.resizable(0, 0)
         # Actualizamos el contenido de la ventana (la ventana pude crecer si se le agrega
         # mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer.
@@ -712,6 +713,7 @@ class ClaseInformeTecnico(tk.Frame):
         self.master.geometry(str(wventana) + "x" + str(hventana) + "+" + str(pwidth) + "+" + str(pheight))
 
     def titulos(self):
+
         # Armo el logo y el titulo
         self.photocc = Image.open('inf_tecnico.png')
         self.photocc = self.photocc.resize((50, 50), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
@@ -724,6 +726,7 @@ class ClaseInformeTecnico(tk.Frame):
         self.lbl_titulo.grid(row=0, column=1, sticky="nsew")
 
     def buscar_en_grid(self):
+
         # BUSCAR Linea de label y entry de busqueda
         self.lbl_buscar_informe = tk.Label(self.frame_buscar, text="Buscar informe (cliente): ")
         self.lbl_buscar_informe.grid(row=0, column=0, padx=5, pady=2)
@@ -737,6 +740,7 @@ class ClaseInformeTecnico(tk.Frame):
         self.btn_mostrar_todo.grid(row=0, column=3, padx=5, pady=2, sticky=tk.W)
 
     def cuadro_grid(self):
+
         # STYLE TREEVIEW
         style = ttk.Style(self.frame_treeview)
         style.theme_use("clam")

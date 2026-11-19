@@ -1,0 +1,26 @@
+parametros(costo_neto_dolar, precio_dolar, tasa_iva, tasa_percepcion, tasa_ganancia, tasa_recargo)
+--------------------------------------------------------------------------------------
+
+PESOS ***********************************************
+retorno_neto_pesos = (costo_neto_dolar * precio_dolar)
+retorno_importe_iva_pesos = retorno_neto_pesos * tasa_iva
+retorno_importe_percepcion_pesos = retorno_neto_pesos * tasa_percepcion
+retorno_bruto_pesos = retorno_neto_pesos + retorno_importe_iva_pesos + retorno_importe_percepcion_pesos
+retorno_ganancia_pesos = retorno_bruto_pesos * tasa_ganancia
+retorno_precio_venta_pesos =  retorno_bruto_pesos + retorno_ganancia_pesos
+retorno_importe_recargo_pesos = retorno_precio_venta_pesos * tasa_recargo
+retorno_precio_venta_pesos_con_recargo = retorno_precio_venta_pesos + retorno_importe_recargo_pesos
+
+
+DOLAR ***********************************************
+retorno_neto_dolar = costo_neto_dolar
+retorno_importe_iva_dolar = costo_neto_dolar * tasa_iva
+retorno_importe_percepcion_dolar = costo_neto_dolar * tasa_percepcion
+retorno_bruto_dolar = costo_neto_dolar + retorno_importe_iva_dolar + retorno_importe_percepcion_dolar
+retorno_ganancia_dolar = retorno_bruto_dolar * tasa_ganancia
+retorno_precio_venta_dolar =  retorno_bruto_dolar + retorno_ganancia_dolar
+retorno_importe_recargo_dolar = retorno_precio_venta_dolar * tasa_recargo
+retorno_precio_venta_dolar_con_recargo = retorno_precio_venta_dolar + retorno_importe_recargo_dolar
+
+
+

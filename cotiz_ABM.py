@@ -69,8 +69,9 @@ class DatosCotiz:
             sql = """
                   INSERT INTO aux_ventas (av_codigo_art, av_desc_art, av_marca_art, av_cantidad, av_tot_uni_conta, 
                                           av_tot_uni_lista, av_neto_unidad, av_impor_iva21, av_impor_iva105, 
-                                          av_impor_ganancia, av_costo_dolar, av_costo_bruto, av_tasaiva)
-                  VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                          av_impor_ganancia, av_costo_dolar, av_costo_bruto, av_tasaiva, av_tasaperc, 
+                                          av_impor_percep)
+                  VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                   """
             valores = (
                 dic_auxventas["av_codigo_art"],
@@ -85,7 +86,57 @@ class DatosCotiz:
                 dic_auxventas["av_impor_ganancia"],
                 dic_auxventas["av_costo_dolar"],
                 dic_auxventas["av_costo_bruto"],
-                dic_auxventas["av_tasaiva"]
+                dic_auxventas["av_tasaiva"],
+                dic_auxventas["av_tasaperc"],
+                dic_auxventas["av_impor_percep"]
+            )
+
+            cur.execute(sql, valores)
+            cnn.commit()
+            # devolvemos el Id generado del nuevo cliente
+            id_nuevo = cur.lastrowid
+            return id_nuevo
+        except Exception:
+            cnn.rollback()
+            raise
+        finally:
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
+
+    def modificar_auxventa(self, dic_auxventas):
+
+        cnn = None
+        cur = None
+        try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
+
+            sql = """
+                  UPDATE aux_ventas SET av_codigo_art=%s, av_desc_art=%s, av_marca_art=%s, av_cantidad=%s, 
+                                        av_tot_uni_conta=%s, av_tot_uni_lista=%s, av_neto_unidad=%s, av_impor_iva21=%s, 
+                                        av_impor_iva105=%s, av_impor_ganancia=%s, av_costo_dolar=%s, av_costo_bruto=%s, 
+                                        av_tasaiva=%s, av_tasaperc=%s, av_impor_percep=%s
+                  WHERE Id = %s 
+                  """
+            valores = (
+                dic_auxventas["av_codigo_art"],
+                dic_auxventas["av_desc_art"],
+                dic_auxventas["av_marca_art"],
+                dic_auxventas["av_cantidad"],
+                dic_auxventas["av_tot_uni_conta"],
+                dic_auxventas["av_tot_uni_lista"],
+                dic_auxventas["av_neto_unidad"],
+                dic_auxventas["av_impor_iva21"],
+                dic_auxventas["av_impor_iva105"],
+                dic_auxventas["av_impor_ganancia"],
+                dic_auxventas["av_costo_dolar"],
+                dic_auxventas["av_costo_bruto"],
+                dic_auxventas["av_tasaiva"],
+                dic_auxventas["av_tasaperc"],
+                dic_auxventas["av_impor_percep"],
+                dic_auxventas["Id"]
             )
 
             cur.execute(sql, valores)
@@ -155,8 +206,8 @@ class DatosCotiz:
                   INSERT INTO deta_ventas(dv_numero, dv_codigo_art, dv_desc_art, dv_marca_art, dv_cantidad, 
                                           dv_tot_uni_conta, dv_tot_uni_lista, dv_neto_venta, dv_impor_iva21, 
                                           dv_impor_iva105, dv_impor_ganancia, dv_costo_dolar, dv_costo_bruto, 
-                                          dv_tasaiva)
-                  VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                          dv_tasaiva, dv_tasaperc, dv_impor_percep)
+                  VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                   """
             valores = (
                 detaventa["dv_numero"],
@@ -173,7 +224,9 @@ class DatosCotiz:
                 detaventa["dv_impor_ganancia"],
                 detaventa["dv_costo_dolar"],
                 detaventa["dv_costo_bruto"],
-                detaventa["dv_tasaiva"]
+                detaventa["dv_tasaiva"],
+                detaventa["dv_tasaperc"],
+                detaventa["dv_impor_percep"]
             )
             cur.execute(sql, valores)
             cnn.commit()
@@ -225,52 +278,6 @@ class DatosCotiz:
             cur.execute(sql, valores)
             cnn.commit()
             return
-        except Exception:
-            cnn.rollback()
-            raise
-        finally:
-            if cur is not None:
-                cur.close()
-            if cnn is not None:
-                cnn.close()
-
-    def modificar_auxventa(self, dic_auxventas):
-
-        cnn = None
-        cur = None
-        try:
-            cnn = self.get_connection()
-            cur = cnn.cursor(buffered=True)
-
-            sql = """
-                  UPDATE aux_ventas SET av_codigo_art=%s, av_desc_art=%s, av_marca_art=%s, av_cantidad=%s, 
-                                        av_tot_uni_conta=%s, av_tot_uni_lista=%s, av_neto_unidad=%s, av_impor_iva21=%s, 
-                                        av_impor_iva105=%s, av_impor_ganancia=%s, av_costo_dolar=%s, av_costo_bruto=%s, 
-                                        av_tasaiva=%s
-                  WHERE Id = %s 
-                  """
-            valores = (
-                dic_auxventas["av_codigo_art"],
-                dic_auxventas["av_desc_art"],
-                dic_auxventas["av_marca_art"],
-                dic_auxventas["av_cantidad"],
-                dic_auxventas["av_tot_uni_conta"],
-                dic_auxventas["av_tot_uni_lista"],
-                dic_auxventas["av_neto_unidad"],
-                dic_auxventas["av_impor_iva21"],
-                dic_auxventas["av_impor_iva105"],
-                dic_auxventas["av_impor_ganancia"],
-                dic_auxventas["av_costo_dolar"],
-                dic_auxventas["av_costo_bruto"],
-                dic_auxventas["av_tasaiva"],
-                dic_auxventas["Id"]
-            )
-
-            cur.execute(sql, valores)
-            cnn.commit()
-            # devolvemos el Id generado del nuevo cliente
-            id_nuevo = cur.lastrowid
-            return id_nuevo
         except Exception:
             cnn.rollback()
             raise

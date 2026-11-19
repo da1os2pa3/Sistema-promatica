@@ -2,6 +2,7 @@ import os
 import tkinter as tk
 import tkinter.font as tkfont
 from datetime import date
+from decimal import Decimal, ROUND_HALF_UP
 from tkinter import ttk, filedialog
 
 from PIL import Image, ImageTk
@@ -42,6 +43,7 @@ class ClaseArticulos(tk.Frame):
 
         self.create_widgets()
         self.estado_inicial()
+        self.entry_buscar_articulo.focus_set()
         self.llena_grilla("")
 
         # SETEO INICIAL DEL GRID --------------------------------------------------------
@@ -108,8 +110,8 @@ class ClaseArticulos(tk.Frame):
         self.sv_costo_neto_pesos         = tk.StringVar(value="0.00")
         self.sv_tasa_iva                 = tk.StringVar(value="0.00")
         self.sv_total_iva                = tk.StringVar(value="0.00")
-        self.sv_tasa_impint              = tk.StringVar(value="0.00")
-        self.sv_total_impint             = tk.StringVar(value="0.00")
+        self.sv_tasa_percep              = tk.StringVar(value="0.00")
+        self.sv_total_percep             = tk.StringVar(value="0.00")
         self.sv_subtotal                 = tk.StringVar(value="0.00")
         self.sv_tasa_ganancia            = tk.StringVar(value="0.00")
         self.sv_total_ganancia           = tk.StringVar(value="0.00")
@@ -214,8 +216,13 @@ class ClaseArticulos(tk.Frame):
             color = ('evenrow',) if cont % 2 else ('oddrow',)
             # convierto fecha de 2024-12-19 a 19/12/2024
             forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[11], '%Y-%m-%d'), False)
-            precio_final_pesos = round(float((row[6]*(1+(row[7]/100))) *
-                                             (1+(row[9]/100))) * float(self.sv_dolar_actual.get()))
+
+            val1 = (Decimal(str(row[6])) * (1 + (Decimal(str(row[7])) / Decimal(100)))).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+            val2 = (((1 + (Decimal(str(row[9])) / Decimal(100))) * (Decimal(str(self.sv_dolar_actual.get())))).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP))
+            precio_final_pesos = val1 * val2
+            # precio_final_pesos = Decimal((row[6]*(1+(row[7]/100))) *
+            #                                  (1+(row[9]/100))) * Decimal(self.sv_dolar_actual.get())
+
             self.grid_articulos.insert("", "end", tags=color, text=row[0], values=(row[1], row[2], row[3],
                                                   row[4], formatear_cifra(precio_final_pesos), row[6], row[5], row[7],
                                                   row[9], row[10], forma_normal, row[12], row[13]))
@@ -251,7 +258,6 @@ class ClaseArticulos(tk.Frame):
                     self.grid_articulos.see(item)
                     break
 
-
     # ------------------------------------------------------------------------
     # ESTADOS -*-
     # ------------------------------------------------------------------------
@@ -275,9 +281,9 @@ class ClaseArticulos(tk.Frame):
             self.entry_codbar,
             self.entry_imagen_art,
             self.entry_costo_neto_dolar,
-            self.entry_costo_neto_pesos,
+            #self.entry_costo_neto_pesos,
             self.combo_iva,
-            self.entry_tasa_impint,
+            self.entry_tasa_percep,
             self.entry_tasa_ganancia,
             self.entry_total_precio_venta,
             self.entry_observa,
@@ -286,13 +292,6 @@ class ClaseArticulos(tk.Frame):
             self.btn_ruta_imagen,
         ]:
             entry.configure(state=estado)
-
-        if self.alta_modif == 1:
-            self.grid_articulos['selectmode'] = 'none'
-            self.grid_articulos.bind("<Double-Button-1>", self.fno_modifique)
-        if self.alta_modif == 2 or self.alta_modif == 0:
-            self.grid_articulos['selectmode'] = 'browse'
-            self.grid_articulos.bind("<Double-Button-1>", self.doble_click_grid)
 
     def limpiar_text(self):
 
@@ -304,9 +303,9 @@ class ClaseArticulos(tk.Frame):
             self.entry_codbar,
             self.entry_imagen_art,
             self.entry_costo_neto_dolar,
-            self.entry_costo_neto_pesos,
+            #self.entry_costo_neto_pesos,
             self.combo_iva,
-            self.entry_tasa_impint,
+            self.entry_tasa_percep,
             self.entry_tasa_ganancia,
             self.entry_total_precio_venta,
             self.entry_observa,
@@ -331,12 +330,12 @@ class ClaseArticulos(tk.Frame):
         for sv2 in [
             self.sv_costo_neto_dolar,
             self.sv_costo_neto_pesos,
-            self.sv_tasa_impint,
+            self.sv_tasa_percep,
             self.sv_tasa_ganancia,
             self.sv_tasa_iva,
             self.sv_costo_historico,
             self.sv_total_iva,
-            self.sv_total_impint,
+            self.sv_total_percep,
             self.sv_subtotal,
             self.sv_total_ganancia,
             self.sv_total_precio_venta,
@@ -376,12 +375,14 @@ class ClaseArticulos(tk.Frame):
         self.btn_guardar.configure(state=estado)
 
     def fcancelar(self):
+        
         r = messagebox.askquestion("Cancelar", "Confirma cancelar operacion actual?", parent=self)
         if r == messagebox.NO:
             return
         self.estado_inicial()
 
     def freset(self):
+
         self.estado_inicial()
         self.fresetmarca()
         self.fresetrubro()
@@ -463,7 +464,7 @@ class ClaseArticulos(tk.Frame):
             self.sv_codbar.set(value=row[5])
             self.sv_costo_neto_dolar.set(value=row[6])
             self.costo_neto_dolar_comparado.set(value=row[6]) # para ver si se cambio el precio y actualizar la fecha de ult. modif.
-            self.sv_tasa_impint.set(value=row[8])
+            self.sv_tasa_percep.set(value=row[8])
             self.sv_tasa_ganancia.set(value=row[9])
             self.sv_observa.set(value=row[10])
 
@@ -516,9 +517,6 @@ class ClaseArticulos(tk.Frame):
 
         self.llena_grilla(self.clave_ant)
 
-
-
-
     def fguardar(self):
 
         # VALIDACIONES -----------------------------------------------------------------------
@@ -553,7 +551,7 @@ class ClaseArticulos(tk.Frame):
             self.fecha_aux = datetime.strptime(self.sv_fechaultact.get(), '%d/%m/%Y')
         if self.alta_modif == 2:
             # Verifico que no haya cambiado el costo neto del dolar articulo, si es asi, cambio fecha de ultima modificacion
-            if float(self.costo_neto_dolar_comparado.get()) != float(self.sv_costo_neto_dolar.get()):
+            if Decimal(self.costo_neto_dolar_comparado.get()) != Decimal(self.sv_costo_neto_dolar.get()):
                 self.fecha_aux = datetime.today()
             else:
                 self.fecha_aux = datetime.strptime(self.sv_fechaultact.get(), '%d/%m/%Y')
@@ -570,7 +568,7 @@ class ClaseArticulos(tk.Frame):
             "codbar":      self.sv_codbar.get(),
             "costodolar":  self.sv_costo_neto_dolar.get(),
             "iva":         self.combo_iva.get(),
-            "impint":      self.sv_tasa_impint.get(),
+            "percep":      self.sv_tasa_percep.get(),
             "porcgan":     self.sv_tasa_ganancia.get(),
             "observa":     self.sv_observa.get(),
             "ultact":      self.fecha_aux,
@@ -603,9 +601,10 @@ class ClaseArticulos(tk.Frame):
         self.habilitar_btn_final("disabled")
         self.habilitar_btn_oper("normal")
 
-        self.filtro_activo = "ORDER BY rubro, marca, descripcion ASC"
+        #self.filtro_activo = "ORDER BY rubro, marca, descripcion ASC"
 
         self.llena_grilla(id_ref)
+        self.entry_buscar_articulo.focus_set()
 
         self.alta_modif = 0
         self.habilitar_text("disabled")
@@ -735,21 +734,43 @@ class ClaseArticulos(tk.Frame):
             self.imagen_defa = "tapiz.jpg"
 
         try:
+            # self.photoa = Image.open(os.path.join(self.carpeta_fotos, self.imagen_defa))
+            # self.photoa = self.photoa.resize((100, 100), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
+            # self.imagen_art = ImageTk.PhotoImage(self.photoa)
+
+            # Intentamos cargar la imagen del artículo
             self.photoa = Image.open(os.path.join(self.carpeta_fotos, self.imagen_defa))
-            self.photoa = self.photoa.resize((100, 100), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
+            self.photoa = self.photoa.resize((100, 100), Image.Resampling.LANCZOS)
             self.imagen_art = ImageTk.PhotoImage(self.photoa)
         except Exception as e:
+            # print(f"Error no controlado: {e}")
+            # self.varFuncion_new.mostrar_error()
+            # return
+
+            # Esto SOLO se ejecuta si la imagen no existe o da error al abrir
             print(f"Error no controlado: {e}")
-            self.varFuncion_new.mostrar_error()
-            return
-        finally:
+            if hasattr(self, 'varFuncion_new') and self.varFuncion_new:
+                self.varFuncion_new.mostrar_error()
+
             messagebox.showerror("Error", "No existe la imagen", parent=self)
+
+            # Cargamos la imagen por defecto de respaldo
             self.imagen_defa = "tapiz.jpg"
-            self.photoa = Image.open(os.path.join(self.carpeta_fotos, self.imagen_defa))
-            self.photoa = self.photoa.resize((100, 100), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
-            self.imagen_art = ImageTk.PhotoImage(self.photoa)
-            self.sv_imagen_Art.set(value="")
-            self.entry_imagen_art.focus()
+            try:
+                self.photoa = Image.open(os.path.join(self.carpeta_fotos, self.imagen_defa))
+                self.photoa = self.photoa.resize((100, 100), Image.Resampling.LANCZOS)
+                self.imagen_art = ImageTk.PhotoImage(self.photoa)
+            except Exception as ex:
+                print(f"Tampoco se pudo cargar la imagen por defecto: {ex}")
+
+        # finally:
+        #     messagebox.showerror("Error", "No existe la imagen", parent=self)
+        #     self.imagen_defa = "tapiz.jpg"
+        #     self.photoa = Image.open(os.path.join(self.carpeta_fotos, self.imagen_defa))
+        #     self.photoa = self.photoa.resize((100, 100), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
+        #     self.imagen_art = ImageTk.PhotoImage(self.photoa)
+        #     self.sv_imagen_Art.set(value="")
+        #     self.entry_imagen_art.focus()
 
         # muestro la imagen en el frame
         self.lbl_imagen_art = tk.Label(self.sector_imagen, image=self.imagen_art, bg="white", relief="ridge", bd=5)
@@ -761,7 +782,7 @@ class ClaseArticulos(tk.Frame):
             self.vent_img = tk.Toplevel(self.master)
             self.vent_img.geometry('420x500+1200+200')
             self.vent_img.config(bg='white', padx=5, pady=5)
-            self.vent_img.resizable(1, 1)
+            self.vent_img.resizable(None, None)
             self.vent_img.title("Imagen ampliada")
 
             photo = Image.open(os.path.join(self.carpeta_fotos, self.imagen_defa))
@@ -844,11 +865,47 @@ class ClaseArticulos(tk.Frame):
         # que se van a usar y verificar variables calculadas en los stringvars
         self.varFuncion_new.corregir_al_salir(self.entry_total_precio_venta)
         self.varFuncion_new.corregir_al_salir(self.entry_tasa_ganancia)
-        self.varFuncion_new.corregir_al_salir(self.entry_tasa_impint)
+        self.varFuncion_new.corregir_al_salir(self.entry_tasa_percep)
         self.varFuncion_new.corregir_al_salir(self.entry_costo_neto_pesos)
         self.varFuncion_new.corregir_al_salir(self.entry_costo_neto_dolar)
         self.varFuncion_new.corregir_al_salir(self.entry_costo_historico)
         # ---------------------------------------------------------------------------------
+
+        # self.lista_calculos = self.varFuncion_new.calcular_precio_articulos(self.sv_costo_neto_dolar.get(),
+        #                                                                     self.sv_dolar_actual.get(),
+        #                                                                     self.combo_iva.get(),
+        #                                                                     self.sv_tasa_percep.get(),
+        #                                                                     self.sv_tasa_ganancia.get(),
+        #                                                                     self.sv_recargo_tarjeta.get())
+
+        #try:
+        a = 0
+        if a == 0:
+            self.lista_calculos = self.varFuncion_new.calcular_precio_articulos(
+                self.sv_costo_neto_dolar.get(),
+                self.sv_dolar_actual.get(),
+                self.combo_iva.get(),
+                self.sv_tasa_percep.get(),
+                self.sv_tasa_ganancia.get(),
+                self.sv_recargo_tarjeta.get(),
+            )
+        # except ValueError as error:
+        #     self.varFuncion_new.mostrar_error(str(error))
+        #     self.status.set_status("❌ Revise los datos numéricos", "")
+        #     return
+
+        self.lista_calculos.append(self.sv_dolar_actual.get())
+
+        # print(self.lista_calculos)
+        # print(self.lista_calculos[0]) # retorno_neto_pesos
+        # print(self.lista_calculos[1]) # retorno_importe_iva_pesos
+        # print(self.lista_calculos[2]) # retorno_importe_percepcion_pesos
+        # print(self.lista_calculos[3]) # retorno_bruto_pesos
+        # print(self.lista_calculos[4]) # retorno_ganancia_pesos
+        # print(self.lista_calculos[5]) # retorno_precio_venta_pesos
+        # print(self.lista_calculos[6]) # retorno_importe_recargo_pesos
+        # print(self.lista_calculos[7]) # retorno_precio_venta_pesos_con_recargo
+        # print(self.lista_calculos[8]) # retorno_dolar_actual
 
         try:
         # a = 0
@@ -856,78 +913,120 @@ class ClaseArticulos(tk.Frame):
 
             # Verifica que costos no esten en cero, porque sino da error el calculo de precio de venta final (divide zero)
             if que_campo != "nada":
-                if float(self.sv_costo_neto_dolar.get()) == 0 and float(self.sv_costo_neto_pesos.get()) == 0:
+
+                # lista_calculos[0] IM PORTE COSTO PESOS NETO
+                if Decimal(self.sv_costo_neto_dolar.get()) == 0 and self.lista_calculos[0] == 0:
                     messagebox.showwarning("Cuidado", "Debe colocar costo", parent=self)
                     self.entry_costo_neto_dolar.focus()
                     return
 
             if que_campo == "dolar":
-                # Calulo el costo neto en dolar
-                x_costo_neto_dolar = float(self.sv_costo_neto_dolar.get())
-                x_valor_dolar_hoy = float(self.sv_dolar_actual.get())
-                #calc_pesos_neto = round((float(self.sv_costo_neto_dolar.get()) * float(self.sv_dolar_actual.get())), 2)
-                calc_pesos_neto = round((x_costo_neto_dolar * x_valor_dolar_hoy), 2)
-                #self.sv_costo_neto_pesos.set(value=str(round(float(calc_pesos_neto), 2)))
-                self.sv_costo_neto_pesos.set(value=str(round(calc_pesos_neto, 2)))
+
+                # self.lista_calculos[0] = costo neto pesos
+                val1 = Decimal(str(self.lista_calculos[0])).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                self.sv_costo_neto_pesos.set(value=str(val1))
 
             elif que_campo == "nada":
-                pass
+                 pass
 
             elif que_campo == "pesos":
 
-                # Calculo el costo en pesos a partir del ingreso de pesos
-                x_costo_neto_pesos = float(self.sv_costo_neto_pesos.get())
-                x_valor_dolar_hoy = float(self.sv_dolar_actual.get())
-                x_calc_dolar_neto = round(( x_costo_neto_pesos / x_valor_dolar_hoy ), 2)
-                self.sv_costo_neto_dolar.set(value=str(round(x_calc_dolar_neto, 2)))
+                #--------------------------------------------------------
+                # Calculo el costo en dolares a partir del ingreso de pesos
+                #--------------------------------------------------------
+                # self.lista_calculos[0] = costo neto pesos
+                # lista_calculos[8] = valor del dolar_hoy
+                # lista_calculos[0] = importe neto pesos
+                x_calc_dolar_neto = (Decimal(self.lista_calculos[0]) / Decimal(self.lista_calculos[8])).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                self.sv_costo_neto_dolar.set(value=str(x_calc_dolar_neto))
 
             elif que_campo == "iva":
 
-                # Calculo el iva correspondiente segun la tasa seleccionada
-                val1 = float(self.combo_iva.get())
-                val2 = float(self.sv_costo_neto_pesos.get())
-                self.sv_total_iva.set(value=str(round(((val1 * val2) / 100), 2)))
+                # ----------------------------------------------------------------------
+                # Calculo el importe del iva correspondiente segun la tasa seleccionada
+                # ----------------------------------------------------------------------
+                # self.lista_calculos[1] = importe del iva
+                val1 = Decimal(str(self.lista_calculos[1])).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                self.sv_total_iva.set(value=str(val1))
 
-            elif que_campo == "impint":
+            elif que_campo == "percep":
 
-                # Calculo el Impuesto Interno
-                val1 = float(self.sv_tasa_impint.get())
-                val2 = float(self.sv_costo_neto_pesos.get())
-                self.sv_total_impint.set(value=str(round(((val1 * val2) / 100), 2)))
+                # ----------------------------------------------------------------------
+                # Calculo el importe del impuesto interno correspondiente segun la tasa seleccionada
+                # ----------------------------------------------------------------------
+                # self.lista_calculos[2] = importe del impuesto interno
+                val1 = Decimal(str(self.lista_calculos[2])).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                self.sv_total_percep.set(value=str(val1))
 
             elif que_campo == "porgan":
 
-                # Calculo el porcentaje de ganancia importe
-                val1 = float(self.sv_tasa_ganancia.get())
-                val2 = float(self.sv_subtotal.get())
-                self.sv_total_ganancia.set(value=str(round(((val1 * val2) / 100), 2)))
+                # ----------------------------------------------------------------------
+                # Calculo el importe de la ganancia segun la tasa seleccionada
+                # ----------------------------------------------------------------------
+                # self.lista_calculos[4] = importe de la ganancia
+                val1 = Decimal(str(self.lista_calculos[4])).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                self.sv_total_ganancia.set(value=str(val1))
 
             elif que_campo == "totales":
 
-                # Aca es si cambio el total de venta en pesos
-                # Debo recalcular el nuevo porc. % de ganancia y el importe de ganancia
+                # Aca es "SI CAMBIO" el total de venta en pesos. Debo recalcular el nuevo porc. % de ganancia
+                # y el importe de ganancia
 
-                # Nuevo porcentaje ganancias
-                x_total_precio_venta = float(self.sv_total_precio_venta.get())
-                x_subtotal = float(self.sv_subtotal.get())
-                val8 = round((((x_total_precio_venta - x_subtotal) * 100) / x_subtotal), 2)
-                self.sv_tasa_ganancia.set(value=str(val8))
+                # Nuevo % de ganancia
+                val1 = Decimal(self.sv_total_precio_venta.get()).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                val2 = Decimal(self.sv_costo_pesos_bruto.get()).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                val3 = (((val1 - val2) / val2) * Decimal(100)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                self.sv_tasa_ganancia.set(value=str(val3))
 
+                # # Funcion que devuelve los calculos necesarios
+                # self.lista_calculos = self.varFuncion_new.calcular_precio_articulos(self.sv_costo_neto_dolar.get(),
+                #                                                                     self.sv_dolar_actual.get(),
+                #                                                                     self.combo_iva.get(),
+                #                                                                     self.sv_tasa_percep.get(),
+                #                                                                     self.sv_tasa_ganancia.get(),
+                #                                                                     self.sv_recargo_tarjeta.get())
+
+                try:
+                    self.lista_calculos = self.varFuncion_new.calcular_precio_articulos(
+                        self.sv_costo_neto_dolar.get(),
+                        self.sv_dolar_actual.get(),
+                        self.combo_iva.get(),
+                        self.sv_tasa_percep.get(),
+                        self.sv_tasa_ganancia.get(),
+                        self.sv_recargo_tarjeta.get(),
+                    )
+                except ValueError as error:
+                    self.varFuncion_new.mostrar_error(str(error))
+                    self.status.set_status("❌ Revise los datos numéricos", "")
+                    return
+
+                # añado a la lista el valor del dolar hoy, para manejarlo tambien como parametro
+                self.lista_calculos.append(self.sv_dolar_actual.get())
+
+                # ----------------------------------------------------------------------
                 # Ahora recalculo el nuevo importe de la ganancia
-                val1 = float(self.sv_tasa_ganancia.get())
-                val2 = float(self.sv_subtotal.get())
-                self.sv_total_ganancia.set(value=str(round(((val1 * val2) / 100), 2)))
+                # ----------------------------------------------------------------------
+                # val1 = Decimal(self.sv_tasa_ganancia.get())
+                # val2 = Decimal(self.sv_subtotal.get())
+                # self.sv_total_ganancia.set(value=str(((val1 * val2) / Decimal(100)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)))
+                val1 = Decimal(self.sv_tasa_ganancia.get()).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                val2 = Decimal(self.sv_subtotal.get()).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                val3 = ((val1*val2) / Decimal(100)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                self.sv_total_ganancia.set(value=str(val3))
 
+                # ----------------------------------------------------------------------
                 # calculo el precio de venta con el recargo por venta con tarjeta
-                x_calc_total_ventas = float(self.sv_total_precio_venta.get())
-                x_recargo_tarjeta = float(self.sv_recargo_tarjeta.get())
-                x_calc_total_ventas_mas10 = x_calc_total_ventas * ((x_recargo_tarjeta / 100) + 1)
-                self.sv_total_precio_venta_mas10.set(value=str(round(x_calc_total_ventas_mas10, 2)))
+                # ----------------------------------------------------------------------
+                # self.lista_calculos[7] = IMPORTE TOTAL VENTA MAS RECARGO DE TARJETA
+                val1 = Decimal(str(self.lista_calculos[7])).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                self.sv_total_precio_venta_mas10.set(value=str(val1))
                 return
 
             elif que_campo == "limp":
 
+                # ----------------------------------------------------------------------
                 # limpìa todos los campos al darle cancelar
+                # ----------------------------------------------------------------------
                 self.sv_total_iva.set(value="0.00")
                 self.sv_subtotal.set(value="0.00")
                 self.sv_total_ganancia.set(value="0.00")
@@ -937,78 +1036,116 @@ class ClaseArticulos(tk.Frame):
 
             elif que_campo == "completo":
 
+                # ----------------------------------------------------------------------
                 # Calculo el costo neto en dolares
-                x_costo_neto_dolar = float(self.sv_costo_neto_dolar.get())
-                x_dolar_actual = float(self.sv_dolar_actual.get())
-                x_calc_pesos_neto = round((x_costo_neto_dolar * x_dolar_actual), 2)
+                # ----------------------------------------------------------------------
+                # self.lista_calculos[0] = IMPORTE PESOS NETO
+                self.sv_costo_neto_pesos.set(value=self.lista_calculos[0])
 
-                # self.sv_costo_neto_pesos.set(value=0)
-                self.sv_costo_neto_pesos.set(value=str(x_calc_pesos_neto))
-
+                # ----------------------------------------------------------------------
                 # Calculo el costo en pesos neto a partir del ingreso de pesos
-                x_costo_neto_pesos = float(self.sv_costo_neto_pesos.get())
-                x_dolar_actual = float(self.sv_dolar_actual.get())
-                x_calc_dolar_neto = str(round((x_costo_neto_pesos / x_dolar_actual), 2))
+                # ----------------------------------------------------------------------
+                # self.lista_calculos[0] = IMPORTE PESOS NETO
+                # self.lista_calculos[8] = IMPORTE VALOR DOLAR HOY
+                # x_dolar_actual = Decimal(self.sv_dolar_actual.get()).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                x_calc_dolar_neto = (Decimal(self.lista_calculos[0]) / Decimal(self.lista_calculos[8])).quantize(
+                    Decimal("0.01"), rounding=ROUND_HALF_UP)
+                self.sv_costo_neto_dolar.set(value=str(x_calc_dolar_neto))
 
-                # self.sv_costo_neto_dolar.set(value=0)
-                self.sv_costo_neto_dolar.set(value=x_calc_dolar_neto)
-
+                # ----------------------------------------------------------------------
                 # Calculo el iva correspondiente segun la tasa seleccionada
-                val1 = float(self.combo_iva.get())
-                val2 = float(self.sv_costo_neto_pesos.get())
-                self.sv_total_iva.set(value=str(round(((val1 * val2) / 100), 2)))
+                # ----------------------------------------------------------------------
+                # self.lista_calculos[1] = IMPORTE DEL IVA EN PESOS
+                self.sv_total_iva.set(value=self.lista_calculos[1])
 
+                # ----------------------------------------------------------------------
                 # Calculo el Impuesto Interno
-                val1 = float(self.sv_tasa_impint.get())
-                val2 = float(self.sv_costo_neto_pesos.get())
-                self.sv_total_impint.set(value=str(round(((val1 * val2) / 100), 2)))
+                # ----------------------------------------------------------------------
+                # self.lista_calculos[2] = IMPORTE DEL IMPUESTO INTERNO EN PESOS
+                self.sv_total_percep.set(value=self.lista_calculos[2])
 
+                # ----------------------------------------------------------------------
                 # Calculo la ganancia
-                x_costo_neto_pesos = float(self.sv_costo_neto_pesos.get())
-                x_total_iva = float(self.sv_total_iva.get())
-                x_total_impint = float(self.sv_total_impint.get())
-                self.sv_subtotal.set(value=str(round((x_costo_neto_pesos + x_total_iva + x_total_impint), 2)))
+                # ----------------------------------------------------------------------
+                # self.lista_calculos[0] = IMPORTE DE VENTA NETO EN PESOS
+                # self.lista_calculos[1] = IMPORTE DEL IVA EN PESOS
+                # self.lista_calculos[2] = IMPORTE DEL IMPUESTO INTERNO EN PESOS
+                val1 = (Decimal(self.lista_calculos[0]) + Decimal(self.lista_calculos[1]) + Decimal(
+                    self.lista_calculos[2])).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                self.sv_subtotal.set(value=str(val1))
 
-                val1 = float(self.sv_tasa_ganancia.get())
-                val2 = float(self.sv_subtotal.get())
-                self.sv_total_ganancia.set(value=str(round(((val1 * val2) / 100), 2)))
+                val1 = Decimal(self.sv_tasa_ganancia.get()).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                val2 = Decimal(self.sv_subtotal.get()).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                self.sv_total_ganancia.set(value=str(((val1 * val2) / Decimal("100"))))
 
+                # Vulevo a calcular con los nuevos valores modificados
+                self.lista_calculos = self.varFuncion_new.calcular_precio_articulos(self.sv_costo_neto_dolar.get(),
+                                                                           self.sv_dolar_actual.get(),
+                                                                           self.combo_iva.get(),
+                                                                           self.sv_tasa_percep.get(),
+                                                                           self.sv_tasa_ganancia.get(),
+                                                                           self.sv_recargo_tarjeta.get())
+
+                # añado a la lista el valor del dolar hoy, para manejarlo tambien como parametro
+                self.lista_calculos.append(self.sv_dolar_actual.get())
+
+
+            # ---------------------------------------------------------------------
             # Aca se recalculan todos los totales por si se modifica algo
+            # ---------------------------------------------------------------------
             # Total IVA
-            val1 = float(self.combo_iva.get())
-            val2 = float(self.sv_costo_neto_pesos.get())
-            self.sv_total_iva.set(value=str(round(((val1 * val2) / 100), 2)))
+            # ---------------------------------------------------------------------
+            # self.lista_calculos[1] = IMPORTE DEL IVA EN PESOS
+            self.sv_total_iva.set(value=self.lista_calculos[1])
 
+            # ---------------------------------------------------------------------
             # Subtotal
-            x_costo_neto_pesos = float(self.sv_costo_neto_pesos.get())
-            x_total_iva = float(self.sv_total_iva.get())
-            x_total_impint = float(self.sv_total_impint.get())
-            self.sv_subtotal.set(value=str(round((x_costo_neto_pesos + x_total_iva + x_total_impint), 2)))
+            # ---------------------------------------------------------------------
+            # self.lista_calculos[0] = IMPORTE DE VENTA NETO EN PESOS
+            # self.lista_calculos[1] = IMPORTE DEL IVA EN PESOS
+            # self.lista_calculos[2] = IMPORTE DEL IMPUESTO INTERNO EN PESOS
+            val1 = Decimal(self.lista_calculos[0]+self.lista_calculos[1]+self.lista_calculos[2]).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
+            self.sv_subtotal.set(value=str(val1))
+
+            # ---------------------------------------------------------------------
             # pesos y dolar bruto con impuestos
-            x_subtotal = float(self.sv_subtotal.get())
-            x_dolar_actual = float(self.sv_dolar_actual.get())
-            self.sv_costo_pesos_bruto.set(value=str(round(x_subtotal, 2)))
-            self.sv_costo_dolar_bruto.set(value=str(round((x_subtotal / x_dolar_actual), 4)))
+            # ---------------------------------------------------------------------
+            x_dolar_actual = Decimal(self.sv_dolar_actual.get())
+            # self.lista_calculos[3] = IMPORTE BRUTO PESOS
+            self.sv_costo_pesos_bruto.set(value=self.lista_calculos[3])
 
+            # self.lista_calculos[3] = IMPORTE BRUTO PESOS
+            val1 = Decimal(self.lista_calculos[3]).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            val2 = Decimal(x_dolar_actual).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            costo_dolar_bruto = 0
+            if val2 != 0:
+                costo_dolar_bruto = (val1 / val2).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            self.sv_costo_dolar_bruto.set(value=str(costo_dolar_bruto))
+
+            # ---------------------------------------------------------------------
             # importe pesos de la ganancia
-            val1 = float(self.sv_tasa_ganancia.get())
-            val2 = float(self.sv_subtotal.get())
-            self.sv_total_ganancia.set(value=str(round(((val1 * val2) / 100), 2)))
+            # ---------------------------------------------------------------------
+            # self.lista_calculos[4] = IMPORTE DE LA GANANCIA EN PESOS
+            self.sv_total_ganancia.set(value=self.lista_calculos[4])
 
+            # ---------------------------------------------------------------------
             # Total venta en pesos con la ganancia incluida
-            x_costo_neto_pesos = float(self.sv_costo_neto_pesos.get())
-            x_total_iva = float(self.sv_total_iva.get())
-            x_total_impint = float(self.sv_total_impint.get())
-            x_total_ganancia = float(self.sv_total_ganancia.get())
-            x_calc_total_ventas = round((x_costo_neto_pesos + x_total_iva + x_total_impint + x_total_ganancia), 2)
+            # ---------------------------------------------------------------------
+            # self.lista_calculos[0] = IMPORTE DE VENTA NETO EN PESOS
+            # self.lista_calculos[1] = IMPORTE DEL IVA EN PESOS
+            # self.lista_calculos[2] = IMPORTE DEL IMPUESTO INTERNO EN PESOS
+            # self.lista_calculos[4] = IMPORTE DE LA GANANCIA EN PESOS
+            x_calc_total_ventas = self.lista_calculos[0]+self.lista_calculos[1]+self.lista_calculos[2]+self.lista_calculos[4]
+            val1 = Decimal(str(x_calc_total_ventas)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            self.sv_total_precio_venta.set(str(val1))
 
-            self.sv_total_precio_venta.set(value=str(round(float(x_calc_total_ventas), 2)))
-
+            # ---------------------------------------------------------------------
             # calculo el precio de venta con el recargo por venta con tarjeta
-            x_recargo_tarjeta = float(self.sv_recargo_tarjeta.get())
-            x_calc_total_ventas_mas10 = x_calc_total_ventas * ((x_recargo_tarjeta / 100) + 1)
-            self.sv_total_precio_venta_mas10.set(value=str(round(float(x_calc_total_ventas_mas10), 2)))
+            # ---------------------------------------------------------------------
+            # self.lista_calculos[7] = IMPORTE TOTAL DE LA VENTA MAS EL RECARGO DE TARJETA EN PESOS
+            val1 = Decimal(str(self.lista_calculos[7])).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            self.sv_total_precio_venta_mas10.set(value=str(val1))
 
         except ValueError as e:
 
@@ -1020,6 +1157,182 @@ class ClaseArticulos(tk.Frame):
             print(f"Error no controlado: {e}")
             self.varFuncion_new.mostrar_error()
             return
+
+
+
+
+
+        # &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+        # try:
+        # # a = 0
+        # # if a == 0:
+        #
+        #     # Verifica que costos no esten en cero, porque sino da error el calculo de precio de venta final (divide zero)
+        #     if que_campo != "nada":
+        #         if float(self.sv_costo_neto_dolar.get()) == 0 and float(self.sv_costo_neto_pesos.get()) == 0:
+        #             messagebox.showwarning("Cuidado", "Debe colocar costo", parent=self)
+        #             self.entry_costo_neto_dolar.focus()
+        #             return
+        #
+        #     if que_campo == "dolar":
+        #         # Calulo el costo neto en dolar
+        #         x_costo_neto_dolar = float(self.sv_costo_neto_dolar.get())
+        #         x_valor_dolar_hoy = float(self.sv_dolar_actual.get())
+        #         #calc_pesos_neto = round((float(self.sv_costo_neto_dolar.get()) * float(self.sv_dolar_actual.get())), 2)
+        #         calc_pesos_neto = round((x_costo_neto_dolar * x_valor_dolar_hoy), 2)
+        #         #self.sv_costo_neto_pesos.set(value=str(round(float(calc_pesos_neto), 2)))
+        #         self.sv_costo_neto_pesos.set(value=str(round(calc_pesos_neto, 2)))
+        #
+        #     elif que_campo == "nada":
+        #         pass
+        #
+        #     elif que_campo == "pesos":
+        #
+        #         # Calculo el costo en pesos a partir del ingreso de pesos
+        #         x_costo_neto_pesos = float(self.sv_costo_neto_pesos.get())
+        #         x_valor_dolar_hoy = float(self.sv_dolar_actual.get())
+        #         x_calc_dolar_neto = round(( x_costo_neto_pesos / x_valor_dolar_hoy ), 2)
+        #         self.sv_costo_neto_dolar.set(value=str(round(x_calc_dolar_neto, 2)))
+        #
+        #     elif que_campo == "iva":
+        #
+        #         # Calculo el iva correspondiente segun la tasa seleccionada
+        #         val1 = float(self.combo_iva.get())
+        #         val2 = float(self.sv_costo_neto_pesos.get())
+        #         self.sv_total_iva.set(value=str(round(((val1 * val2) / 100), 2)))
+        #
+        #     elif que_campo == "percep":
+        #
+        #         # Calculo el Impuesto Interno
+        #         val1 = float(self.sv_tasa_percep.get())
+        #         val2 = float(self.sv_costo_neto_pesos.get())
+        #         self.sv_total_percep.set(value=str(round(((val1 * val2) / 100), 2)))
+        #
+        #     elif que_campo == "porgan":
+        #
+        #         # Calculo el porcentaje de ganancia importe
+        #         val1 = float(self.sv_tasa_ganancia.get())
+        #         val2 = float(self.sv_subtotal.get())
+        #         self.sv_total_ganancia.set(value=str(round(((val1 * val2) / 100), 2)))
+        #
+        #     elif que_campo == "totales":
+        #
+        #         # Aca es si cambio el total de venta en pesos
+        #         # Debo recalcular el nuevo porc. % de ganancia y el importe de ganancia
+        #
+        #         # Nuevo porcentaje ganancias
+        #         x_total_precio_venta = float(self.sv_total_precio_venta.get())
+        #         x_subtotal = float(self.sv_subtotal.get())
+        #         val8 = round((((x_total_precio_venta - x_subtotal) * 100) / x_subtotal), 2)
+        #         self.sv_tasa_ganancia.set(value=str(val8))
+        #
+        #         # Ahora recalculo el nuevo importe de la ganancia
+        #         val1 = float(self.sv_tasa_ganancia.get())
+        #         val2 = float(self.sv_subtotal.get())
+        #         self.sv_total_ganancia.set(value=str(round(((val1 * val2) / 100), 2)))
+        #
+        #         # calculo el precio de venta con el recargo por venta con tarjeta
+        #         x_calc_total_ventas = float(self.sv_total_precio_venta.get())
+        #         x_recargo_tarjeta = float(self.sv_recargo_tarjeta.get())
+        #         x_calc_total_ventas_mas10 = x_calc_total_ventas * ((x_recargo_tarjeta / 100) + 1)
+        #         self.sv_total_precio_venta_mas10.set(value=str(round(x_calc_total_ventas_mas10, 2)))
+        #         return
+        #
+        #     elif que_campo == "limp":
+        #
+        #         # limpìa todos los campos al darle cancelar
+        #         self.sv_total_iva.set(value="0.00")
+        #         self.sv_subtotal.set(value="0.00")
+        #         self.sv_total_ganancia.set(value="0.00")
+        #         self.sv_costo_pesos_bruto.set(value="0.00")
+        #         self.sv_costo_dolar_bruto.set(value="0.00")
+        #         return
+        #
+        #     elif que_campo == "completo":
+        #
+        #         # Calculo el costo neto en dolares
+        #         x_costo_neto_dolar = float(self.sv_costo_neto_dolar.get())
+        #         x_dolar_actual = float(self.sv_dolar_actual.get())
+        #         x_calc_pesos_neto = round((x_costo_neto_dolar * x_dolar_actual), 2)
+        #
+        #         # self.sv_costo_neto_pesos.set(value=0)
+        #         self.sv_costo_neto_pesos.set(value=str(x_calc_pesos_neto))
+        #
+        #         # Calculo el costo en pesos neto a partir del ingreso de pesos
+        #         x_costo_neto_pesos = float(self.sv_costo_neto_pesos.get())
+        #         x_dolar_actual = float(self.sv_dolar_actual.get())
+        #         x_calc_dolar_neto = str(round((x_costo_neto_pesos / x_dolar_actual), 2))
+        #
+        #         # self.sv_costo_neto_dolar.set(value=0)
+        #         self.sv_costo_neto_dolar.set(value=x_calc_dolar_neto)
+        #
+        #         # Calculo el iva correspondiente segun la tasa seleccionada
+        #         val1 = float(self.combo_iva.get())
+        #         val2 = float(self.sv_costo_neto_pesos.get())
+        #         self.sv_total_iva.set(value=str(round(((val1 * val2) / 100), 2)))
+        #
+        #         # Calculo el Impuesto Interno
+        #         val1 = float(self.sv_tasa_percep.get())
+        #         val2 = float(self.sv_costo_neto_pesos.get())
+        #         self.sv_total_percep.set(value=str(round(((val1 * val2) / 100), 2)))
+        #
+        #         # Calculo la ganancia
+        #         x_costo_neto_pesos = float(self.sv_costo_neto_pesos.get())
+        #         x_total_iva = float(self.sv_total_iva.get())
+        #         x_total_percep = float(self.sv_total_percep.get())
+        #         self.sv_subtotal.set(value=str(round((x_costo_neto_pesos + x_total_iva + x_total_percep), 2)))
+        #
+        #         val1 = float(self.sv_tasa_ganancia.get())
+        #         val2 = float(self.sv_subtotal.get())
+        #         self.sv_total_ganancia.set(value=str(round(((val1 * val2) / 100), 2)))
+        #
+        #     # Aca se recalculan todos los totales por si se modifica algo
+        #     # Total IVA
+        #     val1 = float(self.combo_iva.get())
+        #     val2 = float(self.sv_costo_neto_pesos.get())
+        #     self.sv_total_iva.set(value=str(round(((val1 * val2) / 100), 2)))
+        #
+        #     # Subtotal
+        #     x_costo_neto_pesos = float(self.sv_costo_neto_pesos.get())
+        #     x_total_iva = float(self.sv_total_iva.get())
+        #     x_total_percep = float(self.sv_total_percep.get())
+        #     self.sv_subtotal.set(value=str(round((x_costo_neto_pesos + x_total_iva + x_total_percep), 2)))
+        #
+        #     # pesos y dolar bruto con impuestos
+        #     x_subtotal = float(self.sv_subtotal.get())
+        #     x_dolar_actual = float(self.sv_dolar_actual.get())
+        #     self.sv_costo_pesos_bruto.set(value=str(round(x_subtotal, 2)))
+        #     self.sv_costo_dolar_bruto.set(value=str(round((x_subtotal / x_dolar_actual), 4)))
+        #
+        #     # importe pesos de la ganancia
+        #     val1 = float(self.sv_tasa_ganancia.get())
+        #     val2 = float(self.sv_subtotal.get())
+        #     self.sv_total_ganancia.set(value=str(round(((val1 * val2) / 100), 2)))
+        #
+        #     # Total venta en pesos con la ganancia incluida
+        #     x_costo_neto_pesos = float(self.sv_costo_neto_pesos.get())
+        #     x_total_iva = float(self.sv_total_iva.get())
+        #     x_total_percep = float(self.sv_total_percep.get())
+        #     x_total_ganancia = float(self.sv_total_ganancia.get())
+        #     x_calc_total_ventas = round((x_costo_neto_pesos + x_total_iva + x_total_percep + x_total_ganancia), 2)
+        #
+        #     self.sv_total_precio_venta.set(value=str(round(float(x_calc_total_ventas), 2)))
+        #
+        #     # calculo el precio de venta con el recargo por venta con tarjeta
+        #     x_recargo_tarjeta = float(self.sv_recargo_tarjeta.get())
+        #     x_calc_total_ventas_mas10 = x_calc_total_ventas * ((x_recargo_tarjeta / 100) + 1)
+        #     self.sv_total_precio_venta_mas10.set(value=str(round(float(x_calc_total_ventas_mas10), 2)))
+        #
+        # except ValueError as e:
+        #
+        #     self.status.set_status("❌ Except_error - Revise datos numericos", str(e))
+        #     self.entry_costo_historico.focus()
+        #     return
+        #
+        # except Exception as e:
+        #     print(f"Error no controlado: {e}")
+        #     self.varFuncion_new.mostrar_error()
+        #     return
 
     # --------------------------------------------------------------------------
     # PUNTEROS -*-
@@ -1290,7 +1603,7 @@ class ClaseArticulos(tk.Frame):
         # COSTO NETO EN PESOS
         self.lbl_costo_neto_pesos = tk.Label(self.sector_totales, text="Costo neto Pesos:")
         self.lbl_costo_neto_pesos.grid(row=1, column=0, padx=2, pady=1, sticky="w")
-        self.entry_costo_neto_pesos = tk.Entry(self.sector_totales, textvariable=self.sv_costo_neto_pesos, justify="right", width=15)
+        self.entry_costo_neto_pesos = tk.Entry(self.sector_totales, textvariable=self.sv_costo_neto_pesos, justify="right", width=15, state="readonly")
         self.entry_costo_neto_pesos.grid(row=1, column=1, padx=2, pady=1, sticky="w")
         self.entry_costo_neto_pesos.config(validate="key", validatecommand=self.vcmd)
         self.entry_costo_neto_pesos.bind("<FocusOut>", lambda e: self.varFuncion_new.corregir_al_salir(self.entry_costo_neto_pesos))
@@ -1308,20 +1621,20 @@ class ClaseArticulos(tk.Frame):
         self.lbl_total_iva.grid(row=2, column=2, padx=2, pady=1, sticky='nsew')
         self.combo_iva.bind('<Tab>', lambda e: self.calcular("iva"))
 
-        # TASA IMPUESTOS INTERNOS
-        self.lbl_impint = tk.Label(self.sector_totales, text="% Imp.Interno:")
-        self.lbl_impint.grid(row=3, column=0, padx=2, pady=1, sticky="w")
-        self.sv_tasa_impint.set(value="0.00")
-        self.sv_total_impint.set(value="0.00")
-        self.entry_tasa_impint = tk.Entry(self.sector_totales, textvariable=self.sv_tasa_impint, width=5, justify="right")
-        self.entry_tasa_impint.grid(row=3, column=1, padx=2, pady=1, sticky="w")
-        self.entry_tasa_impint.config(validate="key", validatecommand=self.vcmd)
-        self.entry_tasa_impint.bind("<FocusOut>", lambda e: self.varFuncion_new.corregir_al_salir(self.entry_tasa_impint))
-        self.sv_tasa_impint.trace_add("write", lambda name, index, mode: self.limitador(self.sv_tasa_impint, 5))
+        # TASA PERCEPCIONES
+        self.lbl_percep = tk.Label(self.sector_totales, text="% Percepciones:")
+        self.lbl_percep.grid(row=3, column=0, padx=2, pady=1, sticky="w")
+        self.sv_tasa_percep.set(value="0.00")
+        self.sv_total_percep.set(value="0.00")
+        self.entry_tasa_percep = tk.Entry(self.sector_totales, textvariable=self.sv_tasa_percep, width=5, justify="right")
+        self.entry_tasa_percep.grid(row=3, column=1, padx=2, pady=1, sticky="w")
+        self.entry_tasa_percep.config(validate="key", validatecommand=self.vcmd)
+        self.entry_tasa_percep.bind("<FocusOut>", lambda e: self.varFuncion_new.corregir_al_salir(self.entry_tasa_percep))
+        self.sv_tasa_percep.trace_add("write", lambda name, index, mode: self.limitador(self.sv_tasa_percep, 5))
 
-        self.lbl_total_impint = tk.Label(self.sector_totales, textvariable=self.sv_total_impint, width=10, anchor='e')
-        self.lbl_total_impint.grid(row=3, column=2, padx=2, pady=1, sticky='nsew')
-        self.entry_tasa_impint.bind('<Tab>', lambda e: self.calcular("impint"))
+        self.lbl_total_percep = tk.Label(self.sector_totales, textvariable=self.sv_total_percep, width=10, anchor='e')
+        self.lbl_total_percep.grid(row=3, column=2, padx=2, pady=1, sticky='nsew')
+        self.entry_tasa_percep.bind('<Tab>', lambda e: self.calcular("percep"))
 
         # SUBTOTAL COSTO CON IMPUESTOS ( BRUTO )
         fff = tkfont.Font(family="Arial", size=10, weight="bold")
@@ -1370,7 +1683,7 @@ class ClaseArticulos(tk.Frame):
                                               font=fff, fg='blue', anchor='e')
         self.lbltot_costo_dolar_bruto.grid(row=0, column=2, padx=2, pady=1, sticky='nsew')
 
-        self.lbl_aclaracion1 = tk.Label(self.sector_totales, text="c/Iva", fg='blue')
+        self.lbl_aclaracion1 = tk.Label(self.sector_totales, text="c/imp.", fg='blue')
         self.lbl_aclaracion1.grid(row=0, column=3, padx=2, pady=1, sticky='nsew')
 
         # COSTO PESOS CON IMPUESTOS BRUTO
@@ -1379,7 +1692,7 @@ class ClaseArticulos(tk.Frame):
                                               font=fff, fg='blue', anchor='e')
         self.lbltot_costo_pesos_bruto.grid(row=1, column=2, padx=2, pady=1, sticky='nsew')
 
-        self.lbl_aclaracion2 = tk.Label(self.sector_totales, text="c/Iva", fg='blue')
+        self.lbl_aclaracion2 = tk.Label(self.sector_totales, text="c/imp.", fg='blue')
         self.lbl_aclaracion2.grid(row=1, column=3, padx=2, pady=1, sticky='nsew')
 
     def cuadro_imagenes_articulos(self):

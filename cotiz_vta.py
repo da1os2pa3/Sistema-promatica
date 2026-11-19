@@ -2,6 +2,7 @@ import os
 import tkinter as tk
 import tkinter.font as tkfont
 from datetime import date
+from decimal import Decimal, ROUND_HALF_UP
 from tkinter import ttk
 
 from PIL import Image, ImageTk
@@ -161,7 +162,8 @@ class PestanaUno(tk.Frame):
         # VALOR DEL DOLAR HOY
         self.sv_valor_dolar_hoy       = tk.StringVar(self, value="0.00")
         self.sv_tasa_recargo_precio   = tk.StringVar(self, value="0")
-        self.traer_dolarhoy()  # trae dolar y tasa recargo precio con tarjeta
+        self.sv_tasa_percepcion_precio   = tk.StringVar(self, value="0")
+        self.traer_dolarhoy()  # trae dolar y tasa recargo precio con tarjeta y tasa de percepciones
 
         self.sv_buscostring = tk.StringVar(self, value="")
 
@@ -262,6 +264,7 @@ class PestanaUno(tk.Frame):
         self.btn_imprime_venta.configure(state=estado1)
 
     def freset_venta(self):
+
         # Boton CANCELAR
         r = messagebox.askquestion("Cancelar", "Confirma cancelar venta actual?", parent=self)
         if r == messagebox.YES:
@@ -269,16 +272,18 @@ class PestanaUno(tk.Frame):
             # Debo reiniciar tambien lo que se haya hecho en la pestaña dos
 
     def traer_dolarhoy(self):
+
         dev_informa = self.principal.varCotiz.consultar_informa()
         for row in dev_informa:
             self.sv_valor_dolar_hoy.set(value=row[21])
             self.sv_tasa_recargo_precio.set(value=row[23])
-
+            self.sv_tasa_percepcion_precio.set(value=row[18])
 
     # ---------------------------------------------------------------------
     # GRIDS
     # ---------------------------------------------------------------------
 
+    # Llena la grilla de resumen de ventas - con todas las ventas existentes
     def llena_grilla_ventas(self, set_foco="", datos=None):
 
         """
@@ -294,8 +299,6 @@ class PestanaUno(tk.Frame):
         if datos is None:
             datos = self.principal.varCotiz.consultar_tablas("resu", self.filtro_activo_resuventas)
 
-        #datos = self.principal.varCotiz.consultar_tablas("resu", self.filtro_activo_resuventas)
-
         cont = 0
         for row in datos:
 
@@ -304,8 +307,8 @@ class PestanaUno(tk.Frame):
 
             cont += 1
             color = ('evenrow',) if cont % 2 else ('oddrow',)
-            self.grid_tvw_todaslasventas.insert("", "end", tags=color, text=row[0], values=(row[1],
-                                                                       forma_normal, row[4], row[10], row[7], row[8]))
+            self.grid_tvw_todaslasventas.insert("", "end", tags=color, text=row[0],
+                                                values=(row[1], forma_normal, row[4], row[10], row[7], row[8]))
 
         # Controles --------------------------------------------------------
         # Devuelve una colección(tupla) con los IDs de todas las filas cargadas
@@ -477,10 +480,10 @@ class PestanaUno(tk.Frame):
                 "av_impor_ganancia": row[11],
                 "av_costo_dolar": row[12],
                 "av_costo_bruto": row[13],
-                "av_tasaiva": row[14]
+                "av_tasaiva": row[14],
+                "av_tasaperc": row[15],
+                "av_impor_percep": row[16]
             }
-
-            #total_ventas += row[5] * row[7]  # precio de lista unitario por cantidad
 
             self.id_nuevo = self.principal.varCotiz.insertar_auxventa(dic_detaventas)
         # ---------------------------------------------------------------------------------------
@@ -871,6 +874,7 @@ class PestanaDos(tk.Frame):
         # Valor del dolar hoy
         self.sv_valor_dolar_hoy     = tk.StringVar(value="0.00")
         self.sv_tasa_recargo_precio = tk.StringVar(value="0")
+        self.sv_tasa_percepcion_precio = tk.StringVar(value="0")
 
         # Detalles del articulo a vender
         self.sv_it_codigo_articulo      = tk.StringVar(value="")
@@ -901,25 +905,21 @@ class PestanaDos(tk.Frame):
 
         # Tasa del iva %
         self.sv_combo_tasa_iva = tk.StringVar()
+        self.sv_tasa_percepcion_precio = tk.StringVar(value="0.00")
+        # Importe percepciones
+        self.sv_total_percepciones = tk.StringVar(value="0.00")
         # Importe iva articulo (21 o 10.5) unidad
         self.sv_unidad_total_iva = tk.StringVar(value="0.00")
-        # Importe iva articulo por la cantidad
-        # self.sv_xcanti_total_iva = tk.StringVar(value="0.00")
         # Importe iva del articulo 21% (separo para guardar)
         self.sv_unidad_total_iva_21 = tk.StringVar(value="0.00")
         # Importe iva del articulo 10,5% (separo para guardar)
         self.sv_unidad_total_iva_105 = tk.StringVar(value="0.00")
-
         # Tasa Ganancia por articulo
         self.sv_unidad_tasa_ganancia = tk.StringVar(value="0.00")
         # Importe ganancia del articulo unidad
         self.sv_unidad_total_ganancia = tk.StringVar(value="0.00")
         # Importe ganancia del articulo X cantidad
         self.sv_xcanti_total_ganancia = tk.StringVar(value="0.00")
-
-        # # TIPOS DE PAGO
-        # self.sv_combo_formas_pago = tk.StringVar()
-        # self.sv_detalle_pago = tk.StringVar(value="")
 
         # TOTALES FINALES GLOBALES TODA LA VENTA
         # 1 pago
@@ -969,7 +969,8 @@ class PestanaDos(tk.Frame):
         self.frame_entrys_importes_articulos.pack(side="top", fill="both", padx=5, pady=3)
 
         # Contenedor Totales y formas de pago
-        self.frame_totales_venta = tk.LabelFrame(self.frame_principal, text="Total Venta", border=5, foreground="black")
+        self.frame_totales_venta = tk.LabelFrame(self.frame_principal, text="", border=0, foreground="black",
+                                                 highlightbackground="black", highlightthickness=2)
         self.cuadro_totales_venta()
         self.frame_totales_venta.pack(expand=0, side="top", fill="both", pady=10, padx=5)
 
@@ -992,6 +993,7 @@ class PestanaDos(tk.Frame):
         # traen valor dolar y tasa recargo del precio por tarjeta para los calculos que tenga que hacer en esta pestaña
         self.sv_valor_dolar_hoy.set(value=self.principal.pestana_1.sv_valor_dolar_hoy.get())
         self.sv_tasa_recargo_precio.set(value=self.principal.pestana_1.sv_tasa_recargo_precio.get())
+        self.sv_tasa_percepcion_precio.set(value=self.principal.pestana_1.sv_tasa_percepcion_precio.get())
 
         self.habilitar_botones_2("disabled")
         self.limpiar_entrys_2()
@@ -1037,20 +1039,19 @@ class PestanaDos(tk.Frame):
         self.sv_unidad_costo_bruto_pesos.set(value="0.00")
         # Costo pesos NETO articulo unidad
         self.sv_unidad_neto_pesos.set(value="0.00")
-        # Costo pesos NETO articulo X cantidad
-        # self.sv_xcanti_neto_total.set(value="0.00")
         # Venta pesos final articulo unidad
         self.sv_unidad_precio_venta_contado.set(value="0.00")
         self.sv_unidad_precio_venta_lista.set(value="0.00")
         # Venta pesos final articulo por cantidad
         self.sv_xcanti_total_precio_venta_lista.set(value="0.00")
         # Tasa del iva %
-        #        self.sv_combo_tasa_iva = tk.StringVar()
         self.combo_tasa_iva.current(0)
+        # Tasa percepciones %
+        self.sv_tasa_percepcion_precio.set(value="0.00")
+        # Importe percepciones
+        self.sv_total_percepciones.set(value="0.00")
         # Importe iva articulo (21 o 10.5) unidad
         self.sv_unidad_total_iva.set(value="0.00")
-        # Importe iva articulo por la cantidad
-        # self.sv_xcanti_total_iva.set(value="0.00")
         # Importe iva del articulo 21% (separo para guardar)
         self.sv_unidad_total_iva_21.set(value="0.00")
         # Importe iva del articulo 10,5% (separo para guardar)
@@ -1074,6 +1075,7 @@ class PestanaDos(tk.Frame):
         self.limpiar_entrys_2()
 
     def cancelar_articulo(self):
+
         # limpiar los Entrys que puedan tener datos cargados
         self.limpiar_entrys_2()
         # - Desactivar entrys
@@ -1108,8 +1110,22 @@ class PestanaDos(tk.Frame):
         for row in datos:
             cont += 1
             color = ('evenrow',) if cont % 2 else ('oddrow',)
-            self.grid_tvw_auxiliar_venta.insert("", "end", tags=color, text=row[0], values=(row[1], row[2],
-                                                            row[3], row[4], row[5], row[6], row[11], row[12], row[13]))
+            self.grid_tvw_auxiliar_venta.insert("", "end", tags=color, text=row[0], values=(
+                                                            row[1],    # Codigo de articulo
+                                                            row[2],    # Descripcion
+                                                            row[3],    # marca
+                                                            row[4],    # Cantidad vendida
+                                                            row[5],    # Total unidad precio contado
+                                                            row[6],    # importe precio unidad de lista
+                                                            row[7],    # costo neto de la unidad
+                                                            row[8],    # importe iva 21
+                                                            row[9],    # importe iva 10.5
+                                                            row[10],   # importe de la ganancia
+                                                            row[11],   # importe costo en dolares
+                                                            row[12],   # total costo bruto
+                                                            row[13],   # TASA del iva %
+                                                            row[14],   # tasa percepciones
+                                                            row[15]))  # importe percepciones
 
             # Sumariza la columna total por unidad precio lista * cantidad
             totalventa += (row[6] * row[4])
@@ -1159,6 +1175,7 @@ class PestanaDos(tk.Frame):
         self.principal.varFuncion_new.mover_puntero_topend(self.grid_tvw_auxiliar_venta, 'END')
 
 
+
     # ----------------------------------------------------------------------------
     # CRUD  -  TODOS
     # ----------------------------------------------------------------------------
@@ -1173,17 +1190,19 @@ class PestanaDos(tk.Frame):
                 return
 
             case "ALTA":
-                self.cerrar_venta_alta_resumen()
-                self.cerrar_venta_alta_detalle()
+                self.exito = self.cerrar_venta_alta_resumen()
+                self.exito = self.cerrar_venta_alta_detalle()
 
             case "EDICION":
-                self.cerrar_venta_edicion_detalle()
-                self.cerrar_venta_edicion_resumen()
+                self.exito = self.cerrar_venta_edicion_detalle()
+                self.exito = self.cerrar_venta_edicion_resumen()
 
             case _:
                 return
-
-        self.principal.status.set_status("✔ Venta guardada correctamente", "ok")
+        if self.exito == 1:
+            self.principal.status.set_status("✔ Venta guardada correctamente", "ok")
+        else:
+            messagebox.showwarning("Cuidado", "No existe venta cargada", parent=self)
 
         # Código común
         self.principal.freiniciar_todo()
@@ -1193,11 +1212,14 @@ class PestanaDos(tk.Frame):
     # Insertar RESU_VENTAS - RESUMEN DE VENTAS (resu_ventas) encabezados de las ventas
     def cerrar_venta_alta_resumen(self):
 
-        # Hago consulta a aux_ventas y sumarizo el total de la venta -----------------
+        # Controlo que existan articulos y en aux_ventas sumarizo total de la venta --
         self.total_ventas = 0
         datos = self.principal.varCotiz.consultar_tablas("aux", "")
-        for row in datos:
-            self.total_ventas += row[4] * row[6]  # precio de lista unitario por cantidad
+        if not datos:
+            return 0
+        else:
+            for row in datos:
+                self.total_ventas += row[4] * row[6]  # precio de lista unitario por cantidad
         # ----------------------------------------------------------------------------
 
         # Creamos el diccionario para insertar los datos en resu_ventas (encabezado de las ventas)
@@ -1220,9 +1242,10 @@ class PestanaDos(tk.Frame):
         except Exception as e:
             print(f"Error no controlado: {e}")
             self.principal.varFuncion_new.mostrar_error()
-            return
+            return 0
         else:
             self.principal.pestana_1.llena_grilla_ventas(id_ref)  # paso solo el foco, sin datos de busqueda
+            return 1
 
     # Guarda modificaciones en los datos encabezado (resu_ventas)
     def cerrar_venta_edicion_resumen(self):
@@ -1239,8 +1262,11 @@ class PestanaDos(tk.Frame):
         # Hago consulta a aux_ventas y sumarizo el total de la venta -----
         self.total_ventas = 0
         datos = self.principal.varCotiz.consultar_tablas("aux", "")
-        for row in datos:
-            self.total_ventas += row[4] * row[6]  # precio de lista unitario por cantidad
+        if not datos:
+            return 0
+        else:
+            for row in datos:
+                self.total_ventas += row[4] * row[6]  # precio de lista unitario por cantidad
         # ----------------------------------------------------------------
 
         # Creamos el diccionario para insertar los datos en resu_ventas (encabezado de las ventas)
@@ -1264,42 +1290,48 @@ class PestanaDos(tk.Frame):
         except Exception as e:
             print(f"Error no controlado: {e}")
             self.principal.varFuncion_new.mostrar_error()
-            return
+            return 0
         else:
             self.principal.pestana_1.llena_grilla_ventas(id_ref)  # paso solo el foco, sin datos de busqueda
+            return 1
 
     # Insertar en tabla detalle de las ventas (deta_ventas) articulos de la venta
     def cerrar_venta_alta_detalle(self):
 
         datos = self.principal.varCotiz.consultar_tablas("aux", "")
-        for row in datos:
-
-            dic_detaventas = {
-#                "Id": self.clave,
-                "dv_numero": self.principal.sv_venta_numero.get(),
-                "dv_codigo_art": row[1],
-                "dv_desc_art": row[2],
-                "dv_marca_art": row[3],
-                "dv_cantidad": row[4],
-                "dv_tot_uni_conta": row[5],
-                "dv_tot_uni_lista": row[6],
-                "dv_neto_venta": row[7],
-                "dv_impor_iva21": row[8],
-                "dv_impor_iva105": row[9],
-                "dv_impor_ganancia": row[10],
-                "dv_costo_dolar": row[11],
-                "dv_costo_bruto": row[12],
-                "dv_tasaiva": row[13]
-            }
+        if not datos:
+            return 0
+        else:
+            for row in datos:
+                dic_detaventas = {
+    #               "Id": self.clave,
+                    "dv_numero": self.principal.sv_venta_numero.get(),
+                    "dv_codigo_art": row[1],
+                    "dv_desc_art": row[2],
+                    "dv_marca_art": row[3],
+                    "dv_cantidad": row[4],
+                    "dv_tot_uni_conta": row[5],
+                    "dv_tot_uni_lista": row[6],
+                    "dv_neto_venta": row[7],
+                    "dv_impor_iva21": row[8],
+                    "dv_impor_iva105": row[9],
+                    "dv_impor_ganancia": row[10],
+                    "dv_costo_dolar": row[11],
+                    "dv_costo_bruto": row[12],
+                    "dv_tasaiva": row[13],
+                    "dv_tasaperc": row[14],
+                    "dv_impor_percep": row[15]
+                }
 
             try:
                 self.principal.varCotiz.insertar_detaventa(dic_detaventas)
+                return 1
             except Exception as e:
                 print(f"Error no controlado: {e}")
                 self.principal.varFuncion_new.mostrar_error()
-                return
+                return 0
 
-    # Guardo modificaciones en el detalle de venta (se agrego, quito, modifico algyun articulo)
+    # Guardo modificaciones en el detalle de venta (se agrego, quito, modifico algun articulo)
     def cerrar_venta_edicion_detalle(self):
 
         # Aqui si borro venta anterior para ingresar la misma pero modificada -----------
@@ -1307,32 +1339,37 @@ class PestanaDos(tk.Frame):
         # -------------------------------------------------------------------------------
 
         datos = self.principal.varCotiz.consultar_tablas("aux", "")
-        for row in datos:
-
-            dic_detaventas = {
-                # "Id": self.clave,
-                "dv_numero": self.principal.sv_venta_numero.get(),
-                "dv_codigo_art": row[1],
-                "dv_desc_art": row[2],
-                "dv_marca_art": row[3],
-                "dv_cantidad": row[4],
-                "dv_tot_uni_conta": row[5],
-                "dv_tot_uni_lista": row[6],
-                "dv_neto_venta": row[7],
-                "dv_impor_iva21": row[8],
-                "dv_impor_iva105": row[9],
-                "dv_impor_ganancia": row[10],
-                "dv_costo_dolar": row[12],
-                "dv_costo_bruto": row[11],
-                "dv_tasaiva": row[13]
-            }
+        if not datos:
+            return 0
+        else:
+            for row in datos:
+                dic_detaventas = {
+                    # "Id": self.clave,
+                    "dv_numero": self.principal.sv_venta_numero.get(),
+                    "dv_codigo_art": row[1],
+                    "dv_desc_art": row[2],
+                    "dv_marca_art": row[3],
+                    "dv_cantidad": row[4],
+                    "dv_tot_uni_conta": row[5],
+                    "dv_tot_uni_lista": row[6],
+                    "dv_neto_venta": row[7],
+                    "dv_impor_iva21": row[8],
+                    "dv_impor_iva105": row[9],
+                    "dv_impor_ganancia": row[10],
+                    "dv_costo_dolar": row[11],
+                    "dv_costo_bruto": row[12],
+                    "dv_tasaiva": row[13],
+                    "dv_tasaperc": row[14],
+                    "dv_impor_percep": row[15]
+                }
 
             try:
                 self.principal.varCotiz.insertar_detaventa(dic_detaventas)
+                return 1
             except Exception as e:
                 print(f"Error no controlado: {e}")
                 self.principal.varFuncion_new.mostrar_error()
-                return
+                return 0
 
 
     # --------------------------------------------------------------------
@@ -1346,11 +1383,11 @@ class PestanaDos(tk.Frame):
         # Validar los items ingresados
         # 1- que articulo no este vacio
         if len(self.sv_it_descripcion_articulo.get()) == 0:
-            messagebox.showerror("Error", "Falta descripcion de articulo", parent=self)
+            self.principal.status.set_status("ℹ Falta descripcion de articulo", "info")
             return
         # 2- que exista una cantidad
         if not self.sv_cantidad_venta.get():
-            messagebox.showerror("Error", "Falta cantidad de articulo", parent=self)
+            self.principal.status.set_status("ℹ Falta cantidad de articulo", "info")
             self.entry_cantidad_venta.focus()
             return
         #-----------------------------------------------------------------
@@ -1380,9 +1417,13 @@ class PestanaDos(tk.Frame):
             "av_impor_ganancia": self.sv_unidad_total_ganancia.get(),
             "av_costo_dolar": self.sv_unidad_costo_dolar.get(),   # este es en neto
             "av_costo_bruto": self.sv_unidad_costo_bruto_pesos.get(),
-            #"av_costo_dolar": self.sv_unidad_costo_dolar_bruto.get(),
-            "av_tasaiva": self.sv_combo_tasa_iva.get()
+            "av_tasaiva": self.sv_combo_tasa_iva.get(),
+            "av_tasaperc": self.sv_tasa_percepcion_precio.get(),
+            "av_impor_percep": self.sv_total_percepciones.get()
         }
+        # print(self.sv_unidad_total_iva_21.get())
+        # print(self.sv_unidad_total_iva_105.get())
+        # print(self.sv_total_percepciones.get())
         #-----------------------------------------------------------------
 
         # Ingresar datos a la tabla y evaluacion del procedimiento
@@ -1430,18 +1471,19 @@ class PestanaDos(tk.Frame):
 
         self.sv_it_codigo_articulo.set(value=valores[0]),
         self.sv_it_descripcion_articulo.set(value=valores[1])
-        self.sv_it_marca_articulo.set(value=valores[2]),
-        self.sv_cantidad_venta.set(value=valores[3]),
-        self.sv_unidad_precio_venta_contado.set(value=valores[4]),
-        self.sv_unidad_precio_venta_lista.set(value=valores[5]),
-        self.sv_unidad_neto_pesos.set(value=valores[6]),
+        self.sv_it_marca_articulo.set(value=valores[2])
+        self.sv_cantidad_venta.set(value=valores[3])
+        self.sv_unidad_precio_venta_contado.set(value=valores[4])
+        self.sv_unidad_precio_venta_lista.set(value=valores[5])
+        self.sv_unidad_neto_pesos.set(value=valores[6])
         self.sv_unidad_total_iva_21.set(value=valores[7])
-
-        # self.sv_unidad_total_iva_105.get(),
-        # self.sv_unidad_total_ganancia.get(),
-        # self.sv_unidad_costo_bruto_pesos.get(),
-        # self.sv_unidad_costo_dolar_bruto.get(),
-        # self.sv_combo_tasa_iva.get()
+        self.sv_unidad_total_iva_105.set(value=valores[8])
+        self.sv_unidad_total_ganancia.set(value=valores[9])
+        self.sv_unidad_costo_dolar.set(value=valores[10])
+        self.sv_unidad_costo_bruto_pesos.set(value=valores[11])
+        self.sv_combo_tasa_iva.set(value=valores[12])
+        self.sv_tasa_percepcion_precio.set(value=valores[13])
+        self.sv_total_percepciones.set(value=valores[14])
 
         self.principal.pestana_2.calcular("totalventa")
 
@@ -1466,7 +1508,7 @@ class PestanaDos(tk.Frame):
 
         r = messagebox.askquestion("Eliminar", "Confirma eliminar articulo?\n " + data, parent=self)
         if r == messagebox.NO:
-            messagebox.showinfo("Eliminar", "Cancelada por usuario", parent=self)
+            self.principal.status.set_status("ℹ Cancelada por usuario", "info")
             return
 
         try:
@@ -1476,7 +1518,7 @@ class PestanaDos(tk.Frame):
             self.principal.varFuncion_new.mostrar_error()
             return
         else:
-            messagebox.showinfo("Eliminar", "Registro eliminado correctamente", parent=self)
+            self.principal.status.set_status("✔ Registro eliminado correctamente", "ok")
 
         self.llena_grilla_auxiliar(self.clave_ant)
 
@@ -1506,7 +1548,9 @@ class PestanaDos(tk.Frame):
         style.theme_use("clam")
         style.configure("Treeview.Heading", background="black", foreground="white")
         self.grid_tvw_auxiliar_venta = ttk.Treeview(self.frame_grid_ventas_articulos, height=7, columns=("col1", "col2",
-                                                                     "col3", "col4", "col5", "col6", "col7", "col8", "col9"))
+                                                                     "col3", "col4", "col5", "col6", "col7", "col8",
+                                                                     "col9", "col10", "col11", "col12", "col13",
+                                                                     "col14", "col15"))
 
         self.grid_tvw_auxiliar_venta.bind("<Double-Button-1>", self.doble_click_grid2)
         #("<Double-Button-1>", self.doble_click_grid)
@@ -1520,6 +1564,12 @@ class PestanaDos(tk.Frame):
         self.grid_tvw_auxiliar_venta.column("col7", width=70, anchor="center", minwidth=70)
         self.grid_tvw_auxiliar_venta.column("col8", width=70, anchor="center", minwidth=70)
         self.grid_tvw_auxiliar_venta.column("col9", width=70, anchor="center", minwidth=70)
+        self.grid_tvw_auxiliar_venta.column("col10", width=70, anchor="center", minwidth=70)
+        self.grid_tvw_auxiliar_venta.column("col11", width=70, anchor="center", minwidth=70)
+        self.grid_tvw_auxiliar_venta.column("col12", width=70, anchor="center", minwidth=70)
+        self.grid_tvw_auxiliar_venta.column("col13", width=70, anchor="center", minwidth=70)
+        self.grid_tvw_auxiliar_venta.column("col14", width=70, anchor="center", minwidth=70)
+        self.grid_tvw_auxiliar_venta.column("col15", width=70, anchor="center", minwidth=70)
 
         self.grid_tvw_auxiliar_venta.heading("#0",   text="Id", anchor="center")
         self.grid_tvw_auxiliar_venta.heading("col1", text="Codigo", anchor="w")
@@ -1528,9 +1578,15 @@ class PestanaDos(tk.Frame):
         self.grid_tvw_auxiliar_venta.heading("col4", text="Cant", anchor="center")
         self.grid_tvw_auxiliar_venta.heading("col5", text="Precio contado unidad", anchor="center")
         self.grid_tvw_auxiliar_venta.heading("col6", text="Precio lista unidad", anchor="center")
-        self.grid_tvw_auxiliar_venta.heading("col7", text="Costo dolar", anchor="center")
-        self.grid_tvw_auxiliar_venta.heading("col8", text="Costo bruto", anchor="center")
-        self.grid_tvw_auxiliar_venta.heading("col9", text="Tasa IVA", anchor="center")
+        self.grid_tvw_auxiliar_venta.heading("col7", text="Costo neto unidad", anchor="center")
+        self.grid_tvw_auxiliar_venta.heading("col8", text="Importe IVA 21", anchor="center")
+        self.grid_tvw_auxiliar_venta.heading("col9", text="Importe IVA 10.5", anchor="center")
+        self.grid_tvw_auxiliar_venta.heading("col10", text="Importe Ganancia", anchor="center")
+        self.grid_tvw_auxiliar_venta.heading("col11", text="Costo dolar", anchor="center")
+        self.grid_tvw_auxiliar_venta.heading("col12", text="Costo bruto", anchor="center")
+        self.grid_tvw_auxiliar_venta.heading("col13", text="Tasa IVA", anchor="center")
+        self.grid_tvw_auxiliar_venta.heading("col14", text="Tasa Perc.", anchor="center")
+        self.grid_tvw_auxiliar_venta.heading("col15", text="Importe Perc.", anchor="center")
 
         self.grid_tvw_auxiliar_venta.tag_configure('oddrow', background='light grey')
         self.grid_tvw_auxiliar_venta.tag_configure('evenrow', background='light blue')
@@ -1674,12 +1730,12 @@ class PestanaDos(tk.Frame):
         fff = tkfont.Font(family="Arial", size=10, weight="bold")
 
         # PRECIO VENTA FINAL UNIDAD LISTA + % recargo tarjeta
-        self.lbl_precio_lista_unidad1 = tk.Label(self.frame_entrys_importes_articulos, text=f"Precio LISTA (c/"
-                                                 f"{self.sv_tasa_recargo_precio.get()}% rec.)$:", font=fff,
+        self.lbl_precio_lista_unidad1 = tk.Label(self.frame_entrys_importes_articulos, text=f"Precio(c/"
+                                                 f"{self.principal.pestana_1.sv_tasa_recargo_precio.get()}% rec.)$:", font=fff,
                                                  justify="left", fg="green")
         self.lbl_precio_lista_unidad1.grid(row=0, column=0, padx=2, pady=2, sticky=tk.W)
 
-        self.entry_precio_lista_unidad = tk.Entry(self.frame_entrys_importes_articulos, font=fff, width=10,
+        self.entry_precio_lista_unidad = tk.Entry(self.frame_entrys_importes_articulos, font=fff, width=12,
                                                   textvariable=self.sv_unidad_precio_venta_lista, justify="right")
         self.entry_precio_lista_unidad.grid(row=0, column=1, padx=2, pady=2, sticky='nsew')
         self.entry_precio_lista_unidad.config(validate="key", validatecommand=self.vcmd)
@@ -1692,8 +1748,6 @@ class PestanaDos(tk.Frame):
         self.entry_precio_contado_unidad = tk.Label(self.frame_entrys_importes_articulos, font=fff, width=10,
                                                     textvariable=self.sv_unidad_precio_venta_contado, justify="right")
         self.entry_precio_contado_unidad.grid(row=0, column=3, padx=2, pady=2, sticky='nsew')
-        # self.entry_precio_venta_unidad.config(validate="key", validatecommand=self.vcmd)
-        # self.entry_precio_venta_unidad.bind('<Tab>', lambda e: self.calcular("precio_venta_unidad"))
 
         # CANTIDAD A COMPRAR DEL ARTICULO
         self.lbl_cantidad_venta = tk.Label(self.frame_entrys_importes_articulos, justify="left", text="Cant.: ",
@@ -1741,59 +1795,6 @@ class PestanaDos(tk.Frame):
 
         for widg in self.frame_entrys_importes_articulos.winfo_children():
             widg.grid_configure(padx=2, pady=2, sticky='nsew')
-
-        # # TASA GANANCIA
-        # self.lbl_tasa_ganancia_unidad1 = tk.Label(self.frame_entrys_importes_articulo, text="% Ganancia unidad : ", justify="left")
-        # self.lbl_tasa_ganancia_unidad1.grid(row=0, column=2, padx=2, pady=2, sticky=tk.W)
-        # self.entry_tasa_ganancia_unidad2 = Entry(self.frame_entrys_importes_articulo,
-        #                                          textvariable=self.sv_unidad_tasa_ganancia, width=5, justify="right")
-        # self.entry_tasa_ganancia_unidad2.grid(row=0, column=3, padx=3, pady=2, sticky='w')
-        # self.entry_tasa_ganancia_unidad2.config(validate="key", validatecommand=self.vcmd)
-        # self.entry_tasa_ganancia_unidad2.bind('<Tab>', lambda e: self.calcular("tasa_ganancia_unidad"))
-        #
-        # # GANANCIA
-        # self.lbl_ganancia_pesos_unidad1 = tk.Label(self.frame_entrys_importes_articulo, text="Ganancia unidad $: ", justify="left")
-        # self.lbl_ganancia_pesos_unidad1.grid(row=1, column=2, padx=2, pady=2, sticky=tk.W)
-        # self.entry_ganancia_pesos_unidad2 = Entry(self.frame_entrys_importes_articulo,
-        #                                           textvariable=self.sv_unidad_total_ganancia, width=10,
-        #                                           justify="right")
-        # self.entry_ganancia_pesos_unidad2.grid(row=1, column=3, padx=3, pady=2, sticky='nsew')
-        # self.entry_ganancia_pesos_unidad2.config(validate="key", validatecommand=self.vcmd)
-        # self.entry_ganancia_pesos_unidad2.bind('<Tab>', lambda e: self.calcular("importe_ganancia_unidad"))
-        #
-        # # COSTO PESOS BRUTO UNIDAD
-        # self.lbl_costo_pesos_bruto_unidad1 = tk.Label(self.frame_entrys_importes_articulo, text="Costo Bruto $: ", justify="left")
-        # self.lbl_costo_pesos_bruto_unidad1.grid(row=2, column=0, padx=2, pady=2, sticky=tk.W)
-        # self.lbl_costo_pesos_bruto_unidad2 = tk.Label(self.frame_entrys_importes_articulo,
-        #                                            textvariable=self.sv_unidad_costo_bruto_pesos, state='normal',
-        #                                            width=15, justify="right")
-        # self.lbl_costo_pesos_bruto_unidad2.grid(row=2, column=1, padx=3, pady=2, sticky='nsew')
-        # #self.entry_costo_pesos_bruto_unidad2.config(validate="key", validatecommand=self.vcmd)
-        # #self.entry_costo_pesos_bruto_unidad2.bind('<Tab>', lambda e: self.calcular("costo_pesos_bruto"))
-        #
-        # # COSTO DOLAR UNIDAD
-        # self.lbl_total_costodolar_unidad1 = tk.Label(self.frame_entrys_importes_articulo, text="Costo Dolar Bruto U$: ",
-        #                                           justify="left")
-        # self.lbl_total_costodolar_unidad1.grid(row=2, column=2, padx=2, pady=2, sticky=tk.W)
-        # self.lbl_total_costodolar_unidad2 = tk.Label(self.frame_entrys_importes_articulo,
-        #                                           textvariable=self.sv_unidad_costo_dolar_bruto, width=15,
-        #                                           justify="right")
-        # self.lbl_total_costodolar_unidad2.grid(row=2, column=3, padx=3, pady=2, sticky='nsew')
-        #
-        # # NETO VENTA UNIDAD
-        # self.lbl_total_netoventa_unidad1 = tk.Label(self.frame_entrys_importes_articulo, text="Neto Venta unidad $: ",
-        #                                          justify="left")
-        # self.lbl_total_netoventa_unidad1.grid(row=0, column=5, padx=2, pady=2, sticky=tk.W)
-        # self.lbl_total_netoventa_unidad2 = tk.Label(self.frame_entrys_importes_articulo,
-        #                                          textvariable=self.sv_unidad_neto_pesos, width=15, justify="right")
-        # self.lbl_total_netoventa_unidad2.grid(row=0, column=6, padx=3, pady=2, sticky='nsew')
-        #
-        # # TOTAL IVA
-        # self.lbl_totaliva_unidad1 = tk.Label(self.frame_entrys_importes_articulo, text="IVA unidad $: ", justify="left")
-        # self.lbl_totaliva_unidad1.grid(row=1, column=5, padx=2, pady=2, sticky=tk.W)
-        # self.lbl_totaliva_unidad2 = tk.Label(self.frame_entrys_importes_articulo, textvariable=self.sv_unidad_total_iva,
-        #                                   width=15, justify="right")
-        # self.lbl_totaliva_unidad2.grid(row=1, column=6, padx=3, pady=2, sticky='nsew')
 
     def cuadro_totales_venta(self):
 
@@ -1884,15 +1885,18 @@ class PestanaDos(tk.Frame):
                     + " OR INSTR(codigo, '" + self.sv_it_descripcion_articulo.get() + "') > 0" \
                     + " ORDER BY rubro, marca, descripcion"
 
-        valores_new = self.principal.varFuncion_new.ventana_selec("articulos", "descripcion", "marca",
-                                                        "costodolar", "Descripcion", "Marca",
-                                                        "Precio dolar neto", que_busco,
-                                                        "Orden: Rubro+Marca+Descripcion", "S")
-
-        #masiva = 0
-        #masganancia = 0
+        valores_new = self.principal.varFuncion_new.ventana_selec("articulos",
+                                                                  "descripcion",
+                                                                  "marca",
+                                                                  "costodolar",
+                                                                  "Descripcion",
+                                                                  "Marca",
+                                                                  "Precio dolar neto",
+                                                                  que_busco,
+                                                                  "Orden: Rubro+Marca+Descripcion", "S")
 
         for item in valores_new:
+
             # -------------------------------------------------------------
             # PROPIEDADES ARTICULO - descripcion del articulo - %IVA
             self.sv_it_codigo_articulo.set(value=item[1])       #CODIGO ARTICULO
@@ -1900,44 +1904,95 @@ class PestanaDos(tk.Frame):
             self.sv_it_marca_articulo.set(value=item[3])        #MARCA ARTICULOS
             self.sv_unidad_costo_dolar.set(value=item[6])       #COSTO POR UNIDAD EN DOLARES
             self.sv_combo_tasa_iva.set(value=item[7])           #TASA IVA ARTICULO
+            self.sv_tasa_percepcion_precio.set(value=item[8])   #tasa percepcion
+            self.sv_unidad_tasa_ganancia.set(value=item[9])     # tasa ganancia
             # -------------------------------------------------------------
+
+            try:
+                self.lista_calculos = self.principal.varFuncion_new.calcular_precio_articulos(
+                    self.sv_unidad_costo_dolar.get(),
+                    self.sv_valor_dolar_hoy.get(),
+                    self.combo_tasa_iva.get(),
+                    self.sv_tasa_percepcion_precio.get(),
+                    self.sv_unidad_tasa_ganancia.get(),
+                    self.sv_tasa_recargo_precio.get()
+                )
+            except ValueError as error:
+                self.principal.varFuncion_new.mostrar_error(str(error))
+                self.principal.status.set_status("❌ Revise los datos numéricos", "")
+                return
+
+            self.lista_calculos.append(self.sv_valor_dolar_hoy.get())
+
+            # Funcion que devuelve los calculos necesarios
+            # print(self.lista_calculos[0]) # retorno_neto_pesos
+            # print(self.lista_calculos[1]) # retorno_importe_iva_pesos
+            # print(self.lista_calculos[2]) # retorno_importe_percepcion_pesos
+            # print(self.lista_calculos[3]) # retorno_bruto_pesos
+            # print(self.lista_calculos[4]) # retorno_ganancia_pesos
+            # print(self.lista_calculos[5]) # retorno_precio_venta_pesos
+            # print(self.lista_calculos[6]) # retorno_importe_recargo_pesos
+            # print(self.lista_calculos[7]) # retorno_precio_venta_pesos_con_recargo
+            # print(self.lista_calculos[8]) # agrego cotizacion del dolar hoy
 
             # -------------------------------------------------------------
             # CACULOS - calculo neto_pesos : neto mas el iva : neta ma iva mas ganancia = precio de venta por unidad
-            # costo neto
-            costopesos_neto = round((float(self.sv_valor_dolar_hoy.get()) * float(item[6])), 2)
-            # costo bruto
-            costo_neto_masiva = round((float(costopesos_neto) * (1 + (float(item[7]) / 100))), 2)
-            # precio de venta contado
-            costo_masiva_masganancia = round((float(costo_neto_masiva) * (1 + (float(item[9]) / 100))), 2)
-            # precio de venta lista (mas el % de recargo con tarjeta activo
-            precio_venta_lista = costo_masiva_masganancia * (1 + (float(self.sv_tasa_recargo_precio.get()) / 100))
-            # -------------------------------------------------------------
 
-            # -------------------------------------------------------------
-            # Precio de venta x unidad de lista (tiene el recargo del 10%)
-            self.sv_unidad_precio_venta_lista.set(value=str(round(precio_venta_lista)))
-            # Precio de venta x unidad contado (sin el 10% de recargo)
-            self.sv_unidad_precio_venta_contado.set(value=str(round(costo_masiva_masganancia)))
-            # Precio de venta de lista ya multiplicado por la cantidad (TOTAL FINAL DEL ARTICULO)
-            self.sv_xcanti_total_precio_venta_lista.set(value=self.principal.varFuncion_new.formatear_cifra(
-                                            round(precio_venta_lista * float(self.sv_cantidad_venta.get()))))
-            # Costo x unidad del articulo en pesos y bruto(con iva)
-            self.sv_unidad_costo_bruto_pesos.set(value=str(round(costo_neto_masiva)))
-            # -------------------------------------------------------------
+            # costo neto pesos ------------------
+            # lista_claculos[8] = valor dolar hoy
+            # valor dolar hoy * costo unidad en dolares
+            costopesos_neto = (Decimal(self.lista_calculos[8]) * Decimal(item[6])).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            # print("neto", str(costopesos_neto))  #88.951
 
-            # -------------------------------------------------------------
-            # % de ganancia x unidad para el articulo (% ganancia)
+            # costo bruto pesos --------------------
+            # lista_calculos[3] = precio bruto en pesos con impuestos
+            # costo_neto_masiva += es lo mismo que costo bruto (ojo tiene iva y percepcion)
+            costo_neto_masiva = Decimal(self.lista_calculos[3]).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            # print("bruto", str(costo_neto_masiva))
+
+            # precio de venta contado ------------------------
+            # lista_calculos[5] = precio de venta en pesos sin recargo
+            costo_masiva_masganancia = Decimal(self.lista_calculos[5]).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            # print("con ganancia sin recargo", str(costo_masiva_masganancia))
+
+            # precio de venta lista (mas el % de recargo con tarjeta activo) ---------------------
+            # lista_calculos[7] = precio de venta en pesos ma recargo de tarjeta
+            precio_venta_lista = Decimal(self.lista_calculos[7]).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            # print("venta listacon recargo", str(precio_venta_lista))
+
+            # Precio de venta x unidad de lista (tiene el recargo del 10%) -----------------------
+            # Ya esta armado en la linea de arriba (precio_venta_lista)
+            self.sv_unidad_precio_venta_lista.set(value=str(precio_venta_lista))
+
+            # Precio de venta x unidad contado (sin el 10% de recargo) ---------------------------
+            # Ya esta armado en la linea de arriba (costo_masiva_masganancia)
+            self.sv_unidad_precio_venta_contado.set(value=str(costo_masiva_masganancia))
+
+            # Precio venta de lista ya multiplicado por la cantidad (TOTAL FINAL DEL ARTICULO) ---------
+            val0 = Decimal(self.sv_cantidad_venta.get()).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            val1 = (precio_venta_lista * val0).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            self.sv_xcanti_total_precio_venta_lista.set(value=self.principal.varFuncion_new.formatear_cifra(val1))
+
+            # Costo x unidad del articulo en pesos y bruto(con iva) -------------------------------
+            # Ya esta armado en la linea de arriba (costo_neto_masiva)
+            self.sv_unidad_costo_bruto_pesos.set(value=str(costo_neto_masiva))
+
+            # % de ganancia x unidad para el articulo (% ganancia) --------------------------------
             self.sv_unidad_tasa_ganancia.set(value=item[9])
-            # Importe que gano x unidad de articulo tomado desde el precio de lista
-            self.sv_unidad_total_ganancia.set(value=str(round(precio_venta_lista - costo_neto_masiva)))
-            # -------------------------------------------------------------
 
-            # -------------------------------------------------------------
-            # Precio de costo x unidad neto en pesos
+            # Importe que gano x unidad de articulo tomado desde el precio de lista ---------------
+            # Ya estan con decimal y redondeados en las lineas de arriba (precio_venta_lista - costo_neto_masiva)
+            self.sv_unidad_total_ganancia.set(value=str(precio_venta_lista - costo_neto_masiva))
+
+            # Precio de costo x unidad neto en pesos ----------------------------------------------
+            # Ya estan con decimal y redondeados en las lineas de arriba (costo_pesos_neto)
             self.sv_unidad_neto_pesos.set(value=str(costopesos_neto))
-            # -------------------------------------------------------------
 
+            # Guardo el importe de la percepcion --------------------------------------------------
+            val1 = Decimal(self.lista_calculos[2]).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            self.sv_total_percepciones.set(value=str(val1))
+
+            # Foco -------------------------------------------------------------------------------
             self.entry_precio_lista_unidad.focus_set()
             self.entry_precio_lista_unidad.selection_range(0, tk.END)  # selecciona el texto
 
@@ -1946,49 +2001,40 @@ class PestanaDos(tk.Frame):
         # Esta funcion solo controla todos los Entrys numericos que no contengan el valor "" o mas de un "-" o un "."
         self.control_valores()
 
+        # LOS DECIMALES EN LAS PROXIMAS VARIABLES YA ESTAN CONTROLADOS Y CALCULADOS CUANDO CARGUE EL ARTICULO
+
         #ii = 1
         try:
         #if ii == 1:
             if que_campo == "cantidad":  # Cuando se modifica la cantidad de un articulo
 
                 # 1 - Precio de venta por unidad de lista(+10%) x cantidad comprada
-                self.sv_xcanti_total_precio_venta_lista.set(value=str(round(float(self.sv_unidad_precio_venta_lista.get()) *
-                                                                      float(self.sv_cantidad_venta.get()), 2)))
-                # 2 - Ganancia por cantidad
-                # self.sv_xcanti_total_ganancia.set(value=str(round(float(self.sv_unidad_total_ganancia.get()) *
-                #                                                   float(self.sv_cantidad_venta.get()), 2)))
+                val1 = (Decimal(self.sv_unidad_precio_venta_lista.get()) * Decimal(
+                    self.sv_cantidad_venta.get())).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                self.sv_xcanti_total_precio_venta_lista.set(value=str(val1))
 
-            if que_campo == "precio_lista_unidad":  # Se modifico el precio de venta de lista(+10%) para el articulo
+            if que_campo == "precio_lista_unidad":  # Cuando Se modifica el precio de venta de lista(+10%) del articulo
 
-                # 1 - Calculo nueva ganancia unidad
-                self.sv_unidad_total_ganancia.set(value=str(round(float(self.sv_unidad_precio_venta_lista.get()) -
-                                                            float(self.sv_unidad_costo_bruto_pesos.get()), 2)))
+                # 1 - Calculo nueva tasa de ganancia %
 
-                # calculo nuevo neto unidad
-                calcu_nuevo_neto = (float(self.sv_unidad_precio_venta_lista.get()) /
-                                    float((1 + (float(self.sv_combo_tasa_iva.get()) / 100))))
-                self.sv_unidad_neto_pesos.set(value=str(round(calcu_nuevo_neto, 2)))
+                val1 = (Decimal(self.sv_unidad_precio_venta_lista.get())).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                val2 = (Decimal(self.sv_unidad_costo_bruto_pesos.get())).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                # nueva tasa de ganancia
+                val3 = (((Decimal(val1) / Decimal(val2)) - 1) * Decimal(100)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                self.sv_unidad_tasa_ganancia.set(value=str(val3))
 
-                # Importe del IVA unidad Global (para el 21 o el 10,5) segun cual venga es lo mismo
-                self.sv_unidad_total_iva.set(value=str(round(float(self.sv_unidad_neto_pesos.get()) *
-                                                      (float(self.sv_combo_tasa_iva.get()) / 100), 2)))
+                # 2 - aplico esa nueva tasa sobre el costo bruto que tenia (eso no cambia) y obtengo el nuevo importe de ganancia
 
-                # Asigno el importe del IVA segun la TASA
-                if self.sv_combo_tasa_iva.get() == "21.00":
-                    self.sv_unidad_total_iva_21.set(value=str(round((float(self.sv_unidad_neto_pesos.get()) *
-                                                              (float(self.sv_combo_tasa_iva.get()) / 100)), 2)))
-                else:
-                    self.sv_unidad_total_iva_105.set(value=str(round((float(self.sv_unidad_neto_pesos.get()) *
-                                                                          (float(self.sv_combo_tasa_iva.get()) / 100)), 2)))
+                # nuevo importe de la ganancia
+                val1 = (Decimal(self.sv_unidad_costo_bruto_pesos.get()) * (Decimal(val3) / Decimal(100))).quantize(
+                    Decimal("0.01"), rounding=ROUND_HALF_UP)
+                self.sv_unidad_total_ganancia.set(value=str(val1))
 
-            # 3 - Multiplico nuevos importes por cantidad
+                # 3 - Nuevo importe de venta por cantidad
 
-            # - Precio final venta por cantidad comprada para un articulo
-            self.sv_xcanti_total_precio_venta_lista.set(value=str(round(float(self.sv_unidad_precio_venta_lista.get()) *
-                                                                            float(self.sv_cantidad_venta.get()), 2)))
-            # - Ganancia por cantidad
-            # self.sv_xcanti_total_ganancia.set(value=str(round(float(self.sv_unidad_total_ganancia.get()) *
-            #                                                   float(self.sv_cantidad_venta.get()), 2)))
+                val1 = (Decimal(self.sv_unidad_precio_venta_lista.get()) * Decimal(
+                    self.sv_cantidad_venta.get())).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                self.sv_xcanti_total_precio_venta_lista.set(value=str(val1))
 
             if que_campo == "totalventa":  # Sumariza todos los articulos que estan en auxiliar de ventas
 
@@ -2000,24 +2046,21 @@ class PestanaDos(tk.Frame):
                 # sumanetos = 0
 
                 for row in datos:
-                    sumatot += (row[6] * row[4])  # precio de lista * cantidad
+                    sumatot += (Decimal(row[6]) * Decimal(row[4]))  # precio de lista * cantidad
                     # sumaiva21 = sumaiva21 + (row[7] * row[4])
                     # sumaiva105 = sumaiva105 + (row[8] * row[4])
                     # sumanetos = sumanetos + ((row[6]) * row[4])
 
                 self.sv_global_final_venta.set(value=str(round(sumatot)))
-                # self.sv_global_final_venta_iva21.set(value=round(sumaiva21, 2))
-                # self.sv_global_final_venta_iva105.set(value=round(sumaiva105, 2))
-                # self.sv_global_final_venta_neto.set(value=str(float(sumanetos)))
+
+                val1 = (Decimal(self.sv_unidad_precio_venta_lista.get()) * Decimal(
+                    self.sv_cantidad_venta.get())).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                self.sv_xcanti_total_precio_venta_lista.set(value=str(val1))
 
         except ValueError as e:
 
             messagebox.showerror("Error", str(e), parent=self)
             return
-
-
-
-
 
 # # Punto de entrada para ejecutar la aplicación
 # if __name__ == "__main__":

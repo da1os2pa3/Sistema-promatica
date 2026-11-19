@@ -2,6 +2,7 @@ import os
 import tkinter as tk
 import tkinter.font as tkfont
 from datetime import date
+from decimal import Decimal, ROUND_HALF_UP
 from tkinter import ttk
 from tkinter.scrolledtext import *  # para campos text
 
@@ -98,19 +99,6 @@ class ClasePresupuestos(tk.Frame):
         self.sv_valor_dolar_presup.set(value=self.var_obj_funcionnew.traer_dolarhoy())
         self.sv_valor_dolar_oficial_hoy.set(value=self.var_obj_funcionnew.traer_dolarhoy())
 
-        # # ----------------------------------------------------------
-        # try:
-        #     dev_informa = self.var_obj_presup.consultar_informa()
-        # except Exception:
-        #     self.var_obj_funcionnew.mostrar_error()
-        #     return
-        # # ----------------------------------------------------------
-        #
-        # for row in dev_informa:
-        #     self.sv_valor_dolar_presup.set(value=row[21])
-        #     self.sv_valor_dolar_oficial_hoy.set(value=row[21])
-        #     # self.sv_tasa_recargo_precio.set(value=row[23])
-
     def fcancela_presup(self):
 
         r = messagebox.askquestion("Cancelar", "Confirma cancelar operacion actual?", parent=self)
@@ -143,6 +131,7 @@ class ClasePresupuestos(tk.Frame):
         x = int((ancho - ancho_ventana) / 2)
         y = int((alto - alto_ventana) / 2)
         self.master.geometry(f"{ancho_ventana}x{alto_ventana}+{x}+{y}")
+
 
 
 # =========================================================================================
@@ -278,7 +267,8 @@ class ClasePestanaUno(tk.Frame):
         try:
             # Vacio el GRID auxiliar (auxpresup) - donde cargo los componentes
             self.principal.var_obj_presup.vaciar_auxpresup()
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.principal.var_obj_funcionnew.mostrar_error()
             return
         # --------------------------------------------------------
@@ -407,8 +397,8 @@ class ClasePestanaUno(tk.Frame):
                         self.grid_presupuestos.see(item)
                         break
 
-        except Exception:
-
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.principal.var_obj_funcionnew.mostrar_error("Fallo en carga de GRID resu_presup")
             return
 
@@ -445,7 +435,8 @@ class ClasePestanaUno(tk.Frame):
         # Vacio tabla auxilliar ---------------------------------------------
         try:
             self.principal.var_obj_presup.vaciar_auxpresup()
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.principal.var_obj_funcionnew.mostrar_error()
             return
         # -------------------------------------------------------------------
@@ -458,7 +449,8 @@ class ClasePestanaUno(tk.Frame):
         try:
             # 2 - Cargar los datos encabezado de la venta (cliente, fecha....) de Resu_Venta
             datos_presu_entregado = self.principal.var_obj_presup.traer_resu_presup(self.principal.sv_nro_presup.get())
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.principal.var_obj_funcionnew.mostrar_error()
             return
         # -------------------------------------------------------------------
@@ -484,7 +476,8 @@ class ClasePestanaUno(tk.Frame):
         try:
             # 3 - Cargar los componentes del presupuesto de deta_presup
             datos_detapresup = self.principal.var_obj_presup.traer_deta_presup(self.principal.sv_nro_presup.get())
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.principal.var_obj_funcionnew.mostrar_error()
             return
         # ---------------------------------------------------------------------
@@ -492,10 +485,21 @@ class ClasePestanaUno(tk.Frame):
         for row in datos_detapresup:
 
             # -----------------------------------------------------------------
-            dolar_a_pesos = float(row[8]) * float(self.principal.sv_valor_dolar_presup.get())
-            iva_a_cargar = dolar_a_pesos * (float(row[6]) / 100)
-            ganancia_a_cargar = (dolar_a_pesos + iva_a_cargar) * (float(self.principal.sv_tasa_ganancia.get()) / 100)
-            total_presupuesto = dolar_a_pesos + iva_a_cargar + ganancia_a_cargar
+            # paso el costo de dolares a pesos tomando valor dolar asignado al presupuesto
+            dolar_a_pesos = (Decimal(row[8]) * Decimal(self.principal.sv_valor_dolar_presup.get())).quantize(
+                Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+            # Calculo el importe del IVA a cargar
+            val1 = (Decimal(row[6]) / Decimal(100)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            iva_a_cargar = (Decimal(dolar_a_pesos) * Decimal(val1)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+            # Calculo el importe de la ganancia a cargar
+            val1 = (Decimal(self.principal.sv_tasa_ganancia.get()) / Decimal(100)).quantize(Decimal("0.01"),
+                                                                                            rounding=ROUND_HALF_UP)
+            ganancia_a_cargar = (Decimal(dolar_a_pesos + iva_a_cargar) * Decimal(val1)).quantize(Decimal("0.01"),
+                                                                                                 rounding=ROUND_HALF_UP)
+
+            total_presupuesto = (dolar_a_pesos + iva_a_cargar + ganancia_a_cargar)
             # -----------------------------------------------------------------
 
             # -----------------------------------------------------------------
@@ -511,7 +515,8 @@ class ClasePestanaUno(tk.Frame):
                 "ax_total_presup":   total_presupuesto,  # total del presupuesto real
                 "ax_total_redondo":  row[9],             # total en pesos redondeo
                 "ax_total_ganancia": ganancia_a_cargar,  # total ganancia
-                "ax_total_costos":   dolar_a_pesos       # total costos
+                "ax_total_costos":   dolar_a_pesos,      # total costos
+                "ax_tasa_percepcion": row[10]            # tasa percepcion
             }
             # -----------------------------------------------------------------
 
@@ -519,7 +524,8 @@ class ClasePestanaUno(tk.Frame):
             try:
                 # Insertar registro en aux_presup
                 self.principal.var_obj_presup.insertar_auxpresup(dic_deta_auxpresup)
-            except Exception:
+            except Exception as e:
+                print(f"Error no controlado: {e}")
                 self.principal.var_obj_funcionnew.mostrar_error()
                 return
             # -----------------------------------------------------------------
@@ -555,7 +561,8 @@ class ClasePestanaUno(tk.Frame):
         try:
             self.principal.var_obj_presup.eliminar_presu_entregado1(self.clave)
             self.principal.var_obj_presup.eliminar_detapresup(valores[0])  # por numero de venta
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.principal.var_obj_funcionnew.mostrar_error()
             return
         # -----------------------------------------------------------------------------
@@ -581,7 +588,8 @@ class ClasePestanaUno(tk.Frame):
             # consulto registro en la tabla para saber el estado de la marca de aceptado (si esta ya aceptadoo o no)
             datos = self.principal.var_obj_presup.consultar_presupuestos("resu_presup",
                                                                          f"resu_presup WHERE id={self.clave}")
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.principal.var_obj_funcionnew.mostrar_error()
             return
         # ------------------------------------------------------------------------
@@ -606,7 +614,8 @@ class ClasePestanaUno(tk.Frame):
         try:
             # paso self.clave que es el Id de la tabla y la marca para aceptar o des_aceptar
             self.principal.var_obj_presup.marcar_presup_aceptado(self.clave, marca_aceptado)
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.principal.var_obj_funcionnew.mostrar_error()
             return
         # --------------------------------------------------------------------------
@@ -663,7 +672,8 @@ class ClasePestanaUno(tk.Frame):
                 self.principal.var_obj_presup.eliminar_detapresup(self.principal.sv_nro_presup.get())
                 # Borro en deta_presup - por las dudas sea modificacion
                 self.principal.var_obj_presup.eliminar_presu_entregado2(self.principal.sv_nro_presup.get())
-            except Exception:
+            except Exception as e:
+                print(f"Error no controlado: {e}")
                 self.principal.var_obj_funcionnew.mostrar_error()
                 return
             # -------------------------------------------------------------------
@@ -684,7 +694,8 @@ class ClasePestanaUno(tk.Frame):
             # Antes de insertar los presupuestos en las tablas principales, borro _todo aux_presup y
             # lo vuelvo a cargar desde el GRID con los datos actualizados
             self.principal.var_obj_presup.actualizar_auxpresup(self.principal.pestana_2.grid_componentes)
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.principal.var_obj_funcionnew.mostrar_error()
             return
         # --------------------------------------------------------------------
@@ -697,10 +708,11 @@ class ClasePestanaUno(tk.Frame):
         try:
             # Inserto en tabla DETA_PRESU
             datos = self.principal.var_obj_presup.consultar_detalle_auxpresup()
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.principal.var_obj_funcionnew.mostrar_error()
             return
-        # -------------------------------------------------------------------
+        # # -------------------------------------------------------------------
 
         for row in datos:
 
@@ -715,13 +727,15 @@ class ClasePestanaUno(tk.Frame):
                 "dp_iva":        row[5],                              # tasa iva del componente
                 "dp_cantidad":   row[6],                              # cantidad del componente
                 "dp_neto_dolar": row[7],                              # costo neto componente en dolares
-                "dp_redondo":    row[9]                               # total en pesos redondeo
+                "dp_redondo":    row[9],                              # total en pesos redondeo
+                "dp_tasa_percepcion": row[10]                         # tasa de percepciones
             }
 
             # -----------------------------------------------------------------
             try:
                 self.principal.var_obj_presup.insertar_detapresup(dic_deta_presup)
-            except Exception:
+            except Exception as e:
+                print(f"Error no controlado: {e}")
                 self.principal.var_obj_funcionnew.mostrar_error()
                 return
             # -----------------------------------------------------------------
@@ -752,7 +766,8 @@ class ClasePestanaUno(tk.Frame):
         # --------------------------------------------------------------------------
         try:
             self.principal.var_obj_presup.insertar_presu_entregado(dic_resu_presup)
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.principal.var_obj_funcionnew.mostrar_error()
             return
         # -----------------------------------------------------------------
@@ -764,7 +779,8 @@ class ClasePestanaUno(tk.Frame):
         # ---------------------------------------------------------------------
         try:
             ultimo_tabla_id = self.principal.var_obj_presup.traer_ultimo(0)
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.principal.var_obj_funcionnew.mostrar_error()
             return
         # ---------------------------------------------------------------------
@@ -775,7 +791,8 @@ class ClasePestanaUno(tk.Frame):
         try:
             # Vacio GRID aux_presup
             self.principal.var_obj_presup.vaciar_auxpresup()
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.principal.var_obj_funcionnew.mostrar_error()
             return
         # ---------------------------------------------------------------------
@@ -1176,7 +1193,8 @@ class ClasePestanaUno(tk.Frame):
             # ---------------------------------------------------------------------
             try:
                 datos = self.principal.var_obj_presup.buscar_entabla(se_busca)
-            except Exception:
+            except Exception as e:
+                print(f"Error no controlado: {e}")
                 self.principal.var_obj_funcionnew.mostrar_error()
                 return
             # ---------------------------------------------------------------------
@@ -1404,7 +1422,7 @@ class ClasePestanaUno(tk.Frame):
         fecha_presup = valores[1]
         self.pdf_numero_presupuesto   = valores[0]
         self.pdf_nombre_cliente       = valores[2]
-        self.pdf_dolar_presupuesto    = valores[3]
+        self.pdf_dolar_presupuesto =    Decimal(valores[3]).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
         self.pdf_tasa_ganancia        = valores[4]
         self.pdf_total_presup_redondo = valores[6]
 
@@ -1412,7 +1430,8 @@ class ClasePestanaUno(tk.Frame):
         try:
             # Traigo, si es que hay, el detalle extenso del producto presupuestado de la tabla resu_presup
             datos_presu_entregado = self.principal.var_obj_presup.traer_resu_presup(self.pdf_numero_presupuesto)
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.principal.var_obj_funcionnew.mostrar_error()
             return
         # ---------------------------------------------------------------------
@@ -1446,7 +1465,8 @@ class ClasePestanaUno(tk.Frame):
         try:
             # Traer todos los registros de la tabla deta_presup ---------------------
             self.items_presupuesto = self.principal.var_obj_presup.traer_deta_presup(self.pdf_numero_presupuesto)
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.principal.var_obj_funcionnew.mostrar_error()
             return
         # ---------------------------------------------------------------------
@@ -1455,12 +1475,60 @@ class ClasePestanaUno(tk.Frame):
         pdf.set_font('Arial', '', 8)
         total_presupuesto = 0
 
+        #print(self.items_presupuesto)
+
         for row in self.items_presupuesto:
 
+            # -----------------------------------------------------------------------------------------------
+            try:
+                self.lista_calculos = self.principal.var_obj_funcionnew.calcular_precio_articulos(
+                    row[8],   #self.sv_neto_dolar.get(),
+                    self.principal.sv_valor_dolar_oficial_hoy.get(),
+                    row[6],   #self.combo_tasa_iva.get(),
+                    row[10],  #self.sv_tasa_percepcion.get(),
+                    self.principal.sv_tasa_ganancia.get(),
+                    "0"       #self.sv_recargo_tarjeta.get()
+            )
+            except ValueError as error:
+                self.principal.varFuncion_new.mostrar_error(str(error))
+                self.principal.status.set_status("❌ Revise los datos numéricos", "")
+                return
+
+            # print(self.lista_calculos)
+            # print(self.lista_calculos[0]) # retorno_neto_pesos
+            # print(self.lista_calculos[1]) # retorno_importe_iva_pesos
+            # print(self.lista_calculos[2]) # retorno_importe_percepcion_pesos
+            # print(self.lista_calculos[3]) # retorno_bruto_pesos
+            # print(self.lista_calculos[4]) # retorno_ganancia_pesos
+            # print(self.lista_calculos[5]) # retorno_precio_venta_pesos
+            # print(self.lista_calculos[6]) # retorno_importe_recargo_pesos
+            # print(self.lista_calculos[7]) # retorno_precio_venta_pesos_con_recargo
+            # print(self.lista_calculos[8]) # agrego cotizacion del dolar hoy
+
+            self.lista_calculos.append(self.principal.sv_valor_dolar_oficial_hoy.get())
+            # -----------------------------------------------------------------------------------------------
+
             # calculos ----------------------------------------------------------
-            bruto_dolar = round((row[7] * float(row[8])) * (1+(float(row[6])/100)), 2)
-            sumo_precio_final_conganancia = round((bruto_dolar * float(self.principal.sv_valor_dolar_presup.get())) *
-                                                  (1+(float(self.pdf_tasa_ganancia)/100)), 2)
+
+            # -------------------------------------------------------------------
+            # row[6] = tasa del iva
+            # row[7] = cantidad
+            # row[8] = precio neto en dolares
+            # row[9] = precio neto en dolares redondeado
+            # -------------------------------------------------------------------
+
+            # Se obtiene el precio bruto en dolares ya multiplicado por la cantidad
+            val1 = (1 + (Decimal(row[6]) / Decimal(100))).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            bruto_dolar = ((Decimal(row[7]) * Decimal(row[8])) * Decimal(val1)).quantize(Decimal("0.01"),
+                                                                                         rounding=ROUND_HALF_UP)
+            # Al importe bruto en dolares se lo multiplica por la cotizacion del dolar en el presupuesto
+            # y se le suma la ganancia - Se obtiene el pecio de venta final en PESOS
+            val1 = (1 + (Decimal(self.pdf_tasa_ganancia) / Decimal(100)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
+            sumo_precio_final_conganancia = (
+                ((Decimal(bruto_dolar) * Decimal(self.principal.sv_valor_dolar_presup.get())) * Decimal(val1)).quantize(
+                    Decimal("0.01"), rounding=ROUND_HALF_UP))
+
+            # Suma todos los items y da el total del presupuesto en pesos
             total_presupuesto += sumo_precio_final_conganancia
 
             # Descripcion item
@@ -1493,7 +1561,8 @@ class ClasePestanaUno(tk.Frame):
 
         # Total final --------------------------------------------------------------------
         #total_presupuesto = formatear_cifra(total_presupuesto)
-        total_redondo = formatear_cifra(round(float(self.pdf_total_presup_redondo), 2))
+        val1 = Decimal(self.pdf_total_presup_redondo).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        total_redondo = formatear_cifra(val1)
         #pdf.cell(w=0, h=5, txt="Total: " + str(total_presupuesto), border=0, align='R', fill=0, ln=1)
         pdf.cell(w=0, h=5, txt="Total: " + str(total_redondo), border=0, align='R', fill=0, ln=1)
 
@@ -1502,13 +1571,18 @@ class ClasePestanaUno(tk.Frame):
 
         try:
             pdf.output('hoja.pdf')
-        except Exception:
-            self.principal.var_obj_funcionnew.mostrar_error("Verifique listados abiertos en otras terminales")
+        except Exception as e:
+            print(f"Error no controlado: {e}")
+            self.principal.var_obj_funcionnew.mostrar_error()
             return
 
         # Abre el archivo PDF para luego, si quiero, poder imprimirlo
         path = 'hoja.pdf'
         os.system(path)
+
+
+
+
 
     def creopdfint(self):
 
@@ -1544,13 +1618,12 @@ class ClasePestanaUno(tk.Frame):
 
         # # armado de encabezado ------------------------------------------------------------
         # fecha_forma_normal = fecha_str_reves_normal(self, datetime.strftime(row[2], '%Y-%m-%d'))
+        # print(valores)
 
-        # sdf = datetime.strptime(valores[1], '%Y-%m-%d')
-        # fecha_presup = sdf.strftime('%d-%m-%Y')
         fecha_presup = valores[1]
         self.pdf_numero_presupuesto =   valores[0]
         self.pdf_nombre_cliente =       valores[2]
-        self.pdf_dolar_presupuesto =    valores[3]
+        self.pdf_dolar_presupuesto =    Decimal(valores[3]).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
         self.pdf_tasa_ganancia =        valores[4]
         self.pdf_total_presup_redondo = valores[6]
 
@@ -1558,7 +1631,8 @@ class ClasePestanaUno(tk.Frame):
         try:
             # Traigo, si es que hay, el detalle extenso del producto presupuestado de la tabla resu_presup
             datos_presu_entregado = self.principal.var_obj_presup.traer_resu_presup(self.pdf_numero_presupuesto)
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.principal.var_obj_funcionnew.mostrar_error()
             return
         # ---------------------------------------------------------------------
@@ -1593,7 +1667,8 @@ class ClasePestanaUno(tk.Frame):
         try:
             # Traer todos los registros de la tabla deta_presup
             self.items_presupuesto = self.principal.var_obj_presup.traer_deta_presup(self.pdf_numero_presupuesto)
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.principal.var_obj_funcionnew.mostrar_error()
             return
         # ---------------------------------------------------------------------
@@ -1609,40 +1684,77 @@ class ClasePestanaUno(tk.Frame):
 
         for row in self.items_presupuesto:
 
+            # -----------------------------------------------------------------------------------------------
+            try:
+                self.lista_calculos = self.principal.var_obj_funcionnew.calcular_precio_articulos(
+                    row[8],   #self.sv_neto_dolar.get(),
+                    self.principal.sv_valor_dolar_oficial_hoy.get(),
+                    row[6],   #self.combo_tasa_iva.get(),
+                    row[10],  #self.sv_tasa_percepcion.get(),
+                    self.principal.sv_tasa_ganancia.get(),
+                    "0"       #self.sv_recargo_tarjeta.get()
+            )
+            except ValueError as error:
+                self.principal.varFuncion_new.mostrar_error(str(error))
+                self.principal.status.set_status("❌ Revise los datos numéricos", "")
+                return
+
+
+            # print(self.lista_calculos)
+            # print(self.lista_calculos[0]) # retorno_neto_pesos
+            # print(self.lista_calculos[1]) # retorno_importe_iva_pesos
+            # print(self.lista_calculos[2]) # retorno_importe_percepcion_pesos
+            # print(self.lista_calculos[3]) # retorno_bruto_pesos
+            # print(self.lista_calculos[4]) # retorno_ganancia_pesos
+            # print(self.lista_calculos[5]) # retorno_precio_venta_pesos
+            # print(self.lista_calculos[6]) # retorno_importe_recargo_pesos
+            # print(self.lista_calculos[7]) # retorno_precio_venta_pesos_con_recargo
+            # print(self.lista_calculos[8]) # agrego cotizacion del dolar hoy
+
+            self.lista_calculos.append(self.principal.sv_valor_dolar_oficial_hoy.get())
+            # -----------------------------------------------------------------------------------------------
+
+
             # calculos ----------------------------------------------------------
 
+            # -------------------------------------------------------------------
+            # Se obtiene el precio bruto en dolares ya multiplicado por la cantidad
             # costo total bruto en dolar
             # cantidad * precio neto dolar * 1.105 0 1.21
-            bruto_dolar = round((row[7] * float(row[8])) * (1+(float(row[6])/100)), 2)
+            val1 = (1 + (Decimal(row[6]) / Decimal(100))).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            bruto_dolar = ((Decimal(row[7]) * Decimal(row[8])) * Decimal(val1)).quantize(Decimal("0.01"),
+                                                                                         rounding=ROUND_HALF_UP)
             # sumarizo el costo en dolares bruto c/iva
-            total_costo_dolar += bruto_dolar
+            total_costo_dolar += Decimal(bruto_dolar)
+            # -------------------------------------------------------------------
 
-            # costo total Bruto en pesos c/iva
-            # (cantidad * neto_dolar) * dolar_presupuesto * (1+(tasa_iva/100))
-            # bruto_pesos = round(((row[6] * float(row[7])) * float(self.pdf_dolar_presupuesto)) * (1+(float(row[5])/100)), 2)
-            bruto_pesos = round((bruto_dolar * float(self.pdf_dolar_presupuesto)), 2)
+            # -------------------------------------------------------------------
+            # COSTO total Bruto en pesos c/iva
+            bruto_pesos = (Decimal(str(bruto_dolar)) * self.pdf_dolar_presupuesto).quantize(Decimal("0.01"),
+                                                                                              rounding=ROUND_HALF_UP)
             # sumarizo el costo bruto pesos (c/iva)
-            total_costo_pesos += bruto_pesos
+            total_costo_pesos += Decimal(bruto_pesos)
 
-            # calculo y sumarizo la ganancia
-            item_ganancia = round(bruto_pesos * (float(self.pdf_tasa_ganancia) / 100), 2)
+            # calculo y sumarizo el importe de la ganancia
+            val1 = (Decimal(bruto_pesos) * (Decimal(self.pdf_tasa_ganancia) / Decimal(100))).quantize(Decimal("0.01"),
+                                                                                                      rounding=ROUND_HALF_UP)
+            item_ganancia = val1
             total_ganancia += item_ganancia
 
-            # costo bruto * (1+(tasa_ganancia/100))
-            sumo_precio_final_conganancia = round(bruto_pesos * (1+(float(self.pdf_tasa_ganancia)/100)), 2)
+            # Le cargo la ganancia al importe costo bruto en pesos
+            val1 = (Decimal(bruto_pesos) * (1+(Decimal(self.pdf_tasa_ganancia)/Decimal(100))))
+            sumo_precio_final_conganancia = val1
             total_presupuesto += sumo_precio_final_conganancia
 
             # Descripcion item
             pdf.cell(w=95, h=5, txt=row[5], border=0, align='L', fill=0, ln=0)
             pdf.cell(w=10, h=5, txt=str(row[6]), border=0, align='R', fill=0, ln=0)
             pdf.cell(w=5, h=5, txt=str(row[7]), border=0, align='R', fill=0, ln=0)
-            #pdf.cell(w=10, h=5, txt=str(formatear_cifra(row[7] * (1+(row[5]/100)))), border=0, align='R', fill=0, ln=0)
             pdf.cell(w=10, h=5, txt=str(formatear_cifra(bruto_dolar)), border=0, align='R', fill=0, ln=0)
             pdf.cell(w=17, h=5, txt=str(formatear_cifra(bruto_pesos)), border=0, align='R', fill=0, ln=0)
             pdf.cell(w=17, h=5, txt=str(formatear_cifra(sumo_precio_final_conganancia)), border=0, align='R', fill=0)
             pdf.cell(w=17, h=5, txt=str(formatear_cifra(item_ganancia)), border=0, align='R', fill=0)
             pdf.multi_cell(w=0, h=5, txt=str(row[9]), border=0, align='R', fill=0)
-            #pdf.cell(w=0, h=5, txt="", border=0, align='R', fill=0, ln=1)
 
         # Espaciado -----------------------------------------------------------------------
         pdf.cell(w=0, h=2, txt='', align='L', fill=0, ln=1)
@@ -1654,7 +1766,7 @@ class ClasePestanaUno(tk.Frame):
 
         pdf.set_font('Courier', 'B', 8)
 
-        pdf.cell(w=0, h=5, txt='* Dolar: '+self.pdf_dolar_presupuesto+' - Total Ganancia: '+str(total_ganancia)+
+        pdf.cell(w=0, h=5, txt='* Dolar: '+str(self.pdf_dolar_presupuesto)+' - Total Ganancia: '+str(total_ganancia)+
                                ' Costo Dolar: '+str(total_costo_dolar)+' Costo pesos: '+str(total_costo_pesos),
                                 align='L', border=1, fill=0, ln=1)
 
@@ -1672,8 +1784,10 @@ class ClasePestanaUno(tk.Frame):
         pdf.cell(w=0, h=20, txt='', align='L', fill=0, ln=1)
 
         # Total final --------------------------------------------------------------------
-        total_presupuesto = formatear_cifra(round(total_presupuesto, 2))
-        total_redondo = formatear_cifra(round(float(self.pdf_total_presup_redondo), 2))
+        val1 = Decimal(total_presupuesto).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        total_presupuesto = formatear_cifra(val1)
+        val1 = Decimal(self.pdf_total_presup_redondo).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        total_redondo = formatear_cifra(val1)
         pdf.cell(w=0, h=5, txt="Total: " + str(total_presupuesto), border=0, align='R', fill=0, ln=1)
         pdf.cell(w=0, h=5, txt="Redondo: " + str(total_redondo), border=0, align='R', fill=0, ln=1)
 
@@ -1682,13 +1796,16 @@ class ClasePestanaUno(tk.Frame):
 
         try:
             pdf.output('hoja.pdf')
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.principal.var_obj_funcionnew.mostrar_error("Verifique listados abiertos en otras terminales")
             return
 
         # Abre el archivo PDF para luego, si quiero, poder imprimirlo
         path = 'hoja.pdf'
         os.system(path)
+
+
 
 
 
@@ -1712,6 +1829,7 @@ class ClasePestanaDos(tk.Frame):
         self.sv_buscostring       = tk.StringVar(value="")
         self.sv_componente        = tk.StringVar(value="")
         self.sv_combo_tasa_iva    = tk.StringVar(value="")
+        self.sv_tasa_percepcion   = tk.StringVar(value="0.00")
         self.sv_cantidad_vendida  = tk.StringVar(value="0.00")
         self.sv_neto_dolar        = tk.StringVar(value="0.00")
         self.sv_proveedor         = tk.StringVar(value="")
@@ -1729,7 +1847,7 @@ class ClasePestanaDos(tk.Frame):
         self.sv_precio_final_unidad      = tk.StringVar(value="0.00")
         self.sv_precio_final_xcanti      = tk.StringVar(value="0.00")
 
-        self.sv_combo_tasa_iva = tk.StringVar()
+        #self.sv_combo_tasa_iva = tk.StringVar()
         # ----------------------------------------------------------------------
 
         # Ejecutamos tu secuencia de inicialización adaptada a la Pestaña 2
@@ -1818,7 +1936,7 @@ class ClasePestanaDos(tk.Frame):
         style.theme_use("clam")
         style.configure("Treeview.Heading", background="black", foreground="white")
         self.grid_componentes = ttk.Treeview(self.frame_grid_componentes, height=9, columns=("col1", "col2", "col3",
-                                                 "col4", "col5", "col6", "col7", "col8", "col9", "col10", "col11"))
+                                                 "col4", "col5", "col6", "col7", "col8", "col9", "col10", "col11", "col12"))
 
         #self.grid_venta_articulos.bind("<Double-Button-1>", self.doble_click_grid)
         self.grid_componentes.column("#0",    width=40,  anchor="center", minwidth=40)
@@ -1833,7 +1951,7 @@ class ClasePestanaDos(tk.Frame):
         self.grid_componentes.column("col9",  width=100, anchor="center", minwidth=100)
         self.grid_componentes.column("col10", width=100, anchor="center", minwidth=100)
         self.grid_componentes.column("col11", width=100, anchor="center", minwidth=100)
-        #self.grid_componentes.column("col12", width=100, anchor="center", minwidth=80)
+        self.grid_componentes.column("col12", width=100, anchor="center", minwidth=100)
 
         self.grid_componentes.heading("#0",    text="Id",              anchor="center")
         self.grid_componentes.heading("col1",  text="Orden",           anchor="w")
@@ -1847,7 +1965,7 @@ class ClasePestanaDos(tk.Frame):
         self.grid_componentes.heading("col9",  text="Tot.Redondeo",    anchor="center")
         self.grid_componentes.heading("col10", text="Tot.Ganancia",    anchor="center")
         self.grid_componentes.heading("col11", text="Tot.Costo",       anchor="center")
-        #self.grid_componentes.heading("col12", text="Total Costo", anchor="center")
+        self.grid_componentes.heading("col12", text="Tasa percepciones", anchor="center")
 
         # SCROLLBAR del Treeview
         scroll_x = tk.Scrollbar(self.frame_grid_componentes, orient="horizontal")
@@ -1997,6 +2115,7 @@ class ClasePestanaDos(tk.Frame):
         self.sv_codigo_componente.set(value=valores[2])
         self.sv_componente.set(value=valores[3])
         self.sv_combo_tasa_iva.set(value=valores[4])
+        self.sv_tasa_percepcion.set(value=valores[11])
         self.sv_cantidad_vendida.set(value=valores[5])
         self.sv_neto_dolar.set(value=valores[6])
         self.principal.sv_total_item_redondo.set(value=valores[8])
@@ -2031,7 +2150,8 @@ class ClasePestanaDos(tk.Frame):
         try:
             # Elimino item de aux_presup (solo el item seleccionado
             self.principal.var_obj_presup.eliminar_auxpresup(self.clave)
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.principal.var_obj_funcionnew.mostrar_error()
             return
         # -------------------------------------------------------------------
@@ -2058,7 +2178,7 @@ class ClasePestanaDos(tk.Frame):
             self.principal.status.set_status("⚠ Faltan datos del componente", "warn")
             self.entry_componente.focus()
             return
-        if float(self.sv_cantidad_vendida.get()) == 0:
+        if Decimal(self.sv_cantidad_vendida.get()) == 0:
             self.principal.status.set_status("⚠ No ingreso cantidad vendida", "warn")
             self.entry_cantidad.focus()
             return
@@ -2091,7 +2211,8 @@ class ClasePestanaDos(tk.Frame):
             try:
                 # Elimino el item anterior en la tabla aux_presup
                 self.principal.var_obj_presup.eliminar_auxpresup(self.clave)
-            except Exception:
+            except Exception as e:
+                print(f"Error no controlado: {e}")
                 self.principal.var_obj_funcionnew.mostrar_error()
                 return
             # ----------------------------------------------------------------
@@ -2109,18 +2230,19 @@ class ClasePestanaDos(tk.Frame):
 
         # -----------------------------------------------------------------
         dic_deta_auxpresup = {
-            "Id":                "",                                          # Id
-            "ax_orden":          orden_item,                                  # orden elemento
-            "ax_proved":         self.sv_proveedor.get(),                     # nombre del proveedor
-            "ax_codcomp":        self.sv_codigo_componente.get(),             # codigo componente del proveedor
-            "ax_componente":     self.sv_componente.get(),                    # descripcion del componente
-            "ax_iva":            self.sv_combo_tasa_iva.get(),                # tasa iva del componente
-            "ax_cantidad":       self.sv_cantidad_vendida.get(),              # cantidad del componente
-            "ax_neto_dolar":     self.sv_neto_dolar.get(),                    # costo neto componente en dolares
-            "ax_total_presup":   self.sv_precio_final_xcanti.get(),           # total del presupuesto real
-            "ax_total_redondo":  self.principal.sv_total_item_redondo.get(),  # total en pesos redondeo
-            "ax_total_ganancia": self.sv_importe_ganancia_xcanti.get(),       # total ganancia
-            "ax_total_costos":   self.sv_costo_bruto_pesos_xcanti.get()       # total costos
+            "Id":                "",                                           # Id
+            "ax_orden":           orden_item,                                  # orden elemento
+            "ax_proved":          self.sv_proveedor.get(),                     # nombre del proveedor
+            "ax_codcomp":         self.sv_codigo_componente.get(),             # codigo componente del proveedor
+            "ax_componente":      self.sv_componente.get(),                    # descripcion del componente
+            "ax_iva":             self.sv_combo_tasa_iva.get(),                # tasa iva del componente
+            "ax_cantidad":        self.sv_cantidad_vendida.get(),              # cantidad del componente
+            "ax_neto_dolar":      self.sv_neto_dolar.get(),                    # costo neto componente en dolares
+            "ax_total_presup":    self.sv_precio_final_xcanti.get(),           # total del presupuesto real
+            "ax_total_redondo":   self.principal.sv_total_item_redondo.get(),  # total en pesos redondeo
+            "ax_total_ganancia":  self.sv_importe_ganancia_xcanti.get(),       # total ganancia
+            "ax_total_costos":    self.sv_costo_bruto_pesos_xcanti.get(),      # total costos
+            "ax_tasa_percepcion": self.sv_tasa_percepcion.get()                # tasa percepciones
         }
         # -----------------------------------------------------------------
 
@@ -2129,7 +2251,8 @@ class ClasePestanaDos(tk.Frame):
             # Insertamos el componente en el auxilliar de presupuesto (aux_presup)
             self.principal.var_obj_presup.insertar_auxpresup(dic_deta_auxpresup)
             ultimo_tabla_id = self.principal.var_obj_presup.traer_ultimo(0)
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.principal.var_obj_funcionnew.mostrar_error()
             return
         # -----------------------------------------------------------------
@@ -2163,6 +2286,7 @@ class ClasePestanaDos(tk.Frame):
 
         self.entry_componente.configure(state=estado)
         self.combo_tasa_iva.configure(state=estado)
+        # self.tasa_percepcion.configure(state=estado)
         self.entry_cantidad.configure(state=estado)
         self.entry_neto_dolar.configure(state=estado)
         self.entry_proved.configure(state=estado)
@@ -2321,7 +2445,8 @@ class ClasePestanaDos(tk.Frame):
         self.entry_neto_dolar = tk.Entry(self.frame_componentes, textvariable=self.sv_neto_dolar, width=8, justify="right")
         self.entry_neto_dolar.grid(row=0, column=10, padx=2, pady=2, sticky="e")
         self.entry_neto_dolar.config(validate="key", validatecommand=self.vcmd)
-        self.entry_neto_dolar.bind("<FocusOut>", lambda e: self.principal.var_obj_funcionnew.corregir_al_salir(self.entry_neto_dolar))
+        self.entry_neto_dolar.bind("<FocusOut>",
+                                   lambda e: self.principal.var_obj_funcionnew.corregir_al_salir(self.entry_neto_dolar))
         self.entry_neto_dolar.bind('<Tab>', lambda e: self.calcular("completo"))
 
         self.lbl_proved = tk.Label(self.frame_componentes, text="Prov.: ", bg="#81EBCD", justify="left")
@@ -2346,7 +2471,8 @@ class ClasePestanaDos(tk.Frame):
             self.frame_precios_articulo.grid_columnconfigure(c, weight=1, minsize=30)
 
         # COSTO PESOS CON IVA
-        self.lbl_costo_pesos_bruto_unidad = tk.Label(self.frame_precios_articulo, text="Costo Unidad: ", bg="#81EBCD", justify="left")
+        self.lbl_costo_pesos_bruto_unidad = tk.Label(self.frame_precios_articulo, text="Costo Unidad: ", bg="#81EBCD",
+                                                     justify="left")
         self.lbl_costo_pesos_bruto_unidad.grid(row=2, column=0, padx=1, pady=2, sticky="w")
         self.lbl_costo_pesos_bruto_unidad2 = tk.Label(self.frame_precios_articulo,
                                                       textvariable=self.sv_costo_bruto_pesos_unidad, width=10, font=fff,
@@ -2354,7 +2480,8 @@ class ClasePestanaDos(tk.Frame):
         self.lbl_costo_pesos_bruto_unidad2.grid(row=2, column=1, padx=1, pady=2, sticky="e")
 
         # COSTO PESOS CON IVA * CANTIDAD
-        self.lbl_costo_bruto_pesos_xcanti = tk.Label(self.frame_precios_articulo, text="Costo total: ", bg="#81EBCD", justify="left")
+        self.lbl_costo_bruto_pesos_xcanti = tk.Label(self.frame_precios_articulo, text="Costo total: ", bg="#81EBCD",
+                                                     justify="left")
         self.lbl_costo_bruto_pesos_xcanti.grid(row=2, column=2, padx=1, pady=2, sticky="w")
         self.lbl_costo_bruto_pesos_xcanti2 = tk.Label(self.frame_precios_articulo,
                                                       textvariable=self.sv_costo_bruto_pesos_xcanti, width=10, font=fff,
@@ -2362,7 +2489,8 @@ class ClasePestanaDos(tk.Frame):
         self.lbl_costo_bruto_pesos_xcanti2.grid(row=2, column=3, padx=1, pady=2, sticky="e")
 
         # IMPORTE PESOS GANANCIA * CANTIDAD
-        self.lbl_importe_ganancia_xcanti = tk.Label(self.frame_precios_articulo, text="Ganancia: ", bg="#81EBCD", justify="left")
+        self.lbl_importe_ganancia_xcanti = tk.Label(self.frame_precios_articulo, text="Ganancia: ", bg="#81EBCD",
+                                                    justify="left")
         self.lbl_importe_ganancia_xcanti.grid(row=2, column=4, padx=1, pady=2, sticky="w")
         self.lbl_importe_ganancia_xcanti2 = tk.Label(self.frame_precios_articulo,
                                                      textvariable=self.sv_importe_ganancia_xcanti, width=10, fg="blue",
@@ -2370,14 +2498,16 @@ class ClasePestanaDos(tk.Frame):
         self.lbl_importe_ganancia_xcanti2.grid(row=2, column=5, padx=1, pady=2, sticky="e")
 
         # PRECIO DE VENTA
-        self.lbl_precio_final_xcanti = tk.Label(self.frame_precios_articulo, text="Precio venta: ", bg="#81EBCD", justify="left")
+        self.lbl_precio_final_xcanti = tk.Label(self.frame_precios_articulo, text="Precio venta: ", bg="#81EBCD",
+                                                justify="left")
         self.lbl_precio_final_xcanti.grid(row=2, column=6, padx=1, pady=2, sticky="w")
         self.lbl_precio_final_xcanti2 = tk.Label(self.frame_precios_articulo, textvariable=self.sv_precio_final_xcanti,
                                                  width=10, fg="blue", font=fff, justify="right")
         self.lbl_precio_final_xcanti2.grid(row=2, column=7, padx=1, pady=2, sticky="e")
 
         # Redondeo del total del Item
-        self.lbl_total_item_redondo = tk.Label(self.frame_precios_articulo, text="Redondeo: ", bg="#81EBCD", justify="left")
+        self.lbl_total_item_redondo = tk.Label(self.frame_precios_articulo, text="Redondeo: ", bg="#81EBCD",
+                                               justify="left")
         self.lbl_total_item_redondo.grid(row=2, column=8, padx=1, pady=2, sticky="w")
         self.entry_total_item_redondo = tk.Entry(self.frame_precios_articulo,
                                                  textvariable=self.principal.sv_total_item_redondo, width=15,
@@ -2420,6 +2550,7 @@ class ClasePestanaDos(tk.Frame):
 
             self.sv_componente.set(value=item[2]) # d<escripcion del articulo
             self.sv_combo_tasa_iva.set(value=item[7])
+            self.sv_tasa_percepcion.set(value=item[8])
             self.sv_neto_dolar.set(value=item[6])
 
         self.entry_componente.focus()
@@ -2461,7 +2592,7 @@ class ClasePestanaDos(tk.Frame):
 
             for row in datos:
                 self.grid_componentes.insert("", "end", text=row[0], values=(orden, row[2], row[3], row[4],
-                                                             row[5], row[6], row[7], row[8], row[9], row[10], row[11]))
+                                                             row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12]))
                 orden += 1
             if len(self.grid_componentes.get_children()) > 0:
                    self.grid_componentes.selection_set(self.grid_componentes.get_children()[0])
@@ -2495,9 +2626,8 @@ class ClasePestanaDos(tk.Frame):
                         self.grid_componentes.focus(item)
                         self.grid_componentes.see(item)
                         break
-
-        except Exception:
-
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.principal.var_obj_funcionnew.mostrar_error("Fallo en carga de GRID auxiliar")
             return
 
@@ -2517,78 +2647,132 @@ class ClasePestanaDos(tk.Frame):
         self.principal.var_obj_funcionnew.corregir_valor(self.principal.sv_valor_dolar_presup.get())
         # ---------------------------------------------------------------------------------
 
+        # Como aqui no realizo recargo por tarjeta para poder pasar el valor a la formula.
+        self.sv_recargo_tarjeta = tk.StringVar(value="0")
+
+        #try:
+        self.lista_calculos = self.principal.var_obj_funcionnew.calcular_precio_articulos(
+            self.sv_neto_dolar.get(),
+            self.principal.sv_valor_dolar_oficial_hoy.get(),
+            self.combo_tasa_iva.get(),
+            self.sv_tasa_percepcion.get(),
+            self.principal.sv_tasa_ganancia.get(),
+            self.sv_recargo_tarjeta.get()
+        )
+        # except ValueError as error:
+        #     self.principal.varFuncion_new.mostrar_error(str(error))
+        #     self.principal.status.set_status("❌ Revise los datos numéricos", "")
+        #     return
+
+        self.lista_calculos.append(self.principal.sv_valor_dolar_oficial_hoy.get())
+
+        # print(self.lista_calculos)
+        # print(self.lista_calculos[0]) # retorno_neto_pesos
+        # print(self.lista_calculos[1]) # retorno_importe_iva_pesos
+        # print(self.lista_calculos[2]) # retorno_importe_percepcion_pesos
+        # print(self.lista_calculos[3]) # retorno_bruto_pesos
+        # print(self.lista_calculos[4]) # retorno_ganancia_pesos
+        # print(self.lista_calculos[5]) # retorno_precio_venta_pesos
+        # print(self.lista_calculos[6]) # retorno_importe_recargo_pesos
+        # print(self.lista_calculos[7]) # retorno_precio_venta_pesos_con_recargo
+        # print(self.lista_calculos[8]) # agrego cotizacion del dolar hoy
+
         ii = 1
         #try:
         if ii == 1:
 
             if que_campo == "completo":
-                print(self.sv_cantidad_vendida.get())
+
                 # -------------------------------------------------------------
                 # 1 - Costo neto unidad pesos y cantidad
-                self.sv_costo_neto_pesos_unidad.set(value=str(round(float(self.sv_neto_dolar.get()) *
-                                                                    float(self.principal.sv_valor_dolar_presup.get()), 2)))
-                self.sv_costo_neto_pesos_xcanti.set(value=str(round(float(self.sv_neto_dolar.get()) *
-                                                                    float(self.principal.sv_valor_dolar_presup.get()) *
-                                                                    float(self.sv_cantidad_vendida.get()), 2)))
+
+                val1 = (Decimal(self.sv_neto_dolar.get()) * Decimal(
+                    self.principal.sv_valor_dolar_presup.get())).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                self.sv_costo_neto_pesos_unidad.set(value=str(val1))
+                # self.sv_costo_neto_pesos_unidad.set(value=str(round(float(self.sv_neto_dolar.get()) *
+                #                                                     float(self.principal.sv_valor_dolar_presup.get()), 2)))
+
+                val1 = ((Decimal(self.sv_neto_dolar.get()) * Decimal(
+                    self.principal.sv_valor_dolar_presup.get())) * Decimal(self.sv_cantidad_vendida.get())).quantize(
+                    Decimal("0.01"), rounding=ROUND_HALF_UP)
+                self.sv_costo_neto_pesos_xcanti.set(value=str(val1))
+                # self.sv_costo_neto_pesos_xcanti.set(value=str(round(float(self.sv_neto_dolar.get()) *
+                #                                                     float(self.principal.sv_valor_dolar_presup.get()) *
+                #                                                     float(self.sv_cantidad_vendida.get()), 2)))
                 # -------------------------------------------------------------
 
                 # -------------------------------------------------------------
-                # 2 - Importe IVA unidad y cantidad
-                importe_iva = (((float(self.sv_neto_dolar.get()) * float(self.principal.sv_valor_dolar_presup.get())) *
-                              float(self.sv_combo_tasa_iva.get())) / 100)
+                # 2 - Importe IVA unidad y por cantidad
 
-                importe_ivaxcanti = ((((float(self.sv_neto_dolar.get()) *
-                                        float(self.principal.sv_valor_dolar_presup.get())) *
-                                        float(self.sv_combo_tasa_iva.get())) / 100) *
-                                        float(self.sv_cantidad_vendida.get()))
-
-                self.sv_importe_iva_unidad.set(value=str(round(importe_iva, 2)))
-                self.sv_importe_iva_xcanti.set(value=str(round(importe_ivaxcanti, 2)))
+                importe_iva = self.lista_calculos[1]
+                importe_ivaxcanti = (Decimal(importe_iva) * Decimal(self.sv_cantidad_vendida.get())).quantize(
+                    Decimal("0.01"), rounding=ROUND_HALF_UP)
+                # importe_iva = (((float(self.sv_neto_dolar.get()) * float(self.principal.sv_valor_dolar_presup.get())) *
+                #               float(self.sv_combo_tasa_iva.get())) / 100)
+                # importe_ivaxcanti = ((((float(self.sv_neto_dolar.get()) *
+                #                         float(self.principal.sv_valor_dolar_presup.get())) *
+                #                         float(self.sv_combo_tasa_iva.get())) / 100) *
+                #                         float(self.sv_cantidad_vendida.get()))
+                self.sv_importe_iva_unidad.set(value=str(importe_iva))
+                self.sv_importe_iva_xcanti.set(value=str(importe_ivaxcanti))
                 # -------------------------------------------------------------
 
                 # -------------------------------------------------------------
-                # 3 - Costo BRUTO pesos unidad y cantidad
+                # 3 - Costo BRUTO pesos unidad y cantidad - lista_calculos[3]
 
                 # Costo en Pesos mas IVA * unidad
-                self.sv_costo_bruto_pesos_unidad.set(value= str(round(float(self.sv_costo_neto_pesos_unidad.get()) +
-                                                            float(self.sv_importe_iva_unidad.get()), 2)))
-                # Costo en Pesos  ms IVA * unidad * la cantidad vendida
-                self.sv_costo_bruto_pesos_xcanti.set(value= str(round((float(self.sv_costo_neto_pesos_unidad.get()) +
-                                                            float(self.sv_importe_iva_unidad.get())) *
-                                                            float(self.sv_cantidad_vendida.get()), 2)))
+                self.sv_costo_bruto_pesos_unidad.set(value=str(self.lista_calculos[3]))
+                # Costo en Pesos mas IVA * unidad * la cantidad vendida
+                val1 = (Decimal(self.lista_calculos[3]) * Decimal(self.sv_cantidad_vendida.get())).quantize(
+                    Decimal("0.01"), rounding=ROUND_HALF_UP)
+                self.sv_costo_bruto_pesos_xcanti.set(value=str(val1))
+                # self.sv_costo_bruto_pesos_unidad.set(value= str(round(float(self.sv_costo_neto_pesos_unidad.get()) +
+                #                                             float(self.sv_importe_iva_unidad.get()), 2)))
+                # # Costo en Pesos  ms IVA * unidad * la cantidad vendida
+                # self.sv_costo_bruto_pesos_xcanti.set(value= str(round((float(self.sv_costo_neto_pesos_unidad.get()) +
+                #                                             float(self.sv_importe_iva_unidad.get())) *
+                #                                             float(self.sv_cantidad_vendida.get()), 2)))
                 # -------------------------------------------------------------
 
                 # -------------------------------------------------------------
                 # 4 - Importe ganancia por unidad y por cantidad
 
-                ganancia_unidad = round(((float(self.sv_costo_bruto_pesos_unidad.get()) *
-                                          float(self.principal.sv_tasa_ganancia.get())) / 100), 2)
-
-                ganancia_xcanti = round((((float(self.sv_costo_bruto_pesos_unidad.get()) *
-                                           float(self.principal.sv_tasa_ganancia.get())) / 100) *
-                                           float(self.sv_cantidad_vendida.get())), 2)
-
-                self.sv_importe_ganancia_unidad.set(value=str(ganancia_unidad))
+                # self.lista_calculos[4] = importe ganancia unidad
+                # ganancia_unidad = round(((float(self.sv_costo_bruto_pesos_unidad.get()) *
+                #                           float(self.principal.sv_tasa_ganancia.get())) / 100), 2)
+                ganancia_xcanti = (Decimal(self.lista_calculos[4]) * Decimal(self.sv_cantidad_vendida.get())).quantize(
+                    Decimal("0.01"), rounding=ROUND_HALF_UP)
+                # ganancia_xcanti = round((((float(self.sv_costo_bruto_pesos_unidad.get()) *
+                #                            float(self.principal.sv_tasa_ganancia.get())) / 100) *
+                #                            float(self.sv_cantidad_vendida.get())), 2)
+                self.sv_importe_ganancia_unidad.set(value=str(self.lista_calculos[4]))
                 self.sv_importe_ganancia_xcanti.set(value=str(ganancia_xcanti))
                 # -------------------------------------------------------------
 
                 # -------------------------------------------------------------
                 # 4 - Total final del componente por unidad y cantidad
 
-                total_final_unidad = (float(self.sv_importe_ganancia_unidad.get()) +
-                                      float(self.sv_costo_bruto_pesos_unidad.get()))
-                total_final_xcanti = total_final_unidad *  float(self.sv_cantidad_vendida.get())
-
-                self.sv_precio_final_unidad.set(value=str(round(total_final_unidad, 2)))
-                self.sv_precio_final_xcanti.set(value=str(round(total_final_xcanti, 2)))
+                # self.lista_calculos[4] = importe ganancia unidad
+                # self.lista_calculos[3] =  Costo BRUTO pesos unidad
+                total_final_unidad = self.lista_calculos[4] + self.lista_calculos[3]
+                # total_final_unidad = (float(self.sv_importe_ganancia_unidad.get()) +
+                #                       float(self.sv_costo_bruto_pesos_unidad.get()))
+                total_final_xcanti = (Decimal(total_final_unidad) * Decimal(self.sv_cantidad_vendida.get())).quantize(
+                    Decimal("0.01"), rounding=ROUND_HALF_UP)
+                self.sv_precio_final_unidad.set(value=str(total_final_unidad))
+                self.sv_precio_final_xcanti.set(value=str(total_final_xcanti))
                 # -------------------------------------------------------------
+
+                #seguir
+
 
             if que_campo == "totalpresupuesto":
 
                 """ Guardo todos los items que compnen el presupuesto """
                 try:
                     datos = self.principal.var_obj_presup.consultar_presupuestos("aux_presup", "aux_presup")
-                except Exception:
+                except Exception as e:
+                    print(f"Error no controlado: {e}")
                     self.principal.var_obj_funcionnew.mostrar_error()
                     return
 
@@ -2600,23 +2784,25 @@ class ClasePestanaDos(tk.Frame):
                 for row in datos:
 
                     # total costos mas IVA
-                    sumatot_costos  += (row[11] * (1 + (row[5]/100)))
-                    sumatot_presu   += row[8]
-                    sumatot_redondo += row[9]
+                    val1 = (Decimal(row[11]) * (1 + (Decimal(row[5])/Decimal(100)))).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                    sumatot_costos  += val1
+                    #sumatot_costos  += (row[11] * (1 + (row[5]/100)))
+                    sumatot_presu   += Decimal(row[8]).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                    sumatot_redondo += Decimal(row[9]).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
                 """ La ganancia la calculo entre el total redondeado y el costo total bruto para todos los
                 articulos o componentes ingresadosde los articulos """
 
-                sumatot_ganancia = sumatot_redondo - sumatot_costos
+                sumatot_ganancia = (Decimal(sumatot_redondo) - Decimal(sumatot_costos)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
                 # ganancia calculada sobre diferencia entre el "total redondeado" y el "costo total del articulo con IVA"
-                self.principal.sv_total_ganancia.set(value=str(round(sumatot_ganancia, 2)))
+                self.principal.sv_total_ganancia.set(value=str(sumatot_ganancia))
                 # total costos con IVA incluido
-                self.principal.sv_total_costos.set(value=str(round(sumatot_costos, 2)))
+                self.principal.sv_total_costos.set(value=str(sumatot_costos))
                 # Total del presupuesto real - sin redondeo
-                self.principal.sv_total_presup.set(value=str(round(sumatot_presu)))
+                self.principal.sv_total_presup.set(value=str(sumatot_presu))
                 # total presupuesto redondeado
-                self.principal.sv_total_presup_redondo.set(value=str(round(sumatot_redondo, 2)))
+                self.principal.sv_total_presup_redondo.set(value=str(sumatot_redondo))
 
         else:
         #except:
@@ -2658,7 +2844,7 @@ class ClasePestanaDos(tk.Frame):
         self.pantalla_detalle.protocol("WM_DELETE_WINDOW", self.cerrar_pantalla_articulos)
         self.pantalla_detalle.geometry('580x260+600+400')
         self.pantalla_detalle.config(bg='#27BEF5', padx=5, pady=5)
-        self.pantalla_detalle.resizable(1, 1)
+        self.pantalla_detalle.resizable(None, None)
         self.pantalla_detalle.title("Detalle precio del articulo")
         self.pantalla_detalle.focus_set()
         self.pantalla_detalle.grab_set()
@@ -2670,55 +2856,76 @@ class ClasePestanaDos(tk.Frame):
         # DOLARES
 
         # DOLARES Precio neto
+        val1 = (Decimal(self.sv_neto_dolar.get()) * Decimal(self.sv_cantidad_vendida.get())).quantize(Decimal("0.01"),
+                                                                                                      rounding=ROUND_HALF_UP)
         lbl_neto_dolar_articulo=tk.Label(self.frame_detalle_articulo,
         text=f"DOLARES - Costo neto x unidad: U$S {self.sv_neto_dolar.get()} - "
              f"Total costo neto: U$S"
-             f" {float(self.sv_neto_dolar.get())*float(self.sv_cantidad_vendida.get())}")
+             f" {val1}")
         lbl_neto_dolar_articulo.grid(row=0, column=0, padx=5, pady=2, sticky="w")
 
         # DOLARES Importe del IVA
-        self.iva_en_dolares = round(float(self.sv_neto_dolar.get()) * (float(self.sv_combo_tasa_iva.get()) / 100), 2)
+        val1 = (Decimal(self.sv_neto_dolar.get()) * (Decimal(self.sv_combo_tasa_iva.get()) / Decimal(100))).quantize(
+            Decimal("0.01"), rounding=ROUND_HALF_UP)
+        self.iva_en_dolares = val1
 
+        val1 = (Decimal(self.iva_en_dolares) * Decimal(self.sv_cantidad_vendida.get())).quantize(Decimal("0.01"),
+                                                                                                 rounding=ROUND_HALF_UP)
         lbl_iva_dolar_articulo=tk.Label(self.frame_detalle_articulo,
         text=f"DOLARES - Importe IVA x unidad: U$S {self.iva_en_dolares} - "
-             f"Total IVA: U$S {self.iva_en_dolares * float(self.sv_cantidad_vendida.get())}")
+             f"Total IVA: U$S {val1}")
         lbl_iva_dolar_articulo.grid(row=1, column=0, padx=5, pady=2, sticky="w")
 
-        # DOLARES Precio Bruto (con VIA)
+        # DOLARES Precio Costo Bruto (con IVA)
+        val1 = (Decimal(self.iva_en_dolares)+Decimal(self.sv_neto_dolar.get())).quantize(Decimal("0.01"),
+                                                                                                 rounding=ROUND_HALF_UP)
+        val2 = (Decimal(self.sv_cantidad_vendida.get()) * (
+                    Decimal(self.iva_en_dolares) + Decimal(self.sv_neto_dolar.get()))).quantize(Decimal("0.01"),
+                                                                                               rounding=ROUND_HALF_UP)
         lbl_bruto_dolar_articulo=tk.Label(self.frame_detalle_articulo,
-        text=f"DOLARES - Costo bruto x unidad: U$S {self.iva_en_dolares+float(self.sv_neto_dolar.get())} - "
+        text=f"DOLARES - Costo bruto x unidad: U$S {val1} - "
              f"Total costo bruto: U$S "
-             f"{float(self.sv_cantidad_vendida.get()) * (self.iva_en_dolares+float(self.sv_neto_dolar.get()))}")
+             f"{val2}")
         lbl_bruto_dolar_articulo.grid(row=2, column=0, padx=5, pady=2, sticky="w")
 
         # ------------------------------------------------------------------
         # PESOS
 
-        # PESOS Precio neto
+        # PESOS importe Precio neto
+
         lbl_neto_pesos_articulo=tk.Label(self.frame_detalle_articulo,
         text=f"PESOS -      Costo neto x unidad: $ {self.sv_costo_neto_pesos_unidad.get()} - "
              f"Total costo neto: $ {self.sv_costo_neto_pesos_xcanti.get()}")
         lbl_neto_pesos_articulo.grid(row=3, column=0, padx=5, pady=2, sticky="w")
 
         # PESOS Importe del IVA
-        self.iva_en_pesos = round(float(self.sv_costo_neto_pesos_unidad.get()) * (float(self.sv_combo_tasa_iva.get()) / 100), 2)
+        val1 = (Decimal(self.sv_costo_neto_pesos_unidad.get()) * (
+                    Decimal(self.sv_combo_tasa_iva.get()) / Decimal(100))).quantize(Decimal("0.01"),
+                                                                                    rounding=ROUND_HALF_UP)
+        self.iva_en_pesos = val1
+
 
         lbl_iva_pesos_articulo=tk.Label(self.frame_detalle_articulo,
         text=f"PESOS -      Importe IVA x unidad: $ {self.iva_en_pesos} - "
-             f"Total IVA: $ {self.iva_en_pesos * float(self.sv_cantidad_vendida.get())}")
+             f"Total IVA: $ {self.iva_en_pesos * Decimal(self.sv_cantidad_vendida.get())}")
         lbl_iva_pesos_articulo.grid(row=4, column=0, padx=5, pady=2, sticky="w")
 
         # PESOS Precio Bruto (con VIA)
+        val1 = (Decimal(self.sv_cantidad_vendida.get()) * (
+                    Decimal(self.iva_en_pesos) + Decimal(self.sv_costo_neto_pesos_unidad.get()))).quantize(
+            Decimal("0.01"), rounding=ROUND_HALF_UP)
         lbl_bruto_pesos_articulo=tk.Label(self.frame_detalle_articulo,
-        text=f"PESOS -      Costo bruto x unidad: $ {self.iva_en_pesos+float(self.sv_costo_neto_pesos_unidad.get())} - "
+        text=f"PESOS -      Costo bruto x unidad: $ {self.iva_en_pesos + Decimal(self.sv_costo_neto_pesos_unidad.get())} - "
              f"Total costo bruto: $ "
-             f"{float(self.sv_cantidad_vendida.get()) * (self.iva_en_pesos+float(self.sv_costo_neto_pesos_unidad.get()))}")
+             f"{val1}")
         lbl_bruto_pesos_articulo.grid(row=5, column=0, padx=5, pady=2, sticky="w")
 
-        # GANANCIA PESOS
-        importe_ganancia_unidad =round(float(self.sv_costo_bruto_pesos_unidad.get()) *
-                                       (float(self.principal.sv_tasa_ganancia.get()) / 100), 2)
-        importe_ganancia_total = importe_ganancia_unidad * float(self.sv_cantidad_vendida.get())
+        # GANANCIA importe en PESOS
+        val1 = (Decimal(self.sv_costo_bruto_pesos_unidad.get()) * (
+                    Decimal(self.principal.sv_tasa_ganancia.get()) / Decimal(100))).quantize(Decimal("0.01"),
+                                                                                             rounding=ROUND_HALF_UP)
+        importe_ganancia_unidad = val1
+        importe_ganancia_total = importe_ganancia_unidad * Decimal(self.sv_cantidad_vendida.get())
         lbl_ganancia_pesos_articulo=tk.Label(self.frame_detalle_articulo,
         text=f"PESOS -      Ganancia: % {self.principal.sv_tasa_ganancia.get()} - "
              f"Importe ganancia x unidad: "
@@ -2727,10 +2934,17 @@ class ClasePestanaDos(tk.Frame):
              f"{importe_ganancia_total}")
         lbl_ganancia_pesos_articulo.grid(row=6, column=0, padx=5, pady=2, sticky="w")
 
+
+
+
+
+
         # PRECIO VENTA FINAL EN PESOS
-        precio_venta_final_unidad = round(float(self.sv_costo_bruto_pesos_unidad.get()) *
-                                          (1 + (float(self.principal.sv_tasa_ganancia.get()) / 100)), 2)
-        precio_venta_final_total = round(precio_venta_final_unidad * float(self.sv_cantidad_vendida.get()), 2)
+        val1 = (Decimal(self.sv_costo_bruto_pesos_unidad.get()) * (
+                    1 + (Decimal(self.principal.sv_tasa_ganancia.get()) / Decimal(100)))).quantize(Decimal("0.01"),
+                                                                                                   rounding=ROUND_HALF_UP)
+        precio_venta_final_unidad = val1
+        precio_venta_final_total = (precio_venta_final_unidad * Decimal(self.sv_cantidad_vendida.get()))
 
         lbl_precio_pesos_venta_final=tk.Label(self.frame_detalle_articulo,
         text=f"PESOS -      Precio venta final x unidad: {precio_venta_final_unidad} - "
@@ -2746,10 +2960,10 @@ class ClasePestanaDos(tk.Frame):
         self.pantalla_detalle.mainloop()
 
     def cerrar_pantalla_articulos(self):
+
         self.pantalla_detalle.destroy()
         self.master.grab_set()
         self.master.focus_set()
-
 
 """
     ejemplo de uso funcion mostrar error
@@ -2775,5 +2989,3 @@ class ClasePestanaDos(tk.Frame):
         self.set_status("❌ Error al guardar", "error")
         self.set_status("ℹ Buscando clientes...", "info")
 """
-
-

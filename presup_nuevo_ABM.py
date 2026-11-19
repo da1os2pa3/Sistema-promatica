@@ -4,7 +4,6 @@ from datetime import datetime
 class DatosPresupuestos:
 
     def __init__(self, pantalla):
-
         self.master = pantalla
 
     @staticmethod
@@ -105,9 +104,7 @@ class DatosPresupuestos:
         cnn = self.get_connection()
         cur = cnn.cursor(buffered=True)
         try:
-            sql = """
-                  SELECT * FROM resu_presup WHERE rp_nomcli LIKE %s ORDER BY rp_fecha ASC
-                  """
+            sql = "SELECT * FROM resu_presup WHERE rp_nomcli LIKE %s ORDER BY rp_fecha ASC"
             #param = f"%{texto}%"
             param = (f"%{texto}%",)
             cur.execute(sql, param)
@@ -126,8 +123,8 @@ class DatosPresupuestos:
         try:
             sql = '''INSERT INTO aux_presup (ax_orden, ax_proved, ax_codcomp, ax_componente, ax_iva, ax_cantidad, 
                                              ax_neto_dolar, ax_total_presup, ax_total_redondo, ax_total_ganancia, 
-                                             ax_total_costos) 
-                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
+                                             ax_total_costos, ax_tasa_percepcion) 
+                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
             valores = (
                 diccionario["ax_orden"],
                 diccionario["ax_proved"],
@@ -139,7 +136,8 @@ class DatosPresupuestos:
                 diccionario["ax_total_presup"],
                 diccionario["ax_total_redondo"],
                 diccionario["ax_total_ganancia"],
-                diccionario["ax_total_costos"]
+                diccionario["ax_total_costos"],
+                diccionario["ax_tasa_percepcion"]
             )
             cur.execute(sql, valores)
             cnn.commit()
@@ -158,10 +156,12 @@ class DatosPresupuestos:
         cnn = self.get_connection()
         cur = cnn.cursor(buffered=True)
         # Inserta los componentes presupuestados la tabla de detalle de los presupuestos realizados
-        try:
+        aa = 0
+        if aa == 0:
+        #try:
             sql = '''INSERT INTO deta_presup (dp_orden, dp_numero, dp_proved, dp_codcomp, dp_componente, dp_iva, 
-                                              dp_cantidad, dp_neto_dolar, dp_redondo) 
-                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)'''
+                                              dp_cantidad, dp_neto_dolar, dp_redondo, dp_tasa_percepcion) 
+                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
 
             valores = (
                 diccionario["dp_orden"],
@@ -172,7 +172,8 @@ class DatosPresupuestos:
                 diccionario["dp_iva"],
                 diccionario["dp_cantidad"],
                 diccionario["dp_neto_dolar"],
-                diccionario["dp_redondo"]
+                diccionario["dp_redondo"],
+                diccionario["dp_tasa_percepcion"]
             )
 
             cur.execute(sql, valores)
@@ -180,12 +181,12 @@ class DatosPresupuestos:
             # devolvemos el Id generado del nuevo registro (aqui no sirve)
             id_nuevo = cur.lastrowid
             return id_nuevo
-        except Exception:
-            cnn.rollback()
-            raise
-        finally:
-            cur.close()
-            cnn.close()
+        # except Exception:
+        #     cnn.rollback()
+        #     raise
+        # finally:
+        #     cur.close()
+        #     cnn.close()
 
     def insertar_presu_entregado(self, diccionario):
 
@@ -358,8 +359,9 @@ class DatosPresupuestos:
 
         sql = """
               INSERT INTO aux_presup (id, ax_orden, ax_proved, ax_codcomp, ax_componente, ax_iva, ax_cantidad, 
-                                      ax_neto_dolar, ax_total_presup, ax_total_redondo, ax_total_ganancia, ax_total_costos) 
-              VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) 
+                                      ax_neto_dolar, ax_total_presup, ax_total_redondo, ax_total_ganancia, 
+                                      ax_total_costos, ax_tasa_percepcion) 
+              VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) 
               """
 
         datos_total = []
@@ -386,7 +388,7 @@ class DatosPresupuestos:
             valores[0] = i  # asegurar orden correcto
 
             # Comprueba que existan exactamente 11 valores.
-            if len(valores) != 11:
+            if len(valores) != 12:
                 print("Error en fila:", valores)
                 continue
 

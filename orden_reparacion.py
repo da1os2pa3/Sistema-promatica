@@ -46,22 +46,7 @@ class ClaseOrdenesRepara(tk.Frame):
         # ------------------------------------------------------------------------
 
         # PANTALLA  --------------------------------------------------------------
-        self.master.resizable(0, 0)
-        """
-        Actualizamos toddo el contenido de la ventana (la ventana pude crecer si se le agrega
-        mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer.
-        """
-        # Obtenemos el largo y  ancho de la pantalla
-        wtotal = self.master.winfo_screenwidth()
-        htotal = self.master.winfo_screenheight()
-        # Asignamos medidas a la ventana
-        wventana = 1100
-        hventana = 760
-        # Aplicamos la siguiente formula para ubicarla en el centro
-        pwidth = round(wtotal / 2 - wventana / 2) + 0
-        pheight = round(htotal / 2 - hventana / 2) + 0
-        # Se lo aplicamos a la geometría de la ventana
-        self.master.geometry(str(wventana) + "x" + str(hventana) + "+" + str(pwidth) + "+" + str(pheight))
+        self.pantalla()
         # ---------------------------------------------------------------------
 
         # VARIABLES Y ORDEN INICIAL -------------------------------------------
@@ -661,7 +646,6 @@ class ClaseOrdenesRepara(tk.Frame):
 
         self.varOrdenes.eliminar_orden(self.clave)
 
-        #messagebox.showinfo("Aviso", "Registro eliminado correctamente", parent=self)
         self.status.set_status("✔ Registro guardado correctamente", "ok")
         self.llena_grilla(self.clave_ant)
 
@@ -709,7 +693,6 @@ class ClaseOrdenesRepara(tk.Frame):
                 return
 
             self.status.set_status("✔ Registro guardado correctamente", "ok")
-            #messagebox.showinfo("Aviso", "Nuevo registro creado correctamente", parent=self)
 
         if self.alta_modif == 2:
 
@@ -750,7 +733,6 @@ class ClaseOrdenesRepara(tk.Frame):
                 return
 
             self.status.set_status("✔ Registro guardado correctamente", "ok")
-            #messagebox.showinfo("Aviso", "La modificacion del registro fue exitosa", parent=self)
 
         # Ordenar estado de pantalla ----------------------------------------------------
         self.habilitar_text("normal")
@@ -877,58 +859,11 @@ class ClaseOrdenesRepara(tk.Frame):
                              + " OR " + "INSTR(equ_ingresa, '" + se_busca + "') > 0"
 
         self.retorno = self.varOrdenes.buscar_entabla(self.filtro_activo)
-        #self.llena_grilla2(self.filtro_activo)
         self.llena_grilla("")
 
     # ----------------------------------------------------------------------------
     # CALCULOS -*-
     # ----------------------------------------------------------------------------
-
-    # def sumar_totalfinal(self):
-    #
-    #     #try:
-    #     aaa = 0
-    #     if aaa == 0:
-    #
-    #         # Control de que no ingresen mas de una vez el '-' o el '.' - Funcion en funciones.py
-    #         if not control_forma(self.sv_total_partes.get()):
-    #             self.sv_total_partes.set(value="0")
-    #             self.entry_total_partes.focus()
-    #             return
-    #         if not control_forma(self.sv_total_manodeobra.get()):
-    #             self.sv_total_manodeobra.set(value="0")
-    #             self.entry_total_manodeobra.focus()
-    #             return
-    #
-    #         # Control de valor en blanco o solo un . o -
-    #         if (self.sv_total_partes.get() == "" or self.sv_total_partes.get() == "."
-    #                 or self.sv_total_partes.get() == "-"):
-    #             self.sv_total_partes.set(value="0")
-    #         if (self.sv_total_manodeobra.get() == "" or self.sv_total_manodeobra.get() == "."
-    #                 or self.sv_total_manodeobra.get() == "-"):
-    #             self.sv_total_manodeobra.set(value="0")
-    #
-    #         # control de valor en cero o si tiene mas de dos decimales lo trunco a dos
-    #         if float(self.sv_total_partes.get()) == 0:
-    #             self.sv_total_partes.set(value="0")
-    #         else:
-    #             self.sv_total_partes.set(value=str(round(float(self.sv_total_partes.get()), 2)))
-    #         if float(self.sv_total_manodeobra.get()) == 0:
-    #             self.sv_total_manodeobra.set(value="0")
-    #         else:
-    #             self.sv_total_manodeobra.set(value=str(round(float(self.sv_total_manodeobra.get()), 2)))
-    #
-    #         v1 = float(self.sv_total_partes.get())
-    #         v2 = float(self.sv_total_manodeobra.get())
-    #
-    #         self.sv_tot_final.set(value=str(round((v1 + v2), 2)))
-    #
-    #     else:
-    #     #except:
-    #
-    #         messagebox.showerror("Error", "Revise datos ingresados", parent=self)
-    #         self.entry_total_partes.focus()
-    #         return
 
     def sumar_totalfinal(self):
 
@@ -1482,7 +1417,6 @@ class ClaseOrdenesRepara(tk.Frame):
 
         for widg in self.frame_entrys_seis.winfo_children():
             widg.grid_configure(padx=24, pady=3, sticky="nsew")
-
 
 
     # ----------------------------------------------------------------------------
@@ -2043,3 +1977,21 @@ class ClaseOrdenesRepara(tk.Frame):
     # ========================================================================================
     # FIN Grupo de funciones de estadisticas
     # ========================================================================================
+
+    def pantalla(self):
+        self.master.resizable(0, 0)
+        """
+        Actualizamos toddo el contenido de la ventana (la ventana pude crecer si se le agrega
+        mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer.
+        """
+        # Obtenemos el largo y  ancho de la pantalla
+        wtotal = self.master.winfo_screenwidth()
+        htotal = self.master.winfo_screenheight()
+        # Asignamos medidas a la ventana
+        wventana = 1100
+        hventana = 760
+        # Aplicamos la siguiente formula para ubicarla en el centro
+        pwidth = round(wtotal / 2 - wventana / 2) + 0
+        pheight = round(htotal / 2 - hventana / 2) + 0
+        # Se lo aplicamos a la geometría de la ventana
+        self.master.geometry(str(wventana) + "x" + str(hventana) + "+" + str(pwidth) + "+" + str(pheight))

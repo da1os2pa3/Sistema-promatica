@@ -1,19 +1,13 @@
 import mysql.connector
-from mysql.connector import Error
+
 
 class DatosOrdenRepar:
 
     def __init__(self, pantalla):
-
         self.master = pantalla
 
-        try:
-            self.cnn = mysql.connector.connect(host="localhost", user="root", passwd="", database="sist_prom")
-        except Error as ex:
-            print("Error de conexion: {0}".format(ex))
-
-    def get_connection(self):
-
+    @staticmethod
+    def get_connection():
         return mysql.connector.connect(
             host="localhost",
             user="root",
@@ -23,24 +17,29 @@ class DatosOrdenRepar:
 
     def consultar_ordenes(self, orden=""):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql = "SELECT * FROM orden_repara"
             if orden:
                 sql += " " + orden
             cur.execute(sql)
             return cur.fetchall()
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def insertar_orden(self, ordenes):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
-
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql = """
                   INSERT INTO orden_repara(or_num_orden, fecha_ingreso, fecha_egreso, or_cod_cliente, or_nombre_cliente,
                                            equ_ingresa, equ_grupo, equ_procesador, equ_ram, equ_discos, equ_sist_oper,
@@ -84,14 +83,18 @@ class DatosOrdenRepar:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def modificar_orden(self, ordenes):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql = ('''UPDATE orden_repara
                       SET or_num_orden      =%s, 
                           fecha_ingreso     =%s, 
@@ -152,14 +155,18 @@ class DatosOrdenRepar:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def eliminar_orden(self, Id):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql = '''DELETE FROM orden_repara WHERE Id = {}'''.format(Id)
             cur.execute(sql)
             n = cur.rowcount
@@ -170,52 +177,66 @@ class DatosOrdenRepar:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def traer_un_registro(self, Id):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor()
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor()
             cur.execute("SELECT * FROM orden_repara WHERE Id=%s", (Id,))
             datos_inf = cur.fetchone()
             return datos_inf
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def consultar_informa(self):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             cur.execute("SELECT * FROM informa WHERE 1")
             datos_inf = cur.fetchone()
             return datos_inf
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def buscar_entabla(self, argumento):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
-            if len(argumento) <= 0:
-                return
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             cur.execute("SELECT * FROM " + argumento)
             datos = cur.fetchall()
             return datos
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def traer_ultimo(self, xparametro):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             cur.execute("SELECT * FROM orden_repara ORDER BY or_num_orden")
             datos = cur.fetchall()
             aux = ""
@@ -226,30 +247,40 @@ class DatosOrdenRepar:
                     aux = str(row[0]) + "\n"
             return aux
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def traer_un_cliente(self, para_codigo):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql = '''SELECT * FROM clientes WHERE codigo = {}'''.format(para_codigo)
             cur.execute(sql)
             datos_inf = cur.fetchone()
             return datos_inf
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def suma_deuda(self, cod_cliente):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             cur.execute("SELECT * FROM ctacte WHERE cc_codcli = " + cod_cliente)
             datos = cur.fetchall()
             return datos
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()

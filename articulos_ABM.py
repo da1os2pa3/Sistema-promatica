@@ -50,7 +50,7 @@ class DatosArtic:
             cnn = self.get_connection()
             cur = cnn.cursor(buffered=True)
             sql = """
-                  INSERT INTO articulos (codigo, descripcion, marca, rubro, codbar, costodolar, iva, impint, porcgan, 
+                  INSERT INTO articulos (codigo, descripcion, marca, rubro, codbar, costodolar, iva, percep, porcgan, 
                                          observa, ultact, costohist, imagen) 
                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) 
                   """
@@ -63,7 +63,7 @@ class DatosArtic:
                 articulo["codbar"],
                 articulo["costodolar"],
                 articulo["iva"],
-                articulo["impint"],
+                articulo["percep"],
                 articulo["porcgan"],
                 articulo["observa"],
                 articulo["ultact"],
@@ -101,7 +101,7 @@ class DatosArtic:
                     codbar=%s, 
                     costodolar=%s, 
                     iva=%s, 
-                    impint=%s, 
+                    percep=%s, 
                     porcgan=%s, 
                     observa=%s,
                     ultact=%s, 
@@ -117,7 +117,7 @@ class DatosArtic:
                 articulo["codbar"],
                 articulo["costodolar"],
                 articulo["iva"],
-                articulo["impint"],
+                articulo["percep"],
                 articulo["porcgan"],
                 articulo["observa"],
                 articulo["ultact"],

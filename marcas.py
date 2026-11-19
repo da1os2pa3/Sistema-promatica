@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
+
 from PIL import Image, ImageTk
+
 from funcion_new import ClaseFuncionNew
 from funciones import *
 from marcas_ABM import DatosMarcas
@@ -320,7 +322,8 @@ class ClaseMarcas(tk.Frame):
         except ValueError as e:
             messagebox.showwarning("Datos inválidos en Insertar/Modificar", str(e))
             return
-        except Exception:
+        except Exception as e:
+            print(f"Error no controlado: {e}")
             self.varFuncion_new.mostrar_error()
             return
         else:
@@ -334,6 +337,7 @@ class ClaseMarcas(tk.Frame):
         self.alta_modif = 0
 
     def fcancelar(self):
+
         r = messagebox.askquestion("Cancelar", "Confirma cancelar operacion actual?", parent=self)
         if r == messagebox.NO:
             return

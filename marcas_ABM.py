@@ -1,10 +1,8 @@
 import mysql.connector
-#from mysql.connector import Error
 
 class DatosMarcas:
 
     def __init__(self, pantalla):
-
         self.master = pantalla
 
     @staticmethod
@@ -21,47 +19,61 @@ class DatosMarcas:
         ✔ Después podés hacer lo que quieras: otro execute, cerrar cursor, no consumir todo
         SIN errores"""
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql = "SELECT * FROM marcas"
             if orden:
                 sql += " " + orden
             cur.execute(sql)
             return cur.fetchall()
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def traer_ultimo(self):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             cur.execute("SELECT MAX(codigo) FROM marcas")
             resultado = cur.fetchone()[0]
             return resultado or 0  # 👈 clave
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def buscar_entabla(self, argumento):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             cur.execute("SELECT * FROM marcas " + argumento)
             datos = cur.fetchall()
             return datos
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def insertar_marcas(self, datos_marcas):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql = """
                   INSERT INTO marcas (ma_nombre)
                   VALUES (%s) 
@@ -78,15 +90,18 @@ class DatosMarcas:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def modificar_marcas(self, datos_marcas):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
-
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql = """
                   UPDATE marcas 
                   SET ma_nombre=%s 
@@ -106,15 +121,19 @@ class DatosMarcas:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def modi_marca_enart(self, tofil, anterior):
         # modifica las marcas en tabla articulos al modificarla en tabla marcas
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql =  "UPDATE articulos SET marca = '" + tofil +"' WHERE marca = '" + anterior + "'"
             cur.execute(sql)
             # datos = cur.fetchone()
@@ -125,14 +144,18 @@ class DatosMarcas:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def eliminar_marcas(self, Id):
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql = "DELETE FROM marcas WHERE Id = %s"
             # 1 parámetro → (valor,)
             # varios → (v1, v2, v3)
@@ -144,16 +167,19 @@ class DatosMarcas:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def quitamarca(self, tofil):
         # quita las marcas asignadas en tabla articulos al ser eliminada de la tabla marcas
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
-
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql =  "UPDATE articulos SET marca = '' WHERE marca = '" + tofil + "'"
             cur.execute(sql)
             # datos = cur.fetchone()
@@ -164,16 +190,19 @@ class DatosMarcas:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()
 
     def verifica_articulos(self, tofil):
         # verifica si hay articulos con el rubro a eliminar o modificar
 
-        cnn = self.get_connection()
-        cur = cnn.cursor(buffered=True)
-
+        cnn = None
+        cur = None
         try:
+            cnn = self.get_connection()
+            cur = cnn.cursor(buffered=True)
             sql =  "SELECT * FROM articulos WHERE marca = '" + tofil + "'"
             cur.execute(sql)
             # datos = cur.fetchall()
@@ -184,5 +213,7 @@ class DatosMarcas:
             cnn.rollback()
             raise
         finally:
-            cur.close()
-            cnn.close()
+            if cur is not None:
+                cur.close()
+            if cnn is not None:
+                cnn.close()

@@ -1,6 +1,7 @@
 import random
 import tkinter as tk
 from datetime import date, timedelta
+from decimal import Decimal, ROUND_HALF_UP
 from tkinter import ttk
 
 from PIL import Image, ImageTk
@@ -37,24 +38,7 @@ class ClasePlaniCaja(tk.Frame):
         # ---------------------------------------------------------------------------------
         # PANTALLA
         # ---------------------------------------------------------------------------------
-        # Esto esta agregado para centrar las ventanas en la pantalla
-        # master.geometry("880x510")
-        self.master.resizable(0, 0)
-
-        """ Actualizamos el contenido de la ventana (la ventana pude crecer si se le agrega
-        # mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer. """
-
-        # Obtenemos el largo y  ancho de la pantalla
-        wtotal = self.master.winfo_screenwidth()
-        htotal = self.master.winfo_screenheight()
-        # Guardamos el largo y alto de la ventana
-        wventana = 1035
-        hventana = 660
-        # Aplicamos la siguiente formula para calcular donde debería posicionarse
-        pwidth = round(wtotal / 2 - wventana / 2) + 0
-        pheight = round(htotal / 2 - hventana / 2) + 0
-        # Se lo aplicamos a la geometría de la ventana
-        self.master.geometry(str(wventana) + "x" + str(hventana) + "+" + str(pwidth) + "+" + str(pheight))
+        self.pantalla()
         # ------------------------------------------------------------------------------
 
         # ------------------------------------------------------------------------------
@@ -97,30 +81,19 @@ class ClasePlaniCaja(tk.Frame):
         # ---------------------------------------------------------------------------------
         # Encabezado logo y titulo con PACK
         self.frame_titulo_top = tk.Frame(self.master)
-
-        # Armo el logo y el titulo
-        self.photo3 = Image.open('planilla.png')
-        self.photo3 = self.photo3.resize((50, 50), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
-        self.png_ventas = ImageTk.PhotoImage(self.photo3)
-        self.lbl_png_ventas = tk.Label(self.frame_titulo_top, image=self.png_ventas, bg="red", relief="ridge", bd=5)
-        self.lbl_titulo = tk.Label(self.frame_titulo_top, width=52, text="Planilla de Caja", bg="black", fg="gold",
-                                   font=("Arial bold", 20, "bold"), bd=5, relief="ridge", padx=5)
-        # Coloco logo y titulo en posicion de pantalla
-        self.lbl_png_ventas.grid(row=0, column=0, sticky=tk.W, padx=5, ipadx=22)
-        self.lbl_titulo.grid(row=0, column=1, sticky="nsew")
+        self.titulos()
         self.frame_titulo_top.pack(side="top", fill="x", padx=5, pady=2)
         # ---------------------------------------------------------------------------------
-
         # ---------------------------------------------------------------------------------
         # VARIABLES GENERALES
         # ---------------------------------------------------------------------------------
         self.vcmd = (self.register(self.varFuncion_new.validar), "%P")
         # ---------------------------------------------------------------------------------
-
         # ---------------------------------------------------------------------------------
         # STRINGVARS
         # ---------------------------------------------------------------------------------
         self.sv_valor_dolar_hoy = tk.StringVar(value="0.00")
+        self.sv_recargo_tarjeta = tk.StringVar(value="0.00")
 
         self.traer_dolarhoy()
 
@@ -348,6 +321,7 @@ class ClasePlaniCaja(tk.Frame):
     # ---------------------------------------------------------------------------------
 
     def fcancelar(self):
+
         r = messagebox.askquestion("Cancelar", "Confirma cancelar operacion actual?", parent=self)
         if r == messagebox.NO:
             return
@@ -357,6 +331,7 @@ class ClasePlaniCaja(tk.Frame):
         self.btn_nuevoitem.focus()
 
     def freset(self):
+
         r = messagebox.askquestion("Reset", "Confirma -reset- operacion actual?", parent=self)
         if r == messagebox.NO:
             return
@@ -370,6 +345,7 @@ class ClasePlaniCaja(tk.Frame):
         self.btn_nuevoitem.focus()
 
     def estado_inicial(self):
+
         self.habilitar_text()
         self.alta_modif = 0
         self.retorno = ""
@@ -776,11 +752,11 @@ class ClasePlaniCaja(tk.Frame):
             return
 
         # Defino variables para simplificar calculos ----------------------------
-        ingreso = float(self.sv_ingreso.get() or 0)
-        cantidad = float(self.sv_cantidad.get() or 0)
-        egreso = float(self.sv_egreso.get() or 0)
-        compras = float(self.sv_compras.get() or 0)
-        pagos = float(self.sv_pagos_ctacte.get() or 0)
+        ingreso =  (Decimal(self.sv_ingreso.get()) or 0)
+        cantidad = (Decimal(self.sv_cantidad.get()) or 0)
+        egreso =   (Decimal(self.sv_egreso.get()) or 0)
+        compras =  (Decimal(self.sv_compras.get()) or 0)
+        pagos =    (Decimal(self.sv_pagos_ctacte.get()) or 0)
 
         # Validaciones campos numericos segun el tipo de movimiento -------------
 
@@ -842,16 +818,25 @@ class ClasePlaniCaja(tk.Frame):
             if self.sv_pagos_ctacte.get() == "":
                 self.sv_pagos_ctacte.set(value="0")
 
-            self.movim_a_cta = 'S' if (self.sv_check1.get() == "1" or float(self.sv_pagos_ctacte.get()) != 0) else 'N'
+            val1 = Decimal(self.sv_pagos_ctacte.get()).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            self.movim_a_cta = 'S' if (self.sv_check1.get() == "1" or val1 != 0) else 'N'
 
             if self.movim_a_cta == 'S':
 
                 # CODIGO CLIENTE
-                if not float(self.sv_codcli.get()):
+                try:
+                    # 1. Toma el texto, si está vacío pasa a 0, y lo convierte a entero
+                    cod_cliente = int(self.sv_codcli.get().strip() or 0)
+                except ValueError:
+                    # Si el usuario escribió letras por error (ej: "CLIENTE1"), lo tratamos como 0
+                    cod_cliente = 0
+                #if not float(self.sv_codcli.get()):
+                if not cod_cliente:
                     messagebox.showerror("Error", "Cuenta corriente debe tener codigo cliente - "
-                                                  "falta codigo", parent=self)
+                                              "falta codigo", parent=self)
                     self.entry_cliente.focus()
                     return
+
                 # NOMBRE DE CLIENTE
                 if not self.sv_cliente.get():
                     messagebox.showerror("Error", "Cuenta corriente debe tener nombre cliente - "
@@ -875,14 +860,22 @@ class ClasePlaniCaja(tk.Frame):
             except ValueError as e:
                 messagebox.showwarning("Datos inválidos",str(e), parent=self)
                 return
-            except Exception:
+            except Exception as e:
+                print(f"Error no controlado: {e}")
                 self.varFuncion_new.mostrar_error()
                 return
             # ----------------------------------------------------------------------------
 
             # 3- Si se ha generado clave de movimiento a cta. y ademas la variable movimiento a cta esta en "S"
             # Corresponde guardar el movimiento en la tabla de ctacte
-            if float(self.sv_clavemov.get()) != 0 and self.movim_a_cta == 'S':
+            try:
+                # 1. Toma el texto, si está vacío pasa a 0, y lo convierte a entero
+                clavemov = int(self.sv_clavemov.get().strip() or 0)
+            except ValueError:
+                # Si el usuario escribió letras por error (ej: "CLIENTE1"), lo tratamos como 0
+                clavemov = 0
+
+            if clavemov != 0 and self.movim_a_cta == 'S':
                 self.varPlanilla.insertar_ctacte(data_ctacte)
                 self.status.set_status("✔ Registracion correcta en Planillas y cuenta corriente", "ok")
             else:
@@ -895,16 +888,25 @@ class ClasePlaniCaja(tk.Frame):
             if self.sv_pagos_ctacte.get() == "":
                 self.sv_pagos_ctacte.set(value="0")
 
-            self.movim_a_cta = 'S' if (self.sv_check1.get() == "1" or float(self.sv_pagos_ctacte.get()) != 0) else 'N'
+            val1 = Decimal(self.sv_pagos_ctacte.get()).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            self.movim_a_cta = 'S' if (self.sv_check1.get() == "1" or val1 != 0) else 'N'
 
             if self.movim_a_cta == 'S':
 
-                # Si codigo de cliente es "" le meto un "0" pora luego validar
-                if self.sv_codcli.get() == "":
-                    self.sv_codcli.set(value="0")
+                try:
+                    # 1. Toma el texto, si está vacío pasa a 0, y lo convierte a entero
+                    cod_cliente = int(self.sv_codcli.get().strip() or 0)
+                except ValueError:
+                    # Si el usuario escribió letras por error (ej: "CLIENTE1"), lo tratamos como 0
+                    cod_cliente = 0
+
+                # # Si codigo de cliente es "" le meto un "0" pora luego validar
+                # if self.sv_codcli.get() == "":
+                #     self.sv_codcli.set(value="0")
 
                 # Requiero codigo de cliente
-                if not float(self.sv_codcli.get() or 0):
+                # if not float(self.sv_codcli.get() or 0):
+                if not cod_cliente:
                     #messagebox.showerror("Error", "Es necesario codigo de cliente - falta codigo", parent=self)
                     self.status.set_status("ℹ Es necesario codigo de cliente - falta codigo", "info")
                     self.entry_cliente.focus()
@@ -926,8 +928,16 @@ class ClasePlaniCaja(tk.Frame):
             # ----------------------------------------------------------------------------------
             # Borrado previo de los movimientos de ctacte - Al ser modificacion, borrar todos los movimientos
             # en tabla de ctacte con clavemov  = sv_clavemov_ant
-            if float(self.sv_clavemov_ant.get()) != 0 and self.movim_a_cta == 'S':
-                self.varPlanilla.eliminar_item_ctacte_xmodif(self.sv_clavemov_ant.get())
+            try:
+                # 1. Toma el texto, si está vacío pasa a 0, y lo convierte a entero
+                clavemov_ant = int(self.sv_clavemov_ant.get().strip() or 0)
+            except ValueError:
+                # Si el usuario escribió letras por error (ej: "CLIENTE1"), lo tratamos como 0
+                clavemov_ant = 0
+
+            # if float(self.sv_clavemov_ant.get()) != 0 and self.movim_a_cta == 'S':
+            if clavemov_ant != 0 and self.movim_a_cta == 'S':
+             self.varPlanilla.eliminar_item_ctacte_xmodif(self.sv_clavemov_ant.get())
             # ----------------------------------------------------------------------------------
 
             # Ingreso datos a tabla ------------------------------------------------------------
@@ -937,13 +947,20 @@ class ClasePlaniCaja(tk.Frame):
             except ValueError as e:
                 messagebox.showwarning("Datos inválidos", str(e), parent=self)
                 return
-            except Exception:
+            except Exception as e:
+                print(f"Error no controlado: {e}")
                 self.varFuncion_new.mostrar_error()
                 return
             # ----------------------------------------------------------------------------------
+            try:
+                # 1. Toma el texto, si está vacío pasa a 0, y lo convierte a entero
+                clavemov = int(self.sv_clavemov.get().strip() or 0)
+            except ValueError:
+                # Si el usuario escribió letras por error (ej: "CLIENTE1"), lo tratamos como 0
+                clavemov = 0
 
             # Guardo de movimiento en cta cte si corresponde -----------------------------------
-            if float(self.sv_clavemov.get()) != 0 and self.movim_a_cta == 'S':
+            if clavemov != 0 and self.movim_a_cta == 'S':
                 # guardo (como ALTA) movimiento modificado en ctacte con clave nueva, porque el que existia
                 # anteriormente fue borrado previamente.
                 self.varPlanilla.insertar_ctacte(data_ctacte)
@@ -978,15 +995,16 @@ class ClasePlaniCaja(tk.Frame):
         dev_informa = self.varPlanilla.consultar_informa()
         for row in dev_informa:
             self.sv_valor_dolar_hoy.set(value=row[21])
+            self.sv_recargo_tarjeta.set(value=row[20])
 
-    def tildo_cuenta(self, cposa):
+    def tildo_cuenta(self, _cposa):
         # Pone el checkbox en 1 si es movimiento a cuenta corriente o el valor del campo pago es distinto de cero
 
-        valor = self.sv_pagos_ctacte.get()
+        valor = Decimal(self.sv_pagos_ctacte.get()).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
         fpago = self.combo_forma_pago.get()
 
         try:
-            monto = float(valor) if valor else 0.0
+            monto = str(valor) if valor else 0.0
         except ValueError as e:
             messagebox.showerror("Error", str(e), parent=self)
             self.entry_pagoscta.focus()
@@ -1048,6 +1066,7 @@ class ClasePlaniCaja(tk.Frame):
             self.grid_planilla.focus(items[0])
 
     def fshowall(self):
+
         self.selected = self.grid_planilla.focus()
         self.clave = self.grid_planilla.item(self.selected, 'text')
         self.filtrar_grilla(self.sv_fecha_planilla.get())
@@ -1088,12 +1107,18 @@ class ClasePlaniCaja(tk.Frame):
 
             # Evaluo segun el parametro de calculo que asigno en el Entry
             if que_campo == "general":
-                x_ingreso = float(self.sv_ingreso.get())
-                x_costo = float(self.sv_costo.get())
-                x_cantidad = float(self.sv_cantidad.get())
 
-                self.sv_totingresos.set(value=str(round(x_ingreso * x_cantidad, 2)))
-                self.sv_totcosto.set(value=str(round(x_costo * x_cantidad, 2)))
+                x_ingreso = Decimal(self.sv_ingreso.get()).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                x_costo = Decimal(self.sv_costo.get()).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                x_cantidad = Decimal(self.sv_cantidad.get()).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+                val1 = (Decimal(x_ingreso) * Decimal(x_cantidad)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                val2 = (Decimal(x_costo) * Decimal(x_cantidad)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                self.sv_totingresos.set(value=str(val1))
+                self.sv_totcosto.set(value=str(val2))
+                # self.sv_totingresos.set(value=str(round(x_ingreso * x_cantidad, 2)))
+                # self.sv_totcosto.set(value=str(round(x_costo * x_cantidad, 2)))
+
         except ValueError as e:
             messagebox.showerror("Error", str(e), parent=self)
             self.entry_detalle_movim.focus()
@@ -1193,18 +1218,54 @@ class ClasePlaniCaja(tk.Frame):
             "S"
         )
 
+        # valores_new[6] = costo neto dolar
+        # valores_new[7] = tasa del iva
+        # valores_new[8] = tasa de percepcion
+        # valores_new[9] = tasa de ganancia
+
+        for item in valores_new:
+            # Funcion de calculos precios articulos
+            self.lista_calculos = self.varFuncion_new.calcular_precio_articulos(item[6],
+                                                                                self.sv_valor_dolar_hoy.get(),
+                                                                                item[7],
+                                                                                item[8],
+                                                                                item[9],
+                                                                                self.sv_recargo_tarjeta.get())
+
+            self.lista_calculos.append(self.sv_valor_dolar_hoy.get())
+
+        # print(self.lista_calculos)
+        # print(self.lista_calculos[0]) # retorno_neto_pesos
+        # print(self.lista_calculos[1]) # retorno_importe_iva_pesos
+        # print(self.lista_calculos[2]) # retorno_importe_percepcion_pesos
+        # print(self.lista_calculos[3]) # retorno_bruto_pesos
+        # print(self.lista_calculos[4]) # retorno_ganancia_pesos
+        # print(self.lista_calculos[5]) # retorno_precio_venta_pesos
+        # print(self.lista_calculos[6]) # retorno_importe_recargo_pesos
+        # print(self.lista_calculos[7]) # retorno_precio_venta_pesos_con_recargo
+        # print(self.lista_calculos[8]) # agrego cotizacion del dolar hoy
+
         masiva = 0
         masganancia = 0
 
         for item in valores_new:
+
             self.sv_detalle_movim.set(value=item[2])  # descripcion del articulo
 
-            costopesos_neto = round((float(self.sv_valor_dolar_hoy.get()) * float(item[6])), 2)
-            masiva = round((float(costopesos_neto) * (1 + (float(item[7]) / 100))), 2)
-            masganancia = round((float(masiva) * (1 + (float(item[9]) / 100))), 2)
+            # costopesos_neto = round((float(self.sv_valor_dolar_hoy.get()) * float(item[6])), 2)
+            # Importe costo neto pesos
+            #costopesos_neto = Decimal(self.lista_calculos[0]).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
-        self.sv_ingreso.set(value=str(masganancia))
-        self.sv_costo.set(value=str(masiva))
+            # masiva = round((float(costopesos_neto) * (1 + (float(item[7]) / 100))), 2)
+            # Importe Costo bruto en pesos
+            masiva = Decimal(self.lista_calculos[3]).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+            # masganancia = round((float(masiva) * (1 + (float(item[9]) / 100))), 2)
+            # Importe precio de venta (con iva-percepcion y ganancia)
+            masganancia = Decimal(self.lista_calculos[5]).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+        self.sv_ingreso.set(value=str(masganancia))    # precio de venta
+        self.sv_costo.set(value=str(masiva))           # Costo bruto
 
         self.entry_detalle_movim.focus()
         self.entry_detalle_movim.icursor(tk.END)
@@ -1253,7 +1314,6 @@ class ClasePlaniCaja(tk.Frame):
         self.feditaitem()
 
     def fver_blanco(self):
-        print("popopoppopo")
         self.sv_fecha_error.set(value=self.sv_fecha_planilla.get())
 
     def fantes(self):
@@ -1800,7 +1860,8 @@ class ClasePlaniCaja(tk.Frame):
             "Id": self.clave,
             "cc_fecha": fecha_aux,
             "cc_detalle": self.sv_detalle_movim.get(),
-            "cc_ingreso": (float(self.sv_ingreso.get()) * float(self.sv_cantidad.get())),
+            "cc_ingreso": (Decimal(self.sv_ingreso.get()) * Decimal(self.sv_cantidad.get())).quantize(Decimal("0.01"),
+                                                                                                      rounding=ROUND_HALF_UP),
             "cc_egreso": self.sv_pagos_ctacte.get(),
             "cc_codcli": self.sv_codcli.get(),
             "cc_nomcli": self.sv_cliente.get(),
@@ -1811,6 +1872,42 @@ class ClasePlaniCaja(tk.Frame):
     def cargar_icono(path, size=(18,18)):
         img = Image.open(path).resize(size)
         return ImageTk.PhotoImage(img)
+
+    def pantalla(self):
+
+        # Esto esta agregado para centrar las ventanas en la pantalla
+        self.master.resizable(0, 0)
+
+        """ Actualizamos el contenido de la ventana (la ventana pude crecer si se le agrega
+        # mas widgets).Esto actualiza el ancho y alto de la ventana en caso de crecer. """
+
+        # Obtenemos el largo y  ancho de la pantalla
+        wtotal = self.master.winfo_screenwidth()
+        htotal = self.master.winfo_screenheight()
+        # Guardamos el largo y alto de la ventana
+        wventana = 1035
+        hventana = 660
+        # Aplicamos la siguiente formula para calcular donde debería posicionarse
+        pwidth = round(wtotal / 2 - wventana / 2) + 0
+        pheight = round(htotal / 2 - hventana / 2) + 0
+        # Se lo aplicamos a la geometría de la ventana
+        self.master.geometry(str(wventana) + "x" + str(hventana) + "+" + str(pwidth) + "+" + str(pheight))
+
+    def titulos(self):
+
+        # Armo el logo y el titulo
+        self.photo3 = Image.open('planilla.png')
+        self.photo3 = self.photo3.resize((50, 50), Image.Resampling.LANCZOS)  # Redimension (Alto, Ancho)
+        self.png_ventas = ImageTk.PhotoImage(self.photo3)
+        self.lbl_png_ventas = tk.Label(self.frame_titulo_top, image=self.png_ventas, bg="red", relief="ridge", bd=5)
+        self.lbl_titulo = tk.Label(self.frame_titulo_top, width=52, text="Planilla de Caja", bg="black", fg="gold",
+                                   font=("Arial bold", 20, "bold"), bd=5, relief="ridge", padx=5)
+        # Coloco logo y titulo en posicion de pantalla
+        self.lbl_png_ventas.grid(row=0, column=0, sticky=tk.W, padx=5, ipadx=22)
+        self.lbl_titulo.grid(row=0, column=1, sticky="nsew")
+
+
+
 
 """
     # 🔥 CÓMO USARLO

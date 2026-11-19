@@ -6,6 +6,8 @@ from datetime import datetime
 from tkinter import messagebox
 from tkinter import ttk
 
+from decimal import Decimal, ROUND_HALF_UP
+
 import mysql.connector
 
 class ClaseFuncionNew:
@@ -199,7 +201,7 @@ class ClaseFuncionNew:
         toast.geometry(f"+{x}+{y}")
 
         # Auto cerrar
-        toast.after(duracion, toast.destroy)
+        toast.after(duracion, lambda: toast.destroy())
 
 
     """ ---------------------------------------------------------------------------------------------------------
@@ -278,7 +280,7 @@ class ClaseFuncionNew:
         self.sel_item.protocol("WM_DELETE_WINDOW", self.fcerrar)
         self.sel_item.geometry('820x300+600+250')
         self.sel_item.config(bg='light grey', padx=5, pady=5)
-        self.sel_item.resizable(1, 1)
+        self.sel_item.resizable(None, None)
         self.sel_item.title(f"Seleccione => {titulo}")
 
         self.sel_item.transient(self.master)
@@ -541,3 +543,63 @@ class ClaseFuncionNew:
             return f"{numero:.2f}"
         except (ValueError, TypeError):
             return "0.00"
+
+    @staticmethod
+    def calcular_precio_articulos(pr_costo_neto_dolar, pr_precio_dolar, pr_tasa_iva, pr_tasa_percepcion,
+                                  pr_tasa_ganancia, pr_tasa_recargo):
+
+        centavo = Decimal("0.01")
+
+        valores = {
+            "costo neto en dólares": pr_costo_neto_dolar,
+            "precio del dólar": pr_precio_dolar,
+            "tasa de IVA": pr_tasa_iva,
+            "tasa de percepción": pr_tasa_percepcion,
+            "tasa de ganancia": pr_tasa_ganancia,
+            "tasa de recargo": pr_tasa_recargo,
+        }
+
+        for nombre, valor in valores.items():
+            if valor != "":
+                try:
+                    if Decimal(str(valor)) < 0:
+                        raise ValueError(f"El valor de {nombre} no puede ser negativo.")
+                except (ValueError, TypeError):
+                    raise ValueError(f"El valor de {nombre} no es numérico: {valor!r}")
+
+        pr_costo_neto_dolar = Decimal(str(pr_costo_neto_dolar))
+        pr_precio_dolar = Decimal(str(pr_precio_dolar))
+        # Las tasa nunca seran "cero". Si no hay tasa el valor siempre sera 1
+        pr_tasa_iva = ((Decimal(str(pr_tasa_iva)) / Decimal(100)) + 1)
+        pr_tasa_percepcion = (Decimal(str(pr_tasa_percepcion)) / Decimal(100) + 1)
+        pr_tasa_ganancia = (Decimal(str(pr_tasa_ganancia)) / Decimal(100) + 1)
+        pr_tasa_recargo = ((Decimal(str(pr_tasa_recargo)) / Decimal(100)) + 1)
+
+        retorno_neto_pesos = (pr_costo_neto_dolar * pr_precio_dolar)
+        retorno_importe_iva_pesos = (retorno_neto_pesos * pr_tasa_iva) - retorno_neto_pesos
+        retorno_importe_percepcion_pesos = (retorno_neto_pesos * pr_tasa_percepcion) - retorno_neto_pesos
+        retorno_bruto_pesos = (retorno_neto_pesos + retorno_importe_iva_pesos + retorno_importe_percepcion_pesos)
+        retorno_ganancia_pesos = (retorno_bruto_pesos * pr_tasa_ganancia) - retorno_bruto_pesos
+        retorno_precio_venta_pesos = (retorno_bruto_pesos + retorno_ganancia_pesos)
+        retorno_importe_recargo_pesos = (retorno_precio_venta_pesos * pr_tasa_recargo) - retorno_precio_venta_pesos
+        retorno_precio_venta_pesos_con_recargo = (retorno_precio_venta_pesos + retorno_importe_recargo_pesos)
+        #retorno_dolar_actual = pr_precio_dolar
+
+        retornar = []
+
+        retornar.extend([
+            retorno_neto_pesos,
+            retorno_importe_iva_pesos,
+            retorno_importe_percepcion_pesos,
+            retorno_bruto_pesos,
+            retorno_ganancia_pesos,
+            retorno_precio_venta_pesos,
+            retorno_importe_recargo_pesos,
+            retorno_precio_venta_pesos_con_recargo,
+            #retorno_dolar_actual,
+        ])
+
+        return [
+            valor.quantize(centavo, rounding=ROUND_HALF_UP)
+            for valor in retornar
+        ]
